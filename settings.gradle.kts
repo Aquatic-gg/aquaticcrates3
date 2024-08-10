@@ -4,3 +4,5 @@ plugins {
 rootProject.name = "aquaticcrates3"
 include("api")
 include("plugin")
+include("plugin21")
+include("plugin17")
