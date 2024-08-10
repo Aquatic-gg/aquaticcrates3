@@ -3,7 +3,9 @@ package gg.aquatic.aquaticcrates.plugin
 import gg.aquatic.aquaticcrates.api.AbstractCratesPlugin
 import gg.aquatic.aquaticcrates.api.fake.FakeHandler
 
-class CratesPlugin: AbstractCratesPlugin() {
+abstract class CratesPlugin: AbstractCratesPlugin() {
+
+    //abstract val aquaticLib:
 
     companion object {
         val INSTANCE: CratesPlugin

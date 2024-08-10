@@ -12,6 +12,7 @@ kotlin {
 
 repositories {
     mavenCentral()
+    mavenLocal()
     maven("https://hub.spigotmc.org/nexus/content/repositories/snapshots/")
     maven("https://mvn.lumine.io/repository/maven-public/")
 
@@ -40,6 +41,7 @@ subprojects {
 
     repositories {
         mavenCentral()
+        mavenLocal()
         maven("https://hub.spigotmc.org/nexus/content/repositories/snapshots/")
         maven("https://mvn.lumine.io/repository/maven-public/")
 
@@ -58,12 +60,9 @@ subprojects {
         compileOnly("com.github.LoneDev6:API-ItemsAdder:3.6.2-beta-r3-b")
         compileOnly ("com.ticxo.modelengine:ModelEngine:R4.0.4")
         //implementation("net.kyori:adventure-api:4.17.0")
-        implementation("net.kyori:adventure-text-minimessage:4.17.0")
-        implementation("net.kyori:adventure-platform-bukkit:4.3.4")
-        implementation("gg.aquatic.aquaticseries:aquatic-lib:1.0")
     }
 
     kotlin {
-        jvmToolchain(21)
+        jvmToolchain(17)
     }
 }

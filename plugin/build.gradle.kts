@@ -1,10 +1,7 @@
 group = "gg.aquatic.aquaticcrates.plugin"
 version = "1.0-SNAPSHOT"
 
-repositories {
-    mavenLocal()
-}
-
 dependencies {
     implementation(project(":api"))
+    implementation("gg.aquatic.aquaticseries","aquatic-lib","1.0")
 }
