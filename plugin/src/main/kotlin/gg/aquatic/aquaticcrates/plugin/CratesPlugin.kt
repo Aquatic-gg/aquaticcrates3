@@ -1,9 +1,8 @@
 package gg.aquatic.aquaticcrates.plugin
 
 import gg.aquatic.aquaticcrates.api.AbstractCratesPlugin
-import gg.aquatic.aquaticcrates.api.fake.FakeHandler
 
-abstract class CratesPlugin: AbstractCratesPlugin() {
+class CratesPlugin: AbstractCratesPlugin() {
 
     //abstract val aquaticLib:
 
@@ -17,7 +16,6 @@ abstract class CratesPlugin: AbstractCratesPlugin() {
     }
 
     override fun onEnable() {
-        FakeHandler.registerListeners(this)
     }
 
 }
