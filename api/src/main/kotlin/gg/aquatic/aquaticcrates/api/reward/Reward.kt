@@ -1,4 +1,4 @@
 package gg.aquatic.aquaticcrates.api.reward
 
-class Reward {
+interface Reward {
 }
