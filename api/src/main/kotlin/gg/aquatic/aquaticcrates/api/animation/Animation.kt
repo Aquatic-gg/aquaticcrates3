@@ -1,7 +1,7 @@
 package gg.aquatic.aquaticcrates.api.animation
 
-import gg.aquatic.aquaticcrates.api.crate.Model
 import gg.aquatic.aquaticcrates.api.reward.Reward
+import gg.aquatic.aquaticseries.lib.interactable2.SpawnedInteractable
 import org.bukkit.entity.Player
 import org.bukkit.util.Vector
 import java.util.function.Consumer
@@ -34,7 +34,7 @@ abstract class Animation(
         offset: Vector
     )
 
-    abstract fun getModel(): Model
+    abstract fun getVisual(): SpawnedInteractable<*>
 
 
 }

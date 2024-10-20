@@ -30,12 +30,16 @@ subprojects {
         mavenLocal()
         maven("https://hub.spigotmc.org/nexus/content/repositories/snapshots/")
         maven("https://jitpack.io")
+        maven {
+            url = uri("https://repo.nekroplex.com/releases")
+        }
     }
 
     dependencies {
         compileOnly("org.spigotmc:spigot-api:1.17.1-R0.1-SNAPSHOT")
         compileOnly("com.github.LoneDev6:API-ItemsAdder:3.6.2-beta-r3-b")
         compileOnly ("com.ticxo.modelengine:ModelEngine:R4.0.4")
+        implementation("gg.aquatic.waves:Waves:1.0.4")
         //implementation("net.kyori:adventure-api:4.17.0")
     }
 
