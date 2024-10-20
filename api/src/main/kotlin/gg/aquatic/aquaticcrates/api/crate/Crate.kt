@@ -1,10 +1,13 @@
 package gg.aquatic.aquaticcrates.api.crate
 
+import gg.aquatic.aquaticcrates.api.hologram.HologramSettings
+import gg.aquatic.aquaticseries.lib.interactable2.AbstractInteractable
+
 abstract class Crate {
     abstract val identifier: String
     abstract val displayName: String
-    abstract val hologram: List<String>
-    abstract val hologramOffset: Double
+    abstract val hologramSettings: HologramSettings
     abstract val interactHandler: InteractHandler
+    abstract val interactable: AbstractInteractable<*>
 
 }
