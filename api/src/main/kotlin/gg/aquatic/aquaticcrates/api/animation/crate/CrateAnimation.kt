@@ -1,14 +1,13 @@
-package gg.aquatic.aquaticcrates.api.animation
+package gg.aquatic.aquaticcrates.api.animation.crate
 
 import gg.aquatic.aquaticcrates.api.reward.Reward
 import gg.aquatic.aquaticseries.lib.interactable2.SpawnedInteractable
 import org.bukkit.entity.Player
 import org.bukkit.util.Vector
-import java.util.function.Consumer
 
-abstract class Animation {
+abstract class CrateAnimation {
 
-    abstract val animationManager: AnimationManager
+    abstract val animationManager: CrateAnimationManager
     abstract val player: Player
 
     var started = false

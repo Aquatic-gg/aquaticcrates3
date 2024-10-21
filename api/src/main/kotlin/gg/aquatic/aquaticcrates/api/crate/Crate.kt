@@ -7,6 +7,6 @@ abstract class Crate {
     abstract val identifier: String
     abstract val displayName: String
     abstract val hologramSettings: HologramSettings
-    abstract val interactHandler: InteractHandler
+    abstract val interactHandler: CrateInteractHandler
     abstract val interactable: AbstractInteractable<*>
 }

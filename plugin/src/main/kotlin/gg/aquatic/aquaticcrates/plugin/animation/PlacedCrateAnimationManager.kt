@@ -1,8 +1,8 @@
 package gg.aquatic.aquaticcrates.plugin.animation
 
-import gg.aquatic.aquaticcrates.api.animation.Animation
-import gg.aquatic.aquaticcrates.api.animation.AnimationManager
-import gg.aquatic.aquaticcrates.api.animation.AnimationTitle
+import gg.aquatic.aquaticcrates.api.animation.crate.CrateAnimation
+import gg.aquatic.aquaticcrates.api.animation.crate.CrateAnimationManager
+import gg.aquatic.aquaticcrates.api.animation.crate.AnimationTitle
 import gg.aquatic.aquaticcrates.api.crate.Crate
 import gg.aquatic.aquaticcrates.api.crate.SpawnedCrate
 import gg.aquatic.aquaticcrates.api.reward.SpawnedRewardVisual
@@ -13,16 +13,16 @@ import kotlin.collections.HashMap
 
 class PlacedCrateAnimationManager(
     override val crate: Crate,
-    override val animationTasks: TreeMap<Int, MutableList<ConfiguredAction<Animation>>>,
+    override val animationTasks: TreeMap<Int, MutableList<ConfiguredAction<CrateAnimation>>>,
     override val animationLength: Int,
     override val preAnimationDelay: Int,
-    override val preAnimationTasks: MutableList<ConfiguredAction<Animation>>,
-    override val postAnimationTasks: MutableList<ConfiguredAction<Animation>>,
+    override val preAnimationTasks: MutableList<ConfiguredAction<CrateAnimation>>,
+    override val postAnimationTasks: MutableList<ConfiguredAction<CrateAnimation>>,
     override val skippable: Boolean,
     override val openingBossbar: AnimationTitle,
     override val rerollingBossbar: AnimationTitle,
-    override val playingAnimations: HashMap<UUID, Animation>
-) : AnimationManager() {
+    override val playingAnimations: HashMap<UUID, CrateAnimation>
+) : CrateAnimationManager() {
     override val spawnedRewardVisuals: MutableList<SpawnedRewardVisual> = mutableListOf()
 
     override fun open(player: Player, spawnedCrate: SpawnedCrate?) {
@@ -32,11 +32,11 @@ class PlacedCrateAnimationManager(
         }
     }
 
-    override fun playAnimationTask(time: Int, animation: Animation) {
+    override fun playAnimationTask(time: Int, animation: CrateAnimation) {
         TODO("Not yet implemented")
     }
 
-    override fun shouldStopAnimation(time: Int, animation: Animation): Boolean {
+    override fun shouldStopAnimation(time: Int, animation: CrateAnimation): Boolean {
         TODO("Not yet implemented")
     }
 

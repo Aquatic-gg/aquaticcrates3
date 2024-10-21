@@ -1,10 +1,8 @@
-package gg.aquatic.aquaticcrates.api.crate
+package gg.aquatic.aquaticcrates.api.util
 
 import org.bukkit.entity.Player
 
 abstract class InteractHandler {
-
-    abstract val crate: Crate
 
     abstract fun handleInteract(player: Player, isLeft: Boolean)
 

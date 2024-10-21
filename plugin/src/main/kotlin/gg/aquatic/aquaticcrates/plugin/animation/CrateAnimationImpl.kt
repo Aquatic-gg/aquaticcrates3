@@ -1,15 +1,15 @@
 package gg.aquatic.aquaticcrates.plugin.animation
 
-import gg.aquatic.aquaticcrates.api.animation.Animation
-import gg.aquatic.aquaticcrates.api.animation.AnimationManager
+import gg.aquatic.aquaticcrates.api.animation.crate.CrateAnimation
+import gg.aquatic.aquaticcrates.api.animation.crate.CrateAnimationManager
 import gg.aquatic.aquaticseries.lib.interactable2.SpawnedInteractable
 import org.bukkit.entity.Player
 import org.bukkit.util.Vector
 
-class AnimationImpl(
-    override val animationManager: AnimationManager,
+class CrateAnimationImpl(
+    override val animationManager: CrateAnimationManager,
     override val player: Player
-) : Animation() {
+) : CrateAnimation() {
     override fun begin() {
         TODO("Not yet implemented")
     }
