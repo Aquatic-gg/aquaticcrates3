@@ -1,17 +1,12 @@
 package gg.aquatic.aquaticcrates.api.pouche
 
-import gg.aquatic.aquaticcrates.api.AbstractCratesPlugin
 import gg.aquatic.aquaticcrates.api.animation.pouch.PouchAnimationManager
 import gg.aquatic.aquaticcrates.api.crate.CrateHandler
 import gg.aquatic.aquaticcrates.api.openprice.OpenPriceGroup
-import gg.aquatic.aquaticcrates.api.reward.Reward
-import gg.aquatic.aquaticcrates.api.util.Rewardable
 import gg.aquatic.aquaticseries.lib.item2.AquaticItem
 import gg.aquatic.aquaticseries.lib.requirement.ConfiguredRequirement
-import gg.aquatic.aquaticseries.lib.util.checkRequirements
 import gg.aquatic.waves.item.ItemHandler
 import gg.aquatic.waves.registry.register
-import org.bukkit.NamespacedKey
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType
@@ -19,10 +14,9 @@ import org.bukkit.persistence.PersistentDataType
 abstract class RewardPouch(
     val identifier: String,
     val item: AquaticItem
-): Rewardable {
+) {
 
     companion object {
-        val NAMESPACED_KEY = NamespacedKey(AbstractCratesPlugin.INSTANCE, "aquaticrates_pouch_identifier")
         fun get(id: String): RewardPouch? {
             return CrateHandler.pouches[id]
         }
@@ -40,11 +34,11 @@ abstract class RewardPouch(
     }
 
     abstract val displayName: String
-    abstract val rewards: HashMap<String,Reward>
     abstract val openRequirements: MutableList<ConfiguredRequirement<Player>>
     abstract val openPriceGroups: MutableList<OpenPriceGroup>
     abstract val animationManager: PouchAnimationManager
     abstract val interactHandler: PouchInteractHandler
+    abstract val ranges: MutableList<PouchAmountRange>
 
     init {
         item.register("aquaticcrates", "pouch:$identifier") {
@@ -55,16 +49,6 @@ abstract class RewardPouch(
 
     open fun open(player: Player) {
 
-    }
-
-    override fun getPossibleRewards(player: Player): HashMap<String,Reward> {
-        val finalRewards = HashMap<String,Reward>()
-        for ((id, reward) in rewards) {
-            if (!reward.requirements.checkRequirements(player)) continue
-            finalRewards[id] = reward
-        }
-
-        return finalRewards
     }
 
     abstract fun canBeOpened(player: Player): Boolean
