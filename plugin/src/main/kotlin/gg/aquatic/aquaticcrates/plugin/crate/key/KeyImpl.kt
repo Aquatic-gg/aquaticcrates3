@@ -2,6 +2,7 @@ package gg.aquatic.aquaticcrates.plugin.crate.key
 
 import gg.aquatic.aquaticcrates.api.crate.Crate
 import gg.aquatic.aquaticcrates.api.crate.Key
+import gg.aquatic.aquaticcrates.api.crate.KeyInteractHandler
 import gg.aquatic.aquaticseries.lib.item2.AquaticItem
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
@@ -9,9 +10,11 @@ import org.bukkit.inventory.ItemStack
 class KeyImpl(
     crate: Crate,
     item: AquaticItem,
-    override val requiresCrateToOpen: Boolean,
-    override val mustBeHeld: Boolean
+    override val mustBeHeld: Boolean,
+    interactHandler: (KeyImpl) -> KeyInteractHandler
 ) : Key(crate, item) {
+
+    override val interactHandler = interactHandler(this)
 
     fun giveItem(amount: Int, vararg players: Player) {
         val itemStack = getItem(amount)
