@@ -6,4 +6,6 @@ class SpawnedCrate(
     val crate: Crate,
     val location: Location
 ) {
+
+    val spawnedInteractable = crate.interactable.spawn(location, register = false, canInteract = true)
 }

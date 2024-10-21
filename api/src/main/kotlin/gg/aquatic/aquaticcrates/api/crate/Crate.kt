@@ -9,5 +9,4 @@ abstract class Crate {
     abstract val hologramSettings: HologramSettings
     abstract val interactHandler: InteractHandler
     abstract val interactable: AbstractInteractable<*>
-
 }

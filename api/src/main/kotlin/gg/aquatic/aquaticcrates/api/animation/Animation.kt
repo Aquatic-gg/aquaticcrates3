@@ -6,11 +6,11 @@ import org.bukkit.entity.Player
 import org.bukkit.util.Vector
 import java.util.function.Consumer
 
-abstract class Animation(
-    val animationManager: AnimationManager,
-    val player: Player,
-    val callBack: Consumer<Animation>
-) {
+abstract class Animation {
+
+    abstract val animationManager: AnimationManager
+    abstract val player: Player
+
     var started = false
 
     lateinit var reward: Reward
@@ -22,7 +22,6 @@ abstract class Animation(
     abstract fun begin()
     abstract fun start()
     fun reroll() {
-        callBack.accept(this)
     }
     abstract fun end()
     abstract fun spawnReward(
