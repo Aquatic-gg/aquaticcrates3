@@ -6,7 +6,7 @@ import org.bukkit.entity.Player
 
 object HistoryHandler {
 
-    // CrateId, RewardId, Daily/Weekly/Monthly/Alltime, Amount
+    // namespace: CrateId or PouchId, RewardId, Daily/Weekly/Monthly/Alltime, Amount
     val openHistory = hashMapOf<String, HashMap<String, HashMap<HistoryType, Int>>>()
 
     fun history(historyType: HistoryType): Int {

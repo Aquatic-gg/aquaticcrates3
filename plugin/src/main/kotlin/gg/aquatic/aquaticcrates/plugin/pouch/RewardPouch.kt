@@ -8,7 +8,6 @@ import gg.aquatic.aquaticcrates.api.pouch.PouchInteractHandler
 import gg.aquatic.aquaticcrates.api.reward.Reward
 import gg.aquatic.aquaticseries.lib.item2.AquaticItem
 import gg.aquatic.aquaticseries.lib.requirement.ConfiguredRequirement
-import gg.aquatic.aquaticseries.lib.util.checkRequirements
 import org.bukkit.entity.Player
 
 class RewardPouch(
@@ -27,17 +26,6 @@ class RewardPouch(
     }
 
     override val animationManager = animationManager(this)
-
-    override fun getPossibleRewards(player: Player): HashMap<String, Reward> {
-        val finalRewards = HashMap<String, Reward>()
-        for ((id, pair) in rewards) {
-            val reward = pair.first
-            if (!reward.requirements.checkRequirements(player)) continue
-            finalRewards[id] = reward
-        }
-
-        return finalRewards
-    }
 
 
 }

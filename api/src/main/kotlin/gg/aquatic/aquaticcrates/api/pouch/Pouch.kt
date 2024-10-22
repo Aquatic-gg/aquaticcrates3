@@ -3,11 +3,13 @@ package gg.aquatic.aquaticcrates.api.pouch
 import gg.aquatic.aquaticcrates.api.animation.pouch.PouchAnimationManager
 import gg.aquatic.aquaticcrates.api.crate.CrateHandler
 import gg.aquatic.aquaticcrates.api.openprice.OpenPriceGroup
+import gg.aquatic.aquaticcrates.api.player.HistoryHandler
 import gg.aquatic.aquaticcrates.api.reward.Reward
 import gg.aquatic.aquaticcrates.api.reward.RewardAmountRange
 import gg.aquatic.aquaticcrates.api.util.Rewardable
 import gg.aquatic.aquaticseries.lib.item2.AquaticItem
 import gg.aquatic.aquaticseries.lib.requirement.ConfiguredRequirement
+import gg.aquatic.aquaticseries.lib.util.checkRequirements
 import gg.aquatic.waves.item.ItemHandler
 import gg.aquatic.waves.registry.register
 import org.bukkit.entity.Player
@@ -48,6 +50,34 @@ abstract class Pouch(
             interactHandler.handleInteract(it.player, it.isLeftClick)
             it.isCancelled = true
         }
+    }
+
+    override fun getPossibleRewards(player: Player): HashMap<String, Reward> {
+        val finalRewards = HashMap<String, Reward>()
+        for ((id, pair) in rewards) {
+            val reward = pair.first
+            if (!reward.requirements.checkRequirements(player)) continue
+
+            var meetsRequirements = true
+            for ((type, limit) in reward.globalLimits) {
+                if (HistoryHandler.history("pouch:$identifier", id, type) >= limit) {
+                    meetsRequirements = false
+                    break
+                }
+            }
+            if (!meetsRequirements) continue
+            for ((type, limit) in reward.perPlayerLimits) {
+                if (HistoryHandler.history("pouch:$identifier", id, type, player) >= limit) {
+                    meetsRequirements = false
+                    break
+                }
+            }
+            if (!meetsRequirements) continue
+
+            finalRewards[id] = reward
+        }
+
+        return finalRewards
     }
 
     open fun open(player: Player) {

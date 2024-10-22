@@ -18,6 +18,8 @@ abstract class OpenableCrate : Crate(), Rewardable {
 
     abstract fun canBeOpened(player: Player): Boolean
 
+    abstract val historyNamespace: String
+
     override fun getPossibleRewards(player: Player): HashMap<String, Reward> {
         val finalRewards = HashMap<String, Reward>()
         for ((id, reward) in rewards) {
@@ -25,14 +27,14 @@ abstract class OpenableCrate : Crate(), Rewardable {
 
             var meetsRequirements = true
             for ((type, limit) in reward.globalLimits) {
-                if (HistoryHandler.history(this.identifier, id, type) >= limit) {
+                if (HistoryHandler.history("crate:$identifier", id, type) >= limit) {
                     meetsRequirements = false
                     break
                 }
             }
             if (!meetsRequirements) continue
             for ((type, limit) in reward.perPlayerLimits) {
-                if (HistoryHandler.history(this.identifier, id, type, player) >= limit) {
+                if (HistoryHandler.history("crate:$identifier", id, type, player) >= limit) {
                     meetsRequirements = false
                     break
                 }
