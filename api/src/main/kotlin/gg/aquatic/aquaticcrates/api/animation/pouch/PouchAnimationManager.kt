@@ -9,15 +9,7 @@ import java.util.*
 abstract class PouchAnimationManager {
 
     abstract val pouch: Pouch
-    abstract val animationTasks: TreeMap<Int, MutableList<ConfiguredAction<PouchAnimation>>>
-    abstract val animationLength: Int
-    abstract val preAnimationDelay: Int
-    abstract val preAnimationTasks: TreeMap<Int, MutableList<ConfiguredAction<PouchAnimation>>>
-    abstract val postAnimationDelay: Int
-    abstract val postAnimationTasks: TreeMap<Int, MutableList<ConfiguredAction<PouchAnimation>>>
-    abstract val finalAnimationTasks: MutableList<ConfiguredAction<PouchAnimation>>
-    abstract val skippable: Boolean
-    abstract val openingBossbar: AnimationTitle
+    abstract val animationSettings: PouchAnimationSettings
 
     open fun showAnimationTitle(title: AnimationTitle, player: Player) {
 

@@ -24,13 +24,14 @@ class BasicCrate(
     override val openRequirements: MutableList<ConfiguredRequirement<Player>>,
     override val skipAnimationWhileSneaking: Boolean,
     override val openPriceGroups: MutableList<OpenPriceGroup>,
-    val animationManager: CrateAnimationManager,
+    animationManager: (BasicCrate) -> CrateAnimationManager,
     val milestoneManager: MilestoneManager,
     rerollManager: (BasicCrate) -> RerollManager,
     key: (BasicCrate) -> Key,
     val rewardRandomAmountRanges: MutableList<RewardAmountRange>
 ) : OpenableCrate() {
 
+    val animationManager = animationManager(this)
     val rerollManager = rerollManager(this)
 
     override val key = key(this)

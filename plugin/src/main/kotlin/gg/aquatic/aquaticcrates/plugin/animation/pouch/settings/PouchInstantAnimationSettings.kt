@@ -1,15 +1,14 @@
-package gg.aquatic.aquaticcrates.plugin.animation.pouch
+package gg.aquatic.aquaticcrates.plugin.animation.pouch.settings
 
 import gg.aquatic.aquaticcrates.api.animation.AnimationTitle
 import gg.aquatic.aquaticcrates.api.animation.pouch.PouchAnimation
 import gg.aquatic.aquaticcrates.api.animation.pouch.PouchAnimationManager
-import gg.aquatic.aquaticcrates.api.pouch.Pouch
+import gg.aquatic.aquaticcrates.api.animation.pouch.PouchAnimationSettings
 import gg.aquatic.aquaticseries.lib.action.ConfiguredAction
 import org.bukkit.entity.Player
 import java.util.*
 
-class InstantPouchAnimationManager(
-    override val pouch: Pouch,
+class PouchInstantAnimationSettings(
     override val animationTasks: TreeMap<Int, MutableList<ConfiguredAction<PouchAnimation>>>,
     override val animationLength: Int,
     override val preAnimationDelay: Int,
@@ -19,21 +18,8 @@ class InstantPouchAnimationManager(
     override val finalAnimationTasks: MutableList<ConfiguredAction<PouchAnimation>>,
     override val skippable: Boolean,
     override val openingBossbar: AnimationTitle,
-) : PouchAnimationManager() {
-
-    override val playingAnimations: HashMap<UUID, PouchAnimation> = hashMapOf()
-
-    override fun skipAnimation(player: Player) {
-
-    }
-
-    override fun forceStopAnimation(player: Player) {
-
-    }
-
-    override fun tick() {
-        for ((_, animation) in playingAnimations) {
-            animation.tick()
-        }
+) : PouchAnimationSettings() {
+    override fun create(player: Player, animationManager: PouchAnimationManager): PouchAnimation {
+        TODO("Not yet implemented")
     }
 }

@@ -7,9 +7,9 @@ import gg.aquatic.aquaticseries.lib.util.executeActions
 import gg.aquatic.aquaticseries.lib.util.randomItem
 import org.bukkit.entity.Player
 
-class PouchAnimationImpl(
+class InstantPouchAnimationImpl(
     override val player: Player,
-    override val animationManager: PouchAnimationManager
+    override val animationManager: PouchAnimationManager,
 ) : PouchAnimation() {
     override var state: State = State.PRE_OPEN
         private set
@@ -21,6 +21,8 @@ class PouchAnimationImpl(
     val randomAmount = randomReward.amountRanges.randomItem()?.randomNum ?: 1
 
     override fun tick() {
+        finalize()
+        /*
         when (state) {
             State.PRE_OPEN -> {
                 tickPreOpen()
@@ -54,6 +56,7 @@ class PouchAnimationImpl(
         }
 
         tick++
+         */
     }
 
     private fun updateState(state: State) {
@@ -63,9 +66,8 @@ class PouchAnimationImpl(
 
     private fun finalize() {
         updateState(State.FINISHED)
-        executeActions(animationManager.finalAnimationTasks)
+        executeActions(animationManager.animationSettings.finalAnimationTasks)
         animationManager.playingAnimations.remove(player.uniqueId)
-
         randomReward.give(player, randomAmount)
     }
 
