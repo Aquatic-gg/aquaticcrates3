@@ -1,9 +1,9 @@
-package gg.aquatic.aquaticcrates.api.pouche
+package gg.aquatic.aquaticcrates.api.reward
 
 import gg.aquatic.aquaticseries.lib.chance.IChance
 import kotlin.random.Random
 
-class PouchAmountRange(
+class RewardAmountRange(
     val min: Int,
     val max: Int,
     override val chance: Double

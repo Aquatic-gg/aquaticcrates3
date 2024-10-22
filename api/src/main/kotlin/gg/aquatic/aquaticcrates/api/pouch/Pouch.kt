@@ -1,8 +1,11 @@
-package gg.aquatic.aquaticcrates.api.pouche
+package gg.aquatic.aquaticcrates.api.pouch
 
 import gg.aquatic.aquaticcrates.api.animation.pouch.PouchAnimationManager
 import gg.aquatic.aquaticcrates.api.crate.CrateHandler
 import gg.aquatic.aquaticcrates.api.openprice.OpenPriceGroup
+import gg.aquatic.aquaticcrates.api.reward.Reward
+import gg.aquatic.aquaticcrates.api.reward.RewardAmountRange
+import gg.aquatic.aquaticcrates.api.util.Rewardable
 import gg.aquatic.aquaticseries.lib.item2.AquaticItem
 import gg.aquatic.aquaticseries.lib.requirement.ConfiguredRequirement
 import gg.aquatic.waves.item.ItemHandler
@@ -11,16 +14,16 @@ import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType
 
-abstract class RewardPouch(
+abstract class Pouch(
     val identifier: String,
     val item: AquaticItem
-) {
+): Rewardable {
 
     companion object {
-        fun get(id: String): RewardPouch? {
+        fun get(id: String): Pouch? {
             return CrateHandler.pouches[id]
         }
-        fun get(itemStack: ItemStack): RewardPouch? {
+        fun get(itemStack: ItemStack): Pouch? {
             val meta = itemStack.itemMeta ?: return null
             val pair =
                 meta.persistentDataContainer.get(ItemHandler.NAMESPACE_KEY, PersistentDataType.STRING) ?: return null
@@ -38,7 +41,7 @@ abstract class RewardPouch(
     abstract val openPriceGroups: MutableList<OpenPriceGroup>
     abstract val animationManager: PouchAnimationManager
     abstract val interactHandler: PouchInteractHandler
-    abstract val ranges: MutableList<PouchAmountRange>
+    abstract val rewards: HashMap<String,Pair<Reward,MutableList<RewardAmountRange>>>
 
     init {
         item.register("aquaticcrates", "pouch:$identifier") {

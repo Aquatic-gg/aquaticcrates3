@@ -1,8 +1,9 @@
-package gg.aquatic.aquaticcrates.plugin.animation
+package gg.aquatic.aquaticcrates.plugin.animation.crate
 
 import gg.aquatic.aquaticcrates.api.animation.crate.CrateAnimation
 import gg.aquatic.aquaticcrates.api.animation.crate.CrateAnimationManager
-import gg.aquatic.aquaticcrates.api.animation.crate.AnimationTitle
+import gg.aquatic.aquaticcrates.api.animation.AnimationTitle
+import gg.aquatic.aquaticcrates.api.animation.pouch.PouchAnimation
 import gg.aquatic.aquaticcrates.api.crate.Crate
 import gg.aquatic.aquaticcrates.api.crate.SpawnedCrate
 import gg.aquatic.aquaticcrates.api.reward.SpawnedRewardVisual
@@ -16,12 +17,15 @@ class PlacedCrateAnimationManager(
     override val animationTasks: TreeMap<Int, MutableList<ConfiguredAction<CrateAnimation>>>,
     override val animationLength: Int,
     override val preAnimationDelay: Int,
-    override val preAnimationTasks: MutableList<ConfiguredAction<CrateAnimation>>,
-    override val postAnimationTasks: MutableList<ConfiguredAction<CrateAnimation>>,
+    override val preAnimationTasks: TreeMap<Int, MutableList<ConfiguredAction<CrateAnimation>>>,
+    override val postAnimationTasks: TreeMap<Int, MutableList<ConfiguredAction<CrateAnimation>>>,
+    override val postAnimationDelay: Int,
+    override val finalAnimationTasks: MutableList<ConfiguredAction<PouchAnimation>>,
     override val skippable: Boolean,
     override val openingBossbar: AnimationTitle,
     override val rerollingBossbar: AnimationTitle,
-    override val playingAnimations: HashMap<UUID, CrateAnimation>
+    override val playingAnimations: HashMap<UUID, CrateAnimation>,
+    override val state: State
 ) : CrateAnimationManager() {
     override val spawnedRewardVisuals: MutableList<SpawnedRewardVisual> = mutableListOf()
 

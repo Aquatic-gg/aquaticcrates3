@@ -9,6 +9,7 @@ import gg.aquatic.aquaticcrates.api.milestone.MilestoneManager
 import gg.aquatic.aquaticcrates.api.openprice.OpenPriceGroup
 import gg.aquatic.aquaticcrates.api.reroll.RerollManager
 import gg.aquatic.aquaticcrates.api.reward.Reward
+import gg.aquatic.aquaticcrates.api.reward.RewardAmountRange
 import gg.aquatic.aquaticcrates.plugin.crate.interact.BasicInteractHandler
 import gg.aquatic.aquaticseries.lib.interactable2.AbstractInteractable
 import gg.aquatic.aquaticseries.lib.requirement.ConfiguredRequirement
@@ -26,7 +27,8 @@ class BasicCrate(
     val animationManager: CrateAnimationManager,
     val milestoneManager: MilestoneManager,
     rerollManager: (BasicCrate) -> RerollManager,
-    key: (BasicCrate) -> Key
+    key: (BasicCrate) -> Key,
+    val rewardRandomAmountRanges: MutableList<RewardAmountRange>
 ) : OpenableCrate() {
 
     val rerollManager = rerollManager(this)
