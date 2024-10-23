@@ -17,14 +17,15 @@ class RewardPouch(
     override val openRequirements: MutableList<ConfiguredRequirement<Player>>,
     override val openPriceGroups: MutableList<OpenPriceGroup>,
     animationManager: (RewardPouch) -> PouchAnimationManager,
-    override val interactHandler: PouchInteractHandler,
-    override val rewards: HashMap<String,Pair<Reward,MutableList<RewardAmountRange>>>
+    interactHandler: (RewardPouch) -> PouchInteractHandler,
+    override val rewards: HashMap<String, Reward>
 ) : Pouch(identifier, item) {
 
     override fun canBeOpened(player: Player): Boolean {
         return true
     }
 
+    override var interactHandler = interactHandler(this)
     override val animationManager = animationManager(this)
 
 

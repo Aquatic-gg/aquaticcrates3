@@ -6,7 +6,7 @@ import gg.aquatic.aquaticcrates.api.animation.AnimationTitle
 import gg.aquatic.aquaticcrates.api.animation.pouch.PouchAnimation
 import gg.aquatic.aquaticcrates.api.crate.Crate
 import gg.aquatic.aquaticcrates.api.crate.SpawnedCrate
-import gg.aquatic.aquaticcrates.api.reward.SpawnedRewardVisual
+import gg.aquatic.aquaticcrates.api.animation.SpawnedRewardVisual
 import gg.aquatic.aquaticseries.lib.action.ConfiguredAction
 import org.bukkit.entity.Player
 import java.util.*

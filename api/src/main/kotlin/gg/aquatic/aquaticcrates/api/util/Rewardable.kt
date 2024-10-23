@@ -6,6 +6,7 @@ import org.bukkit.entity.Player
 
 interface Rewardable {
 
+    val rewards: HashMap<String, Reward>
     fun getRandomRewards(player: Player, amount: Int): HashMap<String,Pair<Reward, Int>> {
         val finalRewards = HashMap<String,Pair<Reward, Int>>()
         var amountLeft = amount

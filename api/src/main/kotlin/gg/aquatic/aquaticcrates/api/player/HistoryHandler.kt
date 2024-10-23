@@ -18,6 +18,17 @@ object HistoryHandler {
         }
         return total
     }
+    fun history(historyType: HistoryType, namespace: String): Int {
+        var total = 0
+        openHistory.forEach { (id, rewardHistory) ->
+            if (id.startsWith(namespace, ignoreCase = true)) {
+                for ((_, historyMap) in rewardHistory) {
+                    historyMap[historyType]?.let { total += it }
+                }
+            }
+        }
+        return total
+    }
 
     fun history(crateId: String, historyType: HistoryType): Int {
         var total = 0

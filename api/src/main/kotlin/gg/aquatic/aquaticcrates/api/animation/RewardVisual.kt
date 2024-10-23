@@ -1,4 +1,4 @@
-package gg.aquatic.aquaticcrates.api.reward
+package gg.aquatic.aquaticcrates.api.animation
 
 import gg.aquatic.aquaticcrates.api.animation.crate.CrateAnimation
 

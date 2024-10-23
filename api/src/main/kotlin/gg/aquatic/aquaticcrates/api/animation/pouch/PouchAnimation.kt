@@ -22,15 +22,15 @@ abstract class PouchAnimation {
     }
 
     open fun tickPreOpen() {
-        executeActions(animationManager.preAnimationTasks[tick] ?: return)
+        executeActions(animationManager.animationSettings.preAnimationTasks[tick] ?: return)
     }
 
     open fun tickOpening() {
-        executeActions(animationManager.animationTasks[tick] ?: return)
+        executeActions(animationManager.animationSettings.animationTasks[tick] ?: return)
     }
 
     open fun tickPostOpen() {
-        executeActions(animationManager.postAnimationTasks[tick] ?: return)
+        executeActions(animationManager.animationSettings.postAnimationTasks[tick] ?: return)
     }
 
 

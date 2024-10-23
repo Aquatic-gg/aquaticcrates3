@@ -4,6 +4,7 @@ import gg.aquatic.aquaticcrates.api.animation.AnimationTitle
 import gg.aquatic.aquaticcrates.api.animation.pouch.PouchAnimation
 import gg.aquatic.aquaticcrates.api.animation.pouch.PouchAnimationManager
 import gg.aquatic.aquaticcrates.api.animation.pouch.PouchAnimationSettings
+import gg.aquatic.aquaticcrates.plugin.animation.pouch.InstantPouchAnimationImpl
 import gg.aquatic.aquaticseries.lib.action.ConfiguredAction
 import org.bukkit.entity.Player
 import java.util.*
@@ -20,6 +21,6 @@ class PouchInstantAnimationSettings(
     override val openingBossbar: AnimationTitle,
 ) : PouchAnimationSettings() {
     override fun create(player: Player, animationManager: PouchAnimationManager): PouchAnimation {
-        TODO("Not yet implemented")
+        return InstantPouchAnimationImpl(player, animationManager)
     }
 }

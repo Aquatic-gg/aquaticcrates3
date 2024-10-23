@@ -11,7 +11,6 @@ import org.bukkit.entity.Player
 abstract class OpenableCrate : Crate(), Rewardable {
 
     abstract val key: Key
-    abstract val rewards: HashMap<String, Reward>
     abstract val openRequirements: MutableList<ConfiguredRequirement<Player>>
     abstract val openPriceGroups: MutableList<OpenPriceGroup>
     abstract val skipAnimationWhileSneaking: Boolean

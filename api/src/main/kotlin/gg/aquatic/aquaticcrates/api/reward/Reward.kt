@@ -21,7 +21,6 @@ interface Reward: IChance {
     val requirements: List<ConfiguredRequirement<Player>>
     val winCrateAnimation: String?
     val hologramSettings: AquaticHologramSettings
-    val rewardVisual: RewardVisual
     val amountRanges: MutableList<RewardAmountRange>
 
     fun give(player: Player, randomAmount: Int) {

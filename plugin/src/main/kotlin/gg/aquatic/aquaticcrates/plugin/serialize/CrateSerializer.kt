@@ -1,8 +1,9 @@
-package gg.aquatic.aquaticcrates.plugin.crate
+package gg.aquatic.aquaticcrates.plugin.serialize
 
 import gg.aquatic.aquaticcrates.api.crate.Crate
 import gg.aquatic.aquaticcrates.api.reward.Reward
 import gg.aquatic.aquaticcrates.plugin.CratesPlugin
+import gg.aquatic.aquaticcrates.plugin.crate.BasicCrate
 import gg.aquatic.aquaticseries.lib.util.Config
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext

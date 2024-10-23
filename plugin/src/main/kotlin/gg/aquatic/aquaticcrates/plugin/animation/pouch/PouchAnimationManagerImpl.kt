@@ -7,7 +7,7 @@ import gg.aquatic.aquaticcrates.api.pouch.Pouch
 import org.bukkit.entity.Player
 import java.util.*
 
-class PouchAnimationManager(
+class PouchAnimationManagerImpl(
     override val pouch: Pouch,
     override val animationSettings: PouchAnimationSettings,
 ) : PouchAnimationManager() {

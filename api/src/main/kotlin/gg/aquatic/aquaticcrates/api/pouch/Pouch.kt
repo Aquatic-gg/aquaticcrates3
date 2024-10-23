@@ -43,7 +43,6 @@ abstract class Pouch(
     abstract val openPriceGroups: MutableList<OpenPriceGroup>
     abstract val animationManager: PouchAnimationManager
     abstract val interactHandler: PouchInteractHandler
-    abstract val rewards: HashMap<String,Pair<Reward,MutableList<RewardAmountRange>>>
 
     init {
         item.register("aquaticcrates", "pouch:$identifier") {
@@ -54,8 +53,7 @@ abstract class Pouch(
 
     override fun getPossibleRewards(player: Player): HashMap<String, Reward> {
         val finalRewards = HashMap<String, Reward>()
-        for ((id, pair) in rewards) {
-            val reward = pair.first
+        for ((id, reward) in rewards) {
             if (!reward.requirements.checkRequirements(player)) continue
 
             var meetsRequirements = true
@@ -80,8 +78,14 @@ abstract class Pouch(
         return finalRewards
     }
 
-    open fun open(player: Player) {
+    open fun tryOpen(player: Player) {
+        if (!canBeOpened(player)) return
+        open(player)
+    }
 
+    open fun open(player: Player) {
+        val animation = animationManager.animationSettings.create(player, animationManager)
+        animationManager.playingAnimations += player.uniqueId to animation
     }
 
     abstract fun canBeOpened(player: Player): Boolean
