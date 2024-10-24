@@ -1,5 +1,5 @@
 plugins {
-    kotlin("jvm") version "2.0.20"
+    kotlin("jvm") version "2.0.21"
     id("com.github.johnrengelman.shadow") version "7.1.2"
 }
 
@@ -40,6 +40,7 @@ subprojects {
         compileOnly("com.github.LoneDev6:API-ItemsAdder:3.6.2-beta-r3-b")
         compileOnly ("com.ticxo.modelengine:ModelEngine:R4.0.4")
         compileOnly("gg.aquatic.waves:Waves:1.0.12")
+        implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0")
         //implementation("net.kyori:adventure-api:4.17.0")
     }
 
