@@ -29,7 +29,13 @@ abstract class CrateAnimation: Animation() {
     }
 
     open fun executeActions(actions: List<ConfiguredAction<CrateAnimation>>) {
-        actions.executeActions(this) { _, str -> str.replace("%player%", player.name) }
+        actions.executeActions(this) { _, str ->
+            var finalString = str.replace("%player%", player.name)
+            for ((i, reward) in rewards.withIndex()) {
+                finalString = finalString.replace("%random-amount:$i",reward.randomAmount.toString())
+            }
+            finalString
+        }
     }
 
     enum class State {
