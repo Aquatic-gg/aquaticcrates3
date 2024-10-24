@@ -22,7 +22,8 @@ class RewardPouch(
     animationManager: (RewardPouch) -> PouchAnimationManager,
     interactHandler: (RewardPouch) -> PouchInteractHandler,
     override val rewards: HashMap<String, Reward>,
-    override val possibleRewardRanges: MutableList<RewardAmountRange>
+    override val possibleRewardRanges: MutableList<RewardAmountRange>,
+    val previewMenuSettings: PouchPreviewMenuSettings
 ) : Pouch(identifier, item) {
 
     override fun canBeOpened(player: Player): Boolean {
@@ -43,6 +44,11 @@ class RewardPouch(
             }
         }
         return rolledRewards
+    }
+
+    fun openPreview(player: Player) {
+        if (previewMenuSettings.invSettings == null) return
+        PouchPreviewMenu(player, this).open()
     }
 
     override val animationManager = animationManager(this)

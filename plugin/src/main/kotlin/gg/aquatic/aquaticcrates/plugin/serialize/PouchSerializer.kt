@@ -10,17 +10,20 @@ import gg.aquatic.aquaticcrates.plugin.CratesPlugin
 import gg.aquatic.aquaticcrates.plugin.animation.pouch.PouchAnimationManagerImpl
 import gg.aquatic.aquaticcrates.plugin.animation.pouch.settings.PouchInstantAnimationSettings
 import gg.aquatic.aquaticcrates.plugin.pouch.PouchInteractHandlerImpl
+import gg.aquatic.aquaticcrates.plugin.pouch.PouchPreviewMenuSettings
 import gg.aquatic.aquaticcrates.plugin.pouch.RewardPouch
 import gg.aquatic.aquaticseries.lib.action.ConfiguredAction
 import gg.aquatic.aquaticseries.lib.item2.AquaticItem
 import gg.aquatic.aquaticseries.lib.util.Config
 import gg.aquatic.aquaticseries.lib.util.getSectionList
 import gg.aquatic.waves.registry.serializer.ActionSerializer
+import gg.aquatic.waves.registry.serializer.InventorySerializer
 import gg.aquatic.waves.registry.serializer.RequirementSerializer
 import gg.aquatic.waves.util.loadFromYml
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.bukkit.configuration.ConfigurationSection
+import org.bukkit.configuration.file.FileConfiguration
 import org.bukkit.entity.Player
 import java.io.File
 import java.util.*
@@ -56,7 +59,8 @@ object PouchSerializer : BaseSerializer() {
             sendConsoleMessage("Could not load Pouch Item! (Path: pouch-item)")
             return@withContext null
         }
-        val openRequirements = RequirementSerializer.fromSections<Player>(cfg.getSectionList("open-requirements")).toMutableList()
+        val openRequirements =
+            RequirementSerializer.fromSections<Player>(cfg.getSectionList("open-requirements")).toMutableList()
         val openPriceGroups = ArrayList<OpenPriceGroup>()
         val animationSettings = loadPouchAnimationSettings(cfg.getConfigurationSection("animation"))
         val animationManager: (Pouch) -> PouchAnimationManager = { pouch ->
@@ -71,8 +75,34 @@ object PouchSerializer : BaseSerializer() {
 
         val possibleRewardRanges = loadRewardRanges(cfg.getSectionList("possible-rewards"))
         val rewards = loadRewards(rewardSection)
-        return@withContext RewardPouch(id,item,displayName,openRequirements,openPriceGroups,animationManager, { p-> PouchInteractHandlerImpl(p)}, rewards, possibleRewardRanges)
+        val previewSettings = loadPouchPreviewMenuSettings(cfg)
+
+        return@withContext RewardPouch(
+            id,
+            item,
+            displayName,
+            openRequirements,
+            openPriceGroups,
+            animationManager,
+            { p -> PouchInteractHandlerImpl(p) },
+            rewards,
+            possibleRewardRanges,
+            previewSettings
+        )
     }
+
+    private suspend fun loadPouchPreviewMenuSettings(cfg: FileConfiguration): PouchPreviewMenuSettings =
+        withContext(Dispatchers.IO) {
+            val section =
+                cfg.getConfigurationSection("preview") ?: return@withContext PouchPreviewMenuSettings(null, listOf())
+            val rewardSlots = section.getIntegerList("reward-slots")
+            val invSettings = InventorySerializer.loadInventory(section)
+
+            return@withContext PouchPreviewMenuSettings(
+                invSettings,
+                rewardSlots
+            )
+        }
 
     suspend fun loadPouchAnimationSettings(section: ConfigurationSection?): PouchAnimationSettings =
         withContext(Dispatchers.IO) {
