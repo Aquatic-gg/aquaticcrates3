@@ -2,23 +2,34 @@ package gg.aquatic.aquaticcrates.plugin.animation.pouch
 
 import gg.aquatic.aquaticcrates.api.animation.pouch.PouchAnimation
 import gg.aquatic.aquaticcrates.api.animation.pouch.PouchAnimationManager
+import gg.aquatic.aquaticcrates.api.animation.prop.AnimationProp
+import gg.aquatic.aquaticcrates.api.reward.RolledReward
 import gg.aquatic.aquaticseries.lib.action.ConfiguredAction
+import gg.aquatic.aquaticseries.lib.audience.AquaticAudience
+import gg.aquatic.aquaticseries.lib.audience.GlobalAudience
 import gg.aquatic.aquaticseries.lib.util.executeActions
 import gg.aquatic.aquaticseries.lib.util.randomItem
+import org.bukkit.Location
 import org.bukkit.entity.Player
 
 class InstantPouchAnimationImpl(
     override val player: Player,
     override val animationManager: PouchAnimationManager,
+    override val baseLocation: Location,
+    override val rewards: MutableList<RolledReward>,
+    override val props: MutableMap<String, AnimationProp>,
 ) : PouchAnimation() {
     override var state: State = State.PRE_OPEN
         private set
 
-    override var tick: Int = 0
-        private set
 
+    override val audience: AquaticAudience = GlobalAudience()
+
+    /*
     val randomReward = animationManager.pouch.getRandomRewards(player,1).values.first().first
     val randomAmount = randomReward.amountRanges.randomItem()?.randomNum ?: 1
+
+     */
 
     override fun tick() {
         finalize()
@@ -68,12 +79,15 @@ class InstantPouchAnimationImpl(
         updateState(State.FINISHED)
         executeActions(animationManager.animationSettings.finalAnimationTasks)
         animationManager.playingAnimations.remove(player.uniqueId)
-        randomReward.give(player, randomAmount)
+        for (reward in rewards) {
+            reward.give(player)
+        }
+        //.give(player, randomAmount)
     }
 
     override fun executeActions(actions: List<ConfiguredAction<PouchAnimation>>) {
         actions.executeActions(this) { _, str ->
-            str.replace("%player%", player.name).replace("%random-amount%", randomAmount.toString())
+            str.replace("%player%", player.name)
         }
     }
 }

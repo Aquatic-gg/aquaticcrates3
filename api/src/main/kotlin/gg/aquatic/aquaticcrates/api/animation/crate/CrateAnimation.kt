@@ -1,22 +1,16 @@
 package gg.aquatic.aquaticcrates.api.animation.crate
 
+import gg.aquatic.aquaticcrates.api.animation.Animation
 import gg.aquatic.aquaticcrates.api.reward.Reward
 import gg.aquatic.aquaticseries.lib.interactable2.SpawnedInteractable
 import org.bukkit.entity.Player
 import org.bukkit.util.Vector
 
-abstract class CrateAnimation {
+abstract class CrateAnimation: Animation() {
 
     abstract val animationManager: CrateAnimationManager
-    abstract val player: Player
 
-    var started = false
-
-    lateinit var reward: Reward
-
-    companion object {
-        val META_KEY = "AquaticCrates_inAnimation"
-    }
+    abstract val state: State
 
     abstract fun begin()
     abstract fun start()
@@ -32,7 +26,14 @@ abstract class CrateAnimation {
         offset: Vector
     )
 
-    abstract fun getVisual(): SpawnedInteractable<*>
+    //abstract fun getVisual(): SpawnedInteractable<*>
 
+    enum class State {
+        PRE_OPEN,
+        OPENING,
+        ROLLING,
+        POST_OPEN,
+        FINISHED,
+    }
 
 }

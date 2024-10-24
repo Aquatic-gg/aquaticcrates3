@@ -27,8 +27,6 @@ abstract class CrateAnimationManager {
     abstract val playingAnimations: HashMap<UUID, CrateAnimation>
     abstract val spawnedRewardVisuals: MutableList<SpawnedRewardVisual>
 
-    abstract val state: State
-
     abstract fun open(player: Player, spawnedCrate: SpawnedCrate?)
     abstract fun playAnimationTask(time: Int, animation: CrateAnimation)
     abstract fun shouldStopAnimation(time: Int, animation: CrateAnimation): Boolean
@@ -46,13 +44,5 @@ abstract class CrateAnimationManager {
     abstract fun skipAnimation(player: Player)
 
     abstract fun forceStopAnimation(player: Player)
-
-    enum class State {
-        PRE_OPEN,
-        OPENING,
-        ROLLING,
-        POST_OPEN,
-        FINISHED,
-    }
 
 }

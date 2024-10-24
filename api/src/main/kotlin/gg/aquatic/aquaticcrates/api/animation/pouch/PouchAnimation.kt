@@ -1,18 +1,15 @@
 package gg.aquatic.aquaticcrates.api.animation.pouch
 
+import gg.aquatic.aquaticcrates.api.animation.Animation
 import gg.aquatic.aquaticseries.lib.action.ConfiguredAction
 import gg.aquatic.aquaticseries.lib.util.executeActions
-import org.bukkit.entity.Player
 
-abstract class PouchAnimation {
+abstract class PouchAnimation: Animation() {
 
-    abstract val player: Player
     abstract val animationManager: PouchAnimationManager
 
     abstract val state: State
 
-    abstract val tick: Int
-    abstract fun tick()
 
     enum class State {
         PRE_OPEN,
@@ -21,15 +18,15 @@ abstract class PouchAnimation {
         FINISHED,
     }
 
-    open fun tickPreOpen() {
+    override fun tickPreOpen() {
         executeActions(animationManager.animationSettings.preAnimationTasks[tick] ?: return)
     }
 
-    open fun tickOpening() {
+    override fun tickOpening() {
         executeActions(animationManager.animationSettings.animationTasks[tick] ?: return)
     }
 
-    open fun tickPostOpen() {
+    override fun tickPostOpen() {
         executeActions(animationManager.animationSettings.postAnimationTasks[tick] ?: return)
     }
 
