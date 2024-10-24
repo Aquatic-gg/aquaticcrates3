@@ -10,7 +10,6 @@ abstract class PouchAnimation: Animation() {
 
     abstract val state: State
 
-
     enum class State {
         PRE_OPEN,
         OPENING,

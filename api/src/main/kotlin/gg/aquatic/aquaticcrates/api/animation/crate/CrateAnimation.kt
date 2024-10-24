@@ -1,8 +1,11 @@
 package gg.aquatic.aquaticcrates.api.animation.crate
 
 import gg.aquatic.aquaticcrates.api.animation.Animation
+import gg.aquatic.aquaticcrates.api.animation.pouch.PouchAnimation
 import gg.aquatic.aquaticcrates.api.reward.Reward
+import gg.aquatic.aquaticseries.lib.action.ConfiguredAction
 import gg.aquatic.aquaticseries.lib.interactable2.SpawnedInteractable
+import gg.aquatic.aquaticseries.lib.util.executeActions
 import org.bukkit.entity.Player
 import org.bukkit.util.Vector
 
@@ -12,21 +15,22 @@ abstract class CrateAnimation: Animation() {
 
     abstract val state: State
 
-    abstract fun begin()
-    abstract fun start()
-    fun reroll() {
-    }
-    abstract fun end()
-    abstract fun spawnReward(
-        rumblingLength: Int,
-        rumblingPeriod: Int,
-        aliveLength: Int,
-        vector: Vector,
-        gravity: Boolean,
-        offset: Vector
-    )
 
-    //abstract fun getVisual(): SpawnedInteractable<*>
+    override fun tickPreOpen() {
+        executeActions(animationManager.animationSettings.preAnimationTasks[tick] ?: return)
+    }
+
+    override fun tickOpening() {
+        executeActions(animationManager.animationSettings.animationTasks[tick] ?: return)
+    }
+
+    override fun tickPostOpen() {
+        executeActions(animationManager.animationSettings.postAnimationTasks[tick] ?: return)
+    }
+
+    open fun executeActions(actions: List<ConfiguredAction<CrateAnimation>>) {
+        actions.executeActions(this) { _, str -> str.replace("%player%", player.name) }
+    }
 
     enum class State {
         PRE_OPEN,

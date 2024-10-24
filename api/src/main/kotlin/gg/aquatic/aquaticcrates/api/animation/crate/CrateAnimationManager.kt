@@ -23,6 +23,7 @@ abstract class CrateAnimationManager {
     abstract val skippable: Boolean
     abstract val openingBossbar: AnimationTitle
     abstract val rerollingBossbar: AnimationTitle
+    abstract val animationSettings: CrateAnimationSettings
 
     abstract val playingAnimations: HashMap<UUID, CrateAnimation>
     abstract val spawnedRewardVisuals: MutableList<SpawnedRewardVisual>
