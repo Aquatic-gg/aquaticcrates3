@@ -6,11 +6,11 @@ import gg.aquatic.aquaticcrates.api.openprice.OpenPriceGroup
 import gg.aquatic.aquaticcrates.api.player.HistoryHandler
 import gg.aquatic.aquaticcrates.api.reward.Reward
 import gg.aquatic.aquaticcrates.api.reward.RolledReward
+import gg.aquatic.aquaticcrates.api.util.ItemBased
 import gg.aquatic.aquaticcrates.api.util.Rewardable
 import gg.aquatic.aquaticseries.lib.item2.AquaticItem
 import gg.aquatic.aquaticseries.lib.requirement.ConfiguredRequirement
 import gg.aquatic.aquaticseries.lib.util.checkRequirements
-import gg.aquatic.aquaticseries.lib.util.randomItem
 import gg.aquatic.waves.item.ItemHandler
 import gg.aquatic.waves.registry.register
 import org.bukkit.Location
@@ -21,8 +21,8 @@ import org.bukkit.persistence.PersistentDataType
 
 abstract class Pouch(
     val identifier: String,
-    val item: AquaticItem
-): Rewardable {
+    final override val item: AquaticItem
+): Rewardable, ItemBased {
 
     companion object {
         fun get(id: String): Pouch? {
@@ -105,22 +105,4 @@ abstract class Pouch(
     abstract fun generateRewards(player: Player): MutableList<RolledReward>
 
     abstract fun canBeOpened(player: Player): Boolean
-
-    fun giveItem(amount: Int, vararg players: Player) {
-        val itemStack = getItem(amount)
-
-        for (player in players) {
-            val iS = itemStack.clone()
-            for ((_, item) in player.inventory.addItem(iS)) {
-                player.world.dropItem(player.location, item)
-            }
-        }
-    }
-
-    fun getItem(amount: Int): ItemStack {
-        val itemStack = item.getItem()
-        itemStack.amount = amount
-
-        return itemStack
-    }
 }

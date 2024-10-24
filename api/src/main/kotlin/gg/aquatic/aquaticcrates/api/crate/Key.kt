@@ -1,5 +1,6 @@
 package gg.aquatic.aquaticcrates.api.crate
 
+import gg.aquatic.aquaticcrates.api.util.ItemBased
 import gg.aquatic.aquaticseries.lib.item2.AquaticItem
 import gg.aquatic.waves.item.ItemHandler
 import gg.aquatic.waves.registry.register
@@ -9,8 +10,8 @@ import org.bukkit.persistence.PersistentDataType
 
 abstract class Key(
     val crate: Crate,
-    val item: AquaticItem
-) {
+    final override val item: AquaticItem
+): ItemBased {
 
     companion object {
         fun get(id: String): Key? {

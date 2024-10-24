@@ -12,6 +12,7 @@ import gg.aquatic.aquaticseries.lib.item2.AquaticItem
 import gg.aquatic.aquaticseries.lib.requirement.ConfiguredRequirement
 import gg.aquatic.aquaticseries.lib.util.randomItem
 import org.bukkit.entity.Player
+import org.bukkit.inventory.ItemStack
 
 class RewardPouch(
     identifier: String,
