@@ -69,8 +69,9 @@ object PouchSerializer : BaseSerializer() {
             return@withContext null
         }
 
+        val possibleRewardRanges = loadRewardRanges(cfg.getSectionList("possible-rewards"))
         val rewards = loadRewards(rewardSection)
-        return@withContext RewardPouch(id,item,displayName,openRequirements,openPriceGroups,animationManager, { p-> PouchInteractHandlerImpl(p)}, rewards)
+        return@withContext RewardPouch(id,item,displayName,openRequirements,openPriceGroups,animationManager, { p-> PouchInteractHandlerImpl(p)}, rewards, possibleRewardRanges)
     }
 
     suspend fun loadPouchAnimationSettings(section: ConfigurationSection?): PouchAnimationSettings =

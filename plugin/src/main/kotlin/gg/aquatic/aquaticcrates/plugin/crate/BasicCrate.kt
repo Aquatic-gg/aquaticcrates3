@@ -10,7 +10,7 @@ import gg.aquatic.aquaticcrates.api.openprice.OpenPriceGroup
 import gg.aquatic.aquaticcrates.api.reroll.RerollManager
 import gg.aquatic.aquaticcrates.api.reward.Reward
 import gg.aquatic.aquaticcrates.api.reward.RewardAmountRange
-import gg.aquatic.aquaticcrates.plugin.crate.interact.BasicInteractHandler
+import gg.aquatic.aquaticcrates.plugin.crate.interact.BasicCrateInteractHandler
 import gg.aquatic.aquaticseries.lib.interactable2.AbstractInteractable
 import gg.aquatic.aquaticseries.lib.requirement.ConfiguredRequirement
 import org.bukkit.entity.Player
@@ -28,7 +28,8 @@ class BasicCrate(
     val milestoneManager: MilestoneManager,
     rerollManager: (BasicCrate) -> RerollManager,
     key: (BasicCrate) -> Key,
-    val rewardRandomAmountRanges: MutableList<RewardAmountRange>
+    val rewardRandomAmountRanges: MutableList<RewardAmountRange>,
+    override val possibleRewardRanges: MutableList<RewardAmountRange>
 ) : OpenableCrate() {
 
     override val historyNamespace: String = "crate:$identifier"
@@ -41,6 +42,6 @@ class BasicCrate(
         TODO("Not yet implemented")
     }
 
-    override var interactHandler: CrateInteractHandler = BasicInteractHandler(this)
+    override var interactHandler: CrateInteractHandler = BasicCrateInteractHandler(this)
 
 }

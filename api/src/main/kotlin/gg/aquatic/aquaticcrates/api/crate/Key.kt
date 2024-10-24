@@ -3,6 +3,7 @@ package gg.aquatic.aquaticcrates.api.crate
 import gg.aquatic.aquaticseries.lib.item2.AquaticItem
 import gg.aquatic.waves.item.ItemHandler
 import gg.aquatic.waves.registry.register
+import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType
 
@@ -35,7 +36,11 @@ abstract class Key(
 
     init {
         item.register("aquaticcrates", "cratekey:${crate.identifier}") {
-            interactHandler.handleInteract(it.player, it.isLeftClick)
+            val originalEvent = it.originalEvent
+            val location = if (originalEvent is PlayerInteractEvent) {
+                originalEvent.clickedBlock?.location ?: originalEvent.player.location
+            } else return@register
+            interactHandler.handleInteract(it.player, it.isLeftClick, location)
             it.isCancelled = true
         }
     }

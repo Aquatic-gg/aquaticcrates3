@@ -13,16 +13,6 @@ import java.util.UUID
 abstract class CrateAnimationManager {
 
     abstract val crate: Crate
-    abstract val animationTasks: TreeMap<Int, MutableList<ConfiguredAction<CrateAnimation>>>
-    abstract val animationLength: Int
-    abstract val preAnimationDelay: Int
-    abstract val preAnimationTasks: TreeMap<Int, MutableList<ConfiguredAction<CrateAnimation>>>
-    abstract val postAnimationDelay: Int
-    abstract val postAnimationTasks: TreeMap<Int, MutableList<ConfiguredAction<CrateAnimation>>>
-    abstract val finalAnimationTasks: MutableList<ConfiguredAction<PouchAnimation>>
-    abstract val skippable: Boolean
-    abstract val openingBossbar: AnimationTitle
-    abstract val rerollingBossbar: AnimationTitle
     abstract val animationSettings: CrateAnimationSettings
 
     abstract val playingAnimations: HashMap<UUID, CrateAnimation>

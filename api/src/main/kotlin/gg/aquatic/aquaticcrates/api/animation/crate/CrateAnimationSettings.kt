@@ -16,6 +16,7 @@ abstract class CrateAnimationSettings {
     abstract val finalAnimationTasks: MutableList<ConfiguredAction<CrateAnimation>>
     abstract val skippable: Boolean
     abstract val openingBossbar: AnimationTitle
+    abstract val rerollingBossbar: AnimationTitle
 
     abstract fun create(player: Player, animationManager: CrateAnimationManager): CrateAnimation
 
