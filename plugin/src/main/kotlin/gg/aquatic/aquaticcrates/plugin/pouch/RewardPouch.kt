@@ -1,6 +1,7 @@
 package gg.aquatic.aquaticcrates.plugin.pouch
 
 import gg.aquatic.aquaticcrates.api.animation.pouch.PouchAnimationManager
+import gg.aquatic.aquaticcrates.api.milestone.MilestoneManager
 import gg.aquatic.aquaticcrates.api.openprice.OpenPriceGroup
 import gg.aquatic.aquaticcrates.api.pouch.Pouch
 import gg.aquatic.aquaticcrates.api.reward.RewardAmountRange
@@ -24,7 +25,7 @@ class RewardPouch(
     interactHandler: (RewardPouch) -> PouchInteractHandler,
     override val rewards: HashMap<String, Reward>,
     override val possibleRewardRanges: MutableList<RewardAmountRange>,
-    val previewMenuSettings: PouchPreviewMenuSettings
+    val previewMenuSettings: PouchPreviewMenuSettings, override val milestoneManager: MilestoneManager
 ) : Pouch(identifier, item) {
 
     override fun canBeOpened(player: Player): Boolean {

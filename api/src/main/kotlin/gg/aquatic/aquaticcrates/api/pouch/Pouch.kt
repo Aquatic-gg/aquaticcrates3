@@ -2,6 +2,7 @@ package gg.aquatic.aquaticcrates.api.pouch
 
 import gg.aquatic.aquaticcrates.api.animation.pouch.PouchAnimationManager
 import gg.aquatic.aquaticcrates.api.crate.CrateHandler
+import gg.aquatic.aquaticcrates.api.milestone.MilestoneManager
 import gg.aquatic.aquaticcrates.api.openprice.OpenPriceGroup
 import gg.aquatic.aquaticcrates.api.player.HistoryHandler
 import gg.aquatic.aquaticcrates.api.reward.Reward
@@ -46,6 +47,7 @@ abstract class Pouch(
     abstract val openPriceGroups: MutableList<OpenPriceGroup>
     abstract val animationManager: PouchAnimationManager
     abstract val interactHandler: PouchInteractHandler
+    abstract val milestoneManager: MilestoneManager
 
     init {
         item.register("aquaticcrates", "pouch:$identifier") {
