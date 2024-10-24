@@ -87,7 +87,11 @@ class InstantPouchAnimationImpl(
 
     override fun executeActions(actions: List<ConfiguredAction<PouchAnimation>>) {
         actions.executeActions(this) { _, str ->
-            str.replace("%player%", player.name)
+            var finalString = str.replace("%player%", player.name)
+            for ((i, reward) in rewards.withIndex()) {
+                finalString = finalString.replace("%random-amount:$i",reward.randomAmount.toString())
+            }
+            finalString
         }
     }
 }
