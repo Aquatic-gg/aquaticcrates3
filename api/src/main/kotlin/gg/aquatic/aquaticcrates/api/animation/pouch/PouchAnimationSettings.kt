@@ -1,7 +1,9 @@
 package gg.aquatic.aquaticcrates.api.animation.pouch
 
 import gg.aquatic.aquaticcrates.api.animation.AnimationTitle
+import gg.aquatic.aquaticcrates.api.reward.RolledReward
 import gg.aquatic.aquaticseries.lib.action.ConfiguredAction
+import org.bukkit.Location
 import org.bukkit.entity.Player
 import java.util.*
 
@@ -17,6 +19,6 @@ abstract class PouchAnimationSettings {
     abstract val skippable: Boolean
     abstract val openingBossbar: AnimationTitle
 
-    abstract fun create(player: Player, animationManager: PouchAnimationManager): PouchAnimation
+    abstract fun create(player: Player, animationManager: PouchAnimationManager, location: Location, rolledRewards: MutableList<RolledReward>): PouchAnimation
 
 }

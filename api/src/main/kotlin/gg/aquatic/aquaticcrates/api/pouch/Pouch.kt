@@ -5,13 +5,15 @@ import gg.aquatic.aquaticcrates.api.crate.CrateHandler
 import gg.aquatic.aquaticcrates.api.openprice.OpenPriceGroup
 import gg.aquatic.aquaticcrates.api.player.HistoryHandler
 import gg.aquatic.aquaticcrates.api.reward.Reward
-import gg.aquatic.aquaticcrates.api.reward.RewardAmountRange
+import gg.aquatic.aquaticcrates.api.reward.RolledReward
 import gg.aquatic.aquaticcrates.api.util.Rewardable
 import gg.aquatic.aquaticseries.lib.item2.AquaticItem
 import gg.aquatic.aquaticseries.lib.requirement.ConfiguredRequirement
 import gg.aquatic.aquaticseries.lib.util.checkRequirements
+import gg.aquatic.aquaticseries.lib.util.randomItem
 import gg.aquatic.waves.item.ItemHandler
 import gg.aquatic.waves.registry.register
+import org.bukkit.Location
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType
@@ -78,15 +80,24 @@ abstract class Pouch(
         return finalRewards
     }
 
-    open fun tryOpen(player: Player) {
+    open fun tryOpen(player: Player, interactionLocation: Location) {
         if (!canBeOpened(player)) return
-        open(player)
+        open(player, interactionLocation, false)
     }
 
-    open fun open(player: Player) {
-        val animation = animationManager.animationSettings.create(player, animationManager)
+    open fun open(player: Player, interactionLocation: Location, force: Boolean) {
+        val rolledRewards = generateRewards(player)
+        if (force) {
+            for (rolledReward in rolledRewards) {
+                rolledReward.give(player)
+            }
+            return
+        }
+        val animation = animationManager.animationSettings.create(player, animationManager, interactionLocation, rolledRewards)
         animationManager.playingAnimations += player.uniqueId to animation
     }
+
+    abstract fun generateRewards(player: Player): MutableList<RolledReward>
 
     abstract fun canBeOpened(player: Player): Boolean
 

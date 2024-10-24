@@ -4,8 +4,10 @@ import gg.aquatic.aquaticcrates.api.animation.AnimationTitle
 import gg.aquatic.aquaticcrates.api.animation.pouch.PouchAnimation
 import gg.aquatic.aquaticcrates.api.animation.pouch.PouchAnimationManager
 import gg.aquatic.aquaticcrates.api.animation.pouch.PouchAnimationSettings
+import gg.aquatic.aquaticcrates.api.reward.RolledReward
 import gg.aquatic.aquaticcrates.plugin.animation.pouch.InstantPouchAnimationImpl
 import gg.aquatic.aquaticseries.lib.action.ConfiguredAction
+import org.bukkit.Location
 import org.bukkit.entity.Player
 import java.util.*
 
@@ -20,7 +22,7 @@ class PouchInstantAnimationSettings(
     override val skippable: Boolean,
     override val openingBossbar: AnimationTitle,
 ) : PouchAnimationSettings() {
-    override fun create(player: Player, animationManager: PouchAnimationManager): PouchAnimation {
-        return InstantPouchAnimationImpl(player, animationManager)
+    override fun create(player: Player, animationManager: PouchAnimationManager, location: Location, rolledRewards: MutableList<RolledReward>): PouchAnimation {
+        return InstantPouchAnimationImpl(player, animationManager, location, rolledRewards)
     }
 }

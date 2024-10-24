@@ -6,8 +6,11 @@ import gg.aquatic.aquaticcrates.api.pouch.Pouch
 import gg.aquatic.aquaticcrates.api.reward.RewardAmountRange
 import gg.aquatic.aquaticcrates.api.pouch.PouchInteractHandler
 import gg.aquatic.aquaticcrates.api.reward.Reward
+import gg.aquatic.aquaticcrates.api.reward.RolledReward
+import gg.aquatic.aquaticcrates.plugin.reward.RolledRewardImpl
 import gg.aquatic.aquaticseries.lib.item2.AquaticItem
 import gg.aquatic.aquaticseries.lib.requirement.ConfiguredRequirement
+import gg.aquatic.aquaticseries.lib.util.randomItem
 import org.bukkit.entity.Player
 
 class RewardPouch(
@@ -18,7 +21,8 @@ class RewardPouch(
     override val openPriceGroups: MutableList<OpenPriceGroup>,
     animationManager: (RewardPouch) -> PouchAnimationManager,
     interactHandler: (RewardPouch) -> PouchInteractHandler,
-    override val rewards: HashMap<String, Reward>
+    override val rewards: HashMap<String, Reward>,
+    override val possibleRewardRanges: MutableList<RewardAmountRange>
 ) : Pouch(identifier, item) {
 
     override fun canBeOpened(player: Player): Boolean {
@@ -26,6 +30,21 @@ class RewardPouch(
     }
 
     override var interactHandler = interactHandler(this)
+    override fun generateRewards(player: Player): MutableList<RolledReward> {
+        val rolledRewards = mutableListOf<RolledReward>()
+
+        val rewardsAmount = possibleRewardRanges.randomItem()?.randomNum ?: 1
+        val randomRewards = getRandomRewards(player, rewardsAmount)
+        for ((_, pair) in randomRewards) {
+            val reward = pair.first
+            val amount = pair.second
+            for (i in 0..< amount) {
+                rolledRewards += RolledRewardImpl(reward,reward.amountRanges.randomItem()?.randomNum ?: 1)
+            }
+        }
+        return rolledRewards
+    }
+
     override val animationManager = animationManager(this)
 
 

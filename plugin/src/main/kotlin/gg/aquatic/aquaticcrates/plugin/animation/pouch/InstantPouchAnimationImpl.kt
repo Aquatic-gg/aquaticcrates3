@@ -8,7 +8,6 @@ import gg.aquatic.aquaticseries.lib.action.ConfiguredAction
 import gg.aquatic.aquaticseries.lib.audience.AquaticAudience
 import gg.aquatic.aquaticseries.lib.audience.GlobalAudience
 import gg.aquatic.aquaticseries.lib.util.executeActions
-import gg.aquatic.aquaticseries.lib.util.randomItem
 import org.bukkit.Location
 import org.bukkit.entity.Player
 
@@ -17,11 +16,12 @@ class InstantPouchAnimationImpl(
     override val animationManager: PouchAnimationManager,
     override val baseLocation: Location,
     override val rewards: MutableList<RolledReward>,
-    override val props: MutableMap<String, AnimationProp>,
 ) : PouchAnimation() {
     override var state: State = State.PRE_OPEN
         private set
 
+
+    override val props: MutableMap<String, AnimationProp> = hashMapOf()
 
     override val audience: AquaticAudience = GlobalAudience()
 

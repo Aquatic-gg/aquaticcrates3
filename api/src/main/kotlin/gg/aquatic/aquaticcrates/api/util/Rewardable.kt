@@ -1,10 +1,13 @@
 package gg.aquatic.aquaticcrates.api.util
 
 import gg.aquatic.aquaticcrates.api.reward.Reward
+import gg.aquatic.aquaticcrates.api.reward.RewardAmountRange
 import gg.aquatic.aquaticseries.lib.util.randomItem
 import org.bukkit.entity.Player
 
 interface Rewardable {
+
+    val possibleRewardRanges: MutableList<RewardAmountRange>
 
     val rewards: HashMap<String, Reward>
     fun getRandomRewards(player: Player, amount: Int): HashMap<String,Pair<Reward, Int>> {
