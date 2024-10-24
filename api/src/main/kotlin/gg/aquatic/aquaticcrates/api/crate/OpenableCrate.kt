@@ -17,8 +17,6 @@ abstract class OpenableCrate : Crate(), Rewardable {
 
     abstract fun canBeOpened(player: Player): Boolean
 
-    abstract val historyNamespace: String
-
     override fun getPossibleRewards(player: Player): HashMap<String, Reward> {
         val finalRewards = HashMap<String, Reward>()
         for ((id, reward) in rewards) {

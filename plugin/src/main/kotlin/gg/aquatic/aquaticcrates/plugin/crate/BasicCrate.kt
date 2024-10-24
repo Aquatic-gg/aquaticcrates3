@@ -32,8 +32,6 @@ class BasicCrate(
     override val possibleRewardRanges: MutableList<RewardAmountRange>
 ) : OpenableCrate() {
 
-    override val historyNamespace: String = "crate:$identifier"
-
     val animationManager = animationManager(this)
     val rerollManager = rerollManager(this)
 
