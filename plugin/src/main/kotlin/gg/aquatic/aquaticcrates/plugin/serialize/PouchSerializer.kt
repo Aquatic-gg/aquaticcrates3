@@ -94,13 +94,15 @@ object PouchSerializer : BaseSerializer() {
     private suspend fun loadPouchPreviewMenuSettings(cfg: FileConfiguration): PouchPreviewMenuSettings =
         withContext(Dispatchers.IO) {
             val section =
-                cfg.getConfigurationSection("preview") ?: return@withContext PouchPreviewMenuSettings(null, listOf())
+                cfg.getConfigurationSection("preview") ?: return@withContext PouchPreviewMenuSettings(null, false, listOf())
             val rewardSlots = section.getIntegerList("reward-slots")
             val invSettings = InventorySerializer.loadInventory(section)
+            val clearBottomInventory = section.getBoolean("clear-bottom-inventory", false)
 
             return@withContext PouchPreviewMenuSettings(
                 invSettings,
-                rewardSlots
+                clearBottomInventory,
+                rewardSlots,
             )
         }
 

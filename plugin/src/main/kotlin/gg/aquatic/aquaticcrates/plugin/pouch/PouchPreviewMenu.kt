@@ -4,7 +4,9 @@ import gg.aquatic.aquaticseries.lib.betterinventory2.AquaticInventory
 import gg.aquatic.aquaticseries.lib.betterinventory2.SlotSelection
 import gg.aquatic.aquaticseries.lib.betterinventory2.component.ButtonComponent
 import gg.aquatic.aquaticseries.lib.util.executeActions
+import org.bukkit.Material
 import org.bukkit.entity.Player
+import org.bukkit.inventory.ItemStack
 import java.util.HashMap
 
 class PouchPreviewMenu(
@@ -47,6 +49,20 @@ class PouchPreviewMenu(
                 )
             )
         }
+        if (pouch.previewMenuSettings.clearBottomInventory) {
+            val airButton = ButtonComponent(
+                "aquaticcrates:clear-button",
+                -10,
+                SlotSelection((size..size+45).toMutableSet()),
+                HashMap(),
+                null,
+                { e-> e.isCancelled = true },
+                1000,
+                { p, str -> str },
+                ItemStack(Material.AIR)
+            )
+            addComponent(airButton)
+        }
 
         val rewards = pouch.getPossibleRewards(player).values
         for ((index, rewardSlot) in pouch.previewMenuSettings.rewardSlots.withIndex()) {
@@ -61,7 +77,7 @@ class PouchPreviewMenu(
                 SlotSelection.of(rewardSlot),
                 HashMap(),
                 null,
-                {e ->
+                { e ->
                     e.isCancelled = true
                 },
                 10,
