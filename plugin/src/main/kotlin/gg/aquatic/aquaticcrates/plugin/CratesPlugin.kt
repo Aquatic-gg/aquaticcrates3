@@ -2,14 +2,14 @@ package gg.aquatic.aquaticcrates.plugin
 
 import gg.aquatic.aquaticcrates.api.AbstractCratesPlugin
 import gg.aquatic.aquaticcrates.api.crate.CrateHandler
+import gg.aquatic.aquaticcrates.api.crate.OpenableCrate
 import gg.aquatic.aquaticcrates.api.player.CrateProfileModule
 import gg.aquatic.aquaticcrates.plugin.serialize.PouchSerializer
-import gg.aquatic.aquaticseries.lib.util.await
-import gg.aquatic.aquaticseries.lib.util.runLaterAsync
-import gg.aquatic.aquaticseries.lib.util.runLaterSync
+import gg.aquatic.aquaticseries.lib.util.*
 import gg.aquatic.waves.profile.ProfilesModule
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import org.bukkit.event.player.PlayerJoinEvent
 import java.io.File
 
 class CratesPlugin: AbstractCratesPlugin() {
@@ -26,8 +26,24 @@ class CratesPlugin: AbstractCratesPlugin() {
     }
 
     override fun onEnable() {
-        runLaterAsync(1) {
-            load()
+        load()
+
+        event<PlayerJoinEvent> {
+            for (value in CrateHandler.pouches.values) {
+                value.giveItem(1, it.player)
+                it.player.sendMessage("You have been given ${value.identifier} pouch!")
+            }
+        }
+        startTicker()
+    }
+
+    private fun startTicker() {
+        runSyncTimer(1,1) {
+            for (value in CrateHandler.pouches.values) {
+                value.animationManager.tick()
+            }
+            for (value in CrateHandler.crates.values) {
+            }
         }
     }
 

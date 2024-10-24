@@ -62,7 +62,14 @@ object PouchSerializer : BaseSerializer() {
         val animationManager: (Pouch) -> PouchAnimationManager = { pouch ->
             PouchAnimationManagerImpl(pouch, animationSettings)
         }
-        val rewards = loadRewards(cfg.getConfigurationSection("rewards")!!)
+
+        val rewardSection = cfg.getConfigurationSection("rewards")
+        if (rewardSection == null) {
+            sendConsoleMessage("Could not load Rewards! (Path: rewards)")
+            return@withContext null
+        }
+
+        val rewards = loadRewards(rewardSection)
         return@withContext RewardPouch(id,item,displayName,openRequirements,openPriceGroups,animationManager, { p-> PouchInteractHandlerImpl(p)}, rewards)
     }
 
