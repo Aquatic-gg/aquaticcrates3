@@ -59,6 +59,9 @@ class RegularPouchAnimationImpl(
                 return
             }
         }
+        for ((_, prop) in props) {
+            prop.tick()
+        }
 
         tick++
     }
@@ -71,6 +74,10 @@ class RegularPouchAnimationImpl(
     private fun finalize() {
         updateState(State.FINISHED)
         executeActions(animationManager.animationSettings.finalAnimationTasks)
+        for ((_, prop) in props) {
+            prop.onAnimationEnd()
+        }
+        player.sendMessage("Finalizing animation")
         animationManager.playingAnimations.remove(player.uniqueId)
         for (reward in rewards) {
             reward.give(player)

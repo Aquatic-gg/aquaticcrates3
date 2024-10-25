@@ -164,11 +164,11 @@ object PouchSerializer : BaseSerializer() {
         }
     suspend fun loadRegularAnimationSettings(section: ConfigurationSection): PouchRegularAnimationSettings =
         withContext(Dispatchers.IO) {
-            val animationTasks = loadAnimationTasks(section.getConfigurationSection("tasks")!!)
-            val animationLength = section.getInt("animation.length", 0)
-            val preAnimationTasks = loadAnimationTasks(section.getConfigurationSection("pre-animation.tasks")!!)
+            val animationTasks = loadAnimationTasks(section.getConfigurationSection("tasks"))
+            val animationLength = section.getInt("length", 0)
+            val preAnimationTasks = loadAnimationTasks(section.getConfigurationSection("pre-animation.tasks"))
             val preAnimationDelay = section.getInt("pre-animation.delay", 0)
-            val postAnimationTasks = loadAnimationTasks(section.getConfigurationSection("post-animation.tasks")!!)
+            val postAnimationTasks = loadAnimationTasks(section.getConfigurationSection("post-animation.tasks"))
             val postAnimationDelay = section.getInt("post-animation.delay", 0)
             val finalAnimationTasks =
                 ActionSerializer.fromSections<Animation>(section.getSectionList("final-tasks")).toMutableList()

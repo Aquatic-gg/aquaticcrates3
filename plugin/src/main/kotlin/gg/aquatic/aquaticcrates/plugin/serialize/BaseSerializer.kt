@@ -93,9 +93,10 @@ abstract class BaseSerializer {
         return@withContext list
     }
 
-    suspend fun loadAnimationTasks(section: ConfigurationSection): TreeMap<Int, MutableList<ConfiguredAction<Animation>>> =
+    suspend fun loadAnimationTasks(section: ConfigurationSection?): TreeMap<Int, MutableList<ConfiguredAction<Animation>>> =
         withContext(Dispatchers.IO) {
             val tasks = TreeMap<Int, MutableList<ConfiguredAction<Animation>>>()
+            if (section == null) return@withContext tasks
 
             for (key in section.getKeys(false)) {
                 val delay = key.toIntOrNull() ?: continue
