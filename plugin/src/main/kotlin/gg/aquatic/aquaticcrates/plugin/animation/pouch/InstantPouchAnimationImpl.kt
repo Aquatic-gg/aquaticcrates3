@@ -1,5 +1,6 @@
 package gg.aquatic.aquaticcrates.plugin.animation.pouch
 
+import gg.aquatic.aquaticcrates.api.animation.Animation
 import gg.aquatic.aquaticcrates.api.animation.pouch.PouchAnimation
 import gg.aquatic.aquaticcrates.api.animation.pouch.PouchAnimationManager
 import gg.aquatic.aquaticcrates.api.animation.prop.AnimationProp
@@ -85,7 +86,7 @@ class InstantPouchAnimationImpl(
         //.give(player, randomAmount)
     }
 
-    override fun executeActions(actions: List<ConfiguredAction<PouchAnimation>>) {
+    override fun executeActions(actions: List<ConfiguredAction<Animation>>) {
         actions.executeActions(this) { _, str ->
             var finalString = str.replace("%player%", player.name)
             for ((i, reward) in rewards.withIndex()) {

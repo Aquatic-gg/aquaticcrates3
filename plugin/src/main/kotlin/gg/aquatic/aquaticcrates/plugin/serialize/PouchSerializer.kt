@@ -1,5 +1,6 @@
 package gg.aquatic.aquaticcrates.plugin.serialize
 
+import gg.aquatic.aquaticcrates.api.animation.Animation
 import gg.aquatic.aquaticcrates.api.animation.AnimationTitle
 import gg.aquatic.aquaticcrates.api.animation.pouch.PouchAnimation
 import gg.aquatic.aquaticcrates.api.animation.pouch.PouchAnimationManager
@@ -138,13 +139,13 @@ object PouchSerializer : BaseSerializer() {
     suspend fun loadInstantAnimationSettings(section: ConfigurationSection): PouchInstantAnimationSettings =
         withContext(Dispatchers.IO) {
             val animationTasks = loadAnimationTasks(section.getConfigurationSection("tasks")!!)
-            val animationLength = section.getInt("animation-length", 0)
+            val animationLength = section.getInt("animation.length", 0)
             val preAnimationTasks = loadAnimationTasks(section.getConfigurationSection("pre-animation.tasks")!!)
             val preAnimationDelay = section.getInt("pre-animation.delay", 0)
             val postAnimationTasks = loadAnimationTasks(section.getConfigurationSection("post-animation.tasks")!!)
             val postAnimationDelay = section.getInt("post-animation.delay", 0)
             val finalAnimationTasks =
-                ActionSerializer.fromSections<PouchAnimation>(section.getSectionList("final-tasks")).toMutableList()
+                ActionSerializer.fromSections<Animation>(section.getSectionList("final-tasks")).toMutableList()
             val skippable = section.getBoolean("skippable", false)
             val openingBossbar = AnimationTitle()
 
@@ -161,14 +162,14 @@ object PouchSerializer : BaseSerializer() {
             )
         }
 
-    suspend fun loadAnimationTasks(section: ConfigurationSection): TreeMap<Int, MutableList<ConfiguredAction<PouchAnimation>>> =
+    suspend fun loadAnimationTasks(section: ConfigurationSection): TreeMap<Int, MutableList<ConfiguredAction<Animation>>> =
         withContext(Dispatchers.IO) {
-            val tasks = TreeMap<Int, MutableList<ConfiguredAction<PouchAnimation>>>()
+            val tasks = TreeMap<Int, MutableList<ConfiguredAction<Animation>>>()
 
             for (key in section.getKeys(false)) {
                 val delay = key.toIntOrNull() ?: continue
                 tasks[delay] =
-                    ActionSerializer.fromSections<PouchAnimation>(section.getSectionList(key)).toMutableList()
+                    ActionSerializer.fromSections<Animation>(section.getSectionList(key)).toMutableList()
             }
 
             tasks
