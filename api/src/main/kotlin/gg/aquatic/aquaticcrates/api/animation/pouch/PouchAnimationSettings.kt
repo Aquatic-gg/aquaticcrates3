@@ -18,7 +18,6 @@ abstract class PouchAnimationSettings {
     abstract val postAnimationTasks: TreeMap<Int, MutableList<ConfiguredAction<Animation>>>
     abstract val finalAnimationTasks: MutableList<ConfiguredAction<Animation>>
     abstract val skippable: Boolean
-    abstract val openingBossbar: AnimationTitle
 
     abstract fun create(player: Player, animationManager: PouchAnimationManager, location: Location, rolledRewards: MutableList<RolledReward>): PouchAnimation
 

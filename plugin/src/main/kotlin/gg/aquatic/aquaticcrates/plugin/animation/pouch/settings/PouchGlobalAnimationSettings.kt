@@ -1,18 +1,18 @@
 package gg.aquatic.aquaticcrates.plugin.animation.pouch.settings
 
 import gg.aquatic.aquaticcrates.api.animation.Animation
-import gg.aquatic.aquaticcrates.api.animation.AnimationTitle
 import gg.aquatic.aquaticcrates.api.animation.pouch.PouchAnimation
 import gg.aquatic.aquaticcrates.api.animation.pouch.PouchAnimationManager
 import gg.aquatic.aquaticcrates.api.animation.pouch.PouchAnimationSettings
 import gg.aquatic.aquaticcrates.api.reward.RolledReward
+import gg.aquatic.aquaticcrates.plugin.animation.pouch.GlobalPouchAnimationImpl
 import gg.aquatic.aquaticcrates.plugin.animation.pouch.InstantPouchAnimationImpl
 import gg.aquatic.aquaticseries.lib.action.ConfiguredAction
 import org.bukkit.Location
 import org.bukkit.entity.Player
 import java.util.*
 
-class PouchInstantAnimationSettings(
+class PouchGlobalAnimationSettings(
     override val animationTasks: TreeMap<Int, MutableList<ConfiguredAction<Animation>>>,
     override val animationLength: Int,
     override val preAnimationDelay: Int,
@@ -23,6 +23,6 @@ class PouchInstantAnimationSettings(
     override val skippable: Boolean,
 ) : PouchAnimationSettings() {
     override fun create(player: Player, animationManager: PouchAnimationManager, location: Location, rolledRewards: MutableList<RolledReward>): PouchAnimation {
-        return InstantPouchAnimationImpl(player, animationManager, location, rolledRewards)
+        return GlobalPouchAnimationImpl(player, animationManager, location, rolledRewards)
     }
 }
