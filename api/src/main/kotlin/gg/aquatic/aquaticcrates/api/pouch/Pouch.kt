@@ -13,7 +13,9 @@ import gg.aquatic.aquaticseries.lib.item2.AquaticItem
 import gg.aquatic.aquaticseries.lib.requirement.ConfiguredRequirement
 import gg.aquatic.aquaticseries.lib.util.checkRequirements
 import gg.aquatic.waves.item.ItemHandler
+import gg.aquatic.waves.registry.isAquaticItem
 import gg.aquatic.waves.registry.register
+import gg.aquatic.waves.registry.registryId
 import org.bukkit.Location
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerInteractEvent
@@ -89,6 +91,13 @@ abstract class Pouch(
 
     open fun tryOpen(player: Player, interactionLocation: Location) {
         if (!canBeOpened(player)) return
+
+        val holdingItem = player.inventory.itemInMainHand
+        val aquaticItem = holdingItem.isAquaticItem() ?: return
+        if (aquaticItem.registryId() != item.registryId()) return
+
+        holdingItem.amount -= 1
+
         open(player, interactionLocation, false)
     }
 
