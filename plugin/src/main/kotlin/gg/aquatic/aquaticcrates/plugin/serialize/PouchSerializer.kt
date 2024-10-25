@@ -129,6 +129,9 @@ object PouchSerializer : BaseSerializer() {
                 "instant" -> {
                     return@withContext loadInstantAnimationSettings(section)
                 }
+                "regular" -> {
+                    return@withContext loadRegularAnimationSettings(section)
+                }
 
                 else -> {
                     return@withContext loadInstantAnimationSettings(section)
