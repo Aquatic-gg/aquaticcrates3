@@ -7,26 +7,25 @@ import gg.aquatic.aquaticcrates.api.animation.prop.AnimationProp
 import gg.aquatic.aquaticcrates.api.reward.RolledReward
 import gg.aquatic.aquaticseries.lib.action.ConfiguredAction
 import gg.aquatic.aquaticseries.lib.audience.AquaticAudience
-import gg.aquatic.aquaticseries.lib.audience.GlobalAudience
 import gg.aquatic.aquaticseries.lib.util.executeActions
 import org.bukkit.Location
 import org.bukkit.entity.Player
 
-class GlobalPouchAnimationImpl(
+class RegularPouchAnimationImpl(
     override val player: Player,
     override val animationManager: PouchAnimationManager,
     override val baseLocation: Location,
     override val rewards: MutableList<RolledReward>,
+    override val audience: AquaticAudience
 ) : PouchAnimation() {
     override var state: State = State.PRE_OPEN
         private set
 
 
-    val settings = animationManager.animationSettings
+    private val settings = animationManager.animationSettings
 
     override val props: MutableMap<String, AnimationProp> = hashMapOf()
 
-    override val audience: AquaticAudience = GlobalAudience()
 
     override fun tick() {
         when (state) {
