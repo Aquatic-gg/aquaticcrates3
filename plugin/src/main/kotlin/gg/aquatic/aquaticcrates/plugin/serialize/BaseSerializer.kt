@@ -1,10 +1,12 @@
 package gg.aquatic.aquaticcrates.plugin.serialize
 
+import gg.aquatic.aquaticcrates.api.animation.Animation
 import gg.aquatic.aquaticcrates.api.hologram.AquaticHologramSettings
 import gg.aquatic.aquaticcrates.api.player.CrateProfileEntry
 import gg.aquatic.aquaticcrates.api.reward.Reward
 import gg.aquatic.aquaticcrates.api.reward.RewardAmountRange
 import gg.aquatic.aquaticcrates.plugin.reward.RewardImpl
+import gg.aquatic.aquaticseries.lib.action.ConfiguredAction
 import gg.aquatic.aquaticseries.lib.betterhologram.AquaticHologram.Billboard
 import gg.aquatic.aquaticseries.lib.item2.AquaticItem
 import gg.aquatic.aquaticseries.lib.util.getSectionList
@@ -90,5 +92,18 @@ abstract class BaseSerializer {
         }
         return@withContext list
     }
+
+    suspend fun loadAnimationTasks(section: ConfigurationSection): TreeMap<Int, MutableList<ConfiguredAction<Animation>>> =
+        withContext(Dispatchers.IO) {
+            val tasks = TreeMap<Int, MutableList<ConfiguredAction<Animation>>>()
+
+            for (key in section.getKeys(false)) {
+                val delay = key.toIntOrNull() ?: continue
+                tasks[delay] =
+                    ActionSerializer.fromSections<Animation>(section.getSectionList(key)).toMutableList()
+            }
+
+            tasks
+        }
 
 }

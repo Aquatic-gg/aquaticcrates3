@@ -161,17 +161,4 @@ object PouchSerializer : BaseSerializer() {
                 openingBossbar
             )
         }
-
-    suspend fun loadAnimationTasks(section: ConfigurationSection): TreeMap<Int, MutableList<ConfiguredAction<Animation>>> =
-        withContext(Dispatchers.IO) {
-            val tasks = TreeMap<Int, MutableList<ConfiguredAction<Animation>>>()
-
-            for (key in section.getKeys(false)) {
-                val delay = key.toIntOrNull() ?: continue
-                tasks[delay] =
-                    ActionSerializer.fromSections<Animation>(section.getSectionList(key)).toMutableList()
-            }
-
-            tasks
-        }
 }
