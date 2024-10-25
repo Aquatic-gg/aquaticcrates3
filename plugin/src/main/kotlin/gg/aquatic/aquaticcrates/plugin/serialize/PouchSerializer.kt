@@ -10,6 +10,7 @@ import gg.aquatic.aquaticcrates.api.pouch.Pouch
 import gg.aquatic.aquaticcrates.plugin.CratesPlugin
 import gg.aquatic.aquaticcrates.plugin.animation.pouch.PouchAnimationManagerImpl
 import gg.aquatic.aquaticcrates.plugin.animation.pouch.settings.PouchInstantAnimationSettings
+import gg.aquatic.aquaticcrates.plugin.animation.pouch.settings.PouchRegularAnimationSettings
 import gg.aquatic.aquaticcrates.plugin.pouch.PouchInteractHandlerImpl
 import gg.aquatic.aquaticcrates.plugin.pouch.PouchMilestoneManager
 import gg.aquatic.aquaticcrates.plugin.pouch.PouchPreviewMenuSettings
@@ -156,6 +157,31 @@ object PouchSerializer : BaseSerializer() {
                 postAnimationTasks,
                 finalAnimationTasks,
                 skippable,
+            )
+        }
+    suspend fun loadRegularAnimationSettings(section: ConfigurationSection): PouchRegularAnimationSettings =
+        withContext(Dispatchers.IO) {
+            val animationTasks = loadAnimationTasks(section.getConfigurationSection("tasks")!!)
+            val animationLength = section.getInt("animation.length", 0)
+            val preAnimationTasks = loadAnimationTasks(section.getConfigurationSection("pre-animation.tasks")!!)
+            val preAnimationDelay = section.getInt("pre-animation.delay", 0)
+            val postAnimationTasks = loadAnimationTasks(section.getConfigurationSection("post-animation.tasks")!!)
+            val postAnimationDelay = section.getInt("post-animation.delay", 0)
+            val finalAnimationTasks =
+                ActionSerializer.fromSections<Animation>(section.getSectionList("final-tasks")).toMutableList()
+            val skippable = section.getBoolean("skippable", false)
+            val personal = section.getBoolean("personal", false)
+
+            PouchRegularAnimationSettings(
+                animationTasks,
+                animationLength,
+                preAnimationDelay,
+                preAnimationTasks,
+                postAnimationDelay,
+                postAnimationTasks,
+                finalAnimationTasks,
+                skippable,
+                personal
             )
         }
 }
