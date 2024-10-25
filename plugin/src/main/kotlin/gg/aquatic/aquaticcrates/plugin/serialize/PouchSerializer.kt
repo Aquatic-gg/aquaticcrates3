@@ -120,7 +120,6 @@ object PouchSerializer : BaseSerializer() {
                 TreeMap(),
                 ArrayList(),
                 false,
-                AnimationTitle()
             )
 
             val type = section.getString("type", "instant")!!
@@ -147,7 +146,6 @@ object PouchSerializer : BaseSerializer() {
             val finalAnimationTasks =
                 ActionSerializer.fromSections<Animation>(section.getSectionList("final-tasks")).toMutableList()
             val skippable = section.getBoolean("skippable", false)
-            val openingBossbar = AnimationTitle()
 
             PouchInstantAnimationSettings(
                 animationTasks,
@@ -158,7 +156,6 @@ object PouchSerializer : BaseSerializer() {
                 postAnimationTasks,
                 finalAnimationTasks,
                 skippable,
-                openingBossbar
             )
         }
 }
