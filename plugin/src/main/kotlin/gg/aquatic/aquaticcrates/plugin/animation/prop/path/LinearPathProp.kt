@@ -17,11 +17,21 @@ class LinearPathProp(
     override var location: Location? = null
         private set
 
+    init {
+        tick()
+    }
+
     override fun tick() {
         if (tick > points.lastKey()) return
 
-        val lowerPoint = lowerPoint() ?: return
+        val lowerPoint = lowerPoint()
+        if (lowerPoint == null) {
+            tick++
+            return
+        }
         val upperPoint = points.higherEntry(tick).toPair()
+
+        if (upperPoint.second == lowerPoint.second) return
 
         val duration = upperPoint.first - lowerPoint.first
         val currentTick = tick - lowerPoint.first

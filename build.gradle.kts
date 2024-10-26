@@ -36,7 +36,7 @@ subprojects {
     }
 
     dependencies {
-        compileOnly("org.spigotmc:spigot-api:1.17.1-R0.1-SNAPSHOT")
+        compileOnly("org.spigotmc:spigot-api:1.19.4-R0.1-SNAPSHOT")
         compileOnly("com.github.LoneDev6:API-ItemsAdder:3.6.2-beta-r3-b")
         compileOnly ("com.ticxo.modelengine:ModelEngine:R4.0.4")
         compileOnly("gg.aquatic.waves:Waves:1.0.12")
@@ -45,6 +45,6 @@ subprojects {
     }
 
     kotlin {
-        jvmToolchain(17)
+        jvmToolchain(21)
     }
 }
