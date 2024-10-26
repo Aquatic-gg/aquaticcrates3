@@ -2,16 +2,19 @@ package gg.aquatic.aquaticcrates.plugin.animation.prop.path
 
 import gg.aquatic.aquaticcrates.api.animation.Animation
 import gg.aquatic.aquaticcrates.api.animation.prop.AnimationProp
+import gg.aquatic.aquaticcrates.plugin.animation.prop.MovableAnimationProp
 import org.bukkit.Location
 import java.util.TreeMap
 
 class LinearPathProp(
-    val points: TreeMap<Int, PathPoint>,
+    override val points: TreeMap<Int, PathPoint>,
     override val animation: Animation
-): AnimationProp() {
+): AnimationProp(), PathProp {
+
+    val boundProps = mutableListOf<MovableAnimationProp>()
 
     var tick = 0
-    var currentLocation: Location? = null
+    override var location: Location? = null
         private set
 
     override fun tick() {
@@ -36,8 +39,11 @@ class LinearPathProp(
         location.yaw = interpolatedYaw
         location.pitch = interpolatedPitch
 
-        currentLocation = location
+        this.location = location
 
+        for (boundProp in boundProps) {
+            boundProp.move(location.clone())
+        }
         tick++
     }
 

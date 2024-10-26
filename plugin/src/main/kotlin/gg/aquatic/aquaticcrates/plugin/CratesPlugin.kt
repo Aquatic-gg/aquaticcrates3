@@ -4,6 +4,7 @@ import gg.aquatic.aquaticcrates.api.AbstractCratesPlugin
 import gg.aquatic.aquaticcrates.api.crate.CrateHandler
 import gg.aquatic.aquaticcrates.api.player.CrateProfileModule
 import gg.aquatic.aquaticcrates.plugin.animation.action.bossbar.*
+import gg.aquatic.aquaticcrates.plugin.animation.action.path.LinearPathAction
 import gg.aquatic.aquaticcrates.plugin.serialize.PouchSerializer
 import gg.aquatic.aquaticseries.lib.util.*
 import gg.aquatic.waves.profile.ProfilesModule
@@ -69,6 +70,7 @@ class CratesPlugin: AbstractCratesPlugin() {
         WavesRegistry.registerAction("set-bossbar-color", SetBossbarColorAction())
         WavesRegistry.registerAction("set-bossbar-style", SetBossbarStyleAction())
         WavesRegistry.registerAction("set-bossbar-progress", SetBossbarProgressAction())
+        WavesRegistry.registerAction("linear-path", LinearPathAction())
     }
 
 }
