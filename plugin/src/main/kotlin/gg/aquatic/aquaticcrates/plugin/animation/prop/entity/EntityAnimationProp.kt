@@ -13,7 +13,7 @@ import org.bukkit.util.Vector
 class EntityAnimationProp(
     override val animation: Animation,
     val locationOffset: Vector,
-    val boundLocationOffset: Vector? = null,
+    override val boundLocationOffset: Vector?,
     boundPath: PathProp? = null,
     val entityType: String,
     properties: List<EntityProperty>

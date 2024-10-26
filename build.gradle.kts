@@ -8,7 +8,7 @@ group = "gg.aquatic.aquaticcrates"
 version = projectVersion
 
 kotlin {
-    jvmToolchain(21)
+    jvmToolchain(17)
 }
 
 repositories {
@@ -45,6 +45,6 @@ subprojects {
     }
 
     kotlin {
-        jvmToolchain(21)
+        jvmToolchain(17)
     }
 }
