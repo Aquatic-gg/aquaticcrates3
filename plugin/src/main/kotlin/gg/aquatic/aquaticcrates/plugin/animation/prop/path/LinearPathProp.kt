@@ -48,7 +48,8 @@ class LinearPathProp(
     }
 
     override fun onAnimationEnd() {
-
+        tick = 0
+        location = null
     }
 
     private fun lowerPoint(): Pair<Int, PathPoint>? {
