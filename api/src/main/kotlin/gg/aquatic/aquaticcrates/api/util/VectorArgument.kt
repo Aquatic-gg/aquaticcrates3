@@ -21,7 +21,7 @@ class VectorArgument(id: String, defaultValue: Vector?, required: Boolean) : Aqu
             if (split.size != 3) {
                 return null
             }
-            val vector = Vector(split[0].toInt(), split[1].toInt(), split[2].toInt())
+            val vector = Vector(split[0].toDouble(), split[1].toDouble(), split[2].toDouble())
             return vector
         }
     }

@@ -1,6 +1,7 @@
 package gg.aquatic.aquaticcrates.plugin.animation.prop.entity.property
 
 import gg.aquatic.aquaticcrates.plugin.animation.prop.entity.property.impl.EntityArmorProperty
+import gg.aquatic.aquaticcrates.plugin.animation.prop.entity.property.impl.EntityInvisibilityProperty
 import gg.aquatic.aquaticcrates.plugin.animation.prop.entity.property.impl.name.EntityNameProperty
 import gg.aquatic.aquaticcrates.plugin.animation.prop.entity.property.impl.name.EntityNameVisibleProperty
 import gg.aquatic.aquaticseries.lib.util.argument.AbstractObjectArgumentSerializer
@@ -25,6 +26,7 @@ class EntityPropertiesObjectArgument(
             "display-name" to EntityNameProperty.Serializer,
             "display-name-visible" to EntityNameVisibleProperty.Serializer,
             "armor" to EntityArmorProperty.Serializer,
+            "invisible" to EntityInvisibilityProperty.Serializer
         )
 
         override suspend fun load(section: ConfigurationSection, id: String): List<EntityProperty> {
