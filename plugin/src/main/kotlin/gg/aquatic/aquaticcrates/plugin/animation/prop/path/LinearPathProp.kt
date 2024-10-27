@@ -3,6 +3,7 @@ package gg.aquatic.aquaticcrates.plugin.animation.prop.path
 import gg.aquatic.aquaticcrates.api.animation.Animation
 import gg.aquatic.aquaticcrates.api.animation.prop.AnimationProp
 import gg.aquatic.aquaticcrates.plugin.animation.prop.MovableAnimationProp
+import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.util.Vector
 import java.util.TreeMap
@@ -12,7 +13,7 @@ class LinearPathProp(
     override val animation: Animation
 ): AnimationProp(), PathProp {
 
-    val boundProps = mutableListOf<MovableAnimationProp>()
+    override val boundProps = mutableListOf<MovableAnimationProp>()
 
     var tick = 0
     override var location: Location? = null
@@ -23,11 +24,16 @@ class LinearPathProp(
     }
 
     override fun tick() {
+        if (points.isEmpty()) return
         if (tick > points.lastKey()) return
 
         val lowerPoint = lowerPoint()
         if (lowerPoint == null) {
+            Bukkit.broadcastMessage("No lower point found, continuing")
             tick++
+            return
+        }
+        if (lowerPoint.second == points.lastEntry().value) {
             return
         }
         val upperPoint = points.higherEntry(tick).toPair()

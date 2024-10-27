@@ -87,10 +87,7 @@ class RegularPouchAnimationImpl(
 
     override fun executeActions(actions: List<ConfiguredAction<Animation>>) {
         actions.executeActions(this) { _, str ->
-            var finalString = str.replace("%player%", player.name)
-            for ((i, reward) in rewards.withIndex()) {
-                finalString = finalString.replace("%random-amount:$i",reward.randomAmount.toString())
-            }
+            var finalString = updatePlaceholders(str)
             finalString
         }
     }

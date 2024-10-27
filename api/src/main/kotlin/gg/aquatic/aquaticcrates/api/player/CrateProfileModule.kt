@@ -13,7 +13,9 @@ object CrateProfileModule: ProfileModule {
     }
 
     override suspend fun loadEntry(player: AquaticPlayer): ProfileModuleEntry {
-        TODO("Not yet implemented")
+        return CrateProfileEntry(
+            player
+        )
     }
 }
 

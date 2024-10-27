@@ -31,6 +31,6 @@ abstract class PouchAnimation: Animation() {
 
 
     open fun executeActions(actions: List<ConfiguredAction<Animation>>) {
-        actions.executeActions(this) { _, str -> str.replace("%player%", player.name) }
+        actions.executeActions(this) { _, str -> updatePlaceholders(str) }
     }
 }

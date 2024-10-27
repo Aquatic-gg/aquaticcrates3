@@ -53,7 +53,7 @@ class PouchPreviewMenu(
             val airButton = ButtonComponent(
                 "aquaticcrates:clear-button",
                 -10,
-                SlotSelection((size..size+45).toMutableSet()),
+                SlotSelection((size..size+35).toMutableSet()),
                 HashMap(),
                 null,
                 { e-> e.isCancelled = true },

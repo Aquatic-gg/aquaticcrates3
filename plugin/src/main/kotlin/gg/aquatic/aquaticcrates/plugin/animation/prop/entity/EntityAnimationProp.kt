@@ -6,6 +6,7 @@ import gg.aquatic.aquaticcrates.plugin.animation.prop.MovableAnimationProp
 import gg.aquatic.aquaticcrates.plugin.animation.prop.entity.property.EntityProperty
 import gg.aquatic.aquaticcrates.plugin.animation.prop.path.PathProp
 import gg.aquatic.aquaticseries.lib.AquaticSeriesLib
+import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.entity.Entity
 import org.bukkit.util.Vector
@@ -36,12 +37,12 @@ class EntityAnimationProp(
             currentLocation, entityType, animation.audience
         ) {
             for (property in properties) {
-                property.apply(it)
+                Bukkit.getConsoleSender().sendMessage("Applying property!")
+                property.apply(it, this)
             }
         }
 
         entity = AquaticSeriesLib.INSTANCE.nmsAdapter!!.getEntity(entityId)!!
-
     }
 
     override fun tick() {

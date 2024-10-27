@@ -5,6 +5,7 @@ import gg.aquatic.aquaticcrates.api.crate.CrateHandler
 import gg.aquatic.aquaticcrates.api.player.CrateProfileModule
 import gg.aquatic.aquaticcrates.plugin.animation.action.bossbar.*
 import gg.aquatic.aquaticcrates.plugin.animation.action.entity.ShowEntityAction
+import gg.aquatic.aquaticcrates.plugin.animation.action.entity.UpdateEntityPropertiesAction
 import gg.aquatic.aquaticcrates.plugin.animation.action.path.LinearPathAction
 import gg.aquatic.aquaticcrates.plugin.serialize.PouchSerializer
 import gg.aquatic.aquaticseries.lib.util.*
@@ -73,6 +74,7 @@ class CratesPlugin: AbstractCratesPlugin() {
         WavesRegistry.registerAction("set-bossbar-progress", SetBossbarProgressAction())
         WavesRegistry.registerAction("linear-path", LinearPathAction())
         WavesRegistry.registerAction("show-entity", ShowEntityAction())
+        WavesRegistry.registerAction("update-entity-properties", UpdateEntityPropertiesAction())
     }
 
 }

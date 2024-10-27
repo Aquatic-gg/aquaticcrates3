@@ -16,10 +16,37 @@ abstract class Animation {
 
     var tick: Int = 0
         protected set
+
     abstract fun tick()
 
     abstract fun tickPreOpen()
     abstract fun tickOpening()
     abstract fun tickPostOpen()
 
+    val textUpdaters = ArrayList<(Animation, String) -> String>().apply {
+        add { animation, str -> str.replace("%player%", animation.player.name) }
+        add { animation, str ->
+
+            var finalString = str
+            for ((i, reward) in rewards.withIndex()) {
+                finalString = finalString
+                    .replace("%random-amount:$i%", reward.randomAmount.toString())
+                    .replace("%reward-name:$i%", reward.reward.displayName)
+                    .replace("%reward-id:$i%", reward.reward.id)
+                    .replace("%reward-chance:$i%", reward.reward.chance.toString())
+            }
+            finalString
+
+        }
+    }
+
+    fun updatePlaceholders(str: String): String {
+        var finalString = str.replace("%player%", player.name)
+
+        for (textUpdater in textUpdaters) {
+            finalString = textUpdater(this, finalString)
+        }
+
+        return finalString
+    }
 }

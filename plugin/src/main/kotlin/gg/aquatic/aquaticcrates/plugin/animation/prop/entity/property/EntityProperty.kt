@@ -5,8 +5,5 @@ import org.bukkit.entity.Entity
 
 interface EntityProperty {
 
-    fun apply(entity: Entity)
-
-    fun applyAndUpdate(prop: EntityAnimationProp ,entity: Entity)
-
+    fun apply(entity: Entity, prop: EntityAnimationProp)
 }
