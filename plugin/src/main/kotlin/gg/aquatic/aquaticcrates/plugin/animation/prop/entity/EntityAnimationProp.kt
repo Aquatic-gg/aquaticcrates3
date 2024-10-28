@@ -63,15 +63,11 @@ class EntityAnimationProp(
     override fun processPath(path: PathProp, point: PathPoint) {
         processedPaths += path
         if (processedPaths.size != boundPaths.size) {
-            Bukkit.broadcastMessage("${processedPaths.size} does not equal ${boundPaths.size}")
             return
         }
 
-        Bukkit.broadcastMessage("Calculating point")
-
         val currentPoint = calculatePoint()
 
-        Bukkit.broadcastMessage("New point: ${currentPoint.x}, ${currentPoint.y}, ${currentPoint.z}")
         val newLocation = animation.baseLocation.clone().add(currentPoint.vector)
         newLocation.yaw = currentPoint.yaw
         newLocation.pitch = currentPoint.pitch
