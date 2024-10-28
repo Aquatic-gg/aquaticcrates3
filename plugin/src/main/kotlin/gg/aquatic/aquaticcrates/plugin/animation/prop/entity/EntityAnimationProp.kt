@@ -7,13 +7,14 @@ import gg.aquatic.aquaticcrates.plugin.animation.prop.entity.property.EntityProp
 import gg.aquatic.aquaticcrates.plugin.animation.prop.path.PathBoundProperties
 import gg.aquatic.aquaticcrates.plugin.animation.prop.path.PathProp
 import gg.aquatic.aquaticseries.lib.AquaticSeriesLib
+import gg.aquatic.aquaticseries.lib.util.runSync
 import org.bukkit.Location
 import org.bukkit.entity.Entity
 import org.bukkit.util.Vector
 
 class EntityAnimationProp(
     override val animation: Animation,
-    val locationOffset: Vector,
+    override val locationOffset: Vector,
     override val boundPaths: MutableMap<PathProp, PathBoundProperties>,
     val entityType: String,
     properties: List<EntityProperty>
@@ -28,7 +29,7 @@ class EntityAnimationProp(
         val currentLocation = if (boundPaths.isEmpty()) animation.baseLocation.clone().add(locationOffset)
         else {
             val point = calculatePoint()
-            val newLocation = animation.baseLocation.clone().add(point.vector)
+            val newLocation = animation.baseLocation.clone().add(point.vector).add(locationOffset)
             newLocation.yaw = point.yaw
             newLocation.pitch = point.pitch
 

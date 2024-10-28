@@ -3,6 +3,8 @@ package gg.aquatic.aquaticcrates.plugin.animation.prop.path
 import gg.aquatic.aquaticcrates.api.animation.Animation
 import gg.aquatic.aquaticcrates.api.animation.prop.AnimationProp
 import gg.aquatic.aquaticcrates.plugin.animation.prop.MovableAnimationProp
+import gg.aquatic.aquaticseries.lib.util.runAsync
+import gg.aquatic.aquaticseries.lib.util.runSync
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import java.util.TreeMap
@@ -23,45 +25,51 @@ class LinearPathProp(
     }
 
     override fun tick() {
-        if (points.isEmpty()) return
-        if (tick > points.lastKey()) return
+        runAsync {
+            if (points.isEmpty()) return@runAsync
+            if (tick > points.lastKey()) return@runAsync
 
-        val lowerPoint = lowerPoint()
-        if (lowerPoint == null) {
+            val lowerPoint = lowerPoint()
+            if (lowerPoint == null) {
+                tick++
+                return@runAsync
+            }
+            if (lowerPoint.second == points.lastEntry().value) {
+                return@runAsync
+            }
+            val upperPoint = points.higherEntry(tick).toPair()
+
+            if (upperPoint.second == lowerPoint.second) return@runAsync
+
+            val duration = upperPoint.first - lowerPoint.first
+            val currentTick = tick - lowerPoint.first
+
+            val ratio = currentTick.toDouble() / duration.toDouble()
+
+            val interpolatedX = interpolate(lowerPoint.second.x, upperPoint.second.x, ratio)
+            val interpolatedY = interpolate(lowerPoint.second.y, upperPoint.second.y, ratio)
+            val interpolatedZ = interpolate(lowerPoint.second.z, upperPoint.second.z, ratio)
+            val interpolatedYaw = interpolate(lowerPoint.second.yaw.toDouble(), upperPoint.second.yaw.toDouble(), ratio).toFloat()
+            val interpolatedPitch = interpolate(lowerPoint.second.pitch.toDouble(), upperPoint.second.pitch.toDouble(), ratio).toFloat()
+
+            val point = PathPoint(interpolatedX, interpolatedY, interpolatedZ, interpolatedYaw, interpolatedPitch)
+            currentPoint = point
+
+            runSync {
+                for ((prop, _) in boundProps) {
+                    prop.processPath(this@LinearPathProp, point)
+                }
+            }
+
+
+            /*
+            for (boundProp in boundProps) {
+                boundProp.move(location.clone().add(boundProp.boundLocationOffset ?: Vector()))
+            }
+             */
             tick++
-            return
-        }
-        if (lowerPoint.second == points.lastEntry().value) {
-            return
-        }
-        val upperPoint = points.higherEntry(tick).toPair()
-
-        if (upperPoint.second == lowerPoint.second) return
-
-        val duration = upperPoint.first - lowerPoint.first
-        val currentTick = tick - lowerPoint.first
-
-        val ratio = currentTick.toDouble() / duration.toDouble()
-
-        val interpolatedX = interpolate(lowerPoint.second.x, upperPoint.second.x, ratio)
-        val interpolatedY = interpolate(lowerPoint.second.y, upperPoint.second.y, ratio)
-        val interpolatedZ = interpolate(lowerPoint.second.z, upperPoint.second.z, ratio)
-        val interpolatedYaw = interpolate(lowerPoint.second.yaw.toDouble(), upperPoint.second.yaw.toDouble(), ratio).toFloat()
-        val interpolatedPitch = interpolate(lowerPoint.second.pitch.toDouble(), upperPoint.second.pitch.toDouble(), ratio).toFloat()
-
-        val point = PathPoint(interpolatedX, interpolatedY, interpolatedZ, interpolatedYaw, interpolatedPitch)
-        currentPoint = point
-
-        for ((prop, _) in boundProps) {
-            prop.processPath(this, point)
         }
 
-        /*
-        for (boundProp in boundProps) {
-            boundProp.move(location.clone().add(boundProp.boundLocationOffset ?: Vector()))
-        }
-         */
-        tick++
     }
 
     override fun onAnimationEnd() {

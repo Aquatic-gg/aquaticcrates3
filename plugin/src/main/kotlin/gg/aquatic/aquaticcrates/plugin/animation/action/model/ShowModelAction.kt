@@ -9,16 +9,18 @@ import gg.aquatic.aquaticcrates.plugin.animation.prop.path.PathProp
 import gg.aquatic.aquaticseries.lib.action.AbstractAction
 import gg.aquatic.aquaticseries.lib.util.argument.AquaticObjectArgument
 import gg.aquatic.aquaticseries.lib.util.argument.impl.PrimitiveObjectArgument
+import org.bukkit.Bukkit
 import org.bukkit.util.Vector
 import java.util.function.BiFunction
 
-class ShowModelAction: AbstractAction<Animation>() {
+class ShowModelAction : AbstractAction<Animation>() {
     override fun run(binder: Animation, args: Map<String, Any?>, textUpdater: BiFunction<Animation, String, String>) {
         val id = args["id"] as String
         val model = args["model"] as String
         val applySkin = args["apply-skin"] as Boolean
         val animation = args["animation"] as String?
-        val boundPropertiesFactory = args["bound-paths"] as ((Animation) -> MutableMap<PathProp, PathBoundProperties>)? ?: { _ -> hashMapOf() }
+        val boundPropertiesFactory =
+            args["bound-paths"] as? ((Animation) -> MutableMap<PathProp, PathBoundProperties>) ?: { _ -> hashMapOf() }
 
         val boundPaths = boundPropertiesFactory(binder)
         val prop = ModelAnimationProp(
@@ -26,9 +28,14 @@ class ShowModelAction: AbstractAction<Animation>() {
             model,
             if (applySkin) binder.player else null,
             animation,
-            args["offset"] as Vector,
+            args["location-offset"] as Vector,
             boundPaths
         )
+
+        for ((path, pathProperties) in boundPaths) {
+            Bukkit.getConsoleSender().sendMessage("Binding model to the animation!")
+            path.boundProps += prop to pathProperties
+        }
 
         binder.props["model:$id"] = prop
     }
@@ -36,10 +43,10 @@ class ShowModelAction: AbstractAction<Animation>() {
     override fun arguments(): List<AquaticObjectArgument<*>> {
         return listOf(
             PrimitiveObjectArgument("id", "example", true),
-            PrimitiveObjectArgument("model","",true),
+            PrimitiveObjectArgument("model", "", true),
             PrimitiveObjectArgument("apply-skin", true, required = false),
-            PrimitiveObjectArgument("animation",null,true),
-            VectorArgument("offset",Vector(), false),
+            PrimitiveObjectArgument("animation", null, false),
+            VectorArgument("location-offset", Vector(), false),
             BoundPathObjectArgument(
                 "bound-paths",
                 { _ -> hashMapOf() },

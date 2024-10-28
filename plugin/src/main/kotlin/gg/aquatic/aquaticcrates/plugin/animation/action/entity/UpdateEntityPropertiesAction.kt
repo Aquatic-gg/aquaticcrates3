@@ -8,6 +8,7 @@ import gg.aquatic.aquaticseries.lib.AquaticSeriesLib
 import gg.aquatic.aquaticseries.lib.action.AbstractAction
 import gg.aquatic.aquaticseries.lib.util.argument.AquaticObjectArgument
 import gg.aquatic.aquaticseries.lib.util.argument.impl.PrimitiveObjectArgument
+import gg.aquatic.aquaticseries.lib.util.runSync
 import java.util.function.BiFunction
 
 class UpdateEntityPropertiesAction : AbstractAction<Animation>() {
@@ -16,12 +17,16 @@ class UpdateEntityPropertiesAction : AbstractAction<Animation>() {
         val properties = args["properties"] as List<EntityProperty>
 
         val entityProp = binder.props["entity:$id"] as? EntityAnimationProp? ?: return
-        AquaticSeriesLib.INSTANCE.nmsAdapter!!.updateEntity(
-            entityProp.entityId, { entity ->
-                properties.forEach { it.apply(entity, entityProp) }
-            },
-            binder.audience
-        )
+
+        runSync {
+            AquaticSeriesLib.INSTANCE.nmsAdapter!!.updateEntity(
+                entityProp.entityId, { entity ->
+                    properties.forEach { it.apply(entity, entityProp) }
+                },
+                binder.audience
+            )
+        }
+
     }
 
     override fun arguments(): List<AquaticObjectArgument<*>> {

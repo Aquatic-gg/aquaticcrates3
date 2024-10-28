@@ -11,7 +11,7 @@ class VectorArgument(id: String, defaultValue: Vector?, required: Boolean) : Aqu
     override val serializer: AbstractObjectArgumentSerializer<Vector?> = Serializer
 
     override suspend fun load(section: ConfigurationSection): Vector? {
-        return Serializer.load(section, id)
+        return Serializer.load(section, id) ?: defaultValue
     }
 
     object Serializer: AbstractObjectArgumentSerializer<Vector?>() {

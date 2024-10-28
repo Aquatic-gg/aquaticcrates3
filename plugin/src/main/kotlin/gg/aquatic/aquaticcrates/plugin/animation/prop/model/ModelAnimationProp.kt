@@ -22,18 +22,18 @@ class ModelAnimationProp(
     val model: String,
     val skin: Player?,
     val modelAnimation: String?,
-    val offset: Vector,
-    override val boundPaths: MutableMap<PathProp, PathBoundProperties>,
+    override val locationOffset: Vector,
+    override val boundPaths: MutableMap<PathProp, PathBoundProperties>
 ) : AnimationProp(), MovableAnimationProp {
 
     override val processedPaths: MutableList<PathProp> = ArrayList()
     val interactable: SpawnedPacketMegInteractable
 
     init {
-        val currentLocation = if (boundPaths.isEmpty()) animation.baseLocation.clone().add(offset)
+        val currentLocation = if (boundPaths.isEmpty()) animation.baseLocation.clone().add(locationOffset)
         else {
             val point = calculatePoint()
-            val newLocation = animation.baseLocation.clone().add(point.vector)
+            val newLocation = animation.baseLocation.clone().add(point.vector).add(locationOffset)
             newLocation.yaw = point.yaw
             newLocation.pitch = point.pitch
 
@@ -80,6 +80,11 @@ class ModelAnimationProp(
 
     override fun move(location: Location) {
         val dummy = interactable.modeledEntity!!.base as Dummy<*>
-        dummy.syncLocation(location)
+        dummy.location = location
+        dummy.bodyRotationController.yBodyRot = location.yaw
+        dummy.bodyRotationController.xHeadRot = location.pitch
+        dummy.bodyRotationController.yHeadRot = location.yaw
+        dummy.yHeadRot = location.yaw
+        dummy.yBodyRot = location.yaw
     }
 }

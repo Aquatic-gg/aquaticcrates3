@@ -9,17 +9,18 @@ import org.bukkit.util.Vector
 import org.joml.Math.toRadians
 
 interface MovableAnimationProp {
-
+    val locationOffset: Vector
     val animation: Animation
 
-    val boundPaths: MutableMap<PathProp,PathBoundProperties>
+    val boundPaths: MutableMap<PathProp, PathBoundProperties>
     val processedPaths: MutableList<PathProp>
 
     //val boundLocationOffset: Vector?
 
     fun processPath(
         path: PathProp,
-        point: PathPoint) {
+        point: PathPoint
+    ) {
 
         processedPaths += path
         if (processedPaths.size != boundPaths.size) {
@@ -28,7 +29,7 @@ interface MovableAnimationProp {
 
         val currentPoint = calculatePoint()
 
-        val newLocation = animation.baseLocation.clone().add(currentPoint.vector)
+        val newLocation = animation.baseLocation.clone().add(currentPoint.vector).add(locationOffset)
         newLocation.yaw = currentPoint.yaw
         newLocation.pitch = currentPoint.pitch
 

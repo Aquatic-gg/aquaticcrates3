@@ -20,10 +20,10 @@ class BoundPathObjectArgument(id: String,
 
     object Serializer: AbstractObjectArgumentSerializer<((Animation) -> MutableMap<PathProp, PathBoundProperties>)?>() {
         override suspend fun load(section: ConfigurationSection, id: String): ((Animation) -> MutableMap<PathProp, PathBoundProperties>) {
+
+            val section2 = section.getConfigurationSection(id) ?: return { _ -> hashMapOf() }
             return { animation: Animation ->
                 val map = HashMap<PathProp, PathBoundProperties>()
-                val section2 = section.getConfigurationSection(id)!!
-                Bukkit.getConsoleSender().sendMessage("Paths path: ${section2.currentPath}")
                 for (key in section2.getKeys(false)) {
                     val s = section2.getConfigurationSection(key)!!
                     Bukkit.getConsoleSender().sendMessage("Path path: ${s.currentPath}")
