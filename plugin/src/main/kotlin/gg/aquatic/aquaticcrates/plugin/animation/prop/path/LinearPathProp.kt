@@ -5,19 +5,18 @@ import gg.aquatic.aquaticcrates.api.animation.prop.AnimationProp
 import gg.aquatic.aquaticcrates.plugin.animation.prop.MovableAnimationProp
 import org.bukkit.Bukkit
 import org.bukkit.Location
-import org.bukkit.util.Vector
 import java.util.TreeMap
 
 class LinearPathProp(
     override val points: TreeMap<Int, PathPoint>,
     override val animation: Animation
 ): AnimationProp(), PathProp {
+    override var currentPoint: PathPoint = PathPoint(0.0, 0.0, 0.0, 0f, 0f)
+        private set
 
-    override val boundProps = mutableListOf<MovableAnimationProp>()
+    override val boundProps: MutableMap<MovableAnimationProp, PathBoundProperties> = HashMap()
 
     var tick = 0
-    override var location: Location? = null
-        private set
 
     init {
         tick()
@@ -51,22 +50,23 @@ class LinearPathProp(
         val interpolatedYaw = interpolate(lowerPoint.second.yaw.toDouble(), upperPoint.second.yaw.toDouble(), ratio).toFloat()
         val interpolatedPitch = interpolate(lowerPoint.second.pitch.toDouble(), upperPoint.second.pitch.toDouble(), ratio).toFloat()
 
-        val location = animation.baseLocation.clone()
-            .add(interpolatedX, interpolatedY, interpolatedZ)
-        location.yaw = interpolatedYaw
-        location.pitch = interpolatedPitch
+        val point = PathPoint(interpolatedX, interpolatedY, interpolatedZ, interpolatedYaw, interpolatedPitch)
+        currentPoint = point
 
-        this.location = location
+        for ((prop, _) in boundProps) {
+            prop.processPath(this, point)
+        }
 
+        /*
         for (boundProp in boundProps) {
             boundProp.move(location.clone().add(boundProp.boundLocationOffset ?: Vector()))
         }
+         */
         tick++
     }
 
     override fun onAnimationEnd() {
         tick = 0
-        location = null
     }
 
     private fun lowerPoint(): Pair<Int, PathPoint>? {

@@ -16,7 +16,6 @@ class EntityPropertiesObjectArgument(
     override val serializer: AbstractObjectArgumentSerializer<List<EntityProperty>?> = Serializer
 
     override suspend fun load(section: ConfigurationSection): List<EntityProperty>? {
-        Bukkit.getConsoleSender().sendMessage("Loading properties!")
         return serializer.load(section, id)
     }
 
@@ -31,15 +30,10 @@ class EntityPropertiesObjectArgument(
 
         override suspend fun load(section: ConfigurationSection, id: String): List<EntityProperty> {
             val properties = mutableListOf<EntityProperty>()
-
             val s = section.getConfigurationSection(id) ?: return properties
-            Bukkit.getConsoleSender().sendMessage("Properties path: ${s.currentPath}")
-
             for ((key, factory) in factories) {
-                Bukkit.getConsoleSender().sendMessage("Loading property: $key")
                 if (s.contains(key)) {
                     properties += factory.load(s)
-                    Bukkit.getConsoleSender().sendMessage("Loaded property: $key")
                 }
             }
             return properties
