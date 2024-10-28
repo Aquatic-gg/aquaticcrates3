@@ -28,7 +28,6 @@ class LinearPathProp(
 
         val lowerPoint = lowerPoint()
         if (lowerPoint == null) {
-            Bukkit.broadcastMessage("No lower point found, continuing")
             tick++
             return
         }

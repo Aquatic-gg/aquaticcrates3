@@ -46,6 +46,5 @@ class EntityArmorProperty(
             val boots = ArgumentItem.loadFromYml(section.getConfigurationSection("armor.boots"))
             return EntityArmorProperty(helmet, chestplate, leggings, boots)
         }
-
     }
 }

@@ -8,7 +8,6 @@ import gg.aquatic.aquaticcrates.plugin.animation.prop.path.PathBoundProperties
 import gg.aquatic.aquaticcrates.plugin.animation.prop.path.PathPoint
 import gg.aquatic.aquaticcrates.plugin.animation.prop.path.PathProp
 import gg.aquatic.aquaticseries.lib.AquaticSeriesLib
-import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.entity.Entity
 import org.bukkit.util.Vector
@@ -43,7 +42,6 @@ class EntityAnimationProp(
 
         ) {
             for (property in properties) {
-                Bukkit.getConsoleSender().sendMessage("Applying property!")
                 property.apply(it, this)
             }
         }
