@@ -7,7 +7,7 @@ import gg.aquatic.aquaticcrates.plugin.animation.prop.entity.property.EntityProp
 import gg.aquatic.aquaticcrates.plugin.animation.prop.path.PathBoundProperties
 import gg.aquatic.aquaticcrates.plugin.animation.prop.path.PathProp
 import gg.aquatic.aquaticseries.lib.AquaticSeriesLib
-import gg.aquatic.aquaticseries.lib.util.runSync
+import gg.aquatic.aquaticseries.lib.util.runAsync
 import org.bukkit.Location
 import org.bukkit.entity.Entity
 import org.bukkit.util.Vector
@@ -20,32 +20,34 @@ class EntityAnimationProp(
     properties: List<EntityProperty>
 ) : AnimationProp(), MovableAnimationProp {
 
-    val entityId: Int
-    val entity: Entity
+    var entityId: Int = -1
+    lateinit var entity: Entity
 
     override val processedPaths: MutableList<PathProp> = ArrayList()
 
     init {
-        val currentLocation = if (boundPaths.isEmpty()) animation.baseLocation.clone().add(locationOffset)
-        else {
-            val point = calculatePoint()
-            val newLocation = animation.baseLocation.clone().add(point.vector).add(locationOffset)
-            newLocation.yaw = point.yaw
-            newLocation.pitch = point.pitch
+        runAsync {
+            val currentLocation = if (boundPaths.isEmpty()) animation.baseLocation.clone().add(locationOffset)
+            else {
+                val point = calculatePoint()
+                val newLocation = animation.baseLocation.clone().add(point.vector).add(locationOffset)
+                newLocation.yaw = point.yaw
+                newLocation.pitch = point.pitch
 
-            newLocation
-        }
-
-        entityId = AquaticSeriesLib.INSTANCE.nmsAdapter!!.spawnEntity(
-            currentLocation, entityType, animation.audience
-
-        ) {
-            for (property in properties) {
-                property.apply(it, this)
+                newLocation
             }
-        }
 
-        entity = AquaticSeriesLib.INSTANCE.nmsAdapter!!.getEntity(entityId)!!
+            entityId = AquaticSeriesLib.INSTANCE.nmsAdapter!!.spawnEntity(
+                currentLocation, entityType, animation.audience
+
+            ) {
+                for (property in properties) {
+                    property.apply(it, this@EntityAnimationProp)
+                }
+            }
+
+            entity = AquaticSeriesLib.INSTANCE.nmsAdapter!!.getEntity(entityId)!!
+        }
     }
 
     override fun tick() {
@@ -57,6 +59,8 @@ class EntityAnimationProp(
     }
 
     override fun move(location: Location) {
-        AquaticSeriesLib.INSTANCE.nmsAdapter!!.teleportEntity(entityId, location, animation.audience)
+        runAsync {
+            AquaticSeriesLib.INSTANCE.nmsAdapter!!.teleportEntity(entityId, location, animation.audience)
+        }
     }
 }

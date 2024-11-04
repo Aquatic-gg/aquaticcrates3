@@ -4,10 +4,10 @@ import gg.aquatic.aquaticcrates.api.hologram.AquaticHologramSettings
 import gg.aquatic.aquaticcrates.api.player.CrateProfileEntry
 import gg.aquatic.aquaticseries.lib.action.ConfiguredAction
 import gg.aquatic.aquaticseries.lib.chance.IChance
-import gg.aquatic.aquaticseries.lib.item2.AquaticItem
 import gg.aquatic.aquaticseries.lib.requirement.ConfiguredRequirement
 import gg.aquatic.aquaticseries.lib.util.addOrDropItem
 import gg.aquatic.aquaticseries.lib.util.executeActions
+import gg.aquatic.waves.item.AquaticItem
 import org.bukkit.entity.Player
 
 interface Reward: IChance {

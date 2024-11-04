@@ -1,6 +1,7 @@
 package gg.aquatic.aquaticcrates.plugin.pouch
 
-import gg.aquatic.aquaticseries.lib.betterinventory2.serialize.InventorySettings
+import gg.aquatic.waves.util.inventory.InventorySettings
+
 
 class PouchPreviewMenuSettings(
     val invSettings: InventorySettings?,

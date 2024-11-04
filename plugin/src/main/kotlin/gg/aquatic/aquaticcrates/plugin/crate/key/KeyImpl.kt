@@ -3,7 +3,7 @@ package gg.aquatic.aquaticcrates.plugin.crate.key
 import gg.aquatic.aquaticcrates.api.crate.Crate
 import gg.aquatic.aquaticcrates.api.crate.Key
 import gg.aquatic.aquaticcrates.api.crate.KeyInteractHandler
-import gg.aquatic.aquaticseries.lib.item2.AquaticItem
+import gg.aquatic.waves.item.AquaticItem
 
 class KeyImpl(
     crate: Crate,

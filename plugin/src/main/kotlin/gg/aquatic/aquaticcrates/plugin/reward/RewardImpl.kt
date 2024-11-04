@@ -5,8 +5,8 @@ import gg.aquatic.aquaticcrates.api.player.CrateProfileEntry
 import gg.aquatic.aquaticcrates.api.reward.Reward
 import gg.aquatic.aquaticcrates.api.reward.RewardAmountRange
 import gg.aquatic.aquaticseries.lib.action.ConfiguredAction
-import gg.aquatic.aquaticseries.lib.item2.AquaticItem
 import gg.aquatic.aquaticseries.lib.requirement.ConfiguredRequirement
+import gg.aquatic.waves.item.AquaticItem
 import org.bukkit.entity.Player
 
 class RewardImpl(

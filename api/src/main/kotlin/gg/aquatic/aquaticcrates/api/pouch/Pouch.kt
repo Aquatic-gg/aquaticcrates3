@@ -9,9 +9,9 @@ import gg.aquatic.aquaticcrates.api.reward.Reward
 import gg.aquatic.aquaticcrates.api.reward.RolledReward
 import gg.aquatic.aquaticcrates.api.util.ItemBased
 import gg.aquatic.aquaticcrates.api.util.Rewardable
-import gg.aquatic.aquaticseries.lib.item2.AquaticItem
 import gg.aquatic.aquaticseries.lib.requirement.ConfiguredRequirement
 import gg.aquatic.aquaticseries.lib.util.checkRequirements
+import gg.aquatic.waves.item.AquaticItem
 import gg.aquatic.waves.item.ItemHandler
 import gg.aquatic.waves.registry.isAquaticItem
 import gg.aquatic.waves.registry.register
@@ -110,7 +110,7 @@ abstract class Pouch(
             return
         }
         val animation = animationManager.animationSettings.create(player, animationManager, interactionLocation, rolledRewards)
-        animationManager.playingAnimations += player.uniqueId to animation
+        animationManager.playingAnimations.getOrPut(player.uniqueId) { arrayListOf() } += animation
     }
 
     abstract fun generateRewards(player: Player): MutableList<RolledReward>

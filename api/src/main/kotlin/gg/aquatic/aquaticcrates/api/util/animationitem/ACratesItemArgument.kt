@@ -1,8 +1,8 @@
 package gg.aquatic.aquaticcrates.api.util.animationitem
 
-import gg.aquatic.aquaticseries.lib.item2.AquaticItem
 import gg.aquatic.aquaticseries.lib.util.argument.AbstractObjectArgumentSerializer
 import gg.aquatic.aquaticseries.lib.util.argument.AquaticObjectArgument
+import gg.aquatic.waves.item.AquaticItem
 import gg.aquatic.waves.util.loadFromYml
 import org.bukkit.configuration.ConfigurationSection
 

@@ -2,7 +2,6 @@ package gg.aquatic.aquaticcrates.api.animation.pouch
 
 import gg.aquatic.aquaticcrates.api.animation.AnimationTitle
 import gg.aquatic.aquaticcrates.api.pouch.Pouch
-import gg.aquatic.aquaticseries.lib.action.ConfiguredAction
 import org.bukkit.entity.Player
 import java.util.*
 
@@ -19,7 +18,7 @@ abstract class PouchAnimationManager {
 
     }
 
-    abstract val playingAnimations: HashMap<UUID, PouchAnimation>
+    abstract val playingAnimations: HashMap<UUID, MutableList<PouchAnimation>>
 
     abstract fun skipAnimation(player: Player)
 

@@ -1,6 +1,6 @@
 package gg.aquatic.aquaticcrates.api.util
 
-import gg.aquatic.aquaticseries.lib.item2.AquaticItem
+import gg.aquatic.waves.item.AquaticItem
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 

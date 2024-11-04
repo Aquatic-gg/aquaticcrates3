@@ -8,8 +8,8 @@ import gg.aquatic.aquaticcrates.api.reward.RewardAmountRange
 import gg.aquatic.aquaticcrates.plugin.reward.RewardImpl
 import gg.aquatic.aquaticseries.lib.action.ConfiguredAction
 import gg.aquatic.aquaticseries.lib.betterhologram.AquaticHologram.Billboard
-import gg.aquatic.aquaticseries.lib.item2.AquaticItem
 import gg.aquatic.aquaticseries.lib.util.getSectionList
+import gg.aquatic.waves.item.AquaticItem
 import gg.aquatic.waves.registry.serializer.ActionSerializer
 import gg.aquatic.waves.registry.serializer.HologramSerializer
 import gg.aquatic.waves.registry.serializer.RequirementSerializer

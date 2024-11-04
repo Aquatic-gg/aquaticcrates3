@@ -1,8 +1,6 @@
 package gg.aquatic.aquaticcrates.plugin.serialize
 
 import gg.aquatic.aquaticcrates.api.animation.Animation
-import gg.aquatic.aquaticcrates.api.animation.AnimationTitle
-import gg.aquatic.aquaticcrates.api.animation.pouch.PouchAnimation
 import gg.aquatic.aquaticcrates.api.animation.pouch.PouchAnimationManager
 import gg.aquatic.aquaticcrates.api.animation.pouch.PouchAnimationSettings
 import gg.aquatic.aquaticcrates.api.openprice.OpenPriceGroup
@@ -15,10 +13,9 @@ import gg.aquatic.aquaticcrates.plugin.pouch.PouchInteractHandlerImpl
 import gg.aquatic.aquaticcrates.plugin.pouch.PouchMilestoneManager
 import gg.aquatic.aquaticcrates.plugin.pouch.PouchPreviewMenuSettings
 import gg.aquatic.aquaticcrates.plugin.pouch.RewardPouch
-import gg.aquatic.aquaticseries.lib.action.ConfiguredAction
-import gg.aquatic.aquaticseries.lib.item2.AquaticItem
 import gg.aquatic.aquaticseries.lib.util.Config
 import gg.aquatic.aquaticseries.lib.util.getSectionList
+import gg.aquatic.waves.item.AquaticItem
 import gg.aquatic.waves.registry.serializer.ActionSerializer
 import gg.aquatic.waves.registry.serializer.InventorySerializer
 import gg.aquatic.waves.registry.serializer.RequirementSerializer
