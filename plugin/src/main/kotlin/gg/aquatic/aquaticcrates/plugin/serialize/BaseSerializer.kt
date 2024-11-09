@@ -10,12 +10,10 @@ import gg.aquatic.aquaticseries.lib.action.ConfiguredAction
 import gg.aquatic.aquaticseries.lib.betterhologram.AquaticHologram.Billboard
 import gg.aquatic.aquaticseries.lib.util.getSectionList
 import gg.aquatic.waves.item.AquaticItem
+import gg.aquatic.waves.item.loadFromYml
 import gg.aquatic.waves.registry.serializer.ActionSerializer
 import gg.aquatic.waves.registry.serializer.HologramSerializer
 import gg.aquatic.waves.registry.serializer.RequirementSerializer
-import gg.aquatic.waves.util.loadFromYml
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import org.bukkit.Bukkit
 import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.entity.Player
@@ -24,7 +22,7 @@ import java.util.*
 
 abstract class BaseSerializer {
 
-    suspend fun loadRewards(section: ConfigurationSection): HashMap<String, Reward> = withContext(Dispatchers.IO) {
+    fun loadRewards(section: ConfigurationSection): HashMap<String, Reward> {
         val rewards = HashMap<String, Reward>()
 
         for (key in section.getKeys(false)) {
@@ -33,15 +31,15 @@ abstract class BaseSerializer {
             rewards[key] = reward
         }
 
-        return@withContext rewards
+        return rewards
     }
 
-    suspend fun loadReward(section: ConfigurationSection): Reward? = withContext(Dispatchers.IO) {
+    fun loadReward(section: ConfigurationSection): Reward? {
         val id = section.name
         val item = AquaticItem.loadFromYml(section.getConfigurationSection("item"))
         if (item == null) {
             sendConsoleMessage("Could not load Reward Item! (${section.currentPath}.item)")
-            return@withContext null
+            return null
         }
         val chance = section.getDouble("chance", 1.0)
         val giveItem = section.getBoolean("give-item", false)
@@ -54,7 +52,7 @@ abstract class BaseSerializer {
         val hologramSettings = loadAquaticHologram(section.getConfigurationSection("hologram"))
         val chances = loadRewardRanges(section.getSectionList("amount-ranges"))
 
-        return@withContext RewardImpl(chance, id, item, giveItem, displayName, globalLimits, perPlayerLimits, actions, requirements, winCrateAnimation, hologramSettings, chances)
+        return RewardImpl(chance, id, item, giveItem, displayName, globalLimits, perPlayerLimits, actions, requirements, winCrateAnimation, hologramSettings, chances)
     }
 
     fun sendConsoleMessage(vararg message: String) {
@@ -63,8 +61,8 @@ abstract class BaseSerializer {
         }
     }
 
-    suspend fun loadAquaticHologram(section: ConfigurationSection?): AquaticHologramSettings = withContext(Dispatchers.IO) {
-        section ?: return@withContext AquaticHologramSettings(
+    fun loadAquaticHologram(section: ConfigurationSection?): AquaticHologramSettings {
+        section ?: return AquaticHologramSettings(
             ArrayList(),
             Vector(0, 0, 0),
             Billboard.CENTER
@@ -78,11 +76,11 @@ abstract class BaseSerializer {
             offset[2].toDouble()
         )
         val lines = HologramSerializer.load(section.getSectionList("lines"))
-        return@withContext AquaticHologramSettings(lines, vector, billboard)
+        return AquaticHologramSettings(lines, vector, billboard)
     }
 
-    suspend fun loadRewardRanges(sections: List<ConfigurationSection>): MutableList<RewardAmountRange> = withContext(Dispatchers.IO) {
-        if (sections.isEmpty()) return@withContext mutableListOf()
+    fun loadRewardRanges(sections: List<ConfigurationSection>): MutableList<RewardAmountRange> {
+        if (sections.isEmpty()) return mutableListOf()
         val list = mutableListOf<RewardAmountRange>()
         for (rangeSection in sections) {
             val min = rangeSection.getInt("min")
@@ -90,13 +88,12 @@ abstract class BaseSerializer {
             val chance = rangeSection.getDouble("chance", 1.0)
             list.add(RewardAmountRange(min, max, chance))
         }
-        return@withContext list
+        return list
     }
 
-    suspend fun loadAnimationTasks(section: ConfigurationSection?): TreeMap<Int, MutableList<ConfiguredAction<Animation>>> =
-        withContext(Dispatchers.IO) {
+    fun loadAnimationTasks(section: ConfigurationSection?): TreeMap<Int, MutableList<ConfiguredAction<Animation>>> {
             val tasks = TreeMap<Int, MutableList<ConfiguredAction<Animation>>>()
-            if (section == null) return@withContext tasks
+            if (section == null) return tasks
 
             for (key in section.getKeys(false)) {
                 val delay = key.toIntOrNull() ?: continue
@@ -104,7 +101,7 @@ abstract class BaseSerializer {
                     ActionSerializer.fromSections<Animation>(section.getSectionList(key)).toMutableList()
             }
 
-            tasks
+            return tasks
         }
 
 }

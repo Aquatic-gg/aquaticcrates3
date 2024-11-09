@@ -16,7 +16,7 @@ class TextDisplayAlignmentProperty(
     }
 
     object Serializer: EntityPropertySerializer {
-        override suspend fun load(section: ConfigurationSection): EntityProperty {
+        override fun load(section: ConfigurationSection): EntityProperty {
             return TextDisplayAlignmentProperty(TextAlignment.valueOf(section.getString("alignment", "CENTER")!!.uppercase()))
         }
 

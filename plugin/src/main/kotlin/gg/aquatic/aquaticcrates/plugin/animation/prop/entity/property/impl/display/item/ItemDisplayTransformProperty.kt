@@ -16,7 +16,7 @@ class ItemDisplayTransformProperty(
     }
 
     object Serializer: EntityPropertySerializer {
-        override suspend fun load(section: ConfigurationSection): EntityProperty {
+        override fun load(section: ConfigurationSection): EntityProperty {
             return ItemDisplayTransformProperty(ItemDisplayTransform.valueOf(section.getString("item-transform", "NONE")!!.uppercase()))
         }
 

@@ -15,7 +15,7 @@ class DisplayBillboardProperty(
     }
 
     object Serializer : EntityPropertySerializer {
-        override suspend fun load(section: org.bukkit.configuration.ConfigurationSection): EntityProperty {
+        override fun load(section: org.bukkit.configuration.ConfigurationSection): EntityProperty {
             return DisplayBillboardProperty(Billboard.valueOf(section.getString("billboard", "CENTER")!!.uppercase()))
         }
     }

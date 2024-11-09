@@ -15,7 +15,7 @@ class DisplayInterpolationDurationProperty(
     }
 
     object Serializer : EntityPropertySerializer {
-        override suspend fun load(section: ConfigurationSection): EntityProperty {
+        override fun load(section: ConfigurationSection): EntityProperty {
             val duration = section.getInt("interpolation-duration", 0)
             return DisplayInterpolationDurationProperty(duration)
         }

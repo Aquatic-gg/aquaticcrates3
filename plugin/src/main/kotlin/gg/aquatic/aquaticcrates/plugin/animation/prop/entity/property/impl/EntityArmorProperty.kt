@@ -39,7 +39,7 @@ class EntityArmorProperty(
     }
 
     object Serializer : EntityPropertySerializer {
-        override suspend fun load(section: ConfigurationSection): EntityProperty {
+        override fun load(section: ConfigurationSection): EntityProperty {
             val helmet = ArgumentItem.loadFromYml(section.getConfigurationSection("armor.helmet"))
             val chestplate = ArgumentItem.loadFromYml(section.getConfigurationSection("armor.chestplate"))
             val leggings = ArgumentItem.loadFromYml(section.getConfigurationSection("armor.leggings"))

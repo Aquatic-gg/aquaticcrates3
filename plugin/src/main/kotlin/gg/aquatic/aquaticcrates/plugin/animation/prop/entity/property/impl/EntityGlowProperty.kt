@@ -11,7 +11,7 @@ class EntityGlowProperty(val isGlowing: Boolean): EntityProperty {
     }
 
     object Serializer: EntityPropertySerializer {
-        override suspend fun load(section: org.bukkit.configuration.ConfigurationSection): EntityProperty {
+        override fun load(section: org.bukkit.configuration.ConfigurationSection): EntityProperty {
             return EntityGlowProperty(section.getBoolean("glow", false))
         }
     }

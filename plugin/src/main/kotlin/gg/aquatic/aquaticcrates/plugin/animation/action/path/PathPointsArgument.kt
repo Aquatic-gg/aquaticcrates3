@@ -14,13 +14,13 @@ class PathPointsArgument(
 
     override val serializer: AbstractObjectArgumentSerializer<TreeMap<Int, PathPoint>?> = Serializer
 
-    override suspend fun load(section: ConfigurationSection): TreeMap<Int, PathPoint>? {
+    override fun load(section: ConfigurationSection): TreeMap<Int, PathPoint>? {
         Bukkit.getConsoleSender().sendMessage("Loading points!")
         return serializer.load(section, id)
     }
 
     object Serializer : AbstractObjectArgumentSerializer<TreeMap<Int, PathPoint>?>() {
-        override suspend fun load(section: ConfigurationSection, id: String): TreeMap<Int, PathPoint> {
+        override fun load(section: ConfigurationSection, id: String): TreeMap<Int, PathPoint> {
             val map = TreeMap<Int, PathPoint>()
             val s = section.getConfigurationSection(id) ?: return map
             Bukkit.getConsoleSender().sendMessage("Points path: ${s.currentPath}")

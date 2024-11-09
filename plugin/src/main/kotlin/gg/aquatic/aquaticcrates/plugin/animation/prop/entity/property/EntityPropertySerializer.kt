@@ -4,6 +4,6 @@ import org.bukkit.configuration.ConfigurationSection
 
 interface EntityPropertySerializer {
 
-    suspend fun load(section: ConfigurationSection): EntityProperty
+    fun load(section: ConfigurationSection): EntityProperty
 
 }

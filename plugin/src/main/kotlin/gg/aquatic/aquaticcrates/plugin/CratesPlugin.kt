@@ -16,8 +16,6 @@ import gg.aquatic.aquaticseries.lib.util.*
 import gg.aquatic.waves.profile.ProfilesModule
 import gg.aquatic.waves.registry.WavesRegistry
 import gg.aquatic.waves.registry.registerAction
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import org.bukkit.event.player.PlayerJoinEvent
 import java.io.File
 
@@ -58,14 +56,12 @@ class CratesPlugin: AbstractCratesPlugin() {
     }
 
     private fun load() {
-        runBlocking {
-            launch {
-                ProfilesModule.registerModule(CrateProfileModule)
+        ProfilesModule.registerModule(CrateProfileModule)
 
-                val pouchFile = File(dataFolder,"pouches")
-                pouchFile.mkdirs()
-                CrateHandler.pouches += PouchSerializer.loadPouches(pouchFile)
-            }
+        runAsync {
+            val pouchFile = File(dataFolder,"pouches")
+            pouchFile.mkdirs()
+            CrateHandler.pouches += PouchSerializer.loadPouches(pouchFile)
         }
     }
 

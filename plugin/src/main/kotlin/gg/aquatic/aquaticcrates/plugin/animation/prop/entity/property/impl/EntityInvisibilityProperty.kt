@@ -17,7 +17,7 @@ class EntityInvisibilityProperty(
     }
 
     object Serializer : EntityPropertySerializer {
-        override suspend fun load(section: ConfigurationSection): EntityProperty {
+        override fun load(section: ConfigurationSection): EntityProperty {
             return EntityInvisibilityProperty(section.getBoolean("invisible", false))
         }
     }

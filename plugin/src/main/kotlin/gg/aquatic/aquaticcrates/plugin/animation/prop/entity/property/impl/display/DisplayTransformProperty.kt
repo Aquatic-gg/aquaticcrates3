@@ -21,7 +21,7 @@ class DisplayTransformProperty(
     }
 
     object Serializer : EntityPropertySerializer {
-        override suspend fun load(section: ConfigurationSection): EntityProperty {
+        override fun load(section: ConfigurationSection): EntityProperty {
             val s = section.getConfigurationSection("transformation") ?: return DisplayTransformProperty(
                 Transformation(
                     Vector3f(),

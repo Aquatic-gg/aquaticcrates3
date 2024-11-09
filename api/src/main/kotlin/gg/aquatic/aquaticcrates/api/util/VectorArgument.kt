@@ -10,12 +10,12 @@ class VectorArgument(id: String, defaultValue: Vector?, required: Boolean) : Aqu
 ) {
     override val serializer: AbstractObjectArgumentSerializer<Vector?> = Serializer
 
-    override suspend fun load(section: ConfigurationSection): Vector? {
+    override fun load(section: ConfigurationSection): Vector? {
         return Serializer.load(section, id) ?: defaultValue
     }
 
     object Serializer: AbstractObjectArgumentSerializer<Vector?>() {
-        override suspend fun load(section: ConfigurationSection, id: String): Vector? {
+        override fun load(section: ConfigurationSection, id: String): Vector? {
             val str = section.getString(id) ?: return null
             val split = str.split(";")
             if (split.size != 3) {

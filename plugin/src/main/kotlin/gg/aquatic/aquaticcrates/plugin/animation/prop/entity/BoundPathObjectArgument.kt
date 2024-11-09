@@ -14,12 +14,12 @@ class BoundPathObjectArgument(id: String,
 ) : AquaticObjectArgument<(Animation) -> MutableMap<PathProp, PathBoundProperties>>(id, defaultValue, required) {
     override val serializer: AbstractObjectArgumentSerializer<((Animation) -> MutableMap<PathProp, PathBoundProperties>)?> = Serializer
 
-    override suspend fun load(section: ConfigurationSection): ((Animation) -> MutableMap<PathProp, PathBoundProperties>)? {
+    override fun load(section: ConfigurationSection): ((Animation) -> MutableMap<PathProp, PathBoundProperties>)? {
         return serializer.load(section, id)
     }
 
     object Serializer: AbstractObjectArgumentSerializer<((Animation) -> MutableMap<PathProp, PathBoundProperties>)?>() {
-        override suspend fun load(section: ConfigurationSection, id: String): ((Animation) -> MutableMap<PathProp, PathBoundProperties>) {
+        override fun load(section: ConfigurationSection, id: String): ((Animation) -> MutableMap<PathProp, PathBoundProperties>) {
 
             val section2 = section.getConfigurationSection(id) ?: return { _ -> hashMapOf() }
             return { animation: Animation ->

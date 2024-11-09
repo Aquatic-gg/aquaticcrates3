@@ -11,12 +11,12 @@ class BlockArgument(id: String, defaultValue: AquaticBlock?, required: Boolean) 
 ) {
     override val serializer: AbstractObjectArgumentSerializer<AquaticBlock?> = Serializer
 
-    override suspend fun load(section: ConfigurationSection): AquaticBlock? {
+    override fun load(section: ConfigurationSection): AquaticBlock? {
         return serializer.load(section, id)
     }
 
     object Serializer : AbstractObjectArgumentSerializer<AquaticBlock?>() {
-        override suspend fun load(section: ConfigurationSection, id: String): AquaticBlock? {
+        override fun load(section: ConfigurationSection, id: String): AquaticBlock? {
             val s = section.getConfigurationSection(id) ?: return null
             return AquaticBlockSerializer.load(s)
         }

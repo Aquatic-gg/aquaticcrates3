@@ -16,12 +16,10 @@ import gg.aquatic.aquaticcrates.plugin.pouch.RewardPouch
 import gg.aquatic.aquaticseries.lib.util.Config
 import gg.aquatic.aquaticseries.lib.util.getSectionList
 import gg.aquatic.waves.item.AquaticItem
+import gg.aquatic.waves.item.loadFromYml
 import gg.aquatic.waves.registry.serializer.ActionSerializer
 import gg.aquatic.waves.registry.serializer.InventorySerializer
 import gg.aquatic.waves.registry.serializer.RequirementSerializer
-import gg.aquatic.waves.util.loadFromYml
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.configuration.file.FileConfiguration
 import org.bukkit.entity.Player
@@ -32,7 +30,7 @@ import kotlin.collections.HashMap
 
 object PouchSerializer : BaseSerializer() {
 
-    suspend fun loadPouches(folder: File): HashMap<String, Pouch> = withContext(Dispatchers.IO) {
+    fun loadPouches(folder: File): HashMap<String, Pouch> {
         val pouches = HashMap<String, Pouch>()
 
         for (file in folder.listFiles()!!) {
@@ -44,10 +42,10 @@ object PouchSerializer : BaseSerializer() {
             pouches[pouch.identifier] = pouch
         }
 
-        return@withContext pouches
+        return pouches
     }
 
-    suspend fun loadPouch(file: File): Pouch? = withContext(Dispatchers.IO) {
+    fun loadPouch(file: File): Pouch? {
         sendConsoleMessage("Loading file: ${file.name}")
         val id = file.nameWithoutExtension
         val config = Config(file, CratesPlugin.INSTANCE)
@@ -57,7 +55,7 @@ object PouchSerializer : BaseSerializer() {
         val item = AquaticItem.loadFromYml(cfg.getConfigurationSection("pouch-item"))
         if (item == null) {
             sendConsoleMessage("Could not load Pouch Item! (Path: pouch-item)")
-            return@withContext null
+            return null
         }
         val openRequirements =
             RequirementSerializer.fromSections<Player>(cfg.getSectionList("open-requirements")).toMutableList()
@@ -70,14 +68,14 @@ object PouchSerializer : BaseSerializer() {
         val rewardSection = cfg.getConfigurationSection("rewards")
         if (rewardSection == null) {
             sendConsoleMessage("Could not load Rewards! (Path: rewards)")
-            return@withContext null
+            return null
         }
 
         val possibleRewardRanges = loadRewardRanges(cfg.getSectionList("possible-rewards"))
         val rewards = loadRewards(rewardSection)
         val previewSettings = loadPouchPreviewMenuSettings(cfg)
 
-        return@withContext RewardPouch(
+        return RewardPouch(
             id,
             item,
             displayName,
@@ -92,96 +90,94 @@ object PouchSerializer : BaseSerializer() {
         )
     }
 
-    private suspend fun loadPouchPreviewMenuSettings(cfg: FileConfiguration): PouchPreviewMenuSettings =
-        withContext(Dispatchers.IO) {
-            val section =
-                cfg.getConfigurationSection("preview") ?: return@withContext PouchPreviewMenuSettings(null, false, listOf())
-            val rewardSlots = section.getIntegerList("reward-slots")
-            val invSettings = InventorySerializer.loadInventory(section)
-            val clearBottomInventory = section.getBoolean("clear-bottom-inventory", false)
+    private fun loadPouchPreviewMenuSettings(cfg: FileConfiguration): PouchPreviewMenuSettings {
+        val section =
+            cfg.getConfigurationSection("preview") ?: return PouchPreviewMenuSettings(null, false, listOf())
+        val rewardSlots = section.getIntegerList("reward-slots")
+        val invSettings = InventorySerializer.loadInventory(section)
+        val clearBottomInventory = section.getBoolean("clear-bottom-inventory", false)
 
-            return@withContext PouchPreviewMenuSettings(
-                invSettings,
-                clearBottomInventory,
-                rewardSlots,
-            )
-        }
+        return PouchPreviewMenuSettings(
+            invSettings,
+            clearBottomInventory,
+            rewardSlots,
+        )
+    }
 
-    suspend fun loadPouchAnimationSettings(section: ConfigurationSection?): PouchAnimationSettings =
-        withContext(Dispatchers.IO) {
-            if (section == null) return@withContext PouchInstantAnimationSettings(
-                TreeMap(),
-                0,
-                0,
-                TreeMap(),
-                0,
-                TreeMap(),
-                ArrayList(),
-                false,
-            )
+    fun loadPouchAnimationSettings(section: ConfigurationSection?): PouchAnimationSettings {
+        if (section == null) return PouchInstantAnimationSettings(
+            TreeMap(),
+            0,
+            0,
+            TreeMap(),
+            0,
+            TreeMap(),
+            ArrayList(),
+            false,
+        )
 
-            val type = section.getString("type", "instant")!!
+        val type = section.getString("type", "instant")!!
 
-            when (type.lowercase()) {
-                "instant" -> {
-                    return@withContext loadInstantAnimationSettings(section)
-                }
-                "regular" -> {
-                    return@withContext loadRegularAnimationSettings(section)
-                }
+        when (type.lowercase()) {
+            "instant" -> {
+                return loadInstantAnimationSettings(section)
+            }
 
-                else -> {
-                    return@withContext loadInstantAnimationSettings(section)
-                }
+            "regular" -> {
+                return loadRegularAnimationSettings(section)
+            }
+
+            else -> {
+                return loadInstantAnimationSettings(section)
             }
         }
+    }
 
-    suspend fun loadInstantAnimationSettings(section: ConfigurationSection): PouchInstantAnimationSettings =
-        withContext(Dispatchers.IO) {
-            val animationTasks = loadAnimationTasks(section.getConfigurationSection("tasks")!!)
-            val animationLength = section.getInt("animation.length", 0)
-            val preAnimationTasks = loadAnimationTasks(section.getConfigurationSection("pre-animation.tasks")!!)
-            val preAnimationDelay = section.getInt("pre-animation.delay", 0)
-            val postAnimationTasks = loadAnimationTasks(section.getConfigurationSection("post-animation.tasks")!!)
-            val postAnimationDelay = section.getInt("post-animation.delay", 0)
-            val finalAnimationTasks =
-                ActionSerializer.fromSections<Animation>(section.getSectionList("final-tasks")).toMutableList()
-            val skippable = section.getBoolean("skippable", false)
+    fun loadInstantAnimationSettings(section: ConfigurationSection): PouchInstantAnimationSettings {
+        val animationTasks = loadAnimationTasks(section.getConfigurationSection("tasks")!!)
+        val animationLength = section.getInt("animation.length", 0)
+        val preAnimationTasks = loadAnimationTasks(section.getConfigurationSection("pre-animation.tasks")!!)
+        val preAnimationDelay = section.getInt("pre-animation.delay", 0)
+        val postAnimationTasks = loadAnimationTasks(section.getConfigurationSection("post-animation.tasks")!!)
+        val postAnimationDelay = section.getInt("post-animation.delay", 0)
+        val finalAnimationTasks =
+            ActionSerializer.fromSections<Animation>(section.getSectionList("final-tasks")).toMutableList()
+        val skippable = section.getBoolean("skippable", false)
 
-            PouchInstantAnimationSettings(
-                animationTasks,
-                animationLength,
-                preAnimationDelay,
-                preAnimationTasks,
-                postAnimationDelay,
-                postAnimationTasks,
-                finalAnimationTasks,
-                skippable,
-            )
-        }
-    suspend fun loadRegularAnimationSettings(section: ConfigurationSection): PouchRegularAnimationSettings =
-        withContext(Dispatchers.IO) {
-            val animationTasks = loadAnimationTasks(section.getConfigurationSection("tasks"))
-            val animationLength = section.getInt("length", 0)
-            val preAnimationTasks = loadAnimationTasks(section.getConfigurationSection("pre-animation.tasks"))
-            val preAnimationDelay = section.getInt("pre-animation.delay", 0)
-            val postAnimationTasks = loadAnimationTasks(section.getConfigurationSection("post-animation.tasks"))
-            val postAnimationDelay = section.getInt("post-animation.delay", 0)
-            val finalAnimationTasks =
-                ActionSerializer.fromSections<Animation>(section.getSectionList("final-tasks")).toMutableList()
-            val skippable = section.getBoolean("skippable", false)
-            val personal = section.getBoolean("personal", false)
+        return PouchInstantAnimationSettings(
+            animationTasks,
+            animationLength,
+            preAnimationDelay,
+            preAnimationTasks,
+            postAnimationDelay,
+            postAnimationTasks,
+            finalAnimationTasks,
+            skippable,
+        )
+    }
 
-            PouchRegularAnimationSettings(
-                animationTasks,
-                animationLength,
-                preAnimationDelay,
-                preAnimationTasks,
-                postAnimationDelay,
-                postAnimationTasks,
-                finalAnimationTasks,
-                skippable,
-                personal
-            )
-        }
+    fun loadRegularAnimationSettings(section: ConfigurationSection): PouchRegularAnimationSettings {
+        val animationTasks = loadAnimationTasks(section.getConfigurationSection("tasks"))
+        val animationLength = section.getInt("length", 0)
+        val preAnimationTasks = loadAnimationTasks(section.getConfigurationSection("pre-animation.tasks"))
+        val preAnimationDelay = section.getInt("pre-animation.delay", 0)
+        val postAnimationTasks = loadAnimationTasks(section.getConfigurationSection("post-animation.tasks"))
+        val postAnimationDelay = section.getInt("post-animation.delay", 0)
+        val finalAnimationTasks =
+            ActionSerializer.fromSections<Animation>(section.getSectionList("final-tasks")).toMutableList()
+        val skippable = section.getBoolean("skippable", false)
+        val personal = section.getBoolean("personal", false)
+
+        return PouchRegularAnimationSettings(
+            animationTasks,
+            animationLength,
+            preAnimationDelay,
+            preAnimationTasks,
+            postAnimationDelay,
+            postAnimationTasks,
+            finalAnimationTasks,
+            skippable,
+            personal
+        )
+    }
 }

@@ -5,14 +5,12 @@ import gg.aquatic.aquaticcrates.api.reward.Reward
 import gg.aquatic.aquaticcrates.plugin.CratesPlugin
 import gg.aquatic.aquaticcrates.plugin.crate.BasicCrate
 import gg.aquatic.aquaticseries.lib.util.Config
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import org.bukkit.configuration.ConfigurationSection
 import java.io.File
 
 object CrateSerializer {
 
-    suspend fun loadCrates(): HashMap<String, Crate> = withContext(Dispatchers.IO) {
+    fun loadCrates(): HashMap<String, Crate> {
         CratesPlugin.INSTANCE.dataFolder.mkdirs()
         val crates = HashMap<String, Crate>()
 
@@ -21,10 +19,10 @@ object CrateSerializer {
 
         crates += loadBasicCrates(basicFolder)
 
-        return@withContext crates
+        return crates
     }
 
-    suspend fun loadBasicCrates(folder: File): HashMap<String, BasicCrate> = withContext(Dispatchers.IO) {
+    fun loadBasicCrates(folder: File): HashMap<String, BasicCrate> {
         val crates = HashMap<String, BasicCrate>()
         for (file in folder.listFiles()!!) {
             if (file.isDirectory) {
@@ -34,24 +32,24 @@ object CrateSerializer {
             val c = loadBasicCrate(file) ?: continue
             crates[c.identifier] = c
         }
-        return@withContext crates
+        return crates
     }
-    suspend fun loadBasicCrate(file: File): BasicCrate? = withContext(Dispatchers.IO) {
+    fun loadBasicCrate(file: File): BasicCrate? {
         val identifier = file.nameWithoutExtension
         val config = Config(file, CratesPlugin.INSTANCE)
         config.load()
         val cfg = config.getConfiguration()
 
-        null
+        return null
     }
 
-    private suspend fun loadRewards(): HashMap<String, Reward> = withContext(Dispatchers.IO) {
+    private fun loadRewards(): HashMap<String, Reward>  {
         val rewards = HashMap<String, Reward>()
-        return@withContext rewards
+        return rewards
     }
 
-    private suspend fun loadReward(section: ConfigurationSection): Reward? = withContext(Dispatchers.IO) {
-        return@withContext null
+    private fun loadReward(section: ConfigurationSection): Reward? {
+        return null
     }
 
 }

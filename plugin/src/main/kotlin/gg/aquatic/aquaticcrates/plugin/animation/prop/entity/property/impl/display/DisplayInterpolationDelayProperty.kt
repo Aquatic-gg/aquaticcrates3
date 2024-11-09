@@ -16,7 +16,7 @@ class DisplayInterpolationDelayProperty(
     }
 
     object Serializer : EntityPropertySerializer {
-        override suspend fun load(section: ConfigurationSection): EntityProperty {
+        override fun load(section: ConfigurationSection): EntityProperty {
             val delay = section.getInt("interpolation-delay", 0)
             return DisplayInterpolationDelayProperty(delay)
         }

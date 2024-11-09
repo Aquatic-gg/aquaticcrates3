@@ -13,7 +13,7 @@ class TextDisplaySeeThroughProperty(val isSeeThrough: Boolean): EntityProperty {
     }
 
     object Serializer: EntityPropertySerializer {
-        override suspend fun load(section: ConfigurationSection): EntityProperty {
+        override fun load(section: ConfigurationSection): EntityProperty {
             return TextDisplaySeeThroughProperty(section.getBoolean("see-through", false))
         }
 

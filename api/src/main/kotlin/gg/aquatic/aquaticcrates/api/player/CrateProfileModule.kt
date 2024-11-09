@@ -12,7 +12,7 @@ object CrateProfileModule: ProfileModule {
 
     }
 
-    override suspend fun loadEntry(player: AquaticPlayer): ProfileModuleEntry {
+    override fun loadEntry(player: AquaticPlayer): ProfileModuleEntry {
         return CrateProfileEntry(
             player
         )

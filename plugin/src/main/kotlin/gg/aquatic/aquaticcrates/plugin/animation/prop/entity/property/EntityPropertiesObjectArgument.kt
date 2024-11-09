@@ -22,7 +22,7 @@ class EntityPropertiesObjectArgument(
 ) : AquaticObjectArgument<List<EntityProperty>>(id, defaultValue, required) {
     override val serializer: AbstractObjectArgumentSerializer<List<EntityProperty>?> = Serializer
 
-    override suspend fun load(section: ConfigurationSection): List<EntityProperty>? {
+    override fun load(section: ConfigurationSection): List<EntityProperty>? {
         return serializer.load(section, id)
     }
 
@@ -47,7 +47,7 @@ class EntityPropertiesObjectArgument(
 
         )
 
-        override suspend fun load(section: ConfigurationSection, id: String): List<EntityProperty> {
+        override fun load(section: ConfigurationSection, id: String): List<EntityProperty> {
             val properties = mutableListOf<EntityProperty>()
             val s = section.getConfigurationSection(id) ?: return properties
             for ((key, factory) in factories) {

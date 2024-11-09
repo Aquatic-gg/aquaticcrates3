@@ -19,7 +19,7 @@ class TextDisplayBackgroundProperty(
     }
 
     object Serializer: EntityPropertySerializer {
-        override suspend fun load(section: ConfigurationSection): EntityProperty {
+        override fun load(section: ConfigurationSection): EntityProperty {
             val bgSection = section.getConfigurationSection("background") ?: return TextDisplayBackgroundProperty(true, null)
             val isDefaultBackground = bgSection.getBoolean("is-default-background", true)
 

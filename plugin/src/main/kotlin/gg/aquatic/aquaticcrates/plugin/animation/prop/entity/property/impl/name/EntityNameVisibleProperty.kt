@@ -14,7 +14,7 @@ class EntityNameVisibleProperty(
     }
 
     object Serializer : EntityPropertySerializer {
-        override suspend fun load(section: ConfigurationSection): EntityProperty {
+        override fun load(section: ConfigurationSection): EntityProperty {
             return EntityNameVisibleProperty(section.getBoolean("display-name-visible", false))
         }
     }

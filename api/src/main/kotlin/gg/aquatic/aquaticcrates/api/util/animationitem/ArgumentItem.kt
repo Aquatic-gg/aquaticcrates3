@@ -2,8 +2,8 @@ package gg.aquatic.aquaticcrates.api.util.animationitem
 
 import gg.aquatic.aquaticcrates.api.animation.Animation
 import gg.aquatic.waves.item.AquaticItem
+import gg.aquatic.waves.item.loadFromYml
 import gg.aquatic.waves.item.toCustomItem
-import gg.aquatic.waves.util.loadFromYml
 import org.bukkit.Material
 import org.bukkit.configuration.ConfigurationSection
 
@@ -22,7 +22,7 @@ class ArgumentItem(
     }
 
     companion object {
-        suspend fun loadFromYml(section: ConfigurationSection?): ArgumentItem {
+        fun loadFromYml(section: ConfigurationSection?): ArgumentItem {
             val type = section?.getString("type") ?: "regular"
             val baseItem = AquaticItem.loadFromYml(section)
             return ArgumentItem(type, baseItem)
