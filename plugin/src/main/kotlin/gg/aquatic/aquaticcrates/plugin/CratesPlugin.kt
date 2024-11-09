@@ -18,8 +18,9 @@ import gg.aquatic.waves.registry.WavesRegistry
 import gg.aquatic.waves.registry.registerAction
 import org.bukkit.event.player.PlayerJoinEvent
 import java.io.File
+import java.util.concurrent.CompletableFuture
 
-class CratesPlugin: AbstractCratesPlugin() {
+class CratesPlugin : AbstractCratesPlugin() {
 
     companion object {
         val INSTANCE: AbstractCratesPlugin
@@ -32,8 +33,12 @@ class CratesPlugin: AbstractCratesPlugin() {
         AbstractCratesPlugin.INSTANCE = this
     }
 
+    var loading = true
+        private set
+
     override fun onEnable() {
         registerObjects()
+        ProfilesModule.registerModule(CrateProfileModule)
         load()
 
         event<PlayerJoinEvent> {
@@ -46,7 +51,7 @@ class CratesPlugin: AbstractCratesPlugin() {
     }
 
     private fun startTicker() {
-        runSyncTimer(1,1) {
+        runSyncTimer(1, 1) {
             for (value in CrateHandler.pouches.values) {
                 value.animationManager.tick()
             }
@@ -55,14 +60,17 @@ class CratesPlugin: AbstractCratesPlugin() {
         }
     }
 
-    private fun load() {
-        ProfilesModule.registerModule(CrateProfileModule)
-
+    private fun load(): CompletableFuture<Void> {
+        val future = CompletableFuture<Void>()
+        loading = true
         runAsync {
-            val pouchFile = File(dataFolder,"pouches")
+            val pouchFile = File(dataFolder, "pouches")
             pouchFile.mkdirs()
             CrateHandler.pouches += PouchSerializer.loadPouches(pouchFile)
+            future.complete(null)
+            loading = false
         }
+        return future
     }
 
     private fun registerObjects() {
