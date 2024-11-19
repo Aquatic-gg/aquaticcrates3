@@ -1,4 +1,4 @@
-package gg.aquatic.aquaticcrates.plugin.crate.interact
+package gg.aquatic.aquaticcrates.plugin.crate
 
 import gg.aquatic.aquaticcrates.api.crate.Crate
 import gg.aquatic.aquaticcrates.api.crate.CrateInteractHandler
