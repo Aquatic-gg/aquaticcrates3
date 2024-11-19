@@ -57,7 +57,7 @@ abstract class Pouch(
             val location = if (originalEvent is PlayerInteractEvent) {
                 originalEvent.clickedBlock?.location ?: originalEvent.player.location
             } else return@register
-            interactHandler.handleInteract(it.player, it.isLeftClick, location)
+            interactHandler.handleInteract(it.player, it.isLeftClick, location, null)
             it.isCancelled = true
         }
     }

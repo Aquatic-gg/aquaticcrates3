@@ -38,10 +38,7 @@ tasks.withType<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar> {
     archiveFileName.set("AquaticCrates-${project.version}.jar")
     archiveClassifier.set("all")
 
-    dependencies {
-        include(project(":api"))
-    }
-
-    // Relocate packages
-    relocate("kotlinx.coroutines", "gg.aquatic.waves.shadow.kotlinx.coroutines")
+    exclude("kotlin/**")
+    exclude("org/**")
+    relocate("kotlin", "gg.aquatic.waves.shadow.kotlin")
 }

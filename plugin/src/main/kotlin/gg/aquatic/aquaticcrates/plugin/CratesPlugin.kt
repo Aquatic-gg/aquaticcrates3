@@ -2,6 +2,7 @@ package gg.aquatic.aquaticcrates.plugin
 
 import gg.aquatic.aquaticcrates.api.AbstractCratesPlugin
 import gg.aquatic.aquaticcrates.api.crate.CrateHandler
+import gg.aquatic.aquaticcrates.api.crate.OpenableCrate
 import gg.aquatic.aquaticcrates.api.player.CrateProfileModule
 import gg.aquatic.aquaticcrates.plugin.animation.action.SetBlockAction
 import gg.aquatic.aquaticcrates.plugin.animation.action.bossbar.*
@@ -11,6 +12,7 @@ import gg.aquatic.aquaticcrates.plugin.animation.action.model.HideModelAction
 import gg.aquatic.aquaticcrates.plugin.animation.action.model.PlayModelAnimationAction
 import gg.aquatic.aquaticcrates.plugin.animation.action.model.ShowModelAction
 import gg.aquatic.aquaticcrates.plugin.animation.action.path.LinearPathAction
+import gg.aquatic.aquaticcrates.plugin.crate.BasicCrate
 import gg.aquatic.aquaticcrates.plugin.serialize.PouchSerializer
 import gg.aquatic.aquaticseries.lib.util.*
 import gg.aquatic.waves.profile.ProfilesModule
@@ -42,9 +44,17 @@ class CratesPlugin : AbstractCratesPlugin() {
         load()
 
         event<PlayerJoinEvent> {
+            /*
             for (value in CrateHandler.pouches.values) {
                 value.giveItem(1, it.player)
                 it.player.sendMessage("You have been given ${value.identifier} pouch!")
+            }
+             */
+            for (value in CrateHandler.crates.values) {
+                if (value is BasicCrate) {
+                    value.crateItem.giveItem(it.player)
+                    it.player.sendMessage("You have been given ${value.identifier} crate!")
+                }
             }
         }
         startTicker()
@@ -52,10 +62,10 @@ class CratesPlugin : AbstractCratesPlugin() {
 
     private fun startTicker() {
         runSyncTimer(1, 1) {
-            for (value in CrateHandler.pouches.values) {
-                value.animationManager.tick()
-            }
             for (value in CrateHandler.crates.values) {
+                if (value is BasicCrate) {
+                    value.animationManager.tick()
+                }
             }
         }
     }

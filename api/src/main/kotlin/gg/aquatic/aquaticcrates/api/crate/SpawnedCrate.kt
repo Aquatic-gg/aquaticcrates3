@@ -1,5 +1,6 @@
 package gg.aquatic.aquaticcrates.api.crate
 
+import gg.aquatic.aquaticseries.lib.audience.GlobalAudience
 import org.bukkit.Location
 
 class SpawnedCrate(
@@ -7,5 +8,9 @@ class SpawnedCrate(
     val location: Location
 ) {
 
-    val spawnedInteractable = crate.interactable.spawn(location, register = false, canInteract = true)
+    val spawnedInteractables = crate.interactable.map {
+        it.build(location, GlobalAudience()) { e ->
+            crate.interactHandler.handleInteract(e.player, e.isLeft, location, this)
+        }
+    }
 }

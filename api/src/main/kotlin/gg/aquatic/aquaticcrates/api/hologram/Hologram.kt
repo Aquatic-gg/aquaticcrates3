@@ -4,29 +4,17 @@ import gg.aquatic.aquaticseries.lib.audience.AquaticAudience
 import org.bukkit.Location
 import java.util.function.Consumer
 
-abstract class Hologram {
+abstract class Hologram(
+    var location: Location
+) {
 
-    private var location: Location? = null
-
-    fun Hologram(location: Location?) {
-        this.location = location
-    }
-
-    abstract fun move(location: Location?)
+    abstract fun move(location: Location)
 
     abstract fun despawn()
 
-    abstract fun spawn(audience: AquaticAudience?, consumer: Consumer<List<String?>?>?)
+    abstract fun spawn(audience: AquaticAudience, consumer: Consumer<List<String>>)
 
-    abstract fun update(consumer: Consumer<List<String?>?>?)
+    abstract fun update(consumer: Consumer<List<String>>)
 
-
-    fun getLocation(): Location? {
-        return location
-    }
-
-    fun setLocation(location: Location?) {
-        this.location = location
-    }
 
 }
