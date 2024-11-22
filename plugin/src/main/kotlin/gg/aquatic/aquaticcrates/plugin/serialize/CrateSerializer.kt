@@ -3,12 +3,17 @@ package gg.aquatic.aquaticcrates.plugin.serialize
 import gg.aquatic.aquaticcrates.api.crate.Crate
 import gg.aquatic.aquaticcrates.api.reward.Reward
 import gg.aquatic.aquaticcrates.plugin.CratesPlugin
+import gg.aquatic.aquaticcrates.plugin.animation.crate.settings.InstantAnimationSettings
 import gg.aquatic.aquaticcrates.plugin.crate.BasicCrate
 import gg.aquatic.aquaticseries.lib.util.Config
 import org.bukkit.configuration.ConfigurationSection
 import java.io.File
 
 object CrateSerializer {
+
+    val animationSerializers = hashMapOf(
+        "instant" to InstantAnimationSettings.Companion
+    )
 
     fun loadCrates(): HashMap<String, Crate> {
         CratesPlugin.INSTANCE.dataFolder.mkdirs()
