@@ -1,6 +1,5 @@
-package gg.aquatic.aquaticcrates.plugin.hologram
+package gg.aquatic.aquaticcrates.api.hologram
 
-import gg.aquatic.aquaticcrates.api.hologram.Hologram
 import gg.aquatic.aquaticseries.lib.audience.AquaticAudience
 import gg.aquatic.aquaticseries.lib.audience.GlobalAudience
 import gg.aquatic.aquaticseries.lib.betterhologram.AquaticHologram

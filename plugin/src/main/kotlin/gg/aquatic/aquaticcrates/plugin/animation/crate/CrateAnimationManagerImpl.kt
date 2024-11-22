@@ -33,10 +33,10 @@ class CrateAnimationManagerImpl(
     }
 
     override fun skipAnimation(player: Player) {
-        TODO("Not yet implemented")
+
     }
 
     override fun forceStopAnimation(player: Player) {
-        TODO("Not yet implemented")
+
     }
 }

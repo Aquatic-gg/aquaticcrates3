@@ -11,6 +11,6 @@ class AquaticHologramSettings(
 ): HologramSettings {
 
     override fun create(location: Location): Hologram {
-        TODO("Not yet implemented")
+        return AHologram(location.clone(), this)
     }
 }

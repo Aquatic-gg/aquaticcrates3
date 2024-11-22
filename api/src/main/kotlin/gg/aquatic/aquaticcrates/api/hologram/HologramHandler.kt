@@ -1,4 +1,4 @@
-package gg.aquatic.aquaticcrates.plugin.hologram
+package gg.aquatic.aquaticcrates.api.hologram
 
 import gg.aquatic.aquaticseries.lib.betterhologram.AquaticHologram
 

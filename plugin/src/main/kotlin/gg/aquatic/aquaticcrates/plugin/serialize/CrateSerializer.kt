@@ -5,6 +5,7 @@ import gg.aquatic.aquaticcrates.api.reward.Reward
 import gg.aquatic.aquaticcrates.plugin.CratesPlugin
 import gg.aquatic.aquaticcrates.plugin.animation.crate.settings.InstantAnimationSettings
 import gg.aquatic.aquaticcrates.plugin.crate.BasicCrate
+import gg.aquatic.aquaticcrates.plugin.hologram.HologramSerializer
 import gg.aquatic.aquaticseries.lib.util.Config
 import org.bukkit.configuration.ConfigurationSection
 import java.io.File
@@ -43,7 +44,13 @@ object CrateSerializer {
         val identifier = file.nameWithoutExtension
         val config = Config(file, CratesPlugin.INSTANCE)
         config.load()
-        val cfg = config.getConfiguration()
+        val cfg = config.getConfiguration()!!
+
+        BasicCrate(
+            identifier,
+            cfg.getString("display-name") ?: identifier,
+            HologramSerializer.loadAquaticHologram(cfg.getConfigurationSection("hologram")),
+        )
 
         return null
     }
