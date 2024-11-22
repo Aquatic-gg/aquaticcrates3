@@ -1,5 +1,6 @@
 package gg.aquatic.aquaticcrates.api.crate
 
+import gg.aquatic.aquaticcrates.api.animation.crate.CrateAnimationManager
 import gg.aquatic.aquaticcrates.api.openprice.OpenPriceGroup
 import gg.aquatic.aquaticcrates.api.player.HistoryHandler
 import gg.aquatic.aquaticcrates.api.reward.Reward
@@ -13,6 +14,7 @@ abstract class OpenableCrate : Crate(), Rewardable {
     abstract val key: Key
     abstract val openRequirements: MutableList<ConfiguredRequirement<Player>>
     abstract val openPriceGroups: MutableList<OpenPriceGroup>
+    abstract val animationManager: CrateAnimationManager
     //abstract val skipAnimationWhileSneaking: Boolean
 
     abstract fun canBeOpened(player: Player): Boolean

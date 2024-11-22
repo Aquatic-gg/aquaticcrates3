@@ -6,9 +6,7 @@ import gg.aquatic.aquaticcrates.api.crate.CrateInteractHandler
 import gg.aquatic.aquaticcrates.api.crate.Key
 import gg.aquatic.aquaticcrates.api.crate.OpenableCrate
 import gg.aquatic.aquaticcrates.api.hologram.HologramSettings
-import gg.aquatic.aquaticcrates.api.milestone.MilestoneManager
 import gg.aquatic.aquaticcrates.api.openprice.OpenPriceGroup
-import gg.aquatic.aquaticcrates.api.reroll.RerollManager
 import gg.aquatic.aquaticcrates.api.reward.RewardManager
 import gg.aquatic.aquaticseries.lib.requirement.ConfiguredRequirement
 import gg.aquatic.waves.interactable.settings.InteractableSettings
@@ -25,20 +23,15 @@ class BasicCrate(
     override val displayName: String,
     override val hologramSettings: HologramSettings,
     override val interactable: List<InteractableSettings>,
-    //override val rewards: HashMap<String, Reward>,
     override val openRequirements: MutableList<ConfiguredRequirement<Player>>,
-    //override val skipAnimationWhileSneaking: Boolean,
     override val openPriceGroups: MutableList<OpenPriceGroup>,
     animationManager: (BasicCrate) -> CrateAnimationManager,
-    val milestoneManager: MilestoneManager,
-    rerollManager: (BasicCrate) -> RerollManager,
     key: (BasicCrate) -> Key,
     rewardManager: (BasicCrate) -> RewardManager,
 ) : OpenableCrate() {
 
     override val rewardManager: RewardManager = rewardManager(this)
-    val animationManager = animationManager(this)
-    val rerollManager = rerollManager(this)
+    override val animationManager = animationManager(this)
 
     val crateItem = AquaticItem(
         ItemStack(

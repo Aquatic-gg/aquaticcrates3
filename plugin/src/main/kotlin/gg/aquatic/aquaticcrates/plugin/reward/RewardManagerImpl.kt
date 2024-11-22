@@ -1,6 +1,7 @@
 package gg.aquatic.aquaticcrates.plugin.reward
 
 import gg.aquatic.aquaticcrates.api.crate.OpenableCrate
+import gg.aquatic.aquaticcrates.api.milestone.MilestoneManager
 import gg.aquatic.aquaticcrates.api.player.HistoryHandler
 import gg.aquatic.aquaticcrates.api.reward.Reward
 import gg.aquatic.aquaticcrates.api.reward.RewardAmountRange
@@ -13,8 +14,11 @@ import org.bukkit.entity.Player
 class RewardManagerImpl(
     val crate: OpenableCrate,
     val possibleRewardRanges: MutableList<RewardAmountRange>,
+    milestoneManager: (OpenableCrate) -> MilestoneManager,
     override val rewards: HashMap<String, Reward>
 ) : RewardManager() {
+
+    override val milestoneManager = milestoneManager(crate)
     override fun getRewards(player: Player): MutableList<RolledReward> {
         val rolledRewards = mutableListOf<RolledReward>()
 

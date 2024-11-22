@@ -8,39 +8,28 @@ import gg.aquatic.aquaticcrates.api.crate.Crate
 import gg.aquatic.aquaticcrates.api.crate.SpawnedCrate
 import gg.aquatic.aquaticcrates.api.animation.SpawnedRewardVisual
 import gg.aquatic.aquaticcrates.api.animation.crate.CrateAnimationSettings
+import gg.aquatic.aquaticcrates.api.crate.OpenableCrate
+import gg.aquatic.aquaticcrates.api.reroll.RerollManager
+import gg.aquatic.aquaticcrates.plugin.crate.BasicCrate
 import gg.aquatic.aquaticseries.lib.action.ConfiguredAction
 import org.bukkit.entity.Player
 import java.util.*
 import kotlin.collections.HashMap
 
 class CrateAnimationManagerImpl(
-    override val crate: Crate,
+    override val crate: OpenableCrate,
     override val animationSettings: CrateAnimationSettings,
+    rerollManager: (OpenableCrate) -> RerollManager,
 ) : CrateAnimationManager() {
-    override val spawnedRewardVisuals: MutableList<SpawnedRewardVisual> = mutableListOf()
-    override val playingAnimations: HashMap<UUID, CrateAnimation> = hashMapOf()
+    override val rerollManager = rerollManager(crate)
+    override val playingAnimations: HashMap<UUID, MutableList<CrateAnimation>> = hashMapOf()
 
-    override fun open(player: Player, spawnedCrate: SpawnedCrate?) {
-        spawnedCrate?.apply {
-            val interactable = this.spawnedInteractable
-            // TODO: Play crate animation
+    override fun tick() {
+        for ((_, animations) in playingAnimations) {
+            for (animation in animations) {
+                animation.tick()
+            }
         }
-    }
-
-    override fun playAnimationTask(time: Int, animation: CrateAnimation) {
-        TODO("Not yet implemented")
-    }
-
-    override fun shouldStopAnimation(time: Int, animation: CrateAnimation): Boolean {
-        TODO("Not yet implemented")
-    }
-
-    override fun canBeOpened(player: Player): Boolean {
-        TODO("Not yet implemented")
-    }
-
-    override fun isAnyoneOpening(): Boolean {
-        TODO("Not yet implemented")
     }
 
     override fun skipAnimation(player: Player) {
