@@ -14,13 +14,11 @@ import gg.aquatic.aquaticcrates.plugin.animation.action.model.ShowModelAction
 import gg.aquatic.aquaticcrates.plugin.animation.action.path.LinearPathAction
 import gg.aquatic.aquaticcrates.plugin.crate.BasicCrate
 import gg.aquatic.aquaticcrates.plugin.serialize.CrateSerializer
-import gg.aquatic.aquaticcrates.plugin.serialize.PouchSerializer
 import gg.aquatic.aquaticseries.lib.util.*
 import gg.aquatic.waves.profile.ProfilesModule
 import gg.aquatic.waves.registry.WavesRegistry
 import gg.aquatic.waves.registry.registerAction
 import org.bukkit.event.player.PlayerJoinEvent
-import java.io.File
 import java.util.concurrent.CompletableFuture
 
 class CratesPlugin : AbstractCratesPlugin() {
@@ -45,15 +43,10 @@ class CratesPlugin : AbstractCratesPlugin() {
         load()
 
         event<PlayerJoinEvent> {
-            /*
-            for (value in CrateHandler.pouches.values) {
-                value.giveItem(1, it.player)
-                it.player.sendMessage("You have been given ${value.identifier} pouch!")
-            }
-             */
             for (value in CrateHandler.crates.values) {
                 if (value is BasicCrate) {
                     value.crateItem.giveItem(it.player)
+                    value.key.giveItem(1, it.player)
                     it.player.sendMessage("You have been given ${value.identifier} crate!")
                 }
             }
