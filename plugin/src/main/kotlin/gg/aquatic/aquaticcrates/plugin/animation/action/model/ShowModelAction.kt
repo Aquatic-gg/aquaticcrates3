@@ -14,6 +14,7 @@ import org.bukkit.util.Vector
 import java.util.function.BiFunction
 
 class ShowModelAction : AbstractAction<Animation>() {
+    @Suppress("UNCHECKED_CAST")
     override fun run(binder: Animation, args: Map<String, Any?>, textUpdater: BiFunction<Animation, String, String>) {
         val id = args["id"] as String
         val model = args["model"] as String

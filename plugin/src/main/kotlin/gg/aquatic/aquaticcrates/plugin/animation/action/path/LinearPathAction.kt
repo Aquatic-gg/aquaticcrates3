@@ -10,6 +10,7 @@ import java.util.*
 import java.util.function.BiFunction
 
 class LinearPathAction: AbstractAction<Animation>() {
+    @Suppress("UNCHECKED_CAST")
     override fun run(binder: Animation, args: Map<String, Any?>, textUpdater: BiFunction<Animation, String, String>) {
         val id = args["id"] as String
         val points = args["points"] as TreeMap<Int, PathPoint>

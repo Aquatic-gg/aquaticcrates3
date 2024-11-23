@@ -12,6 +12,7 @@ import gg.aquatic.aquaticseries.lib.util.runAsync
 import java.util.function.BiFunction
 
 class UpdateEntityPropertiesAction : AbstractAction<Animation>() {
+    @Suppress("UNCHECKED_CAST")
     override fun run(binder: Animation, args: Map<String, Any?>, textUpdater: BiFunction<Animation, String, String>) {
         val id = args["id"] as String
         val properties = args["properties"] as List<EntityProperty>
