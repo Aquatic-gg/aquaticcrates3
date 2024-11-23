@@ -1,7 +1,7 @@
 package gg.aquatic.aquaticcrates.api.crate
 
 import gg.aquatic.aquaticcrates.api.hologram.HologramSettings
-import gg.aquatic.aquaticseries.lib.interactable2.AbstractInteractable
+import gg.aquatic.aquaticcrates.api.interaction.crate.CrateInteractHandler
 import gg.aquatic.waves.interactable.settings.InteractableSettings
 
 abstract class Crate {

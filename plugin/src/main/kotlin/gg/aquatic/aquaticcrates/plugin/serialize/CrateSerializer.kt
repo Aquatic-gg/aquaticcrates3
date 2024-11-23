@@ -18,6 +18,7 @@ import gg.aquatic.aquaticcrates.plugin.reward.RewardManagerImpl
 import gg.aquatic.aquaticseries.lib.util.Config
 import gg.aquatic.aquaticseries.lib.util.getSectionList
 import gg.aquatic.waves.item.AquaticItem
+import gg.aquatic.waves.item.AquaticItemInteractEvent
 import gg.aquatic.waves.item.loadFromYml
 import gg.aquatic.waves.registry.serializer.InteractableSerializer
 import gg.aquatic.waves.registry.serializer.RequirementSerializer
@@ -96,7 +97,8 @@ object CrateSerializer : BaseSerializer() {
             ) { key ->
                 KeyInteractHandlerImpl(
                     cfg.getBoolean("key.requires-crate-to-open"),
-                    key
+                    key,
+                    EnumMap(AquaticItemInteractEvent.InteractType::class.java)
                 )
             }
         }

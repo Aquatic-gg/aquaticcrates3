@@ -1,8 +1,9 @@
 package gg.aquatic.aquaticcrates.plugin.crate
 
+import com.google.common.collect.EnumHashBiMap
 import gg.aquatic.aquaticcrates.api.animation.crate.CrateAnimationManager
 import gg.aquatic.aquaticcrates.api.crate.CrateHandler
-import gg.aquatic.aquaticcrates.api.crate.CrateInteractHandler
+import gg.aquatic.aquaticcrates.api.interaction.crate.CrateInteractHandler
 import gg.aquatic.aquaticcrates.api.crate.Key
 import gg.aquatic.aquaticcrates.api.crate.OpenableCrate
 import gg.aquatic.aquaticcrates.api.hologram.HologramSettings
@@ -11,12 +12,14 @@ import gg.aquatic.aquaticcrates.api.reward.RewardManager
 import gg.aquatic.aquaticseries.lib.requirement.ConfiguredRequirement
 import gg.aquatic.waves.interactable.settings.InteractableSettings
 import gg.aquatic.waves.item.AquaticItem
+import gg.aquatic.waves.item.AquaticItemInteractEvent
 import gg.aquatic.waves.item.modifyFastMeta
 import gg.aquatic.waves.registry.register
 import net.kyori.adventure.text.Component
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.ItemStack
+import java.util.*
 
 class BasicCrate(
     override val identifier: String,
@@ -64,6 +67,6 @@ class BasicCrate(
         return true
     }
 
-    override var interactHandler: CrateInteractHandler = BasicCrateInteractHandler(this)
+    override var interactHandler: CrateInteractHandler = BasicCrateInteractHandler(this, EnumMap(AquaticItemInteractEvent.InteractType::class.java))
 
 }
