@@ -64,6 +64,7 @@ class PouchPreviewMenu(
             addComponent(airButton)
         }
 
+        /*
         val rewards = pouch.getPossibleRewards(player).values
         for ((index, rewardSlot) in pouch.previewMenuSettings.rewardSlots.withIndex()) {
             val rewardIndex = page * pouch.previewMenuSettings.rewardSlots.size + index
@@ -86,5 +87,6 @@ class PouchPreviewMenu(
             )
             addComponent(button)
         }
+         */
     }
 }

@@ -38,7 +38,7 @@ object CrateSerializer : BaseSerializer() {
         CratesPlugin.INSTANCE.dataFolder.mkdirs()
         val crates = HashMap<String, Crate>()
 
-        val basicFolder = File(CratesPlugin.INSTANCE.dataFolder, "regularcrates")
+        val basicFolder = File(CratesPlugin.INSTANCE.dataFolder, "crates")
         basicFolder.mkdirs()
 
         crates += loadBasicCrates(basicFolder)

@@ -15,6 +15,7 @@ class AHologram(
 
 
     var lines: MutableList<AquaticHologram.Line> = settings.lines.toMutableList()
+        private set
 
     private var audience: AquaticAudience = GlobalAudience()
 

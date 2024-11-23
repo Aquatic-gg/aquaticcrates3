@@ -13,6 +13,7 @@ import gg.aquatic.aquaticcrates.plugin.animation.action.model.PlayModelAnimation
 import gg.aquatic.aquaticcrates.plugin.animation.action.model.ShowModelAction
 import gg.aquatic.aquaticcrates.plugin.animation.action.path.LinearPathAction
 import gg.aquatic.aquaticcrates.plugin.crate.BasicCrate
+import gg.aquatic.aquaticcrates.plugin.serialize.CrateSerializer
 import gg.aquatic.aquaticcrates.plugin.serialize.PouchSerializer
 import gg.aquatic.aquaticseries.lib.util.*
 import gg.aquatic.waves.profile.ProfilesModule
@@ -74,9 +75,7 @@ class CratesPlugin : AbstractCratesPlugin() {
         val future = CompletableFuture<Void>()
         loading = true
         runAsync {
-            val pouchFile = File(dataFolder, "pouches")
-            pouchFile.mkdirs()
-            CrateHandler.pouches += PouchSerializer.loadPouches(pouchFile)
+            CrateHandler.crates += CrateSerializer.loadCrates()
             future.complete(null)
             loading = false
         }

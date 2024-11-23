@@ -8,7 +8,7 @@ class SpawnedCrate(
     val location: Location
 ) {
 
-    val spawnedInteractables = crate.interactable.map {
+    val spawnedInteractables = crate.interactables.map {
         it.build(location, GlobalAudience()) { e ->
             crate.interactHandler.handleInteract(e.player, e.isLeft, location, this)
         }

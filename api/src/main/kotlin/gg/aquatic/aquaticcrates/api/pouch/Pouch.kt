@@ -62,6 +62,7 @@ abstract class Pouch(
         }
     }
 
+    /*
     override fun getPossibleRewards(player: Player): HashMap<String, Reward> {
         val finalRewards = HashMap<String, Reward>()
         for ((id, reward) in rewards) {
@@ -88,6 +89,7 @@ abstract class Pouch(
 
         return finalRewards
     }
+     */
 
     open fun tryOpen(player: Player, interactionLocation: Location) {
         if (!canBeOpened(player)) return

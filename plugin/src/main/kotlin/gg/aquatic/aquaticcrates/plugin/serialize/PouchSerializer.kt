@@ -74,7 +74,7 @@ object PouchSerializer : BaseSerializer() {
         val possibleRewardRanges = loadRewardRanges(cfg.getSectionList("possible-rewards"))
         val rewards = loadRewards(rewardSection)
         val previewSettings = loadPouchPreviewMenuSettings(cfg)
-
+        /*
         return RewardPouch(
             id,
             item,
@@ -88,6 +88,8 @@ object PouchSerializer : BaseSerializer() {
             previewSettings,
             PouchMilestoneManager(TreeMap(), TreeMap())
         )
+         */
+        return null
     }
 
     private fun loadPouchPreviewMenuSettings(cfg: FileConfiguration): PouchPreviewMenuSettings {
