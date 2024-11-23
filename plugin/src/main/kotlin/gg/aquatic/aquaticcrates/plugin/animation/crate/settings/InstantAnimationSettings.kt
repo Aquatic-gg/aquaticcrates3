@@ -6,6 +6,8 @@ import gg.aquatic.aquaticcrates.api.animation.crate.CrateAnimation
 import gg.aquatic.aquaticcrates.api.animation.crate.CrateAnimationManager
 import gg.aquatic.aquaticcrates.api.animation.crate.CrateAnimationSettings
 import gg.aquatic.aquaticcrates.api.animation.prop.AnimationProp
+import gg.aquatic.aquaticcrates.api.crate.Crate
+import gg.aquatic.aquaticcrates.api.crate.OpenableCrate
 import gg.aquatic.aquaticcrates.api.reward.RolledReward
 import gg.aquatic.aquaticseries.lib.action.ConfiguredAction
 import gg.aquatic.aquaticseries.lib.audience.AquaticAudience
@@ -38,23 +40,11 @@ class InstantAnimationSettings(
         for (rolledReward in rolledRewards) {
             rolledReward.give(player)
         }
-        finalAnimationTasks.executeActions(
-            object : CrateAnimation() {
-                override val animationManager: CrateAnimationManager = animationManager
-                override val state: State = State.FINISHED
-                override val baseLocation: Location = location
-                override val player: Player = player
-                override val audience: AquaticAudience = GlobalAudience()
-                override val rewards: MutableList<RolledReward> = rolledRewards
-                override val props: MutableMap<String, AnimationProp> = mutableMapOf()
 
-                override fun tick() {
-                }
-            }
-        ) { _, str -> str }
+        execute(player, animationManager)
     }
 
-    companion object: AnimationSettingsFactory() {
+    companion object : AnimationSettingsFactory() {
         override fun serialize(section: ConfigurationSection?): CrateAnimationSettings {
             if (section == null) return InstantAnimationSettings(mutableListOf())
             val finalAnimationTasks = loadFinalActions(section)
@@ -63,5 +53,25 @@ class InstantAnimationSettings(
             )
         }
 
+        fun execute(
+            player: Player,
+            animationManager: CrateAnimationManager
+        ) {
+            val finalAnimationTasks = animationManager.animationSettings.finalAnimationTasks
+            finalAnimationTasks.executeActions(
+                object : CrateAnimation() {
+                    override val animationManager: CrateAnimationManager = animationManager
+                    override val state: State = State.FINISHED
+                    override val baseLocation: Location = player.location
+                    override val player: Player = player
+                    override val audience: AquaticAudience = GlobalAudience()
+                    override val rewards: MutableList<RolledReward> = mutableListOf()
+                    override val props: MutableMap<String, AnimationProp> = mutableMapOf()
+
+                    override fun tick() {
+                    }
+                }
+            ) { _, str -> str }
+        }
     }
 }

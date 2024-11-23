@@ -3,14 +3,12 @@ package gg.aquatic.aquaticcrates.plugin.serialize
 import gg.aquatic.aquaticcrates.api.crate.Crate
 import gg.aquatic.aquaticcrates.api.crate.OpenableCrate
 import gg.aquatic.aquaticcrates.api.openprice.OpenPriceGroup
-import gg.aquatic.aquaticcrates.api.reroll.RerollManager
-import gg.aquatic.aquaticcrates.api.reward.Reward
 import gg.aquatic.aquaticcrates.plugin.CratesPlugin
 import gg.aquatic.aquaticcrates.plugin.animation.crate.CrateAnimationManagerImpl
 import gg.aquatic.aquaticcrates.plugin.animation.crate.settings.InstantAnimationSettings
 import gg.aquatic.aquaticcrates.plugin.crate.BasicCrate
 import gg.aquatic.aquaticcrates.plugin.crate.KeyImpl
-import gg.aquatic.aquaticcrates.plugin.crate.KeyInteractHandlerImpl
+import gg.aquatic.aquaticcrates.plugin.interact.KeyInteractHandlerImpl
 import gg.aquatic.aquaticcrates.plugin.hologram.HologramSerializer
 import gg.aquatic.aquaticcrates.plugin.milestone.MilestoneManagerImpl
 import gg.aquatic.aquaticcrates.plugin.reroll.RerollManagerImpl
@@ -22,7 +20,6 @@ import gg.aquatic.waves.item.AquaticItemInteractEvent
 import gg.aquatic.waves.item.loadFromYml
 import gg.aquatic.waves.registry.serializer.InteractableSerializer
 import gg.aquatic.waves.registry.serializer.RequirementSerializer
-import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.entity.Player
 import java.io.File
 import java.util.*
