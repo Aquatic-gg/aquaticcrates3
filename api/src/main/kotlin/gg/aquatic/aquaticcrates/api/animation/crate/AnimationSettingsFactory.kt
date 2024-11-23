@@ -7,7 +7,7 @@ import org.bukkit.configuration.ConfigurationSection
 
 abstract class AnimationSettingsFactory {
 
-    abstract fun serialize(section: ConfigurationSection): CrateAnimationSettings?
+    abstract fun serialize(section: ConfigurationSection?): CrateAnimationSettings?
 
     protected fun loadFinalActions(section: ConfigurationSection): MutableList<ConfiguredAction<CrateAnimation>> {
         return ActionSerializer.fromSections<CrateAnimation>(section.getSectionList("final-tasks")).toMutableList()

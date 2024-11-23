@@ -17,15 +17,18 @@ import org.bukkit.entity.Player
 import java.util.*
 
 class InstantAnimationSettings(
-    override val animationTasks: TreeMap<Int, MutableList<ConfiguredAction<CrateAnimation>>>,
-    override val animationLength: Int,
-    override val preAnimationDelay: Int,
-    override val preAnimationTasks: TreeMap<Int, MutableList<ConfiguredAction<CrateAnimation>>>,
-    override val postAnimationDelay: Int,
-    override val postAnimationTasks: TreeMap<Int, MutableList<ConfiguredAction<CrateAnimation>>>,
     override val finalAnimationTasks: MutableList<ConfiguredAction<CrateAnimation>>,
-    override val skippable: Boolean,
 ) : CrateAnimationSettings() {
+
+
+    override val animationTasks: TreeMap<Int, MutableList<ConfiguredAction<CrateAnimation>>> = TreeMap()
+    override val animationLength: Int = 0
+    override val preAnimationDelay: Int = 0
+    override val preAnimationTasks: TreeMap<Int, MutableList<ConfiguredAction<CrateAnimation>>> = TreeMap()
+    override val postAnimationDelay: Int = 0
+    override val postAnimationTasks: TreeMap<Int, MutableList<ConfiguredAction<CrateAnimation>>> = TreeMap()
+    override val skippable: Boolean = false
+
     override fun create(
         player: Player,
         animationManager: CrateAnimationManager,
@@ -52,17 +55,11 @@ class InstantAnimationSettings(
     }
 
     companion object: AnimationSettingsFactory() {
-        override fun serialize(section: ConfigurationSection): CrateAnimationSettings? {
+        override fun serialize(section: ConfigurationSection?): CrateAnimationSettings {
+            if (section == null) return InstantAnimationSettings(mutableListOf())
             val finalAnimationTasks = loadFinalActions(section)
             return InstantAnimationSettings(
-                TreeMap(),
-                0,
-                0,
-                TreeMap(),
-                0,
-                TreeMap(),
                 finalAnimationTasks,
-                false,
             )
         }
 

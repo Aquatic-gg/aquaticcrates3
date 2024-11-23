@@ -9,5 +9,5 @@ abstract class Crate {
     abstract val displayName: String
     abstract val hologramSettings: HologramSettings
     abstract val interactHandler: CrateInteractHandler
-    abstract val interactable: List<InteractableSettings>
+    abstract val interactables: List<InteractableSettings>
 }

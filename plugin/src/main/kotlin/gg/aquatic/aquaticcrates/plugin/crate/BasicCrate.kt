@@ -22,7 +22,7 @@ class BasicCrate(
     override val identifier: String,
     override val displayName: String,
     override val hologramSettings: HologramSettings,
-    override val interactable: List<InteractableSettings>,
+    override val interactables: List<InteractableSettings>,
     override val openRequirements: MutableList<ConfiguredRequirement<Player>>,
     override val openPriceGroups: MutableList<OpenPriceGroup>,
     animationManager: (BasicCrate) -> CrateAnimationManager,
