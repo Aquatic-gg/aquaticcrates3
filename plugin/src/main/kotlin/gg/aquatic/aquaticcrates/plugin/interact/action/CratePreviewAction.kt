@@ -17,7 +17,7 @@ class CratePreviewAction: AbstractAction<CrateInteractAction>() {
     ) {
         Bukkit.broadcastMessage("Previewing crate!")
         val menu = CratePreviewMenu(binder.player,binder.crate as? BasicCrate ?: return)
-        menu.open(binder.player)
+        menu.open()
     }
 
     override fun arguments(): List<AquaticObjectArgument<*>> {

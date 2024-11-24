@@ -13,10 +13,7 @@ import gg.aquatic.aquaticcrates.plugin.animation.action.model.PlayModelAnimation
 import gg.aquatic.aquaticcrates.plugin.animation.action.model.ShowModelAction
 import gg.aquatic.aquaticcrates.plugin.animation.action.path.LinearPathAction
 import gg.aquatic.aquaticcrates.plugin.crate.BasicCrate
-import gg.aquatic.aquaticcrates.plugin.interact.action.CrateBreakAction
-import gg.aquatic.aquaticcrates.plugin.interact.action.CrateInstantOpenAction
-import gg.aquatic.aquaticcrates.plugin.interact.action.CrateOpenAction
-import gg.aquatic.aquaticcrates.plugin.interact.action.CratePreviewAction
+import gg.aquatic.aquaticcrates.plugin.interact.action.*
 import gg.aquatic.aquaticcrates.plugin.serialize.CrateSerializer
 import gg.aquatic.aquaticseries.lib.util.*
 import gg.aquatic.waves.profile.ProfilesModule
@@ -98,6 +95,7 @@ class CratesPlugin : AbstractCratesPlugin() {
         WavesRegistry.registerAction("open-crate-instant", CrateInstantOpenAction())
         WavesRegistry.registerAction("preview-crate", CratePreviewAction())
         WavesRegistry.registerAction("destroy-crate", CrateBreakAction())
+        WavesRegistry.registerAction("execute-actions", CrateExecuteActionsAction())
 
     }
 }
