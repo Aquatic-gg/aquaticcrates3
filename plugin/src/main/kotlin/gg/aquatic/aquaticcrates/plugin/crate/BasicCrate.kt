@@ -57,6 +57,7 @@ class BasicCrate(
                 originalEvent.clickedBlock?.location ?: originalEvent.player.location
             } else return@register
             CrateHandler.spawnCrate(this@BasicCrate,location)
+            e.player.sendMessage("Crate Spawned")
         }
     }
 

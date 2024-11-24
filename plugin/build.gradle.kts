@@ -22,6 +22,10 @@ tasks {
 
     processResources {
         filteringCharset = Charsets.UTF_8.name()
+        filesMatching("plugin.yml") {
+            expand(getProperties())
+            expand(mutableMapOf("version" to project.version))
+        }
     }
 
     val sourcesJar by creating(Jar::class) {
