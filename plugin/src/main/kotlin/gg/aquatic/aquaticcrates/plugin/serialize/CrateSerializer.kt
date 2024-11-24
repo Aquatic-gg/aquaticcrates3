@@ -2,6 +2,7 @@ package gg.aquatic.aquaticcrates.plugin.serialize
 
 import gg.aquatic.aquaticcrates.api.crate.Crate
 import gg.aquatic.aquaticcrates.api.crate.OpenableCrate
+import gg.aquatic.aquaticcrates.api.interaction.CrateInteractAction
 import gg.aquatic.aquaticcrates.api.openprice.OpenPriceGroup
 import gg.aquatic.aquaticcrates.plugin.CratesPlugin
 import gg.aquatic.aquaticcrates.plugin.animation.crate.CrateAnimationManagerImpl
@@ -10,16 +11,23 @@ import gg.aquatic.aquaticcrates.plugin.crate.BasicCrate
 import gg.aquatic.aquaticcrates.plugin.crate.KeyImpl
 import gg.aquatic.aquaticcrates.plugin.interact.KeyInteractHandlerImpl
 import gg.aquatic.aquaticcrates.plugin.hologram.HologramSerializer
+import gg.aquatic.aquaticcrates.plugin.interact.BasicCrateInteractHandler
+import gg.aquatic.aquaticcrates.plugin.interact.action.CrateInstantOpenAction
+import gg.aquatic.aquaticcrates.plugin.interact.action.CrateOpenAction
+import gg.aquatic.aquaticcrates.plugin.interact.action.CratePreviewAction
 import gg.aquatic.aquaticcrates.plugin.milestone.MilestoneManagerImpl
 import gg.aquatic.aquaticcrates.plugin.reroll.RerollManagerImpl
 import gg.aquatic.aquaticcrates.plugin.reward.RewardManagerImpl
+import gg.aquatic.aquaticseries.lib.action.ConfiguredAction
 import gg.aquatic.aquaticseries.lib.util.Config
 import gg.aquatic.aquaticseries.lib.util.getSectionList
 import gg.aquatic.waves.item.AquaticItem
 import gg.aquatic.waves.item.AquaticItemInteractEvent
 import gg.aquatic.waves.item.loadFromYml
+import gg.aquatic.waves.registry.serializer.ActionSerializer
 import gg.aquatic.waves.registry.serializer.InteractableSerializer
 import gg.aquatic.waves.registry.serializer.RequirementSerializer
+import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.entity.Player
 import java.io.File
 import java.util.*
@@ -86,6 +94,8 @@ object CrateSerializer : BaseSerializer() {
             sendConsoleMessage("Could not load Key Item! (Path: key)")
             return null
         }
+
+        val keyInteractActions = loadInteractActions(keySection.getConfigurationSection("interaction"))
         val key = { crate: OpenableCrate ->
             KeyImpl(
                 crate,
@@ -95,7 +105,7 @@ object CrateSerializer : BaseSerializer() {
                 KeyInteractHandlerImpl(
                     cfg.getBoolean("key.requires-crate-to-open"),
                     key,
-                    EnumMap(AquaticItemInteractEvent.InteractType::class.java)
+                    keyInteractActions
                 )
             }
         }
@@ -110,6 +120,25 @@ object CrateSerializer : BaseSerializer() {
             MilestoneManagerImpl(
                 crate, TreeMap(), TreeMap()
             )
+        }
+
+        val interactHandler = { crate: OpenableCrate ->
+            val clickActions = loadInteractActions(cfg.getConfigurationSection("interaction"))
+            if (clickActions.isEmpty()) {
+                clickActions += AquaticItemInteractEvent.InteractType.LEFT to ConfiguredAction(
+                    CratePreviewAction(),
+                    mapOf()
+                )
+                clickActions += AquaticItemInteractEvent.InteractType.RIGHT to ConfiguredAction(
+                    CrateOpenAction(),
+                    mapOf()
+                )
+                clickActions += AquaticItemInteractEvent.InteractType.SHIFT_RIGHT to ConfiguredAction(
+                    CrateInstantOpenAction(),
+                    mapOf()
+                )
+            }
+            BasicCrateInteractHandler(crate, clickActions)
         }
 
         return BasicCrate(
@@ -131,8 +160,23 @@ object CrateSerializer : BaseSerializer() {
                 val possibleRewardRanges = loadRewardRanges(cfg.getSectionList("possible-rewards"))
                 val rewards = loadRewards(rewardSection)
                 RewardManagerImpl(bc, possibleRewardRanges, milestoneManager, rewards)
-            }
+            },
+            interactHandler,
         )
+    }
+
+    fun loadInteractActions(section: ConfigurationSection?): EnumMap<AquaticItemInteractEvent.InteractType, ConfiguredAction<CrateInteractAction>> {
+        val map = EnumMap<AquaticItemInteractEvent.InteractType, ConfiguredAction<CrateInteractAction>>(
+            AquaticItemInteractEvent.InteractType::class.java
+        )
+        section ?: return map
+        for (key in section.getKeys(false)) {
+            val actionSection = section.getConfigurationSection(key) ?: continue
+            val type = AquaticItemInteractEvent.InteractType.valueOf(key.uppercase())
+            val action = ActionSerializer.fromSection<CrateInteractAction>(actionSection) ?: continue
+            map[type] = action
+        }
+        return map
     }
 
 }

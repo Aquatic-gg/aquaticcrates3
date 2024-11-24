@@ -8,18 +8,15 @@ import gg.aquatic.aquaticcrates.api.crate.OpenableCrate
 import gg.aquatic.aquaticcrates.api.hologram.HologramSettings
 import gg.aquatic.aquaticcrates.api.openprice.OpenPriceGroup
 import gg.aquatic.aquaticcrates.api.reward.RewardManager
-import gg.aquatic.aquaticcrates.plugin.interact.BasicCrateInteractHandler
 import gg.aquatic.aquaticseries.lib.requirement.ConfiguredRequirement
 import gg.aquatic.waves.interactable.settings.InteractableSettings
 import gg.aquatic.waves.item.AquaticItem
-import gg.aquatic.waves.item.AquaticItemInteractEvent
 import gg.aquatic.waves.item.modifyFastMeta
 import gg.aquatic.waves.registry.register
 import net.kyori.adventure.text.Component
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.ItemStack
-import java.util.*
 
 class BasicCrate(
     override val identifier: String,
@@ -31,8 +28,10 @@ class BasicCrate(
     animationManager: (BasicCrate) -> CrateAnimationManager,
     key: (BasicCrate) -> Key,
     rewardManager: (BasicCrate) -> RewardManager,
+    interactHandler: (BasicCrate) -> CrateInteractHandler,
 ) : OpenableCrate() {
 
+    override var interactHandler: CrateInteractHandler = interactHandler(this)
     override val rewardManager: RewardManager = rewardManager(this)
     override val animationManager = animationManager(this)
 
@@ -66,7 +65,4 @@ class BasicCrate(
     override fun canBeOpened(player: Player): Boolean {
         return true
     }
-
-    override var interactHandler: CrateInteractHandler = BasicCrateInteractHandler(this, EnumMap(AquaticItemInteractEvent.InteractType::class.java))
-
 }
