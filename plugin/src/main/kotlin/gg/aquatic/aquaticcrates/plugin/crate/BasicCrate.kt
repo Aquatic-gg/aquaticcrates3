@@ -8,6 +8,7 @@ import gg.aquatic.aquaticcrates.api.crate.OpenableCrate
 import gg.aquatic.aquaticcrates.api.hologram.HologramSettings
 import gg.aquatic.aquaticcrates.api.openprice.OpenPriceGroup
 import gg.aquatic.aquaticcrates.api.reward.RewardManager
+import gg.aquatic.aquaticcrates.plugin.preview.CratePreviewMenuSettings
 import gg.aquatic.aquaticseries.lib.requirement.ConfiguredRequirement
 import gg.aquatic.waves.interactable.settings.InteractableSettings
 import gg.aquatic.waves.item.AquaticItem
@@ -29,6 +30,7 @@ class BasicCrate(
     key: (BasicCrate) -> Key,
     rewardManager: (BasicCrate) -> RewardManager,
     interactHandler: (BasicCrate) -> CrateInteractHandler,
+    val previewMenuSettings: CratePreviewMenuSettings
 ) : OpenableCrate() {
 
     override var interactHandler: CrateInteractHandler = interactHandler(this)

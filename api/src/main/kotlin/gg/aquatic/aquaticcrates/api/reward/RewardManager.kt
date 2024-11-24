@@ -8,5 +8,6 @@ abstract class RewardManager {
     abstract val milestoneManager: MilestoneManager
     abstract val rewards: HashMap<String, Reward>
     abstract fun getRewards(player: Player): MutableList<RolledReward>
+    abstract fun getPossibleRewards(player: Player): HashMap<String,Reward>
 
 }
