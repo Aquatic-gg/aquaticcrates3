@@ -50,7 +50,7 @@ class RewardManagerImpl(
         return finalRewards
     }
 
-    fun getPossibleRewards(player: Player): HashMap<String, Reward> {
+    override fun getPossibleRewards(player: Player): HashMap<String, Reward> {
         val finalRewards = HashMap<String, Reward>()
         for ((id, reward) in rewards) {
             if (!reward.requirements.checkRequirements(player)) continue

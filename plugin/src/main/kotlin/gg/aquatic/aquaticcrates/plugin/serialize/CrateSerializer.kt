@@ -16,6 +16,8 @@ import gg.aquatic.aquaticcrates.plugin.interact.action.CrateInstantOpenAction
 import gg.aquatic.aquaticcrates.plugin.interact.action.CrateOpenAction
 import gg.aquatic.aquaticcrates.plugin.interact.action.CratePreviewAction
 import gg.aquatic.aquaticcrates.plugin.milestone.MilestoneManagerImpl
+import gg.aquatic.aquaticcrates.plugin.pouch.PouchPreviewMenuSettings
+import gg.aquatic.aquaticcrates.plugin.preview.CratePreviewMenuSettings
 import gg.aquatic.aquaticcrates.plugin.reroll.RerollManagerImpl
 import gg.aquatic.aquaticcrates.plugin.reward.RewardManagerImpl
 import gg.aquatic.aquaticseries.lib.action.ConfiguredAction
@@ -26,8 +28,10 @@ import gg.aquatic.waves.item.AquaticItemInteractEvent
 import gg.aquatic.waves.item.loadFromYml
 import gg.aquatic.waves.registry.serializer.ActionSerializer
 import gg.aquatic.waves.registry.serializer.InteractableSerializer
+import gg.aquatic.waves.registry.serializer.InventorySerializer
 import gg.aquatic.waves.registry.serializer.RequirementSerializer
 import org.bukkit.configuration.ConfigurationSection
+import org.bukkit.configuration.file.FileConfiguration
 import org.bukkit.entity.Player
 import java.io.File
 import java.util.*
@@ -162,6 +166,21 @@ object CrateSerializer : BaseSerializer() {
                 RewardManagerImpl(bc, possibleRewardRanges, milestoneManager, rewards)
             },
             interactHandler,
+            loadCratePreviewMenuSettings(cfg)
+        )
+    }
+
+    private fun loadCratePreviewMenuSettings(cfg: FileConfiguration): CratePreviewMenuSettings {
+        val section =
+            cfg.getConfigurationSection("preview") ?: return CratePreviewMenuSettings(null, false, listOf())
+        val rewardSlots = section.getIntegerList("reward-slots")
+        val invSettings = InventorySerializer.loadInventory(section)
+        val clearBottomInventory = section.getBoolean("clear-bottom-inventory", false)
+
+        return CratePreviewMenuSettings(
+            invSettings,
+            clearBottomInventory,
+            rewardSlots,
         )
     }
 
