@@ -34,6 +34,7 @@ import gg.aquatic.waves.registry.serializer.ActionSerializer
 import gg.aquatic.waves.registry.serializer.InteractableSerializer
 import gg.aquatic.waves.registry.serializer.InventorySerializer
 import gg.aquatic.waves.registry.serializer.RequirementSerializer
+import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.configuration.file.FileConfiguration
@@ -158,6 +159,25 @@ object CrateSerializer : BaseSerializer() {
             BasicCrateInteractHandler(crate, clickActions)
         }
 
+        val previewMenuPages = ArrayList<CratePreviewMenuSettings>()
+        val previewSection = cfg.getConfigurationSection("preview")
+        if (previewSection != null) {
+            if (!previewSection.contains("pages")) {
+                val settings = loadCratePreviewMenuSettings(previewSection)
+                if (settings != null) {
+                    previewMenuPages += settings
+                }
+            } else {
+                val sections = previewSection.getSectionList("pages")
+                for (section in sections) {
+                    val settings = loadCratePreviewMenuSettings(section)
+                    if (settings != null) {
+                        previewMenuPages += settings
+                    }
+                }
+            }
+        }
+
         return BasicCrate(
             identifier,
             cfg.getString("display-name") ?: identifier,
@@ -179,15 +199,13 @@ object CrateSerializer : BaseSerializer() {
                 RewardManagerImpl(bc, possibleRewardRanges, milestoneManager, rewards)
             },
             interactHandler,
-            loadCratePreviewMenuSettings(cfg)
+            previewMenuPages
         )
     }
 
-    private fun loadCratePreviewMenuSettings(cfg: FileConfiguration): CratePreviewMenuSettings {
-        val section =
-            cfg.getConfigurationSection("preview") ?: return CratePreviewMenuSettings(null, false, listOf())
+    private fun loadCratePreviewMenuSettings(section: ConfigurationSection): CratePreviewMenuSettings? {
         val rewardSlots = section.getIntegerList("reward-slots")
-        val invSettings = InventorySerializer.loadInventory(section)
+        val invSettings = InventorySerializer.loadInventory(section) ?: return null
         val clearBottomInventory = section.getBoolean("clear-bottom-inventory", false)
 
         return CratePreviewMenuSettings(

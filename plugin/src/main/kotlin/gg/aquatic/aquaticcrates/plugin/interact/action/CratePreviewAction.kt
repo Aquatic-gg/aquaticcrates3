@@ -9,7 +9,7 @@ import gg.aquatic.aquaticseries.lib.util.runSync
 import org.bukkit.Bukkit
 import java.util.function.BiFunction
 
-class CratePreviewAction: AbstractAction<CrateInteractAction>() {
+class CratePreviewAction : AbstractAction<CrateInteractAction>() {
 
     override fun run(
         binder: CrateInteractAction,
@@ -17,8 +17,13 @@ class CratePreviewAction: AbstractAction<CrateInteractAction>() {
         textUpdater: BiFunction<CrateInteractAction, String, String>
     ) {
         Bukkit.broadcastMessage("Previewing crate!")
-        val menu = CratePreviewMenu(binder.player,binder.crate as? BasicCrate ?: return)
+        val crate = binder.crate
+        if (crate !is BasicCrate) return
+        val player = binder.player
+
+        val settings = crate.previewMenuSettings.firstOrNull() ?: return
         runSync {
+            val menu = CratePreviewMenu(player, crate, settings, 0)
             menu.open()
         }
     }

@@ -5,24 +5,26 @@ import gg.aquatic.aquaticseries.lib.betterinventory2.AquaticInventory
 import gg.aquatic.aquaticseries.lib.betterinventory2.SlotSelection
 import gg.aquatic.aquaticseries.lib.betterinventory2.component.ButtonComponent
 import gg.aquatic.aquaticseries.lib.util.executeActions
+import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import java.util.HashMap
-import kotlin.math.ceil
 
 class CratePreviewMenu(
     val player: Player,
     val crate: BasicCrate,
+    val settings: CratePreviewMenuSettings,
+    val page: Int
 ) : AquaticInventory(
-    crate.previewMenuSettings.invSettings!!.title,
-    crate.previewMenuSettings.invSettings.size,
-    crate.previewMenuSettings.invSettings.inventoryType,
+    settings.invSettings.title,
+    settings.invSettings.size,
+    settings.invSettings.inventoryType,
     { p, inv ->
-        crate.previewMenuSettings.invSettings.onOpen.executeActions(player) { p, str -> str }
+        settings.invSettings.onOpen.executeActions(player) { p, str -> str }
     },
     { p, inv ->
-        crate.previewMenuSettings.invSettings.onClose.executeActions(player) { p, str -> str }
+        settings.invSettings.onClose.executeActions(player) { p, str -> str }
     },
     { e, inv ->
 
@@ -32,25 +34,25 @@ class CratePreviewMenu(
     val rewards = crate.rewardManager.getPossibleRewards(player).values
 
     fun open() {
-        loadItems(0)
+        loadItems()
         open(player)
     }
 
     private fun openPage(page: Int) {
-        clearComponents()
-        loadItems(page)
-        updateComponents(player)
+        val settings = crate.previewMenuSettings[page]
+        val menu = CratePreviewMenu(player, crate, settings, page)
+        menu.open()
     }
 
-    private fun loadItems(page: Int) {
-        for (button in crate.previewMenuSettings.invSettings!!.buttons) {
+    private fun loadItems() {
+        for (button in settings.invSettings.buttons) {
             addComponent(
                 button.create(
                     { p, str -> str },
                     { e ->
                         val id = button.id.lowercase()
                         if (id == "next-page") {
-                            if (!hasNextPage(page)) return@create
+                            if (!hasNextPage()) return@create
                             openPage(page + 1)
                         } else if (id == "prev-page") {
                             if (page <= 0) return@create
@@ -61,7 +63,7 @@ class CratePreviewMenu(
                 )
             )
         }
-        if (crate.previewMenuSettings.clearBottomInventory) {
+        if (settings.clearBottomInventory) {
             val airButton = ButtonComponent(
                 "aquaticcrates:clear-button",
                 -10,
@@ -76,8 +78,15 @@ class CratePreviewMenu(
             addComponent(airButton)
         }
 
-        for ((index, rewardSlot) in crate.previewMenuSettings.rewardSlots.withIndex()) {
-            val rewardIndex = page * crate.previewMenuSettings.rewardSlots.size + index
+        var lowerIndex = 0
+        for ((index,page) in crate.previewMenuSettings.withIndex()) {
+            if (index == this.page) break
+            lowerIndex += page.rewardSlots.size
+        }
+
+        for ((index, rewardSlot) in settings.rewardSlots.withIndex()) {
+            //val rewardIndex = page * settings.rewardSlots.size + index
+            val rewardIndex = lowerIndex + index
             if (rewardIndex >= crate.rewardManager.rewards.size) break
             val reward = rewards.elementAtOrNull(rewardIndex) ?: break
             val rewardItem = reward.item.getItem()
@@ -104,9 +113,8 @@ class CratePreviewMenu(
 
     }
 
-    private fun hasNextPage(currentPage: Int): Boolean {
-        val amt = ceil(rewards.size / crate.previewMenuSettings.rewardSlots.size.toDouble())
-        return currentPage < amt
+    private fun hasNextPage(): Boolean {
+        return (crate.previewMenuSettings.size >= page)
     }
 
 }

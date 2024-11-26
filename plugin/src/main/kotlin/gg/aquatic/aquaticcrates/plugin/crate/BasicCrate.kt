@@ -31,7 +31,7 @@ class BasicCrate(
     key: (BasicCrate) -> Key,
     rewardManager: (BasicCrate) -> RewardManager,
     interactHandler: (BasicCrate) -> CrateInteractHandler,
-    val previewMenuSettings: CratePreviewMenuSettings
+    val previewMenuSettings: MutableList<CratePreviewMenuSettings>
 ) : OpenableCrate() {
 
     override var interactHandler: CrateInteractHandler = interactHandler(this)
