@@ -5,7 +5,6 @@ import gg.aquatic.aquaticseries.lib.betterinventory2.AquaticInventory
 import gg.aquatic.aquaticseries.lib.betterinventory2.SlotSelection
 import gg.aquatic.aquaticseries.lib.betterinventory2.component.ButtonComponent
 import gg.aquatic.aquaticseries.lib.util.executeActions
-import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
@@ -45,6 +44,12 @@ class CratePreviewMenu(
     }
 
     private fun loadItems() {
+        loadButtons()
+        loadRewards()
+        loadRandomRewards()
+    }
+
+    private fun loadButtons() {
         for (button in settings.invSettings.buttons) {
             addComponent(
                 button.create(
@@ -77,7 +82,9 @@ class CratePreviewMenu(
             )
             addComponent(airButton)
         }
+    }
 
+    private fun loadRewards() {
         var lowerIndex = 0
         for ((index,page) in crate.previewMenuSettings.withIndex()) {
             if (index == this.page) break
@@ -110,8 +117,44 @@ class CratePreviewMenu(
             )
             addComponent(button)
         }
-
     }
+
+    private fun loadRandomRewards() {
+        for (slot in settings.randomRewards.slots) {
+            val button = RandomRewardComponent(
+                crate,
+                rewards,
+                settings.randomRewards.changeDuration,
+                { e ->
+                    e.isCancelled = true
+                },
+                10,
+                SlotSelection.of(slot),
+                { p, str -> str },
+            )
+            addComponent(button)
+        }
+    }
+
+    /*
+    private fun refreshRandomRewards() {
+        for (randomRewardComponent in randomRewardComponents) {
+            removeComponent(randomRewardComponent)
+        }
+        randomRewardComponents.clear()
+        loadRandomRewards()
+        updateComponents(player)
+    }
+
+    private var ticks = 0
+    override fun tick() {
+        if (settings.randomRewards.changeDuration <= 0) return
+        ticks++
+        if (ticks < settings.randomRewards.changeDuration) return
+        ticks = 0
+        refreshRandomRewards()
+    }
+     */
 
     private fun hasNextPage(): Boolean {
         return (crate.previewMenuSettings.size >= page)

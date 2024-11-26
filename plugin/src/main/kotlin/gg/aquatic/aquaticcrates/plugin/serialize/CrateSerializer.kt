@@ -208,10 +208,14 @@ object CrateSerializer : BaseSerializer() {
         val invSettings = InventorySerializer.loadInventory(section) ?: return null
         val clearBottomInventory = section.getBoolean("clear-bottom-inventory", false)
 
+        val randomRewardsSlots = section.getIntegerList("random-rewards.slots")
+        val changeDuration = section.getInt("random-rewards.change-duration")
+
         return CratePreviewMenuSettings(
             invSettings,
             clearBottomInventory,
             rewardSlots,
+            CratePreviewMenuSettings.RandomRewardsSettings(randomRewardsSlots, changeDuration)
         )
     }
 
