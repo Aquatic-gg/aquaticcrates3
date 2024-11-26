@@ -12,6 +12,7 @@ import gg.aquatic.aquaticcrates.plugin.crate.KeyImpl
 import gg.aquatic.aquaticcrates.plugin.interact.KeyInteractHandlerImpl
 import gg.aquatic.aquaticcrates.plugin.hologram.HologramSerializer
 import gg.aquatic.aquaticcrates.plugin.interact.BasicCrateInteractHandler
+import gg.aquatic.aquaticcrates.plugin.interact.action.CrateBreakAction
 import gg.aquatic.aquaticcrates.plugin.interact.action.CrateInstantOpenAction
 import gg.aquatic.aquaticcrates.plugin.interact.action.CrateOpenAction
 import gg.aquatic.aquaticcrates.plugin.interact.action.CratePreviewAction
@@ -21,8 +22,11 @@ import gg.aquatic.aquaticcrates.plugin.preview.CratePreviewMenuSettings
 import gg.aquatic.aquaticcrates.plugin.reroll.RerollManagerImpl
 import gg.aquatic.aquaticcrates.plugin.reward.RewardManagerImpl
 import gg.aquatic.aquaticseries.lib.action.ConfiguredAction
+import gg.aquatic.aquaticseries.lib.block.AquaticBlock
+import gg.aquatic.aquaticseries.lib.block.impl.VanillaBlock
 import gg.aquatic.aquaticseries.lib.util.Config
 import gg.aquatic.aquaticseries.lib.util.getSectionList
+import gg.aquatic.waves.interactable.settings.BlockInteractableSettings
 import gg.aquatic.waves.item.AquaticItem
 import gg.aquatic.waves.item.AquaticItemInteractEvent
 import gg.aquatic.waves.item.loadFromYml
@@ -30,9 +34,11 @@ import gg.aquatic.waves.registry.serializer.ActionSerializer
 import gg.aquatic.waves.registry.serializer.InteractableSerializer
 import gg.aquatic.waves.registry.serializer.InventorySerializer
 import gg.aquatic.waves.registry.serializer.RequirementSerializer
+import org.bukkit.Material
 import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.configuration.file.FileConfiguration
 import org.bukkit.entity.Player
+import org.bukkit.util.Vector
 import java.io.File
 import java.util.*
 import kotlin.collections.ArrayList
@@ -76,7 +82,10 @@ object CrateSerializer : BaseSerializer() {
         val cfg = config.getConfiguration()!!
 
         val interactableSections = cfg.getSectionList("interactables")
-        val interactableSettings = interactableSections.mapNotNull { InteractableSerializer.load(it) }
+        val interactableSettings = interactableSections.mapNotNull { InteractableSerializer.load(it) }.toMutableList()
+        if (interactableSettings.isEmpty()) {
+            interactableSettings += BlockInteractableSettings(VanillaBlock(Material.STONE.createBlockData()), Vector())
+        }
 
         val openRequirements =
             RequirementSerializer.fromSections<Player>(cfg.getSectionList("open-requirements")).toMutableList()
@@ -139,6 +148,10 @@ object CrateSerializer : BaseSerializer() {
                 )
                 clickActions += AquaticItemInteractEvent.InteractType.SHIFT_RIGHT to ConfiguredAction(
                     CrateInstantOpenAction(),
+                    mapOf()
+                )
+                clickActions += AquaticItemInteractEvent.InteractType.SHIFT_LEFT to ConfiguredAction(
+                    CrateBreakAction(),
                     mapOf()
                 )
             }

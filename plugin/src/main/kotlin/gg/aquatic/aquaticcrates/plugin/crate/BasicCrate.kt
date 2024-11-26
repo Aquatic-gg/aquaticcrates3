@@ -10,6 +10,7 @@ import gg.aquatic.aquaticcrates.api.openprice.OpenPriceGroup
 import gg.aquatic.aquaticcrates.api.reward.RewardManager
 import gg.aquatic.aquaticcrates.plugin.preview.CratePreviewMenuSettings
 import gg.aquatic.aquaticseries.lib.requirement.ConfiguredRequirement
+import gg.aquatic.aquaticseries.lib.util.runLaterSync
 import gg.aquatic.waves.interactable.settings.InteractableSettings
 import gg.aquatic.waves.item.AquaticItem
 import gg.aquatic.waves.item.modifyFastMeta
@@ -58,7 +59,9 @@ class BasicCrate(
             val location = if (originalEvent is PlayerInteractEvent) {
                 originalEvent.clickedBlock?.location ?: originalEvent.player.location
             } else return@register
-            CrateHandler.spawnCrate(this@BasicCrate,location)
+            runLaterSync(2) {
+                CrateHandler.spawnCrate(this@BasicCrate,location.clone().add(.0,1.0, .0))
+            }
             e.player.sendMessage("Crate Spawned")
         }
     }

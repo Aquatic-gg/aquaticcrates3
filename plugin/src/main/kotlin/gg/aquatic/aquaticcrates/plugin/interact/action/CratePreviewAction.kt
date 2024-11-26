@@ -5,6 +5,7 @@ import gg.aquatic.aquaticcrates.plugin.crate.BasicCrate
 import gg.aquatic.aquaticcrates.plugin.preview.CratePreviewMenu
 import gg.aquatic.aquaticseries.lib.action.AbstractAction
 import gg.aquatic.aquaticseries.lib.util.argument.AquaticObjectArgument
+import gg.aquatic.aquaticseries.lib.util.runSync
 import org.bukkit.Bukkit
 import java.util.function.BiFunction
 
@@ -17,7 +18,9 @@ class CratePreviewAction: AbstractAction<CrateInteractAction>() {
     ) {
         Bukkit.broadcastMessage("Previewing crate!")
         val menu = CratePreviewMenu(binder.player,binder.crate as? BasicCrate ?: return)
-        menu.open()
+        runSync {
+            menu.open()
+        }
     }
 
     override fun arguments(): List<AquaticObjectArgument<*>> {
