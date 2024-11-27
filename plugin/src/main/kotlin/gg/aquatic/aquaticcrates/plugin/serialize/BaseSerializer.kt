@@ -52,7 +52,20 @@ abstract class BaseSerializer {
         val hologramSettings = loadAquaticHologram(section.getConfigurationSection("hologram"))
         val chances = loadRewardRanges(section.getSectionList("amount-ranges"))
 
-        return RewardImpl(chance, id, item, giveItem, displayName, globalLimits, perPlayerLimits, actions, requirements, winCrateAnimation, hologramSettings, chances)
+        return RewardImpl(
+            chance,
+            id,
+            item,
+            giveItem,
+            displayName,
+            globalLimits,
+            perPlayerLimits,
+            actions,
+            requirements,
+            winCrateAnimation,
+            hologramSettings,
+            chances
+        )
     }
 
     fun sendConsoleMessage(vararg message: String) {
@@ -69,7 +82,8 @@ abstract class BaseSerializer {
         )
         val offset =
             section.getString("offset", "0;0;0")!!.split(";".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
-        val billboard: Billboard = Billboard.valueOf(section.getString("billboard", "CENTER")!!.uppercase(Locale.getDefault()))
+        val billboard: Billboard =
+            Billboard.valueOf(section.getString("billboard", "CENTER")!!.uppercase(Locale.getDefault()))
         val vector = Vector(
             offset[0].toDouble(),
             offset[1].toDouble(),
@@ -92,16 +106,16 @@ abstract class BaseSerializer {
     }
 
     fun loadAnimationTasks(section: ConfigurationSection?): TreeMap<Int, MutableList<ConfiguredAction<Animation>>> {
-            val tasks = TreeMap<Int, MutableList<ConfiguredAction<Animation>>>()
-            if (section == null) return tasks
+        val tasks = TreeMap<Int, MutableList<ConfiguredAction<Animation>>>()
+        if (section == null) return tasks
 
-            for (key in section.getKeys(false)) {
-                val delay = key.toIntOrNull() ?: continue
-                tasks[delay] =
-                    ActionSerializer.fromSections<Animation>(section.getSectionList(key)).toMutableList()
-            }
-
-            return tasks
+        for (key in section.getKeys(false)) {
+            val delay = key.toIntOrNull() ?: continue
+            tasks[delay] =
+                ActionSerializer.fromSections<Animation>(section.getSectionList(key)).toMutableList()
         }
+
+        return tasks
+    }
 
 }

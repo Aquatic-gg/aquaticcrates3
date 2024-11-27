@@ -5,8 +5,9 @@ import gg.aquatic.aquaticcrates.api.crate.OpenableCrate
 import gg.aquatic.aquaticcrates.api.interaction.CrateInteractAction
 import gg.aquatic.aquaticcrates.api.openprice.OpenPriceGroup
 import gg.aquatic.aquaticcrates.plugin.CratesPlugin
-import gg.aquatic.aquaticcrates.plugin.animation.crate.CrateAnimationManagerImpl
+import gg.aquatic.aquaticcrates.plugin.animation.crate.AnimationManagerImpl
 import gg.aquatic.aquaticcrates.plugin.animation.crate.settings.InstantAnimationSettings
+import gg.aquatic.aquaticcrates.plugin.animation.crate.settings.RegularAnimationSettings
 import gg.aquatic.aquaticcrates.plugin.crate.BasicCrate
 import gg.aquatic.aquaticcrates.plugin.crate.KeyImpl
 import gg.aquatic.aquaticcrates.plugin.interact.KeyInteractHandlerImpl
@@ -17,12 +18,10 @@ import gg.aquatic.aquaticcrates.plugin.interact.action.CrateInstantOpenAction
 import gg.aquatic.aquaticcrates.plugin.interact.action.CrateOpenAction
 import gg.aquatic.aquaticcrates.plugin.interact.action.CratePreviewAction
 import gg.aquatic.aquaticcrates.plugin.milestone.MilestoneManagerImpl
-import gg.aquatic.aquaticcrates.plugin.pouch.PouchPreviewMenuSettings
 import gg.aquatic.aquaticcrates.plugin.preview.CratePreviewMenuSettings
 import gg.aquatic.aquaticcrates.plugin.reroll.RerollManagerImpl
 import gg.aquatic.aquaticcrates.plugin.reward.RewardManagerImpl
 import gg.aquatic.aquaticseries.lib.action.ConfiguredAction
-import gg.aquatic.aquaticseries.lib.block.AquaticBlock
 import gg.aquatic.aquaticseries.lib.block.impl.VanillaBlock
 import gg.aquatic.aquaticseries.lib.util.Config
 import gg.aquatic.aquaticseries.lib.util.getSectionList
@@ -34,10 +33,8 @@ import gg.aquatic.waves.registry.serializer.ActionSerializer
 import gg.aquatic.waves.registry.serializer.InteractableSerializer
 import gg.aquatic.waves.registry.serializer.InventorySerializer
 import gg.aquatic.waves.registry.serializer.RequirementSerializer
-import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.configuration.ConfigurationSection
-import org.bukkit.configuration.file.FileConfiguration
 import org.bukkit.entity.Player
 import org.bukkit.util.Vector
 import java.io.File
@@ -48,7 +45,8 @@ import kotlin.collections.HashMap
 object CrateSerializer : BaseSerializer() {
 
     val animationSerializers = hashMapOf(
-        "instant" to InstantAnimationSettings.Companion
+        "instant" to InstantAnimationSettings.Companion,
+        "regular" to RegularAnimationSettings.Companion,
     )
 
     fun loadCrates(): HashMap<String, Crate> {
@@ -91,9 +89,6 @@ object CrateSerializer : BaseSerializer() {
         val openRequirements =
             RequirementSerializer.fromSections<Player>(cfg.getSectionList("open-requirements")).toMutableList()
         val openPriceGroups = ArrayList<OpenPriceGroup>()
-
-        val animationSettingsFactory = cfg.getString("animation.type", "instant")!!.lowercase()
-        val factory = animationSerializers[animationSettingsFactory] ?: InstantAnimationSettings.Companion
 
         val rerollManager = { crate: OpenableCrate ->
             RerollManagerImpl(crate, hashMapOf())
@@ -178,6 +173,11 @@ object CrateSerializer : BaseSerializer() {
             }
         }
 
+
+        val animationSettingsFactory = cfg.getString("animation.type", "instant")!!.lowercase()
+        val animationFactory = animationSerializers[animationSettingsFactory] ?: InstantAnimationSettings.Companion
+        val animationSettings = animationFactory.serialize(cfg.getConfigurationSection("animation")) ?: InstantAnimationSettings.Companion.serialize(null)!!
+
         return BasicCrate(
             identifier,
             cfg.getString("display-name") ?: identifier,
@@ -186,9 +186,9 @@ object CrateSerializer : BaseSerializer() {
             openRequirements,
             openPriceGroups,
             { bc ->
-                CrateAnimationManagerImpl(
+                AnimationManagerImpl(
                     bc,
-                    factory.serialize(cfg.getConfigurationSection("animation")),
+                    animationSettings,
                     rerollManager
                 )
             },

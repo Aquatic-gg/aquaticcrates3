@@ -1,13 +1,8 @@
 package gg.aquatic.aquaticcrates.api.animation.crate
 
 import gg.aquatic.aquaticcrates.api.animation.Animation
-import gg.aquatic.aquaticcrates.api.animation.pouch.PouchAnimation
-import gg.aquatic.aquaticcrates.api.reward.Reward
 import gg.aquatic.aquaticseries.lib.action.ConfiguredAction
-import gg.aquatic.aquaticseries.lib.interactable2.SpawnedInteractable
 import gg.aquatic.aquaticseries.lib.util.executeActions
-import org.bukkit.entity.Player
-import org.bukkit.util.Vector
 
 abstract class CrateAnimation: Animation() {
 
@@ -28,7 +23,7 @@ abstract class CrateAnimation: Animation() {
         executeActions(animationManager.animationSettings.postAnimationTasks[tick] ?: return)
     }
 
-    open fun executeActions(actions: List<ConfiguredAction<CrateAnimation>>) {
+    open fun executeActions(actions: List<ConfiguredAction<Animation>>) {
         actions.executeActions(this) { _, str ->
             var finalString = str.replace("%player%", player.name)
             for ((i, reward) in rewards.withIndex()) {

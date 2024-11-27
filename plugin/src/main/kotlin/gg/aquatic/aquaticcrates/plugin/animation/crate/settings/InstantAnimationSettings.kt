@@ -1,5 +1,6 @@
 package gg.aquatic.aquaticcrates.plugin.animation.crate.settings
 
+import gg.aquatic.aquaticcrates.api.animation.Animation
 import gg.aquatic.aquaticcrates.api.animation.AnimationTitle
 import gg.aquatic.aquaticcrates.api.animation.crate.AnimationSettingsFactory
 import gg.aquatic.aquaticcrates.api.animation.crate.CrateAnimation
@@ -19,16 +20,16 @@ import org.bukkit.entity.Player
 import java.util.*
 
 class InstantAnimationSettings(
-    override val finalAnimationTasks: MutableList<ConfiguredAction<CrateAnimation>>,
+    override val finalAnimationTasks: MutableList<ConfiguredAction<Animation>>,
 ) : CrateAnimationSettings() {
 
 
-    override val animationTasks: TreeMap<Int, MutableList<ConfiguredAction<CrateAnimation>>> = TreeMap()
+    override val animationTasks: TreeMap<Int, MutableList<ConfiguredAction<Animation>>> = TreeMap()
     override val animationLength: Int = 0
     override val preAnimationDelay: Int = 0
-    override val preAnimationTasks: TreeMap<Int, MutableList<ConfiguredAction<CrateAnimation>>> = TreeMap()
+    override val preAnimationTasks: TreeMap<Int, MutableList<ConfiguredAction<Animation>>> = TreeMap()
     override val postAnimationDelay: Int = 0
-    override val postAnimationTasks: TreeMap<Int, MutableList<ConfiguredAction<CrateAnimation>>> = TreeMap()
+    override val postAnimationTasks: TreeMap<Int, MutableList<ConfiguredAction<Animation>>> = TreeMap()
     override val skippable: Boolean = false
 
     override fun create(
