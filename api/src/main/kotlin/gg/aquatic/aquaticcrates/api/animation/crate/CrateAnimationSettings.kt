@@ -6,6 +6,7 @@ import gg.aquatic.aquaticseries.lib.action.ConfiguredAction
 import org.bukkit.Location
 import org.bukkit.entity.Player
 import java.util.*
+import java.util.concurrent.CompletableFuture
 
 abstract class CrateAnimationSettings {
 
@@ -18,6 +19,6 @@ abstract class CrateAnimationSettings {
     abstract val finalAnimationTasks: MutableList<ConfiguredAction<Animation>>
     abstract val skippable: Boolean
 
-    abstract fun create(player: Player, animationManager: CrateAnimationManager, location: Location, rolledRewards: MutableList<RolledReward>)
+    abstract fun create(player: Player, animationManager: CrateAnimationManager, location: Location, rolledRewards: MutableList<RolledReward>): CompletableFuture<Void>
 
 }

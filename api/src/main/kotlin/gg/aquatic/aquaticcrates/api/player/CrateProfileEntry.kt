@@ -8,29 +8,58 @@ class CrateProfileEntry(aquaticPlayer: AquaticPlayer) : ProfileModuleEntry(aquat
 
     val balance = hashMapOf<String, Int>()
 
-    val newEntries = ArrayList<OpenHistoryEntry>()
-    // CrateId, RewardId, Daily/Weekly/Monthly/Alltime, Amount
-    val openHistory = hashMapOf<String, HashMap<String, HashMap<HistoryType, Int>>>()
+    // CrateId, Entry
+    val newEntries = hashMapOf<String,MutableList<OpenHistoryEntry>>()
+    // CrateId, Daily/Weekly/Monthly/Alltime, Amount
+    val openHistory = hashMapOf<String, HashMap<HistoryType, Int>>()
+    // CrateId:RewardId, Daily/Weekly/Monthly/Alltime, Amount
+    val rewardHistory = hashMapOf<String,HashMap<HistoryType, Int>>()
 
-    fun history(historyType: HistoryType): Int {
+    fun openHistory(historyType: HistoryType): Int {
         var total = 0
-        openHistory.forEach { (_, rewardHistory) ->
-            for ((_, historyMap) in rewardHistory) {
-                historyMap[historyType]?.let { total += it }
+
+        for ((_, history) in openHistory) {
+            history[historyType]?.let { total += it }
+        }
+        return total
+    }
+    fun rewardHistory(historyType: HistoryType): Int {
+        var total = 0
+        for ((_, history) in rewardHistory) {
+            history[historyType]?.let { total += it }
+        }
+        return total
+    }
+
+    fun registerCrateOpen(crateId: String, rewards: Map<String,Int>) {
+        val entries = newEntries.getOrPut(crateId) { arrayListOf() }
+        entries += OpenHistoryEntry(
+            System.currentTimeMillis()/60000,
+            crateId,
+            HashMap(rewards)
+        )
+        val crateHistory = openHistory.getOrPut(crateId) { hashMapOf() }
+        for (historyType in HistoryType.entries) {
+            val dailyCrate = crateHistory.getOrPut(historyType) { 0 }
+            crateHistory[historyType] = dailyCrate + rewards.values.sum()
+            for ((reward, amount) in rewards) {
+                val rewardHistory = this.rewardHistory.getOrPut("$crateId:$reward") { hashMapOf() }
+                val dailyReward = rewardHistory.getOrPut(historyType) { 0 }
+                rewardHistory[historyType] = dailyReward + amount
             }
         }
-        return total
     }
 
-    fun history(crateId: String, historyType: HistoryType): Int {
+    fun openHistory(crateId: String, historyType: HistoryType): Int {
         var total = 0
-        openHistory[crateId]?.forEach { (_, historyMap) ->
-            historyMap[historyType]?.let { total += it }
-        }
+        openHistory[crateId]?.get(historyType)?.let { total += it }
         return total
     }
-    fun history(crateId: String, rewardId: String, historyType: HistoryType): Int {
-        return openHistory[crateId]?.get(rewardId)?.get(historyType) ?: 0
+    fun rewardHistory(crateId: String, rewardId: String, historyType: HistoryType): Int {
+        var total = 0
+        val rewardHistory = rewardHistory["$crateId:$rewardId"] ?: return total
+        rewardHistory[historyType]?.let { total += it }
+        return total
     }
 
     override fun save(connection: Connection) {
@@ -64,7 +93,7 @@ class CrateProfileEntry(aquaticPlayer: AquaticPlayer) : ProfileModuleEntry(aquat
     class OpenHistoryEntry(
         val timestamp: Long,
         val crateId: String,
-        val rewardId: String,
+        val rewardIds: HashMap<String,Int>,
     ) {
 
     }
