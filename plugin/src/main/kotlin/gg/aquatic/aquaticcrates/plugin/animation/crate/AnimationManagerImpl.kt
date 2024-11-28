@@ -15,7 +15,14 @@ class AnimationManagerImpl(
     rerollManager: (OpenableCrate) -> RerollManager,
 ) : CrateAnimationManager() {
     override val rerollManager = rerollManager(crate)
+
     override val playingAnimations: HashMap<UUID, MutableList<CrateAnimation>> = hashMapOf()
+
+
+    override fun playAnimation(animation: CrateAnimation) {
+        val animations = playingAnimations.getOrPut(animation.player.uniqueId) { ArrayList() }
+        animations += animation
+    }
 
     override fun tick() {
         for ((_, animations) in playingAnimations) {

@@ -2,6 +2,7 @@ package gg.aquatic.aquaticcrates.plugin.reward
 
 import gg.aquatic.aquaticcrates.api.crate.OpenableCrate
 import gg.aquatic.aquaticcrates.api.milestone.MilestoneManager
+import gg.aquatic.aquaticcrates.api.player.CrateProfileEntry
 import gg.aquatic.aquaticcrates.api.player.HistoryHandler
 import gg.aquatic.aquaticcrates.api.reward.Reward
 import gg.aquatic.aquaticcrates.api.reward.RewardAmountRange
@@ -14,6 +15,7 @@ import org.bukkit.entity.Player
 class RewardManagerImpl(
     val crate: OpenableCrate,
     val possibleRewardRanges: MutableList<RewardAmountRange>,
+    val guaranteedRewards: HashMap<Int,Reward>,
     milestoneManager: (OpenableCrate) -> MilestoneManager,
     override val rewards: HashMap<String, Reward>
 ) : RewardManager() {
@@ -40,6 +42,13 @@ class RewardManagerImpl(
 
         val possibleRewards = getPossibleRewards(player).values.toList()
         if (possibleRewards.isEmpty()) return finalRewards
+
+        val alltimeHistory = HistoryHandler.history(crate.identifier, CrateProfileEntry.HistoryType.ALLTIME, player)
+        if (guaranteedRewards.containsKey(alltimeHistory)) {
+            val reward = guaranteedRewards[alltimeHistory]!!
+            finalRewards[reward.id] = reward to 1
+            amountLeft--
+        }
 
         while (amountLeft > 0) {
             val randomReward = possibleRewards.toList().randomItem() ?: return finalRewards

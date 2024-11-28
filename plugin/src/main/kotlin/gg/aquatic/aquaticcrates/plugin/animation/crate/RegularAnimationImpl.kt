@@ -10,13 +10,15 @@ import gg.aquatic.aquaticseries.lib.audience.AquaticAudience
 import gg.aquatic.aquaticseries.lib.util.executeActions
 import org.bukkit.Location
 import org.bukkit.entity.Player
+import java.util.concurrent.CompletableFuture
 
 class RegularAnimationImpl(
     override val player: Player,
     override val animationManager: CrateAnimationManager,
     override val baseLocation: Location,
     override val rewards: MutableList<RolledReward>,
-    override val audience: AquaticAudience
+    override val audience: AquaticAudience,
+    val completionFuture: CompletableFuture<Void>
 ) : CrateAnimation() {
     override var state: State = State.PRE_OPEN
         private set
@@ -78,11 +80,10 @@ class RegularAnimationImpl(
             prop.onAnimationEnd()
         }
         player.sendMessage("Finalizing animation")
-        animationManager.playingAnimations.remove(player.uniqueId)
         for (reward in rewards) {
             reward.give(player)
         }
-        //.give(player, randomAmount)
+        completionFuture.complete(null)
     }
 
     override fun executeActions(actions: List<ConfiguredAction<Animation>>) {

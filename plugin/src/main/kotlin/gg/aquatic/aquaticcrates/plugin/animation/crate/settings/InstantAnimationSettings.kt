@@ -18,6 +18,7 @@ import org.bukkit.Location
 import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.entity.Player
 import java.util.*
+import java.util.concurrent.CompletableFuture
 
 class InstantAnimationSettings(
     override val finalAnimationTasks: MutableList<ConfiguredAction<Animation>>,
@@ -37,12 +38,13 @@ class InstantAnimationSettings(
         animationManager: CrateAnimationManager,
         location: Location,
         rolledRewards: MutableList<RolledReward>
-    ) {
+    ): CompletableFuture<Void> {
         for (rolledReward in rolledRewards) {
             rolledReward.give(player)
         }
 
         execute(player, animationManager)
+        return CompletableFuture.completedFuture(null)
     }
 
     companion object : AnimationSettingsFactory() {

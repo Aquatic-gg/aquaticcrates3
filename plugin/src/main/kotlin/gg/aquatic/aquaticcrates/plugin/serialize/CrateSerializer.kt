@@ -4,6 +4,7 @@ import gg.aquatic.aquaticcrates.api.crate.Crate
 import gg.aquatic.aquaticcrates.api.crate.OpenableCrate
 import gg.aquatic.aquaticcrates.api.interaction.CrateInteractAction
 import gg.aquatic.aquaticcrates.api.openprice.OpenPriceGroup
+import gg.aquatic.aquaticcrates.api.reward.Reward
 import gg.aquatic.aquaticcrates.plugin.CratesPlugin
 import gg.aquatic.aquaticcrates.plugin.animation.crate.AnimationManagerImpl
 import gg.aquatic.aquaticcrates.plugin.animation.crate.settings.InstantAnimationSettings
@@ -176,7 +177,19 @@ object CrateSerializer : BaseSerializer() {
 
         val animationSettingsFactory = cfg.getString("animation.type", "instant")!!.lowercase()
         val animationFactory = animationSerializers[animationSettingsFactory] ?: InstantAnimationSettings.Companion
-        val animationSettings = animationFactory.serialize(cfg.getConfigurationSection("animation")) ?: InstantAnimationSettings.Companion.serialize(null)!!
+        val animationSettings = animationFactory.serialize(cfg.getConfigurationSection("animation"))
+            ?: InstantAnimationSettings.serialize(null)
+
+        val guaranteedRewardsSection = cfg.getConfigurationSection("guaranteed-rewards")
+        val guaranteedRewards = HashMap<Int, Reward>()
+        if (guaranteedRewardsSection != null) {
+            for (milestoneStr in guaranteedRewardsSection.getKeys(false)) {
+                val milestone = milestoneStr.toIntOrNull() ?: continue
+                val section = guaranteedRewardsSection.getConfigurationSection(milestoneStr) ?: continue
+                val reward = loadReward(section) ?: continue
+                guaranteedRewards += milestone to reward
+            }
+        }
 
         return BasicCrate(
             identifier,
@@ -196,7 +209,7 @@ object CrateSerializer : BaseSerializer() {
             { bc ->
                 val possibleRewardRanges = loadRewardRanges(cfg.getSectionList("possible-rewards"))
                 val rewards = loadRewards(rewardSection)
-                RewardManagerImpl(bc, possibleRewardRanges, milestoneManager, rewards)
+                RewardManagerImpl(bc, possibleRewardRanges, guaranteedRewards, milestoneManager, rewards)
             },
             interactHandler,
             previewMenuPages

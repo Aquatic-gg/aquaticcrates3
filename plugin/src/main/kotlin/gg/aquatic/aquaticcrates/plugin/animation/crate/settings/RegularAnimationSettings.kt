@@ -14,6 +14,7 @@ import org.bukkit.Location
 import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.entity.Player
 import java.util.*
+import java.util.concurrent.CompletableFuture
 
 class RegularAnimationSettings(
     override val animationTasks: TreeMap<Int, MutableList<ConfiguredAction<Animation>>>,
@@ -32,22 +33,17 @@ class RegularAnimationSettings(
         animationManager: CrateAnimationManager,
         location: Location,
         rolledRewards: MutableList<RolledReward>
-    ) {
+    ): CompletableFuture<Void> {
         val animation = RegularAnimationImpl(
             player,
             animationManager,
             location,
             rolledRewards,
-            if (personal) FilterAudience { it == player } else GlobalAudience())
-
-        val animations = if (animationManager.playingAnimations.containsKey(player.uniqueId)) {
-            animationManager.playingAnimations[player.uniqueId]!!
-        } else {
-            val list = mutableListOf<CrateAnimation>()
-            animationManager.playingAnimations[player.uniqueId] = list
-            list
-        }
-        animations += animation
+            if (personal) FilterAudience { it == player } else GlobalAudience(),
+            CompletableFuture()
+        )
+        animationManager.playAnimation(animation)
+        return animation.completionFuture
     }
 
     companion object: AnimationSettingsFactory() {

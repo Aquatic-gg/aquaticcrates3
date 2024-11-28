@@ -22,6 +22,7 @@ abstract class CrateAnimationManager {
     }
 
     abstract val playingAnimations: HashMap<UUID, MutableList<CrateAnimation>>
+    abstract fun playAnimation(animation: CrateAnimation)
 
     abstract fun skipAnimation(player: Player)
 

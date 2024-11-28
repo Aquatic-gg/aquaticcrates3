@@ -9,7 +9,6 @@ import gg.aquatic.aquaticcrates.plugin.CratesPlugin
 import gg.aquatic.aquaticcrates.plugin.animation.pouch.PouchAnimationManagerImpl
 import gg.aquatic.aquaticcrates.plugin.animation.pouch.settings.PouchInstantAnimationSettings
 import gg.aquatic.aquaticcrates.plugin.animation.pouch.settings.PouchRegularAnimationSettings
-import gg.aquatic.aquaticcrates.plugin.pouch.PouchMilestoneManager
 import gg.aquatic.aquaticcrates.plugin.pouch.PouchPreviewMenuSettings
 import gg.aquatic.aquaticcrates.plugin.pouch.RewardPouch
 import gg.aquatic.aquaticseries.lib.util.Config
