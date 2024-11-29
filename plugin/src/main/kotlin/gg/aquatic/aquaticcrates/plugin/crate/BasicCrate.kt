@@ -15,6 +15,7 @@ import gg.aquatic.aquaticseries.lib.requirement.ConfiguredRequirement
 import gg.aquatic.aquaticseries.lib.util.runLaterSync
 import gg.aquatic.waves.interactable.settings.InteractableSettings
 import gg.aquatic.waves.item.AquaticItem
+import gg.aquatic.waves.item.AquaticItemInteractEvent
 import gg.aquatic.waves.item.modifyFastMeta
 import gg.aquatic.waves.registry.register
 import net.kyori.adventure.text.Component
@@ -66,10 +67,13 @@ class BasicCrate(
             val location = if (originalEvent is PlayerInteractEvent) {
                 originalEvent.clickedBlock?.location ?: originalEvent.player.location
             } else return@register
-            runLaterSync(2) {
-                CrateHandler.spawnCrate(this@BasicCrate,location.clone().add(.0,1.0, .0))
+            if (e.interactType == AquaticItemInteractEvent.InteractType.RIGHT) {
+                runLaterSync(2) {
+                    CrateHandler.spawnCrate(this@BasicCrate,location.clone().add(.0,1.0, .0))
+                }
+                e.player.sendMessage("Crate Spawned")
             }
-            e.player.sendMessage("Crate Spawned")
+
         }
     }
 
