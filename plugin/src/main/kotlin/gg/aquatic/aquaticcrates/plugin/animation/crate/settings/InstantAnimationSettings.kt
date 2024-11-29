@@ -40,7 +40,7 @@ class InstantAnimationSettings(
         rolledRewards: MutableList<RolledReward>
     ): CompletableFuture<Void> {
         for (rolledReward in rolledRewards) {
-            rolledReward.give(player)
+            rolledReward.give(player, false)
         }
 
         execute(player, animationManager)

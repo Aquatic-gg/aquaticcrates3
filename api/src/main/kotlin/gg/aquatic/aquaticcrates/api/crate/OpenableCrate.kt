@@ -8,6 +8,7 @@ import gg.aquatic.aquaticcrates.api.util.Rewardable
 import gg.aquatic.aquaticseries.lib.requirement.ConfiguredRequirement
 import gg.aquatic.aquaticseries.lib.util.checkRequirements
 import org.bukkit.entity.Player
+import java.util.concurrent.CompletableFuture
 
 abstract class OpenableCrate : Crate(), Rewardable {
 
@@ -18,4 +19,7 @@ abstract class OpenableCrate : Crate(), Rewardable {
     //abstract val skipAnimationWhileSneaking: Boolean
 
     abstract fun canBeOpened(player: Player): Boolean
+
+    abstract fun open(player: Player, location: org.bukkit.Location, spawnedCrate: SpawnedCrate?): CompletableFuture<Void>
+    abstract fun massOpen(player: Player, amount: Int, threads: Int?): CompletableFuture<Void>
 }

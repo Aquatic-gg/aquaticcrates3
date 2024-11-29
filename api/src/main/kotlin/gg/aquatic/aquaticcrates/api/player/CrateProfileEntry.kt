@@ -1,19 +1,21 @@
 package gg.aquatic.aquaticcrates.api.player
 
+import gg.aquatic.aquaticcrates.api.reward.RewardContainer
 import gg.aquatic.waves.profile.AquaticPlayer
 import gg.aquatic.waves.profile.module.ProfileModuleEntry
 import java.sql.Connection
+import java.util.concurrent.ConcurrentHashMap
 
-class CrateProfileEntry(aquaticPlayer: AquaticPlayer) : ProfileModuleEntry(aquaticPlayer) {
+class CrateProfileEntry(aquaticPlayer: AquaticPlayer, val rewardContainer: RewardContainer) : ProfileModuleEntry(aquaticPlayer) {
 
     val balance = hashMapOf<String, Int>()
 
     // CrateId, Entry
-    val newEntries = hashMapOf<String,MutableList<OpenHistoryEntry>>()
+    val newEntries = ConcurrentHashMap<String,MutableSet<OpenHistoryEntry>>()
     // CrateId, Daily/Weekly/Monthly/Alltime, Amount
-    val openHistory = hashMapOf<String, HashMap<HistoryType, Int>>()
+    val openHistory = ConcurrentHashMap<String, ConcurrentHashMap<HistoryType, Int>>()
     // CrateId:RewardId, Daily/Weekly/Monthly/Alltime, Amount
-    val rewardHistory = hashMapOf<String,HashMap<HistoryType, Int>>()
+    val rewardHistory = ConcurrentHashMap<String,ConcurrentHashMap<HistoryType, Int>>()
 
     fun openHistory(historyType: HistoryType): Int {
         var total = 0
@@ -31,21 +33,34 @@ class CrateProfileEntry(aquaticPlayer: AquaticPlayer) : ProfileModuleEntry(aquat
         return total
     }
 
+    fun saveAndPrune() {
+        // TODO: SAVE
+        newEntries.clear()
+    }
+
     fun registerCrateOpen(crateId: String, rewards: Map<String,Int>) {
-        val entries = newEntries.getOrPut(crateId) { arrayListOf() }
+        val entries = newEntries.getOrPut(crateId) { ConcurrentHashMap.newKeySet() }
         entries += OpenHistoryEntry(
             System.currentTimeMillis()/60000,
             crateId,
             HashMap(rewards)
         )
-        val crateHistory = openHistory.getOrPut(crateId) { hashMapOf() }
+        val crateHistory = openHistory.getOrPut(crateId) { ConcurrentHashMap() }
         for (historyType in HistoryType.entries) {
             val dailyCrate = crateHistory.getOrPut(historyType) { 0 }
             crateHistory[historyType] = dailyCrate + rewards.values.sum()
             for ((reward, amount) in rewards) {
-                val rewardHistory = this.rewardHistory.getOrPut("$crateId:$reward") { hashMapOf() }
+                val rewardHistory = this.rewardHistory.getOrPut("$crateId:$reward") { ConcurrentHashMap() }
                 val dailyReward = rewardHistory.getOrPut(historyType) { 0 }
                 rewardHistory[historyType] = dailyReward + amount
+            }
+        }
+        var totalSize = 0
+        for ((_,histories) in newEntries) {
+            totalSize += histories.size
+            if (totalSize >= 100) {
+                saveAndPrune()
+                break
             }
         }
     }

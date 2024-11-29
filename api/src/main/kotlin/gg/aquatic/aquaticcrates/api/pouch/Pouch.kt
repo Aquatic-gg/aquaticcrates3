@@ -107,7 +107,7 @@ abstract class Pouch(
         val rolledRewards = generateRewards(player)
         if (force) {
             for (rolledReward in rolledRewards) {
-                rolledReward.give(player)
+                rolledReward.give(player, false)
             }
             return
         }

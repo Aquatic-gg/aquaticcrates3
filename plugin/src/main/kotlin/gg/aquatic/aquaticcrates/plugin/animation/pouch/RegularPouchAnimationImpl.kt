@@ -80,7 +80,7 @@ class RegularPouchAnimationImpl(
         player.sendMessage("Finalizing animation")
         animationManager.playingAnimations.remove(player.uniqueId)
         for (reward in rewards) {
-            reward.give(player)
+            reward.give(player, false)
         }
         //.give(player, randomAmount)
     }

@@ -108,7 +108,7 @@ class CratePreviewMenu(
                     e.isCancelled = true
                     val p = e.whoClicked as? Player ?: return@ButtonComponent
                     if (p.hasPermission("aquaticcrates.admin")) {
-                        reward.give(player, 1)
+                        reward.give(player, 1, false)
                     }
                 },
                 10,

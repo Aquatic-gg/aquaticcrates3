@@ -10,6 +10,7 @@ import gg.aquatic.aquaticcrates.api.hologram.HologramSettings
 import gg.aquatic.aquaticcrates.api.openprice.OpenPriceGroup
 import gg.aquatic.aquaticcrates.api.reward.RewardManager
 import gg.aquatic.aquaticcrates.plugin.preview.CratePreviewMenuSettings
+import gg.aquatic.aquaticseries.lib.action.ConfiguredAction
 import gg.aquatic.aquaticseries.lib.requirement.ConfiguredRequirement
 import gg.aquatic.aquaticseries.lib.util.runLaterSync
 import gg.aquatic.waves.interactable.settings.InteractableSettings
@@ -33,7 +34,9 @@ class BasicCrate(
     key: (BasicCrate) -> Key,
     rewardManager: (BasicCrate) -> RewardManager,
     interactHandler: (BasicCrate) -> CrateInteractHandler,
-    val previewMenuSettings: MutableList<CratePreviewMenuSettings>
+    val previewMenuSettings: MutableList<CratePreviewMenuSettings>,
+    val massOpenFinalActions: MutableList<ConfiguredAction<Player>>,
+    val massOpenPerRewardActions: MutableList<ConfiguredAction<Player>>
 ) : OpenableCrate() {
 
     var openManager = BasicOpenManager(this)
@@ -70,8 +73,12 @@ class BasicCrate(
         }
     }
 
-    fun open(player: Player, location: org.bukkit.Location, spawnedCrate: SpawnedCrate?): CompletableFuture<Void> {
+    override fun open(player: Player, location: org.bukkit.Location, spawnedCrate: SpawnedCrate?): CompletableFuture<Void> {
         return openManager.open(player, location, spawnedCrate)
+    }
+
+    override fun massOpen(player: Player, amount: Int, threads: Int?): CompletableFuture<Void> {
+        return openManager.massOpen(player, amount, threads)
     }
 
 

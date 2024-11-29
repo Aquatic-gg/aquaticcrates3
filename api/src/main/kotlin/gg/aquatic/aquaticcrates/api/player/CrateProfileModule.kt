@@ -1,5 +1,6 @@
 package gg.aquatic.aquaticcrates.api.player
 
+import gg.aquatic.aquaticcrates.api.reward.RewardContainer
 import gg.aquatic.waves.profile.AquaticPlayer
 import gg.aquatic.waves.profile.module.ProfileModule
 import gg.aquatic.waves.profile.module.ProfileModuleEntry
@@ -14,7 +15,8 @@ object CrateProfileModule: ProfileModule {
 
     override fun loadEntry(player: AquaticPlayer): ProfileModuleEntry {
         return CrateProfileEntry(
-            player
+            player,
+            RewardContainer()
         )
     }
 }

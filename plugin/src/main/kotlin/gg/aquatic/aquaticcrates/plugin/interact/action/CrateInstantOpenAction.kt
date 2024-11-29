@@ -1,8 +1,7 @@
 package gg.aquatic.aquaticcrates.plugin.interact.action
 
-import gg.aquatic.aquaticcrates.api.crate.OpenableCrate
 import gg.aquatic.aquaticcrates.api.interaction.CrateInteractAction
-import gg.aquatic.aquaticcrates.plugin.animation.crate.settings.InstantAnimationSettings
+import gg.aquatic.aquaticcrates.plugin.crate.BasicCrate
 import gg.aquatic.aquaticseries.lib.action.AbstractAction
 import gg.aquatic.aquaticseries.lib.util.argument.AquaticObjectArgument
 import org.bukkit.Bukkit
@@ -17,11 +16,8 @@ class CrateInstantOpenAction: AbstractAction<CrateInteractAction>() {
         Bukkit.broadcastMessage("Instant Opening crate!")
         val crate = binder.crate
         val player = binder.player
-        if (crate is OpenableCrate) {
-            for (reward in crate.rewardManager.getRewards(player)) {
-                reward.give(player)
-            }
-            InstantAnimationSettings.execute(player,crate.animationManager)
+        if (crate is BasicCrate) {
+            crate.openManager.instantOpen(player)
         }
     }
 

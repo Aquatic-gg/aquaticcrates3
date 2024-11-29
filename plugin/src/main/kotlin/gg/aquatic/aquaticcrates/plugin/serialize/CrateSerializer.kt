@@ -191,6 +191,9 @@ object CrateSerializer : BaseSerializer() {
             }
         }
 
+        val massOpenFinalActions = ActionSerializer.fromSections<Player>(cfg.getSectionList("mass-open.final-tasks")).toMutableList()
+        val massOpenPerRewardActions = ActionSerializer.fromSections<Player>(cfg.getSectionList("mass-open.per-reward-tasks")).toMutableList()
+
         return BasicCrate(
             identifier,
             cfg.getString("display-name") ?: identifier,
@@ -212,7 +215,9 @@ object CrateSerializer : BaseSerializer() {
                 RewardManagerImpl(bc, possibleRewardRanges, guaranteedRewards, milestoneManager, rewards)
             },
             interactHandler,
-            previewMenuPages
+            previewMenuPages,
+            massOpenFinalActions,
+            massOpenPerRewardActions
         )
     }
 

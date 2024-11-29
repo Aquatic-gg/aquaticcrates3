@@ -4,6 +4,7 @@ import gg.aquatic.aquaticcrates.api.animation.Animation
 import gg.aquatic.aquaticcrates.api.hologram.AquaticHologramSettings
 import gg.aquatic.aquaticcrates.api.player.CrateProfileEntry
 import gg.aquatic.aquaticcrates.api.reward.Reward
+import gg.aquatic.aquaticcrates.api.reward.RewardAction
 import gg.aquatic.aquaticcrates.api.reward.RewardAmountRange
 import gg.aquatic.aquaticcrates.plugin.reward.RewardImpl
 import gg.aquatic.aquaticseries.lib.action.ConfiguredAction
@@ -19,6 +20,7 @@ import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.entity.Player
 import org.bukkit.util.Vector
 import java.util.*
+import kotlin.collections.ArrayList
 
 abstract class BaseSerializer {
 
@@ -46,7 +48,15 @@ abstract class BaseSerializer {
         val displayName = section.getString("display-name") ?: id
         val globalLimits: HashMap<CrateProfileEntry.HistoryType, Int> = HashMap()
         val perPlayerLimits: HashMap<CrateProfileEntry.HistoryType, Int> = HashMap()
-        val actions = ActionSerializer.fromSections<Player>(section.getSectionList("actions"))
+
+        val actions = ArrayList<RewardAction>()
+        val actionSections = section.getSectionList("actions")
+        for (actionSection in actionSections) {
+            val massOpenExecute = actionSection.getBoolean("mass-open-execute", true)
+            val action = ActionSerializer.fromSection<Player>(actionSection) ?: continue
+            actions += RewardAction(massOpenExecute, action)
+        }
+
         val requirements = RequirementSerializer.fromSections<Player>(section.getSectionList("requirements"))
         val winCrateAnimation = section.getString("win-crate-animation")
         val hologramSettings = loadAquaticHologram(section.getConfigurationSection("hologram"))

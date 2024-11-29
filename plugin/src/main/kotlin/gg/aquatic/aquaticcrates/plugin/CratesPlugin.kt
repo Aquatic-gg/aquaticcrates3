@@ -12,9 +12,12 @@ import gg.aquatic.aquaticcrates.plugin.animation.action.model.HideModelAction
 import gg.aquatic.aquaticcrates.plugin.animation.action.model.PlayModelAnimationAction
 import gg.aquatic.aquaticcrates.plugin.animation.action.model.ShowModelAction
 import gg.aquatic.aquaticcrates.plugin.animation.action.path.LinearPathAction
+import gg.aquatic.aquaticcrates.plugin.command.MassOpenCommand
 import gg.aquatic.aquaticcrates.plugin.crate.BasicCrate
 import gg.aquatic.aquaticcrates.plugin.interact.action.*
 import gg.aquatic.aquaticcrates.plugin.serialize.CrateSerializer
+import gg.aquatic.aquaticseries.lib.command.AquaticBaseCommand
+import gg.aquatic.aquaticseries.lib.command.register
 import gg.aquatic.aquaticseries.lib.util.*
 import gg.aquatic.waves.profile.ProfilesModule
 import gg.aquatic.waves.registry.WavesRegistry
@@ -53,6 +56,17 @@ class CratesPlugin : AbstractCratesPlugin() {
             }
         }
         startTicker()
+        AquaticBaseCommand(
+            "aquaticcrates",
+            "Base command of AquaticCrates plugin",
+            mutableListOf(
+                "acrates"
+            ),
+            mutableMapOf(
+                "massopen" to MassOpenCommand
+            ),
+            listOf()
+        ).register("aquaticcrates")
     }
 
     private fun startTicker() {

@@ -81,7 +81,7 @@ class RegularAnimationImpl(
         }
         player.sendMessage("Finalizing animation")
         for (reward in rewards) {
-            reward.give(player)
+            reward.give(player, false)
         }
         completionFuture.complete(null)
     }
