@@ -21,6 +21,7 @@ import gg.aquatic.aquaticcrates.plugin.interact.action.CratePreviewAction
 import gg.aquatic.aquaticcrates.plugin.milestone.MilestoneManagerImpl
 import gg.aquatic.aquaticcrates.plugin.preview.CratePreviewMenuSettings
 import gg.aquatic.aquaticcrates.plugin.reroll.RerollManagerImpl
+import gg.aquatic.aquaticcrates.plugin.reroll.input.inventory.InventoryRerollInput
 import gg.aquatic.aquaticcrates.plugin.reward.RewardManagerImpl
 import gg.aquatic.aquaticseries.lib.action.ConfiguredAction
 import gg.aquatic.aquaticseries.lib.block.impl.VanillaBlock
@@ -34,6 +35,7 @@ import gg.aquatic.waves.registry.serializer.ActionSerializer
 import gg.aquatic.waves.registry.serializer.InteractableSerializer
 import gg.aquatic.waves.registry.serializer.InventorySerializer
 import gg.aquatic.waves.registry.serializer.RequirementSerializer
+import io.ktor.server.config.ConfigLoader.Companion.load
 import org.bukkit.Material
 import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.entity.Player
@@ -48,6 +50,9 @@ object CrateSerializer : BaseSerializer() {
     val animationSerializers = hashMapOf(
         "instant" to InstantAnimationSettings.Companion,
         "regular" to RegularAnimationSettings.Companion,
+    )
+    val rerollInputSerializers = hashMapOf(
+        "inventory" to InventoryRerollInput.Companion
     )
 
     fun loadCrates(): HashMap<String, Crate> {
@@ -91,8 +96,15 @@ object CrateSerializer : BaseSerializer() {
             RequirementSerializer.fromSections<Player>(cfg.getSectionList("open-requirements")).toMutableList()
         val openPriceGroups = ArrayList<OpenPriceGroup>()
 
+        val rerollInputSection = cfg.getConfigurationSection("reroll")
+        val type = rerollInputSection?.getString("type", "inventory") ?: "inventory"
+        val serializer = rerollInputSerializers[type] ?: InventoryRerollInput.Companion
         val rerollManager = { crate: OpenableCrate ->
-            RerollManagerImpl(crate, hashMapOf())
+            val input = serializer.serialize(cfg)
+            if (input != null) {
+                RerollManagerImpl(crate, hashMapOf(), input)
+            }
+            null
         }
         val keySection = cfg.getConfigurationSection("key")
         if (keySection == null) {

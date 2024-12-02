@@ -28,6 +28,7 @@ subprojects {
     repositories {
         mavenCentral()
         mavenLocal()
+        maven(url = "https://mvn.lumine.io/repository/maven-public/")
         maven("https://hub.spigotmc.org/nexus/content/repositories/snapshots/")
         maven("https://jitpack.io")
         maven {

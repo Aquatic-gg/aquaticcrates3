@@ -12,7 +12,7 @@ import kotlin.collections.HashMap
 class AnimationManagerImpl(
     override val crate: OpenableCrate,
     override val animationSettings: CrateAnimationSettings,
-    rerollManager: (OpenableCrate) -> RerollManager,
+    rerollManager: (OpenableCrate) -> RerollManager?,
 ) : CrateAnimationManager() {
     override val rerollManager = rerollManager(crate)
 

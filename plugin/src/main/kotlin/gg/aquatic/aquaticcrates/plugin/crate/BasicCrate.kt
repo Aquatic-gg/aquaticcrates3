@@ -8,6 +8,7 @@ import gg.aquatic.aquaticcrates.api.crate.OpenableCrate
 import gg.aquatic.aquaticcrates.api.crate.SpawnedCrate
 import gg.aquatic.aquaticcrates.api.hologram.HologramSettings
 import gg.aquatic.aquaticcrates.api.openprice.OpenPriceGroup
+import gg.aquatic.aquaticcrates.api.player.PlayerHandler
 import gg.aquatic.aquaticcrates.api.reward.RewardManager
 import gg.aquatic.aquaticcrates.plugin.preview.CratePreviewMenuSettings
 import gg.aquatic.aquaticseries.lib.action.ConfiguredAction
@@ -19,6 +20,7 @@ import gg.aquatic.waves.item.AquaticItemInteractEvent
 import gg.aquatic.waves.item.modifyFastMeta
 import gg.aquatic.waves.registry.register
 import net.kyori.adventure.text.Component
+import org.bukkit.Location
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.ItemStack
@@ -45,13 +47,15 @@ class BasicCrate(
     override var interactHandler: CrateInteractHandler = interactHandler(this)
     override val rewardManager: RewardManager = rewardManager(this)
     override val animationManager = animationManager(this)
+    override val key = key(this)
 
     val crateItem = AquaticItem(
         ItemStack(
-            org.bukkit.Material.CHEST).apply {
-                modifyFastMeta {
-                    displayName = Component.text("Crate: $identifier")
-                }
+            org.bukkit.Material.CHEST
+        ).apply {
+            modifyFastMeta {
+                displayName = Component.text("Crate: $identifier")
+            }
         },
         null,
         null,
@@ -61,7 +65,7 @@ class BasicCrate(
         null,
         null
     ).apply {
-        register("aquaticcrates-crates", identifier) { e->
+        register("aquaticcrates-crates", identifier) { e ->
             e.isCancelled = true
             val originalEvent = e.originalEvent
             val location = if (originalEvent is PlayerInteractEvent) {
@@ -69,7 +73,7 @@ class BasicCrate(
             } else return@register
             if (e.interactType == AquaticItemInteractEvent.InteractType.RIGHT) {
                 runLaterSync(2) {
-                    CrateHandler.spawnCrate(this@BasicCrate,location.clone().add(.0,1.0, .0))
+                    CrateHandler.spawnCrate(this@BasicCrate, location.clone().add(.0, 1.0, .0))
                 }
                 e.player.sendMessage("Crate Spawned")
             }
@@ -77,17 +81,36 @@ class BasicCrate(
         }
     }
 
-    override fun open(player: Player, location: org.bukkit.Location, spawnedCrate: SpawnedCrate?): CompletableFuture<Void> {
+    override fun tryOpen(player: Player, location: Location, spawnedCrate: SpawnedCrate?): CompletableFuture<Void> {
+        if (!PlayerHandler.takeKeys(player, key, 1)) {
+            player.sendMessage("You do not have enough keys to open this crate!")
+            return CompletableFuture.completedFuture(null)
+        }
+        return open(player, location, spawnedCrate)
+    }
+
+    override fun open(
+        player: Player,
+        location: org.bukkit.Location,
+        spawnedCrate: SpawnedCrate?
+    ): CompletableFuture<Void> {
         return openManager.open(player, location, spawnedCrate)
+    }
+
+    override fun tryMassOpen(player: Player, amount: Int, threads: Int?): CompletableFuture<Void> {
+        if (!PlayerHandler.takeKeys(player, key, amount)) {
+            player.sendMessage("You do not have enough keys to open this crate!")
+            return CompletableFuture.completedFuture(null)
+        }
+        return massOpen(
+            player,
+            amount,
+            threads
+        )
     }
 
     override fun massOpen(player: Player, amount: Int, threads: Int?): CompletableFuture<Void> {
         return openManager.massOpen(player, amount, threads)
     }
 
-
-    override val key = key(this)
-    override fun canBeOpened(player: Player): Boolean {
-        return true
-    }
 }

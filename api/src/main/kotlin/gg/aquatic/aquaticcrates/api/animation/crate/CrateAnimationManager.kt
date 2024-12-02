@@ -11,7 +11,7 @@ abstract class CrateAnimationManager {
 
     abstract val crate: Crate
     abstract val animationSettings: CrateAnimationSettings
-    abstract val rerollManager: RerollManager
+    abstract val rerollManager: RerollManager?
 
     open fun showAnimationTitle(title: AnimationTitle, player: Player) {
 

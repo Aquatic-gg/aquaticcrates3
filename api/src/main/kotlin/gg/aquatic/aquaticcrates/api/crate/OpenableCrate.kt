@@ -16,10 +16,9 @@ abstract class OpenableCrate : Crate(), Rewardable {
     abstract val openRequirements: MutableList<ConfiguredRequirement<Player>>
     abstract val openPriceGroups: MutableList<OpenPriceGroup>
     abstract val animationManager: CrateAnimationManager
-    //abstract val skipAnimationWhileSneaking: Boolean
 
-    abstract fun canBeOpened(player: Player): Boolean
-
+    abstract fun tryOpen(player: Player, location: org.bukkit.Location, spawnedCrate: SpawnedCrate?): CompletableFuture<Void>
     abstract fun open(player: Player, location: org.bukkit.Location, spawnedCrate: SpawnedCrate?): CompletableFuture<Void>
+    abstract fun tryMassOpen(player: Player, amount: Int, threads: Int?): CompletableFuture<Void>
     abstract fun massOpen(player: Player, amount: Int, threads: Int?): CompletableFuture<Void>
 }
