@@ -4,6 +4,7 @@ import gg.aquatic.aquaticcrates.api.crate.Key
 import gg.aquatic.waves.profile.toAquaticPlayer
 import gg.aquatic.waves.util.readEntityMetadata
 import org.bukkit.entity.Player
+import org.bukkit.inventory.ItemStack
 
 object PlayerHandler {
 
@@ -28,6 +29,7 @@ object PlayerHandler {
         return vKeys + pKeys
     }
 
+    /*
     fun takeKeys(player: Player, key: Key, amount: Int): Boolean {
         val entry = player.toAquaticPlayer()?.crateEntry() ?: return false
         var remaining = amount
@@ -53,6 +55,39 @@ object PlayerHandler {
                 remaining -= stack.amount
                 stack.amount = 0
             }
+        }
+        return true
+    }
+     */
+
+    fun takeKeys(player: Player, id: String, amount: Int): Boolean {
+        var currentAmount = virtualKeys(player, id) ?: return false
+        val items = ArrayList<ItemStack>()
+        for (storageContent in player.inventory.storageContents) {
+            val pkey = Key.get(storageContent) ?: continue
+            if (pkey.crate.identifier != id) continue
+            if (storageContent.amount < amount) continue
+            items.add(storageContent)
+            currentAmount+=storageContent.amount
+            if (currentAmount >= amount) {
+                currentAmount=amount
+                break
+            }
+        }
+        if (currentAmount < amount) return false
+        for (item in items) {
+            if (item.amount > currentAmount) {
+                item.amount-=currentAmount
+                return true
+            }
+            val toRemove = item.amount
+            item.amount = 0
+            currentAmount-=toRemove
+            if (currentAmount == 0) return true
+        }
+        if (currentAmount > 0) {
+            val entry = player.toAquaticPlayer()?.crateEntry() ?: return false
+            entry.take(currentAmount, key.crate.identifier)
         }
         return true
     }

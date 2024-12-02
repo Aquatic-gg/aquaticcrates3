@@ -11,6 +11,7 @@ import gg.aquatic.aquaticcrates.api.openprice.OpenPriceGroup
 import gg.aquatic.aquaticcrates.api.player.PlayerHandler
 import gg.aquatic.aquaticcrates.api.reward.RewardManager
 import gg.aquatic.aquaticcrates.plugin.preview.CratePreviewMenuSettings
+import gg.aquatic.aquaticcrates.plugin.takeKeys
 import gg.aquatic.aquaticseries.lib.action.ConfiguredAction
 import gg.aquatic.aquaticseries.lib.requirement.ConfiguredRequirement
 import gg.aquatic.aquaticseries.lib.util.runLaterSync
@@ -82,7 +83,7 @@ class BasicCrate(
     }
 
     override fun tryOpen(player: Player, location: Location, spawnedCrate: SpawnedCrate?): CompletableFuture<Void> {
-        if (!PlayerHandler.takeKeys(player, key, 1)) {
+        if (!player.takeKeys(identifier, 1)) {
             player.sendMessage("You do not have enough keys to open this crate!")
             return CompletableFuture.completedFuture(null)
         }
@@ -91,14 +92,14 @@ class BasicCrate(
 
     override fun open(
         player: Player,
-        location: org.bukkit.Location,
+        location: Location,
         spawnedCrate: SpawnedCrate?
     ): CompletableFuture<Void> {
         return openManager.open(player, location, spawnedCrate)
     }
 
     override fun tryMassOpen(player: Player, amount: Int, threads: Int?): CompletableFuture<Void> {
-        if (!PlayerHandler.takeKeys(player, key, amount)) {
+        if (!player.takeKeys(identifier, amount)) {
             player.sendMessage("You do not have enough keys to open this crate!")
             return CompletableFuture.completedFuture(null)
         }
