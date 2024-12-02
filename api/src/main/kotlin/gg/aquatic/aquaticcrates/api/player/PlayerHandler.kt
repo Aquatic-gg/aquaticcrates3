@@ -87,7 +87,7 @@ object PlayerHandler {
         }
         if (currentAmount > 0) {
             val entry = player.toAquaticPlayer()?.crateEntry() ?: return false
-            entry.take(currentAmount, key.crate.identifier)
+            entry.take(currentAmount, id)
         }
         return true
     }
