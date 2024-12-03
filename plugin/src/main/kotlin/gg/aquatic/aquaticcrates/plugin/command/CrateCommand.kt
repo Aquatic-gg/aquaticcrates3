@@ -76,18 +76,18 @@ object CrateCommand : ICommand {
                 crate.tryOpen(player, player.location, null)
             }
 
-            "mass-open" -> {
+            "massopen" -> {
                 if (args.size < 5) {
-                    sender.sendMessage("Usage: /acrates crate massopen <player> <crate> <amount> [threads] [-nokey]")
+                    sender.sendMessage("Usage: /acrates crate massopen <crate> <player> <amount> [threads] [-nokey]")
                     return
                 }
-                val playerName = args[2]
+                val playerName = args[3]
                 val player = Bukkit.getPlayer(playerName)
                 if (player == null) {
                     sender.sendMessage("Player $playerName not found")
                     return
                 }
-                val crateName = args[3]
+                val crateName = args[2]
                 val crate = CrateHandler.crates[crateName]
                 if (crate == null) {
                     sender.sendMessage("Crate $crateName not found")
@@ -159,12 +159,13 @@ object CrateCommand : ICommand {
             "massopen" -> {
                 when (args.size) {
                     2 -> {
-                        Bukkit.getOnlinePlayers().map { it.name }
+                        CrateHandler.crates.keys.toList()
                     }
 
                     3 -> {
-                        CrateHandler.crates.keys.toList()
+                        Bukkit.getOnlinePlayers().map { it.name }
                     }
+
 
                     4 -> {
                         listOf("1", "2", "3", "4", "5", "6", "7", "8", "9", "10")
