@@ -34,6 +34,7 @@ class CratesPlugin : AbstractCratesPlugin() {
             get() {
                 return AbstractCratesPlugin.INSTANCE
             }
+        val spawnedCratesConfig = Config("spawnedcrates.yml", INSTANCE)
     }
 
     override fun onLoad() {
@@ -92,7 +93,7 @@ class CratesPlugin : AbstractCratesPlugin() {
         loading = true
         runAsync {
             CrateHandler.crates += CrateSerializer.loadCrates()
-            CrateHandler.loadSpawnedCrates(BasicCrate.spawnedCratesConfig)
+            CrateHandler.loadSpawnedCrates(spawnedCratesConfig)
             future.complete(null)
             loading = false
         }

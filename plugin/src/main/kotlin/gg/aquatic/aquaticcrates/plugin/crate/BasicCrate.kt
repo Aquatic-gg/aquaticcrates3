@@ -45,12 +45,7 @@ class BasicCrate(
     val massOpenPerRewardActions: MutableList<ConfiguredAction<Player>>
 ) : OpenableCrate() {
 
-    companion object {
-        val spawnedCratesConfig = Config("spawnedcrates.yml", CratesPlugin.INSTANCE)
-    }
-
     var openManager = BasicOpenManager(this)
-
     override var interactHandler: CrateInteractHandler = interactHandler(this)
     override val rewardManager: RewardManager = rewardManager(this)
     override val animationManager = animationManager(this)
@@ -82,7 +77,7 @@ class BasicCrate(
                 runLaterSync(2) {
                     CrateHandler.spawnCrate(this@BasicCrate, location.clone().add(.0, 1.0, .0))
                     runAsync {
-                        CrateHandler.saveSpawnedCrates(spawnedCratesConfig)
+                        CrateHandler.saveSpawnedCrates(CratesPlugin.spawnedCratesConfig)
                     }
                 }
                 e.player.sendMessage("Crate Spawned")
