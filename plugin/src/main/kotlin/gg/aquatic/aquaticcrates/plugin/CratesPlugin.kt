@@ -12,6 +12,7 @@ import gg.aquatic.aquaticcrates.plugin.animation.action.model.HideModelAction
 import gg.aquatic.aquaticcrates.plugin.animation.action.model.PlayModelAnimationAction
 import gg.aquatic.aquaticcrates.plugin.animation.action.model.ShowModelAction
 import gg.aquatic.aquaticcrates.plugin.animation.action.path.LinearPathAction
+import gg.aquatic.aquaticcrates.plugin.command.KeyCommand
 import gg.aquatic.aquaticcrates.plugin.command.MassOpenCommand
 import gg.aquatic.aquaticcrates.plugin.crate.BasicCrate
 import gg.aquatic.aquaticcrates.plugin.interact.action.*
@@ -63,7 +64,8 @@ class CratesPlugin : AbstractCratesPlugin() {
                 "acrates"
             ),
             mutableMapOf(
-                "massopen" to MassOpenCommand
+                "massopen" to MassOpenCommand,
+                "key" to KeyCommand
             ),
             listOf()
         ).register("aquaticcrates")

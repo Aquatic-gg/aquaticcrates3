@@ -50,7 +50,7 @@ class RegularAnimationSettings(
         override fun serialize(section: ConfigurationSection?): CrateAnimationSettings? {
             if (section == null) return null
             return RegularAnimationSettings(
-                loadAnimationTasks(section),
+                loadAnimationTasks(section.getConfigurationSection("tasks")),
                 loadAnimationLength(section),
                 loadPreAnimationDelay(section),
                 loadPreAnimationTasks(section),
