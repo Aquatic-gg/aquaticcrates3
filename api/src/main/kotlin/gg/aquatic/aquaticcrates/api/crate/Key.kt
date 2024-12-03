@@ -44,8 +44,8 @@ abstract class Key(
                 originalEvent.clickedBlock?.location ?: originalEvent.player.location
             } else it.player.location
 
+            it.isCancelled = true
             if (interactHandler.handleInteract(it.player, it.interactType, location, null)) {
-                it.isCancelled = true
                 return@register
             }
         }

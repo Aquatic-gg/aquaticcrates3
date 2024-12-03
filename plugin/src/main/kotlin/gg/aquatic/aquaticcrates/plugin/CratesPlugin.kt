@@ -24,6 +24,7 @@ import gg.aquatic.waves.profile.ProfilesModule
 import gg.aquatic.waves.registry.WavesRegistry
 import gg.aquatic.waves.registry.registerAction
 import org.bukkit.event.player.PlayerJoinEvent
+import org.bukkit.event.world.WorldLoadEvent
 import java.util.concurrent.CompletableFuture
 
 class CratesPlugin : AbstractCratesPlugin() {
@@ -56,6 +57,11 @@ class CratesPlugin : AbstractCratesPlugin() {
                 }
             }
         }
+
+        event<WorldLoadEvent> {
+            CrateHandler.onWorldLoad(it.world)
+        }
+
         startTicker()
         AquaticBaseCommand(
             "aquaticcrates",
@@ -86,6 +92,7 @@ class CratesPlugin : AbstractCratesPlugin() {
         loading = true
         runAsync {
             CrateHandler.crates += CrateSerializer.loadCrates()
+            CrateHandler.loadSpawnedCrates(BasicCrate.spawnedCratesConfig)
             future.complete(null)
             loading = false
         }

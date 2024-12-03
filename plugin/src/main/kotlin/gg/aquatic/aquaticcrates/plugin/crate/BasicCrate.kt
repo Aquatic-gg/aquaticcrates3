@@ -8,12 +8,14 @@ import gg.aquatic.aquaticcrates.api.crate.OpenableCrate
 import gg.aquatic.aquaticcrates.api.crate.SpawnedCrate
 import gg.aquatic.aquaticcrates.api.hologram.HologramSettings
 import gg.aquatic.aquaticcrates.api.openprice.OpenPriceGroup
-import gg.aquatic.aquaticcrates.api.player.PlayerHandler
 import gg.aquatic.aquaticcrates.api.reward.RewardManager
+import gg.aquatic.aquaticcrates.plugin.CratesPlugin
 import gg.aquatic.aquaticcrates.plugin.preview.CratePreviewMenuSettings
 import gg.aquatic.aquaticcrates.plugin.takeKeys
 import gg.aquatic.aquaticseries.lib.action.ConfiguredAction
 import gg.aquatic.aquaticseries.lib.requirement.ConfiguredRequirement
+import gg.aquatic.aquaticseries.lib.util.Config
+import gg.aquatic.aquaticseries.lib.util.runAsync
 import gg.aquatic.aquaticseries.lib.util.runLaterSync
 import gg.aquatic.waves.interactable.settings.InteractableSettings
 import gg.aquatic.waves.item.AquaticItem
@@ -42,6 +44,10 @@ class BasicCrate(
     val massOpenFinalActions: MutableList<ConfiguredAction<Player>>,
     val massOpenPerRewardActions: MutableList<ConfiguredAction<Player>>
 ) : OpenableCrate() {
+
+    companion object {
+        val spawnedCratesConfig = Config("spawnedcrates.yml", CratesPlugin.INSTANCE)
+    }
 
     var openManager = BasicOpenManager(this)
 
@@ -75,6 +81,9 @@ class BasicCrate(
             if (e.interactType == AquaticItemInteractEvent.InteractType.RIGHT) {
                 runLaterSync(2) {
                     CrateHandler.spawnCrate(this@BasicCrate, location.clone().add(.0, 1.0, .0))
+                    runAsync {
+                        CrateHandler.saveSpawnedCrates(spawnedCratesConfig)
+                    }
                 }
                 e.player.sendMessage("Crate Spawned")
             }
