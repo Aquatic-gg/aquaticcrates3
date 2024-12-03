@@ -1,6 +1,7 @@
 package gg.aquatic.aquaticcrates.plugin.command
 
 import gg.aquatic.aquaticcrates.api.crate.CrateHandler
+import gg.aquatic.aquaticcrates.api.crate.OpenableCrate
 import gg.aquatic.aquaticcrates.api.player.crateEntry
 import gg.aquatic.aquaticseries.lib.util.ICommand
 import gg.aquatic.waves.profile.toAquaticPlayer
@@ -23,7 +24,7 @@ object KeyCommand : ICommand {
         when (args[1].lowercase()) { // Start from args[1] to account for "key"
             "give" -> {
                 if (args.size < 5) { // Ensure enough arguments for "give"
-                    sender.sendMessage("Usage: /acrates key give <crate> <player> <amount> [-s] [-off]")
+                    sender.sendMessage("Usage: /acrates key give <crate> <player> <amount> [-s] [-off] [-v]")
                     return
                 }
                 val crateId = args[2]
@@ -41,6 +42,7 @@ object KeyCommand : ICommand {
                 // Handle optional flags
                 val isSilent = args.contains("-s")
                 val isOffline = args.contains("-off")
+                val isVirtual = args.contains("-v")
 
                 val player = Bukkit.getPlayer(playerName)
                 if (player == null) {
@@ -58,7 +60,14 @@ object KeyCommand : ICommand {
                     return
                 }
 
-                aPlayer.give(amount, crateId)
+                if (isVirtual) {
+                    aPlayer.give(amount, crateId)
+                    return
+                } else {
+                    if (crate is OpenableCrate) {
+                        crate.key.giveItem(amount, player)
+                    }
+                }
                 if (!isSilent) {
                     player.sendMessage("You have received key!")
                     sender.sendMessage("Key given!")
@@ -84,6 +93,7 @@ object KeyCommand : ICommand {
                 // Handle optional flags
                 val isSilent = args.contains("-s")
                 val isOffline = args.contains("-off")
+                val isVirtual = args.contains("-v")
 
                 val given = hashSetOf<String>()
                 for (player in Bukkit.getOnlinePlayers()) {
@@ -92,13 +102,22 @@ object KeyCommand : ICommand {
                         continue
                     }
                     given += player.name
-                    aPlayer.give(amount, crateId)
+                    if (isVirtual) {
+                        aPlayer.give(amount, crateId)
+                    } else {
+                        if (crate is OpenableCrate) {
+                            crate.key.giveItem(amount, player)
+                        }
+                    }
                     if (!isSilent) {
                         player.sendMessage("You have received key!")
                     }
                 }
 
                 if (isOffline) {
+                    if (!isVirtual) {
+                        sender.sendMessage("Keys are gonna be given as virtual keys to offline players!")
+                    }
                     sender.sendMessage("Trying to give the key to offline players...")
                     // TODO: Offline player give
                 }
@@ -138,7 +157,8 @@ object KeyCommand : ICommand {
                     else -> {
                         listOf(
                             "-s",
-                            "-off"
+                            "-off",
+                            "-v"
                         )
                     }
                 }
@@ -155,7 +175,8 @@ object KeyCommand : ICommand {
                     else -> {
                         listOf(
                             "-s",
-                            "-off"
+                            "-off",
+                            "-v"
                         )
                     }
                 }
