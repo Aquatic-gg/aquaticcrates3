@@ -1,5 +1,6 @@
 package gg.aquatic.aquaticcrates.plugin.interact.action
 
+import gg.aquatic.aquaticcrates.api.crate.OpenableCrate
 import gg.aquatic.aquaticcrates.api.interaction.CrateInteractAction
 import gg.aquatic.aquaticcrates.plugin.crate.BasicCrate
 import gg.aquatic.aquaticseries.lib.action.AbstractAction
@@ -14,8 +15,8 @@ class CrateOpenAction : AbstractAction<CrateInteractAction>() {
         textUpdater: BiFunction<CrateInteractAction, String, String>
     ) {
         val crate = binder.crate
-        if (crate is BasicCrate) {
-            crate.open(binder.player, binder.interactedLocation, binder.spawnedCrate)
+        if (crate is OpenableCrate) {
+            crate.tryOpen(binder.player, binder.interactedLocation, binder.spawnedCrate)
         }
     }
 

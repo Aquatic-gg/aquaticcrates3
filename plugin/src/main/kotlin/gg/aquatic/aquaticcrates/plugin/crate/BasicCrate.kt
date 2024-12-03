@@ -81,6 +81,25 @@ class BasicCrate(
 
         }
     }
+    override fun tryInstantOpen(
+        player: Player,
+        location: Location,
+        spawnedCrate: SpawnedCrate?
+    ) {
+        if (!player.takeKeys(identifier, 1)) {
+            player.sendMessage("You do not have enough keys to open this crate!")
+            return
+        }
+        instantOpen(player, location, spawnedCrate)
+    }
+
+    override fun instantOpen(
+        player: Player,
+        location: Location,
+        spawnedCrate: SpawnedCrate?
+    ) {
+        openManager.instantOpen(player,false)
+    }
 
     override fun tryOpen(player: Player, location: Location, spawnedCrate: SpawnedCrate?): CompletableFuture<Void> {
         if (!player.takeKeys(identifier, 1)) {

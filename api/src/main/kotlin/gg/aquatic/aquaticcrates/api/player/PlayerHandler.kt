@@ -16,7 +16,7 @@ object PlayerHandler {
         player.toAquaticPlayer()?.crateEntry() ?: return null
         var amt = 0
         for (stack in player.inventory.storageContents) {
-            if (Key.get(stack) == key) {
+            if (Key.get(stack ?: continue) == key) {
                 amt += stack.amount
             }
         }
@@ -64,7 +64,7 @@ object PlayerHandler {
         var currentAmount = virtualKeys(player, id) ?: return false
         val items = ArrayList<ItemStack>()
         for (storageContent in player.inventory.storageContents) {
-            val pkey = Key.get(storageContent) ?: continue
+            val pkey = Key.get(storageContent ?: continue) ?: continue
             if (pkey.crate.identifier != id) continue
             if (storageContent.amount < amount) continue
             items.add(storageContent)

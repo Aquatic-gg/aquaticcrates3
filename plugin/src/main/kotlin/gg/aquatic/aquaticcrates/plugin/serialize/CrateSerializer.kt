@@ -36,6 +36,7 @@ import gg.aquatic.waves.registry.serializer.InteractableSerializer
 import gg.aquatic.waves.registry.serializer.InventorySerializer
 import gg.aquatic.waves.registry.serializer.RequirementSerializer
 import io.ktor.server.config.ConfigLoader.Companion.load
+import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.entity.Player
@@ -186,11 +187,11 @@ object CrateSerializer : BaseSerializer() {
             }
         }
 
-
         val animationSettingsFactory = cfg.getString("animation.type", "instant")!!.lowercase()
         val animationFactory = animationSerializers[animationSettingsFactory] ?: InstantAnimationSettings.Companion
         val animationSettings = animationFactory.serialize(cfg.getConfigurationSection("animation"))
             ?: InstantAnimationSettings.serialize(null)
+        Bukkit.getConsoleSender().sendMessage("Loaded ${animationSettings.animationTasks.size} animation tasks")
 
         val guaranteedRewardsSection = cfg.getConfigurationSection("guaranteed-rewards")
         val guaranteedRewards = HashMap<Int, Reward>()

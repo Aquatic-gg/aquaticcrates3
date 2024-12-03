@@ -3,6 +3,7 @@ package gg.aquatic.aquaticcrates.api.animation.crate
 import gg.aquatic.aquaticcrates.api.animation.Animation
 import gg.aquatic.aquaticseries.lib.action.ConfiguredAction
 import gg.aquatic.aquaticseries.lib.util.executeActions
+import gg.aquatic.aquaticseries.lib.util.updatePAPIPlaceholders
 
 abstract class CrateAnimation: Animation() {
 
@@ -29,7 +30,7 @@ abstract class CrateAnimation: Animation() {
             for ((i, reward) in rewards.withIndex()) {
                 finalString = finalString.replace("%random-amount:$i",reward.randomAmount.toString())
             }
-            finalString
+            finalString.updatePAPIPlaceholders(player)
         }
     }
 
