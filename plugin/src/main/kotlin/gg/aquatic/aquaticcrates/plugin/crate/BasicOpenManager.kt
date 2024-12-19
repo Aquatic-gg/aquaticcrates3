@@ -1,18 +1,11 @@
 package gg.aquatic.aquaticcrates.plugin.crate
 
 import gg.aquatic.aquaticcrates.api.crate.SpawnedCrate
-import gg.aquatic.aquaticcrates.api.player.CrateProfileEntry
-import gg.aquatic.aquaticcrates.api.player.HistoryHandler
 import gg.aquatic.aquaticcrates.api.player.crateEntry
 import gg.aquatic.aquaticcrates.api.reward.Reward
-import gg.aquatic.aquaticcrates.api.reward.RewardAmountRange
-import gg.aquatic.aquaticcrates.api.reward.RolledReward
 import gg.aquatic.aquaticcrates.plugin.animation.crate.settings.InstantAnimationSettings
-import gg.aquatic.aquaticcrates.plugin.reward.RewardManagerImpl
-import gg.aquatic.aquaticcrates.plugin.reward.RolledRewardImpl
 import gg.aquatic.aquaticseries.lib.util.executeActions
 import gg.aquatic.aquaticseries.lib.util.mapPair
-import gg.aquatic.aquaticseries.lib.util.randomItem
 import gg.aquatic.aquaticseries.lib.util.runAsync
 import gg.aquatic.waves.profile.toAquaticPlayer
 import org.bukkit.Bukkit
@@ -24,7 +17,7 @@ import java.util.concurrent.atomic.AtomicInteger
 class BasicOpenManager(val crate: BasicCrate) {
 
     companion object {
-        private val THREADS_LIMIT = 2
+        private const val THREADS_LIMIT = 2
     }
 
     fun instantOpen(player: Player, massOpen: Boolean = false) {
@@ -56,83 +49,6 @@ class BasicOpenManager(val crate: BasicCrate) {
         }
     }
 
-    /*
-    private fun getRandomRewards(amount: Int, possibleRewards: Collection<Reward>): List<RolledReward> {
-        var amountLeft = amount
-
-        val rolledRewards = mutableListOf<RolledReward>()
-        while (amountLeft > 0) {
-            val randomReward = possibleRewards.randomItem() ?: return listOf()
-            rolledRewards += RolledRewardImpl(randomReward,randomReward.amountRanges.randomItem()?.randomNum ?: 1)
-            amountLeft--
-        }
-        return rolledRewards
-    }
-
-
-    private fun massOpenOptimized(player: Player, amount: Int, threadsAmount: Int): CompletableFuture<Void> {
-        Bukkit.broadcastMessage("Opening $amount crates with $threadsAmount threads - optimized!")
-        val previousTime = System.currentTimeMillis()
-        val crateEntry = player.toAquaticPlayer()?.crateEntry() ?: return CompletableFuture.completedFuture(null)
-        val finalFuture = CompletableFuture<Void>()
-
-        val rewardmanager = crate.rewardManager as RewardManagerImpl
-
-        runAsync {
-            val wonRewards = ConcurrentHashMap<Reward, Pair<AtomicInteger, AtomicInteger>>()
-            val possibleRewards = rewardmanager.getPossibleRewards(player).values
-
-            val separated = (amount / threadsAmount)
-            val lastAmount = amount - (separated * (threadsAmount - 1))
-
-            val tasksToJoin = mutableSetOf<CompletableFuture<Void>>()
-            for (i in 0 until threadsAmount) {
-                val amt = if (i == threadsAmount - 1) lastAmount else separated
-                tasksToJoin += CompletableFuture.runAsync {
-                    Bukkit.broadcastMessage("Opening $amt crates")
-                    for (ignored in 0 until amt) {
-                        val range = rewardmanager.possibleRewardRanges.randomItem() ?: RewardAmountRange(1,1,1.0)
-                        val rewards = getRandomRewards(range.randomNum, possibleRewards)
-
-                        crateEntry.registerCrateOpen(
-                            crate.identifier,
-                            rewards.mapPair { it.reward.id to it.randomAmount })
-                        for (reward in rewards) {
-                            val current = wonRewards.getOrPut(reward.reward) { (AtomicInteger(0) to AtomicInteger(0)) }
-                            current.first.getAndAdd(1)
-                            current.second.getAndAdd(reward.randomAmount)
-                            reward.give(player, true)
-                        }
-                    }
-                }
-            }
-            for (completableFuture in tasksToJoin) {
-                completableFuture.join()
-            }
-            val totalWon = wonRewards.values.sumOf { it.second.get() }
-            val totalWonExcluded = wonRewards.values.sumOf { it.first.get() }
-            crate.massOpenFinalActions.executeActions(player) { p, str ->
-                str.replace("%total-won%", totalWon.toString().replace("%player%", p.name))
-                    .replace("%total-won-excluded%", totalWonExcluded.toString())
-            }
-            for ((reward, amtPair) in wonRewards) {
-                val amt = amtPair.first.get()
-                val amtTotal = amtPair.second.get()
-                crate.massOpenPerRewardActions.executeActions(player) { p, str ->
-                    str.replace("%reward%", reward.displayName)
-                        .replace("%amount%", amt.toString())
-                        .replace("%amount-total%", amtTotal.toString())
-                        .replace("%player%", p.name)
-                }
-            }
-            System.gc()
-            player.sendMessage("Completed in ${System.currentTimeMillis() - previousTime}ms")
-            finalFuture.complete(null)
-        }
-        return finalFuture
-    }
-     */
-
     fun massOpen(player: Player, amount: Int, threadsAmount: Int?): CompletableFuture<Void> {
         val threads = threadsAmount ?: THREADS_LIMIT
         val crateEntry = player.toAquaticPlayer()?.crateEntry() ?: return CompletableFuture.completedFuture(null)
@@ -143,29 +59,6 @@ class BasicOpenManager(val crate: BasicCrate) {
             val previousTime = System.currentTimeMillis()
             val wonRewards = ConcurrentHashMap<Reward, Pair<AtomicInteger, AtomicInteger>>()
             runAsync {
-                /*
-                var canBeOptimized = true
-                for (reward in crate.rewardManager.rewards.values) {
-                    if (reward.requirements.isNotEmpty()) {
-                        canBeOptimized = false
-                        break
-                    }
-                    if (reward.globalLimits.isNotEmpty()) {
-                        canBeOptimized = false
-                        break
-                    }
-                    if (reward.perPlayerLimits.isNotEmpty()) {
-                        canBeOptimized = false
-                        break
-                    }
-                }
-                if (canBeOptimized) {
-                    massOpenOptimized(player, amount, threads).thenRun {
-                        finalFuture.complete(null)
-                    }
-                    return@runAsync
-                }
-                 */
 
                 val separated = (amount / threads)
                 val lastAmount = amount - (separated * (threads - 1))
@@ -181,7 +74,8 @@ class BasicOpenManager(val crate: BasicCrate) {
                                 crate.identifier,
                                 rewards.mapPair { it.reward.id to it.randomAmount })
                             for (reward in rewards) {
-                                val current = wonRewards.getOrPut(reward.reward) { (AtomicInteger(0) to AtomicInteger(0)) }
+                                val current =
+                                    wonRewards.getOrPut(reward.reward) { (AtomicInteger(0) to AtomicInteger(0)) }
                                 current.first.getAndAdd(1)
                                 current.second.getAndAdd(reward.randomAmount)
                                 reward.give(player, true)
@@ -246,8 +140,6 @@ class BasicOpenManager(val crate: BasicCrate) {
 
             finalFuture.complete(null)
         }
-
-
         return finalFuture
     }
 }

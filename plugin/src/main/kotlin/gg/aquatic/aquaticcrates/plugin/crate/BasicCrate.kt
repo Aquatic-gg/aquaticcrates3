@@ -61,7 +61,7 @@ class BasicCrate(
         null,
         null
     ).apply {
-        register("aquaticcrates-crates", identifier) { e ->
+        register("aquaticcrates-crates", identifier) { e->
             e.isCancelled = true
             val originalEvent = e.originalEvent
             val location = if (originalEvent is PlayerInteractEvent) {
@@ -70,18 +70,61 @@ class BasicCrate(
             if (e.interactType == AquaticItemInteractEvent.InteractType.RIGHT) {
                 runLaterSync(2) {
                     CrateHandler.spawnCrate(this@BasicCrate, location.clone().add(.0, 1.0, .0))
+                    runAsync {
+                        CrateHandler.saveSpawnedCrates(CratesPlugin.spawnedCratesConfig)
+                    }
                 }
                 e.player.sendMessage("Crate Spawned")
             }
+
         }
+    }
+    override fun tryInstantOpen(
+        player: Player,
+        location: Location,
+        spawnedCrate: SpawnedCrate?
+    ) {
+        if (!player.takeKeys(identifier, 1)) {
+            player.sendMessage("You do not have enough keys to open this crate!")
+            return
+        }
+        instantOpen(player, location, spawnedCrate)
+    }
+
+    override fun instantOpen(
+        player: Player,
+        location: Location,
+        spawnedCrate: SpawnedCrate?
+    ) {
+        openManager.instantOpen(player,false)
+    }
+
+    override fun tryOpen(player: Player, location: Location, spawnedCrate: SpawnedCrate?): CompletableFuture<Void> {
+        if (!player.takeKeys(identifier, 1)) {
+            player.sendMessage("You do not have enough keys to open this crate!")
+            return CompletableFuture.completedFuture(null)
+        }
+        return open(player, location, spawnedCrate)
     }
 
     override fun open(
         player: Player,
-        location: org.bukkit.Location,
+        location: Location,
         spawnedCrate: SpawnedCrate?
     ): CompletableFuture<Void> {
         return openManager.open(player, location, spawnedCrate)
+    }
+
+    override fun tryMassOpen(player: Player, amount: Int, threads: Int?): CompletableFuture<Void> {
+        if (!player.takeKeys(identifier, amount)) {
+            player.sendMessage("You do not have enough keys to open this crate!")
+            return CompletableFuture.completedFuture(null)
+        }
+        return massOpen(
+            player,
+            amount,
+            threads
+        )
     }
 
     override fun massOpen(player: Player, amount: Int, threads: Int?): CompletableFuture<Void> {

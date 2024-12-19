@@ -12,7 +12,8 @@ import gg.aquatic.aquaticcrates.plugin.animation.action.model.HideModelAction
 import gg.aquatic.aquaticcrates.plugin.animation.action.model.PlayModelAnimationAction
 import gg.aquatic.aquaticcrates.plugin.animation.action.model.ShowModelAction
 import gg.aquatic.aquaticcrates.plugin.animation.action.path.LinearPathAction
-import gg.aquatic.aquaticcrates.plugin.command.MassOpenCommand
+import gg.aquatic.aquaticcrates.plugin.command.CrateCommand
+import gg.aquatic.aquaticcrates.plugin.command.KeyCommand
 import gg.aquatic.aquaticcrates.plugin.crate.BasicCrate
 import gg.aquatic.aquaticcrates.plugin.interact.action.*
 import gg.aquatic.aquaticcrates.plugin.serialize.CrateSerializer
@@ -23,6 +24,7 @@ import gg.aquatic.waves.profile.ProfilesModule
 import gg.aquatic.waves.registry.WavesRegistry
 import gg.aquatic.waves.registry.registerAction
 import org.bukkit.event.player.PlayerJoinEvent
+import org.bukkit.event.world.WorldLoadEvent
 import java.util.concurrent.CompletableFuture
 
 class CratesPlugin : AbstractCratesPlugin() {
@@ -32,10 +34,12 @@ class CratesPlugin : AbstractCratesPlugin() {
             get() {
                 return AbstractCratesPlugin.INSTANCE
             }
+        lateinit var spawnedCratesConfig: Config
     }
 
     override fun onLoad() {
         AbstractCratesPlugin.INSTANCE = this
+        spawnedCratesConfig = Config("spawnedcrates.yml", INSTANCE)
     }
 
     var loading = true
@@ -46,15 +50,10 @@ class CratesPlugin : AbstractCratesPlugin() {
         ProfilesModule.registerModule(CrateProfileModule)
         load()
 
-        event<PlayerJoinEvent> {
-            for (value in CrateHandler.crates.values) {
-                if (value is BasicCrate) {
-                    value.crateItem.giveItem(it.player)
-                    value.key.giveItem(1, it.player)
-                    it.player.sendMessage("You have been given ${value.identifier} crate!")
-                }
-            }
+        event<WorldLoadEvent> {
+            CrateHandler.onWorldLoad(it.world)
         }
+
         startTicker()
         AquaticBaseCommand(
             "aquaticcrates",
@@ -63,7 +62,8 @@ class CratesPlugin : AbstractCratesPlugin() {
                 "acrates"
             ),
             mutableMapOf(
-                "massopen" to MassOpenCommand
+                "key" to KeyCommand,
+                "crate" to CrateCommand
             ),
             listOf()
         ).register("aquaticcrates")
@@ -84,6 +84,7 @@ class CratesPlugin : AbstractCratesPlugin() {
         loading = true
         runAsync {
             CrateHandler.crates += CrateSerializer.loadCrates()
+            CrateHandler.loadSpawnedCrates(spawnedCratesConfig)
             future.complete(null)
             loading = false
         }
