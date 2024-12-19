@@ -5,10 +5,10 @@ import gg.aquatic.aquaticseries.lib.betterinventory2.SlotSelection
 import gg.aquatic.aquaticseries.lib.betterinventory2.component.ButtonComponent
 import gg.aquatic.waves.menu.PrivateAquaticMenu
 import gg.aquatic.waves.menu.component.Button
+import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
-import java.util.HashMap
 
 class CratePreviewMenu(
     player: Player,
@@ -20,11 +20,13 @@ class CratePreviewMenu(
     settings.invSettings.type,
     player
 ) {
-
     val rewards = crate.rewardManager.getPossibleRewards(player).values
 
     init {
         loadItems()
+        for (component in components.values) {
+            updateComponent(component)
+        }
     }
 
     private fun openPage(page: Int) {
@@ -41,7 +43,7 @@ class CratePreviewMenu(
 
     private fun loadButtons() {
         for ((id, component) in settings.invSettings.components) {
-            components += id to component.create(
+            val comp = component.create(
                 { str, menu ->
                     str
                 },
@@ -55,6 +57,7 @@ class CratePreviewMenu(
                     }
                 }
             )
+            components += id to comp
         }
         if (settings.clearBottomInventory) {
             val airButton = Button(

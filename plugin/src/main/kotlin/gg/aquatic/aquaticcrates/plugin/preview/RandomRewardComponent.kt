@@ -42,6 +42,7 @@ class RandomRewardComponent(
         if (changeTick >= changeEvery) {
             changeTick = 0
             currentRewardItem = rewards.random().item.getItem()
+            menu.updateComponent(this)
         }
     }
 }
