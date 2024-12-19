@@ -1,9 +1,9 @@
 package gg.aquatic.aquaticcrates.plugin.preview
 
-import gg.aquatic.waves.util.inventory.InventorySettings
+import gg.aquatic.waves.menu.settings.PrivateMenuSettings
 
 class CratePreviewMenuSettings(
-    val invSettings: InventorySettings,
+    val invSettings: PrivateMenuSettings,
     val clearBottomInventory: Boolean,
     val rewardSlots: List<Int>,
     val randomRewards: RandomRewardsSettings

@@ -1,40 +1,30 @@
 package gg.aquatic.aquaticcrates.plugin.preview
 
 import gg.aquatic.aquaticcrates.plugin.crate.BasicCrate
-import gg.aquatic.aquaticseries.lib.betterinventory2.AquaticInventory
 import gg.aquatic.aquaticseries.lib.betterinventory2.SlotSelection
 import gg.aquatic.aquaticseries.lib.betterinventory2.component.ButtonComponent
-import gg.aquatic.aquaticseries.lib.util.executeActions
+import gg.aquatic.waves.menu.PrivateAquaticMenu
+import gg.aquatic.waves.menu.component.Button
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import java.util.HashMap
 
 class CratePreviewMenu(
-    val player: Player,
+    player: Player,
     val crate: BasicCrate,
     val settings: CratePreviewMenuSettings,
     val page: Int
-) : AquaticInventory(
+) : PrivateAquaticMenu(
     settings.invSettings.title,
-    settings.invSettings.size,
-    settings.invSettings.inventoryType,
-    { p, inv ->
-        settings.invSettings.onOpen.executeActions(player) { p, str -> str }
-    },
-    { p, inv ->
-        settings.invSettings.onClose.executeActions(player) { p, str -> str }
-    },
-    { e, inv ->
-
-    }
+    settings.invSettings.type,
+    player
 ) {
 
     val rewards = crate.rewardManager.getPossibleRewards(player).values
 
-    fun open() {
+    init {
         loadItems()
-        open(player)
     }
 
     private fun openPage(page: Int) {
@@ -50,37 +40,33 @@ class CratePreviewMenu(
     }
 
     private fun loadButtons() {
-        for (button in settings.invSettings.buttons) {
-            addComponent(
-                button.create(
-                    { p, str -> str },
-                    { e ->
-                        val id = button.id.lowercase()
-                        if (id == "next-page") {
-                            if (!hasNextPage()) return@create
-                            openPage(page + 1)
-                        } else if (id == "prev-page") {
-                            if (page <= 0) return@create
-                            openPage(page - 1)
-                        }
-                        e.isCancelled = true
+        for ((id, component) in settings.invSettings.components) {
+            components += id to component.create(
+                { str, menu ->
+                    str
+                },
+                { e ->
+                    if (id == "next-page") {
+                        if (!hasNextPage()) return@create
+                        openPage(page + 1)
+                    } else if (id == "prev-page") {
+                        if (page <= 0) return@create
+                        openPage(page - 1)
                     }
-                )
+                }
             )
         }
         if (settings.clearBottomInventory) {
-            val airButton = ButtonComponent(
+            val airButton = Button(
                 "aquaticcrates:clear-button",
+                ItemStack(Material.AIR),
+                SlotSelection(((type.size)..((type.size) + 35)).toMutableSet()).slots,
                 -10,
-                SlotSelection((size..size + 35).toMutableSet()),
-                HashMap(),
-                null,
-                { e -> e.isCancelled = true },
                 1000,
-                { p, str -> str },
-                ItemStack(Material.AIR)
+                null,
+                { true },
             )
-            addComponent(airButton)
+            components += airButton.id to airButton
         }
     }
 
@@ -98,24 +84,15 @@ class CratePreviewMenu(
             val reward = rewards.elementAtOrNull(rewardIndex) ?: break
             val rewardItem = reward.item.getItem()
 
-            val button = ButtonComponent(
+            val button = Button(
                 "reward-${reward.id}",
+                rewardItem,
+                SlotSelection.of(rewardSlot).slots,
                 10,
-                SlotSelection.of(rewardSlot),
-                HashMap(),
-                null,
-                { e ->
-                    e.isCancelled = true
-                    val p = e.whoClicked as? Player ?: return@ButtonComponent
-                    if (p.hasPermission("aquaticcrates.admin")) {
-                        reward.give(player, 1, false)
-                    }
-                },
                 10,
-                { p, str -> str },
-                rewardItem
+                null
             )
-            addComponent(button)
+            components += button.id to button
         }
     }
 
@@ -126,13 +103,13 @@ class CratePreviewMenu(
                 rewards,
                 settings.randomRewards.changeDuration,
                 { e ->
-                    e.isCancelled = true
+
                 },
                 10,
-                SlotSelection.of(slot),
-                { p, str -> str },
+                listOf(slot),
+                { str, menu -> str}
             )
-            addComponent(button)
+            components += button.id to button
         }
     }
 

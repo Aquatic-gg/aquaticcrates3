@@ -30,6 +30,7 @@ import gg.aquatic.waves.interactable.settings.BlockInteractableSettings
 import gg.aquatic.waves.item.AquaticItem
 import gg.aquatic.waves.item.AquaticItemInteractEvent
 import gg.aquatic.waves.item.loadFromYml
+import gg.aquatic.waves.menu.MenuSerializer
 import gg.aquatic.waves.registry.serializer.ActionSerializer
 import gg.aquatic.waves.registry.serializer.InteractableSerializer
 import gg.aquatic.waves.registry.serializer.InventorySerializer
@@ -223,7 +224,7 @@ object CrateSerializer : BaseSerializer() {
 
     private fun loadCratePreviewMenuSettings(section: ConfigurationSection): CratePreviewMenuSettings? {
         val rewardSlots = section.getIntegerList("reward-slots")
-        val invSettings = InventorySerializer.loadInventory(section) ?: return null
+        val invSettings = MenuSerializer.loadPrivateInventory(section)
         val clearBottomInventory = section.getBoolean("clear-bottom-inventory", false)
 
         val randomRewardsSlots = section.getIntegerList("random-rewards.slots")

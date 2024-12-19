@@ -19,6 +19,7 @@ import gg.aquatic.waves.item.AquaticItemInteractEvent
 import gg.aquatic.waves.item.modifyFastMeta
 import gg.aquatic.waves.registry.register
 import net.kyori.adventure.text.Component
+import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.ItemStack
@@ -47,11 +48,10 @@ class BasicCrate(
     override val animationManager = animationManager(this)
 
     val crateItem = AquaticItem(
-        ItemStack(
-            org.bukkit.Material.CHEST).apply {
-                modifyFastMeta {
-                    displayName = Component.text("Crate: $identifier")
-                }
+        ItemStack(Material.CHEST).apply {
+            modifyFastMeta {
+                displayName = Component.text("Crate: $identifier")
+            }
         },
         null,
         null,
@@ -61,7 +61,7 @@ class BasicCrate(
         null,
         null
     ).apply {
-        register("aquaticcrates-crates", identifier) { e->
+        register("aquaticcrates-crates", identifier) { e ->
             e.isCancelled = true
             val originalEvent = e.originalEvent
             val location = if (originalEvent is PlayerInteractEvent) {
@@ -69,15 +69,18 @@ class BasicCrate(
             } else return@register
             if (e.interactType == AquaticItemInteractEvent.InteractType.RIGHT) {
                 runLaterSync(2) {
-                    CrateHandler.spawnCrate(this@BasicCrate,location.clone().add(.0,1.0, .0))
+                    CrateHandler.spawnCrate(this@BasicCrate, location.clone().add(.0, 1.0, .0))
                 }
                 e.player.sendMessage("Crate Spawned")
             }
-
         }
     }
 
-    override fun open(player: Player, location: org.bukkit.Location, spawnedCrate: SpawnedCrate?): CompletableFuture<Void> {
+    override fun open(
+        player: Player,
+        location: org.bukkit.Location,
+        spawnedCrate: SpawnedCrate?
+    ): CompletableFuture<Void> {
         return openManager.open(player, location, spawnedCrate)
     }
 
