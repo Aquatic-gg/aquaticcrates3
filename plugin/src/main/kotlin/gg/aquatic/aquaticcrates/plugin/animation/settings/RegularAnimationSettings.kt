@@ -1,12 +1,11 @@
-package gg.aquatic.aquaticcrates.plugin.animation.crate.settings
+package gg.aquatic.aquaticcrates.plugin.animation.settings
 
 import gg.aquatic.aquaticcrates.api.animation.Animation
 import gg.aquatic.aquaticcrates.api.animation.crate.AnimationSettingsFactory
-import gg.aquatic.aquaticcrates.api.animation.crate.CrateAnimation
 import gg.aquatic.aquaticcrates.api.animation.crate.CrateAnimationManager
 import gg.aquatic.aquaticcrates.api.animation.crate.CrateAnimationSettings
 import gg.aquatic.aquaticcrates.api.reward.RolledReward
-import gg.aquatic.aquaticcrates.plugin.animation.crate.RegularAnimationImpl
+import gg.aquatic.aquaticcrates.plugin.animation.RegularAnimationImpl
 import gg.aquatic.aquaticseries.lib.action.ConfiguredAction
 import gg.aquatic.aquaticseries.lib.audience.FilterAudience
 import gg.aquatic.aquaticseries.lib.audience.GlobalAudience

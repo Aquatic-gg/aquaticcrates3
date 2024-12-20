@@ -6,9 +6,9 @@ import gg.aquatic.aquaticcrates.api.interaction.CrateInteractAction
 import gg.aquatic.aquaticcrates.api.openprice.OpenPriceGroup
 import gg.aquatic.aquaticcrates.api.reward.Reward
 import gg.aquatic.aquaticcrates.plugin.CratesPlugin
-import gg.aquatic.aquaticcrates.plugin.animation.crate.AnimationManagerImpl
-import gg.aquatic.aquaticcrates.plugin.animation.crate.settings.InstantAnimationSettings
-import gg.aquatic.aquaticcrates.plugin.animation.crate.settings.RegularAnimationSettings
+import gg.aquatic.aquaticcrates.plugin.animation.AnimationManagerImpl
+import gg.aquatic.aquaticcrates.plugin.animation.settings.InstantAnimationSettings
+import gg.aquatic.aquaticcrates.plugin.animation.settings.RegularAnimationSettings
 import gg.aquatic.aquaticcrates.plugin.crate.BasicCrate
 import gg.aquatic.aquaticcrates.plugin.crate.KeyImpl
 import gg.aquatic.aquaticcrates.plugin.interact.KeyInteractHandlerImpl
@@ -35,9 +35,7 @@ import gg.aquatic.waves.item.loadFromYml
 import gg.aquatic.waves.menu.MenuSerializer
 import gg.aquatic.waves.registry.serializer.ActionSerializer
 import gg.aquatic.waves.registry.serializer.InteractableSerializer
-import gg.aquatic.waves.registry.serializer.InventorySerializer
 import gg.aquatic.waves.registry.serializer.RequirementSerializer
-import io.ktor.server.config.ConfigLoader.Companion.load
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.configuration.ConfigurationSection

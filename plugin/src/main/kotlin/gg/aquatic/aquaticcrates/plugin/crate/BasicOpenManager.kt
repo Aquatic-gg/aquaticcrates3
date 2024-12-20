@@ -3,7 +3,7 @@ package gg.aquatic.aquaticcrates.plugin.crate
 import gg.aquatic.aquaticcrates.api.crate.SpawnedCrate
 import gg.aquatic.aquaticcrates.api.player.crateEntry
 import gg.aquatic.aquaticcrates.api.reward.Reward
-import gg.aquatic.aquaticcrates.plugin.animation.crate.settings.InstantAnimationSettings
+import gg.aquatic.aquaticcrates.plugin.animation.settings.InstantAnimationSettings
 import gg.aquatic.aquaticseries.lib.util.executeActions
 import gg.aquatic.aquaticseries.lib.util.mapPair
 import gg.aquatic.aquaticseries.lib.util.runAsync

@@ -1,4 +1,4 @@
-package gg.aquatic.aquaticcrates.plugin.animation.crate
+package gg.aquatic.aquaticcrates.plugin.animation
 
 import gg.aquatic.aquaticcrates.api.animation.crate.CrateAnimation
 import gg.aquatic.aquaticcrates.api.animation.crate.CrateAnimationManager
