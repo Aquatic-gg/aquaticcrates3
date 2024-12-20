@@ -22,6 +22,7 @@ import gg.aquatic.aquaticcrates.plugin.milestone.MilestoneManagerImpl
 import gg.aquatic.aquaticcrates.plugin.preview.CratePreviewMenuSettings
 import gg.aquatic.aquaticcrates.plugin.reroll.RerollManagerImpl
 import gg.aquatic.aquaticcrates.plugin.reroll.input.inventory.InventoryRerollInput
+import gg.aquatic.aquaticcrates.plugin.restriction.OpenData
 import gg.aquatic.aquaticcrates.plugin.reward.RewardManagerImpl
 import gg.aquatic.aquaticseries.lib.action.ConfiguredAction
 import gg.aquatic.aquaticseries.lib.block.impl.VanillaBlock
@@ -207,6 +208,7 @@ object CrateSerializer : BaseSerializer() {
 
         val massOpenFinalActions = ActionSerializer.fromSections<Player>(cfg.getSectionList("mass-open.final-tasks")).toMutableList()
         val massOpenPerRewardActions = ActionSerializer.fromSections<Player>(cfg.getSectionList("mass-open.per-reward-tasks")).toMutableList()
+        val openRestrictions = RequirementSerializer.fromSections<OpenData>(cfg.getSectionList("open-restrictions")).toMutableList()
 
         return BasicCrate(
             identifier,
@@ -231,7 +233,8 @@ object CrateSerializer : BaseSerializer() {
             interactHandler,
             previewMenuPages,
             massOpenFinalActions,
-            massOpenPerRewardActions
+            massOpenPerRewardActions,
+            openRestrictions
         )
     }
 

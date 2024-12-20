@@ -16,6 +16,7 @@ import gg.aquatic.aquaticcrates.plugin.command.CrateCommand
 import gg.aquatic.aquaticcrates.plugin.command.KeyCommand
 import gg.aquatic.aquaticcrates.plugin.crate.BasicCrate
 import gg.aquatic.aquaticcrates.plugin.interact.action.*
+import gg.aquatic.aquaticcrates.plugin.restriction.impl.*
 import gg.aquatic.aquaticcrates.plugin.serialize.CrateSerializer
 import gg.aquatic.aquaticseries.lib.command.AquaticBaseCommand
 import gg.aquatic.aquaticseries.lib.command.register
@@ -23,6 +24,7 @@ import gg.aquatic.aquaticseries.lib.util.*
 import gg.aquatic.waves.profile.ProfilesModule
 import gg.aquatic.waves.registry.WavesRegistry
 import gg.aquatic.waves.registry.registerAction
+import gg.aquatic.waves.registry.registerRequirement
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.world.WorldLoadEvent
 import java.util.concurrent.CompletableFuture
@@ -111,6 +113,12 @@ class CratesPlugin : AbstractCratesPlugin() {
         WavesRegistry.registerAction("preview-crate", CratePreviewAction())
         WavesRegistry.registerAction("destroy-crate", CrateBreakAction())
         WavesRegistry.registerAction("execute-actions", CrateExecuteActionsAction())
+
+        WavesRegistry.registerRequirement("player", PlayerOpenRestriction())
+        WavesRegistry.registerRequirement("global", GlobalOpenRestriction())
+        WavesRegistry.registerRequirement("all_player", AllPlayerOpenRestriction())
+        WavesRegistry.registerRequirement("all_global", AllGlobalOpenRestriction())
+        WavesRegistry.registerRequirement("world_blacklist", WorldBlacklistOpenRestriction())
 
     }
 }

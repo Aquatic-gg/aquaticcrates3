@@ -11,9 +11,11 @@ import gg.aquatic.aquaticcrates.api.openprice.OpenPriceGroup
 import gg.aquatic.aquaticcrates.api.reward.RewardManager
 import gg.aquatic.aquaticcrates.plugin.CratesPlugin
 import gg.aquatic.aquaticcrates.plugin.preview.CratePreviewMenuSettings
+import gg.aquatic.aquaticcrates.plugin.restriction.OpenData
 import gg.aquatic.aquaticcrates.plugin.takeKeys
 import gg.aquatic.aquaticseries.lib.action.ConfiguredAction
 import gg.aquatic.aquaticseries.lib.requirement.ConfiguredRequirement
+import gg.aquatic.aquaticseries.lib.util.checkRequirements
 import gg.aquatic.aquaticseries.lib.util.runLaterSync
 import gg.aquatic.waves.interactable.settings.InteractableSettings
 import gg.aquatic.waves.item.AquaticItem
@@ -42,7 +44,8 @@ class BasicCrate(
     interactHandler: (BasicCrate) -> CrateInteractHandler,
     val previewMenuSettings: MutableList<CratePreviewMenuSettings>,
     val massOpenFinalActions: MutableList<ConfiguredAction<Player>>,
-    val massOpenPerRewardActions: MutableList<ConfiguredAction<Player>>
+    val massOpenPerRewardActions: MutableList<ConfiguredAction<Player>>,
+    val openRestrictions: MutableList<ConfiguredRequirement<OpenData>>
 ) : OpenableCrate() {
 
     var openManager = BasicOpenManager(this)
@@ -50,6 +53,7 @@ class BasicCrate(
     override var interactHandler: CrateInteractHandler = interactHandler(this)
     override val rewardManager: RewardManager = rewardManager(this)
     override val animationManager = animationManager(this)
+    override val key = key(this)
 
     val crateItem = AquaticItem(
         ItemStack(Material.CHEST).apply {
@@ -88,7 +92,7 @@ class BasicCrate(
         location: Location,
         spawnedCrate: SpawnedCrate?
     ) {
-        if (!player.takeKeys(identifier, 1)) {
+        if (!canBeOpened(player,1,null)) {
             player.sendMessage("You do not have enough keys to open this crate!")
             return
         }
@@ -104,8 +108,7 @@ class BasicCrate(
     }
 
     override fun tryOpen(player: Player, location: Location, spawnedCrate: SpawnedCrate?): CompletableFuture<Void> {
-        if (!player.takeKeys(identifier, 1)) {
-            player.sendMessage("You do not have enough keys to open this crate!")
+        if (!canBeOpened(player,1,OpenData(player,location,this))) {
             return CompletableFuture.completedFuture(null)
         }
         return open(player, location, spawnedCrate)
@@ -120,8 +123,7 @@ class BasicCrate(
     }
 
     override fun tryMassOpen(player: Player, amount: Int, threads: Int?): CompletableFuture<Void> {
-        if (!player.takeKeys(identifier, amount)) {
-            player.sendMessage("You do not have enough keys to open this crate!")
+        if (!canBeOpened(player, amount, null)) {
             return CompletableFuture.completedFuture(null)
         }
         return massOpen(
@@ -136,10 +138,19 @@ class BasicCrate(
     }
 
 
-    override val key = key(this)
-    /*
-    override fun canBeOpened(player: Player): Boolean {
+    fun canBeOpened(player: Player, amount: Int, openData: OpenData?): Boolean {
+        if (!player.takeKeys(identifier, amount)) {
+            player.sendMessage("You do not have enough keys to open this crate!")
+            return false
+        }
+        if (openData != null) {
+            if (!openRestrictions.checkRequirements(openData)) {
+                player.sendMessage("You cannot open the crate here!")
+                return false
+            }
+        }
+
         return true
     }
-     */
+
 }
