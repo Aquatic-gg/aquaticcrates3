@@ -1,9 +1,9 @@
 package gg.aquatic.aquaticcrates.api.animation.crate
 
 import gg.aquatic.aquaticcrates.api.animation.Animation
-import gg.aquatic.aquaticseries.lib.action.ConfiguredAction
-import gg.aquatic.aquaticseries.lib.util.executeActions
-import gg.aquatic.aquaticseries.lib.util.updatePAPIPlaceholders
+import gg.aquatic.waves.util.executeActions
+import gg.aquatic.waves.util.generic.ConfiguredExecutableObject
+import gg.aquatic.waves.util.updatePAPIPlaceholders
 
 abstract class CrateAnimation: Animation() {
 
@@ -24,7 +24,7 @@ abstract class CrateAnimation: Animation() {
         executeActions(animationManager.animationSettings.postAnimationTasks[tick] ?: return)
     }
 
-    open fun executeActions(actions: List<ConfiguredAction<Animation>>) {
+    open fun executeActions(actions: List<ConfiguredExecutableObject<Animation,Unit>>) {
         actions.executeActions(this) { _, str ->
             var finalString = str.replace("%player%", player.name)
             for ((i, reward) in rewards.withIndex()) {

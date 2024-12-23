@@ -2,7 +2,7 @@ package gg.aquatic.aquaticcrates.api.animation
 
 import gg.aquatic.aquaticcrates.api.animation.prop.AnimationProp
 import gg.aquatic.aquaticcrates.api.reward.RolledReward
-import gg.aquatic.aquaticseries.lib.audience.AquaticAudience
+import gg.aquatic.waves.util.audience.AquaticAudience
 import org.bukkit.Location
 import org.bukkit.entity.Player
 

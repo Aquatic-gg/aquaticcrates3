@@ -1,6 +1,6 @@
 package gg.aquatic.aquaticcrates.api.hologram
 
-import gg.aquatic.aquaticseries.lib.audience.AquaticAudience
+import gg.aquatic.waves.util.audience.AquaticAudience
 import org.bukkit.Location
 import java.util.function.Consumer
 

@@ -1,13 +1,13 @@
 package gg.aquatic.aquaticcrates.api.openprice
 
-import gg.aquatic.aquaticseries.lib.action.ConfiguredAction
-import gg.aquatic.aquaticseries.lib.price.ConfiguredPrice
-import gg.aquatic.aquaticseries.lib.util.executeActions
+import gg.aquatic.waves.util.executeActions
+import gg.aquatic.waves.util.generic.ConfiguredExecutableObject
+import gg.aquatic.waves.util.price.ConfiguredPrice
 import org.bukkit.entity.Player
 
 class OpenPrice(
     val price: ConfiguredPrice<Player>,
-    val failActions: MutableList<ConfiguredAction<Player>>
+    val failActions: MutableList<ConfiguredExecutableObject<Player,Unit>>
 ) {
 
     fun tryTake(player: Player): Boolean {

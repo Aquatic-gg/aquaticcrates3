@@ -2,11 +2,8 @@ package gg.aquatic.aquaticcrates.api.crate
 
 import gg.aquatic.aquaticcrates.api.animation.crate.CrateAnimationManager
 import gg.aquatic.aquaticcrates.api.openprice.OpenPriceGroup
-import gg.aquatic.aquaticcrates.api.player.HistoryHandler
-import gg.aquatic.aquaticcrates.api.reward.Reward
 import gg.aquatic.aquaticcrates.api.util.Rewardable
-import gg.aquatic.aquaticseries.lib.requirement.ConfiguredRequirement
-import gg.aquatic.aquaticseries.lib.util.checkRequirements
+import gg.aquatic.waves.util.requirement.ConfiguredRequirement
 import org.bukkit.entity.Player
 import java.util.concurrent.CompletableFuture
 

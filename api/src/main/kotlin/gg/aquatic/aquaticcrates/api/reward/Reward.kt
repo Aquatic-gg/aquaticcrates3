@@ -3,15 +3,10 @@ package gg.aquatic.aquaticcrates.api.reward
 import gg.aquatic.aquaticcrates.api.hologram.AquaticHologramSettings
 import gg.aquatic.aquaticcrates.api.player.CrateProfileEntry
 import gg.aquatic.aquaticcrates.api.player.crateEntry
-import gg.aquatic.aquaticseries.lib.action.ConfiguredAction
-import gg.aquatic.aquaticseries.lib.chance.IChance
-import gg.aquatic.aquaticseries.lib.requirement.ConfiguredRequirement
-import gg.aquatic.aquaticseries.lib.util.addOrDropItem
-import gg.aquatic.aquaticseries.lib.util.displayName
-import gg.aquatic.aquaticseries.lib.util.executeActions
-import gg.aquatic.aquaticseries.lib.util.runSync
 import gg.aquatic.waves.item.AquaticItem
 import gg.aquatic.waves.profile.toAquaticPlayer
+import gg.aquatic.waves.util.chance.IChance
+import gg.aquatic.waves.util.requirement.ConfiguredRequirement
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 
@@ -55,7 +50,7 @@ interface Reward: IChance {
         }
         for (action in actions) {
             if (!action.massOpenExecute && massOpen) continue
-            action.action.run(player) { p, str -> str.replace("%player%", p.name).replace("%random-amount%", randomAmount.toString()) }
+            action.action.execute(player) { p, str -> str.replace("%player%", p.name).replace("%random-amount%", randomAmount.toString()) }
         }
     }
 }

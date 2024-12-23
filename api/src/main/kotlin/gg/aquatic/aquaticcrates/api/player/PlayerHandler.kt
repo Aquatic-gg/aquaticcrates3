@@ -2,7 +2,6 @@ package gg.aquatic.aquaticcrates.api.player
 
 import gg.aquatic.aquaticcrates.api.crate.Key
 import gg.aquatic.waves.profile.toAquaticPlayer
-import gg.aquatic.waves.util.readEntityMetadata
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 

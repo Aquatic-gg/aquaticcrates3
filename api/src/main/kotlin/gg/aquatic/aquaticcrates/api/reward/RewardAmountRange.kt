@@ -1,6 +1,6 @@
 package gg.aquatic.aquaticcrates.api.reward
 
-import gg.aquatic.aquaticseries.lib.chance.IChance
+import gg.aquatic.waves.util.chance.IChance
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.random.Random

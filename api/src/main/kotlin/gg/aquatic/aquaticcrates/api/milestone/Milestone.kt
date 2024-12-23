@@ -1,10 +1,10 @@
 package gg.aquatic.aquaticcrates.api.milestone
 
 import gg.aquatic.aquaticcrates.api.reward.Reward
-import gg.aquatic.aquaticseries.lib.adapt.AquaticString
+import net.kyori.adventure.text.Component
 
 interface Milestone {
     val milestone: Int
-    val displayName: AquaticString
+    val displayName: Component
     val rewards: List<Reward>
 }

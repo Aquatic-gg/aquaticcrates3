@@ -1,7 +1,7 @@
 package gg.aquatic.aquaticcrates.api.crate
 
-import gg.aquatic.aquaticseries.lib.audience.GlobalAudience
 import gg.aquatic.waves.item.AquaticItemInteractEvent
+import gg.aquatic.waves.util.audience.GlobalAudience
 import org.bukkit.Location
 
 class SpawnedCrate(

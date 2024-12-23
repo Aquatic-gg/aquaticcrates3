@@ -2,8 +2,8 @@ package gg.aquatic.aquaticcrates.api.util.animationitem
 
 import gg.aquatic.aquaticcrates.api.animation.Animation
 import gg.aquatic.waves.item.AquaticItem
-import gg.aquatic.waves.item.loadFromYml
-import gg.aquatic.waves.item.toCustomItem
+import gg.aquatic.waves.util.item.loadFromYml
+import gg.aquatic.waves.util.item.toCustomItem
 import org.bukkit.Material
 import org.bukkit.configuration.ConfigurationSection
 

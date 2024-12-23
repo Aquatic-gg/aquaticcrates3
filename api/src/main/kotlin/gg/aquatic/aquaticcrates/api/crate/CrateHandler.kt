@@ -1,7 +1,7 @@
 package gg.aquatic.aquaticcrates.api.crate
 
-import gg.aquatic.aquaticseries.lib.util.AquaticLocation
-import gg.aquatic.aquaticseries.lib.util.Config
+import gg.aquatic.waves.util.Config
+import gg.aquatic.waves.util.location.AquaticLocation
 import org.bukkit.Location
 import org.bukkit.World
 import java.util.concurrent.ConcurrentHashMap
