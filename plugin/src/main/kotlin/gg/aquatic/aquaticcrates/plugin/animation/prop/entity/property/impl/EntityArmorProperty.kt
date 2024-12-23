@@ -4,6 +4,12 @@ import gg.aquatic.aquaticcrates.api.util.animationitem.ArgumentItem
 import gg.aquatic.aquaticcrates.plugin.animation.prop.entity.EntityAnimationProp
 import gg.aquatic.aquaticcrates.plugin.animation.prop.entity.property.EntityProperty
 import gg.aquatic.aquaticcrates.plugin.animation.prop.entity.property.EntityPropertySerializer
+import gg.aquatic.aquaticseries.lib.util.mapPair
+import gg.aquatic.waves.fake.entity.FakeEntity
+import gg.aquatic.waves.packetevents.EntityDataBuilder
+import gg.aquatic.waves.packetevents.type.ItemDisplayEntityDataBuilder
+import gg.aquatic.waves.shadow.com.retrooper.packetevents.protocol.entity.type.EntityTypes
+import gg.aquatic.waves.shadow.com.retrooper.packetevents.protocol.player.EquipmentSlot
 import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.entity.Entity
 import org.bukkit.entity.ItemDisplay
@@ -14,27 +20,32 @@ class EntityArmorProperty(
     val chestplate: ArgumentItem?,
     val leggings: ArgumentItem?,
     val boots: ArgumentItem?,
-): EntityProperty {
-    override fun apply(entity: Entity, prop: EntityAnimationProp) {
-        val living = entity as? LivingEntity
-        if (living != null) {
-            if (helmet != null) {
-                living.equipment?.helmet = helmet.getActualItem(prop.animation).getItem()
-            }
-            if (chestplate != null) {
-                living.equipment?.chestplate = chestplate.getActualItem(prop.animation).getItem()
-            }
-            if (leggings != null) {
-                living.equipment?.leggings = leggings.getActualItem(prop.animation).getItem()
-            }
-            if (boots != null) {
-                living.equipment?.boots = boots.getActualItem(prop.animation).getItem()
+) : EntityProperty {
+    override fun apply(entity: FakeEntity, prop: EntityAnimationProp) {
+
+        if (entity.type != EntityTypes.ITEM_DISPLAY) {
+            entity.updateEntity {
+                helmet?.getActualItem(prop.animation)?.getItem()?.let {
+                    equipment[EquipmentSlot.HELMET] = it
+                }
+                chestplate?.getActualItem(prop.animation)?.getItem()?.let {
+                    equipment[EquipmentSlot.CHEST_PLATE] = it
+                }
+                leggings?.getActualItem(prop.animation)?.getItem()?.let {
+                    equipment[EquipmentSlot.LEGGINGS] = it
+                }
+                boots?.getActualItem(prop.animation)?.getItem()?.let {
+                    equipment[EquipmentSlot.BOOTS] = it
+                }
             }
             return
-        }
-        if (entity is ItemDisplay) {
-            entity.itemStack = helmet?.getActualItem(prop.animation)?.getItem() ?: return
-            return
+        } else {
+            entity.updateEntity {
+                helmet?.getActualItem(prop.animation)?.getItem()?.let {
+                    entityData += EntityDataBuilder.ITEM_DISPLAY.setItem(it).build()
+                        .mapPair { value -> value.index to value }
+                }
+            }
         }
     }
 

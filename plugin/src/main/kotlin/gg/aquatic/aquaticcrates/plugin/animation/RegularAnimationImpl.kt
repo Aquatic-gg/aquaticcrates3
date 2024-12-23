@@ -8,9 +8,11 @@ import gg.aquatic.aquaticcrates.api.reward.RolledReward
 import gg.aquatic.aquaticseries.lib.action.ConfiguredAction
 import gg.aquatic.aquaticseries.lib.audience.AquaticAudience
 import gg.aquatic.aquaticseries.lib.util.executeActions
+import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.entity.Player
 import java.util.concurrent.CompletableFuture
+import java.util.concurrent.ConcurrentHashMap
 
 class RegularAnimationImpl(
     override val player: Player,
@@ -23,10 +25,8 @@ class RegularAnimationImpl(
     override var state: State = State.PRE_OPEN
         private set
 
-
     private val settings = animationManager.animationSettings
-
-    override val props: MutableMap<String, AnimationProp> = hashMapOf()
+    override val props: ConcurrentHashMap<String, AnimationProp> = ConcurrentHashMap()
 
 
     override fun tick() {
@@ -65,6 +65,7 @@ class RegularAnimationImpl(
             prop.tick()
         }
 
+        Bukkit.broadcastMessage("Tick: $tick")
         tick++
     }
 

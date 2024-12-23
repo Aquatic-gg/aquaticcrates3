@@ -3,7 +3,7 @@ package gg.aquatic.aquaticcrates.plugin.command
 import gg.aquatic.aquaticcrates.api.crate.CrateHandler
 import gg.aquatic.aquaticcrates.api.crate.OpenableCrate
 import gg.aquatic.aquaticcrates.plugin.crate.BasicCrate
-import gg.aquatic.aquaticseries.lib.util.ICommand
+import gg.aquatic.waves.command.ICommand
 import org.bukkit.Bukkit
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player

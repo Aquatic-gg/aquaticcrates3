@@ -4,12 +4,13 @@ import gg.aquatic.aquaticseries.lib.util.AquaticLocation
 import gg.aquatic.aquaticseries.lib.util.Config
 import org.bukkit.Location
 import org.bukkit.World
+import java.util.concurrent.ConcurrentHashMap
 
 object CrateHandler {
 
-    val crates = HashMap<String, Crate>()
-    val cratesToSpawn = HashMap<String, HashMap<AquaticLocation, Crate>>()
-    val spawned = HashMap<Location, SpawnedCrate>()
+    val crates = ConcurrentHashMap<String, Crate>()
+    val cratesToSpawn = ConcurrentHashMap<String, HashMap<AquaticLocation, Crate>>()
+    val spawned = ConcurrentHashMap<Location, SpawnedCrate>()
 
     fun spawnCrate(crate: Crate, location: Location): SpawnedCrate {
         val spawnedCrate = SpawnedCrate(crate, location)

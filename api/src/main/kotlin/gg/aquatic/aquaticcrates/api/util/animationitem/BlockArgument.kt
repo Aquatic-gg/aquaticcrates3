@@ -1,9 +1,9 @@
 package gg.aquatic.aquaticcrates.api.util.animationitem
 
-import gg.aquatic.aquaticseries.lib.block.AquaticBlock
-import gg.aquatic.aquaticseries.lib.util.AquaticBlockSerializer
-import gg.aquatic.aquaticseries.lib.util.argument.AbstractObjectArgumentSerializer
-import gg.aquatic.aquaticseries.lib.util.argument.AquaticObjectArgument
+import gg.aquatic.waves.util.argument.AbstractObjectArgumentSerializer
+import gg.aquatic.waves.util.argument.AquaticObjectArgument
+import gg.aquatic.waves.util.block.AquaticBlock
+import gg.aquatic.waves.util.block.AquaticBlockSerializer
 import org.bukkit.configuration.ConfigurationSection
 
 class BlockArgument(id: String, defaultValue: AquaticBlock?, required: Boolean) : AquaticObjectArgument<AquaticBlock>(id, defaultValue,

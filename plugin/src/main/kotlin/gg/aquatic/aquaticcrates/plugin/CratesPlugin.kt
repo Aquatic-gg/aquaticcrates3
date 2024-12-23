@@ -14,20 +14,21 @@ import gg.aquatic.aquaticcrates.plugin.animation.action.model.ShowModelAction
 import gg.aquatic.aquaticcrates.plugin.animation.action.path.LinearPathAction
 import gg.aquatic.aquaticcrates.plugin.command.CrateCommand
 import gg.aquatic.aquaticcrates.plugin.command.KeyCommand
-import gg.aquatic.aquaticcrates.plugin.crate.BasicCrate
 import gg.aquatic.aquaticcrates.plugin.interact.action.*
 import gg.aquatic.aquaticcrates.plugin.restriction.impl.*
 import gg.aquatic.aquaticcrates.plugin.serialize.CrateSerializer
-import gg.aquatic.aquaticseries.lib.command.AquaticBaseCommand
-import gg.aquatic.aquaticseries.lib.command.register
-import gg.aquatic.aquaticseries.lib.util.*
+import gg.aquatic.waves.command.AquaticBaseCommand
+import gg.aquatic.waves.command.register
 import gg.aquatic.waves.profile.ProfilesModule
 import gg.aquatic.waves.registry.WavesRegistry
 import gg.aquatic.waves.registry.registerAction
 import gg.aquatic.waves.registry.registerRequirement
-import org.bukkit.event.player.PlayerJoinEvent
+import gg.aquatic.waves.util.Config
+import gg.aquatic.waves.util.event.event
+import gg.aquatic.waves.util.runSyncTimer
 import org.bukkit.event.world.WorldLoadEvent
 import java.util.concurrent.CompletableFuture
+import java.util.concurrent.CompletableFuture.runAsync
 
 class CratesPlugin : AbstractCratesPlugin() {
 
@@ -73,9 +74,9 @@ class CratesPlugin : AbstractCratesPlugin() {
 
     private fun startTicker() {
         runSyncTimer(1, 1) {
-            for (value in CrateHandler.crates.values) {
-                if (value is OpenableCrate) {
-                    value.animationManager.tick()
+            for ((_, crate) in CrateHandler.crates) {
+                if (crate is OpenableCrate) {
+                    crate.animationManager.tick()
                 }
             }
         }

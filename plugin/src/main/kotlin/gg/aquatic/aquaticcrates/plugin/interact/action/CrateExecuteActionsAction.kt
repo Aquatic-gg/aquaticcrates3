@@ -1,45 +1,44 @@
 package gg.aquatic.aquaticcrates.plugin.interact.action
 
 import gg.aquatic.aquaticcrates.api.interaction.CrateInteractAction
-import gg.aquatic.aquaticseries.lib.action.AbstractAction
-import gg.aquatic.aquaticseries.lib.action.ConfiguredAction
-import gg.aquatic.aquaticseries.lib.util.argument.AbstractObjectArgumentSerializer
-import gg.aquatic.aquaticseries.lib.util.argument.AquaticObjectArgument
-import gg.aquatic.aquaticseries.lib.util.executeActions
-import gg.aquatic.aquaticseries.lib.util.getSectionList
 import gg.aquatic.waves.registry.serializer.ActionSerializer
+import gg.aquatic.waves.util.action.AbstractAction
+import gg.aquatic.waves.util.argument.AbstractObjectArgumentSerializer
+import gg.aquatic.waves.util.argument.AquaticObjectArgument
+import gg.aquatic.waves.util.executeActions
+import gg.aquatic.waves.util.generic.ConfiguredExecutableObject
+import gg.aquatic.waves.util.generic.ExecutableObject
+import gg.aquatic.waves.util.getSectionList
 import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.entity.Player
-import java.util.function.BiFunction
 
 class CrateExecuteActionsAction : AbstractAction<CrateInteractAction>() {
-    @Suppress("UNCHECKED_CAST")
-    override fun run(
+
+    override val arguments: List<AquaticObjectArgument<*>> = listOf(ActionsArgument("actions", true))
+
+    override fun execute(
         binder: CrateInteractAction,
         args: Map<String, Any?>,
-        textUpdater: BiFunction<CrateInteractAction, String, String>
+        textUpdater: (CrateInteractAction, String) -> String
     ) {
-        val actions = args["actions"] as List<ConfiguredAction<Player>>
-        actions.executeActions(binder.player) { _, str -> textUpdater.apply(binder, str) }
+        val actions = args["actions"] as List<ConfiguredExecutableObject<Player,Unit>>
+        actions.executeActions(binder.player) { _, str -> textUpdater(binder, str)
+        }
     }
 
-    override fun arguments(): List<AquaticObjectArgument<*>> {
-        return listOf(ActionsArgument("actions", true))
-    }
-
-    class ActionsArgument(id: String, required: Boolean) : AquaticObjectArgument<List<ConfiguredAction<Player>>>(
+    class ActionsArgument(id: String, required: Boolean) : AquaticObjectArgument<List<ConfiguredExecutableObject<Player,Unit>>>(
         id,
         arrayListOf(), required
     ) {
-        override val serializer: AbstractObjectArgumentSerializer<List<ConfiguredAction<Player>>?>
+        override val serializer: AbstractObjectArgumentSerializer<List<ConfiguredExecutableObject<Player,Unit>>?>
             get() = Companion
 
-        override fun load(section: ConfigurationSection): List<ConfiguredAction<Player>>? {
+        override fun load(section: ConfigurationSection): List<ConfiguredExecutableObject<Player,Unit>>? {
             return serializer.load(section, id) ?: defaultValue
         }
 
-        companion object : AbstractObjectArgumentSerializer<List<ConfiguredAction<Player>>?>() {
-            override fun load(section: ConfigurationSection, id: String): List<ConfiguredAction<Player>> {
+        companion object : AbstractObjectArgumentSerializer<List<ConfiguredExecutableObject<Player,Unit>>?>() {
+            override fun load(section: ConfigurationSection, id: String): List<ConfiguredExecutableObject<Player,Unit>> {
                 return ActionSerializer.fromSections(section.getSectionList(id))
             }
         }

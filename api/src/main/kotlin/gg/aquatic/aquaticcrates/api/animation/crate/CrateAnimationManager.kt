@@ -4,8 +4,8 @@ import gg.aquatic.aquaticcrates.api.animation.AnimationTitle
 import gg.aquatic.aquaticcrates.api.crate.Crate
 import gg.aquatic.aquaticcrates.api.reroll.RerollManager
 import org.bukkit.entity.Player
-import java.util.HashMap
 import java.util.UUID
+import java.util.concurrent.ConcurrentHashMap
 
 abstract class CrateAnimationManager {
 
@@ -21,7 +21,7 @@ abstract class CrateAnimationManager {
 
     }
 
-    abstract val playingAnimations: HashMap<UUID, MutableList<CrateAnimation>>
+    abstract val playingAnimations: ConcurrentHashMap<UUID, MutableSet<CrateAnimation>>
     abstract fun playAnimation(animation: CrateAnimation)
 
     abstract fun skipAnimation(player: Player)

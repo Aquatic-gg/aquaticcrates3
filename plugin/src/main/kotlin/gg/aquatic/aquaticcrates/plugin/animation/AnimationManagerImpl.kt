@@ -7,6 +7,7 @@ import gg.aquatic.aquaticcrates.api.crate.OpenableCrate
 import gg.aquatic.aquaticcrates.api.reroll.RerollManager
 import org.bukkit.entity.Player
 import java.util.*
+import java.util.concurrent.ConcurrentHashMap
 import kotlin.collections.HashMap
 
 class AnimationManagerImpl(
@@ -16,11 +17,11 @@ class AnimationManagerImpl(
 ) : CrateAnimationManager() {
     override val rerollManager = rerollManager(crate)
 
-    override val playingAnimations: HashMap<UUID, MutableList<CrateAnimation>> = hashMapOf()
+    override val playingAnimations: ConcurrentHashMap<UUID, MutableSet<CrateAnimation>> = ConcurrentHashMap()
 
 
     override fun playAnimation(animation: CrateAnimation) {
-        val animations = playingAnimations.getOrPut(animation.player.uniqueId) { ArrayList() }
+        val animations = playingAnimations.getOrPut(animation.player.uniqueId) { ConcurrentHashMap.newKeySet() }
         animations += animation
     }
 

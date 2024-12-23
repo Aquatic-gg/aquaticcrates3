@@ -4,8 +4,9 @@ import gg.aquatic.aquaticcrates.api.animation.Animation
 import gg.aquatic.aquaticcrates.plugin.animation.prop.path.PathBoundProperties
 import gg.aquatic.aquaticcrates.plugin.animation.prop.path.PathPoint
 import gg.aquatic.aquaticcrates.plugin.animation.prop.path.PathProp
-import gg.aquatic.aquaticseries.lib.util.argument.AbstractObjectArgumentSerializer
-import gg.aquatic.aquaticseries.lib.util.argument.AquaticObjectArgument
+
+import gg.aquatic.waves.util.argument.AbstractObjectArgumentSerializer
+import gg.aquatic.waves.util.argument.AquaticObjectArgument
 import org.bukkit.Bukkit
 import org.bukkit.configuration.ConfigurationSection
 

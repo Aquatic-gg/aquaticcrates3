@@ -2,17 +2,19 @@ package gg.aquatic.aquaticcrates.plugin.interact.action
 
 import gg.aquatic.aquaticcrates.api.crate.OpenableCrate
 import gg.aquatic.aquaticcrates.api.interaction.CrateInteractAction
-import gg.aquatic.aquaticcrates.plugin.crate.BasicCrate
-import gg.aquatic.aquaticseries.lib.action.AbstractAction
-import gg.aquatic.aquaticseries.lib.util.argument.AquaticObjectArgument
+import gg.aquatic.waves.util.action.AbstractAction
+import gg.aquatic.waves.util.argument.AquaticObjectArgument
+import gg.aquatic.waves.util.generic.ExecutableObject
 import org.bukkit.Bukkit
-import java.util.function.BiFunction
 
 class CrateInstantOpenAction: AbstractAction<CrateInteractAction>() {
-    override fun run(
+
+    override val arguments: List<AquaticObjectArgument<*>> = listOf()
+
+    override fun execute(
         binder: CrateInteractAction,
         args: Map<String, Any?>,
-        textUpdater: BiFunction<CrateInteractAction, String, String>
+        textUpdater: (CrateInteractAction, String) -> String
     ) {
         Bukkit.broadcastMessage("Instant Opening crate!")
         val crate = binder.crate
@@ -20,10 +22,6 @@ class CrateInstantOpenAction: AbstractAction<CrateInteractAction>() {
         if (crate is OpenableCrate) {
             crate.tryInstantOpen(player, binder.interactedLocation, binder.spawnedCrate)
         }
-    }
-
-    override fun arguments(): List<AquaticObjectArgument<*>> {
-        return listOf()
     }
 
 }

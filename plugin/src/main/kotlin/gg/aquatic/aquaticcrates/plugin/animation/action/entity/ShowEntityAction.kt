@@ -8,17 +8,27 @@ import gg.aquatic.aquaticcrates.plugin.animation.prop.entity.property.EntityProp
 import gg.aquatic.aquaticcrates.plugin.animation.prop.entity.property.EntityProperty
 import gg.aquatic.aquaticcrates.plugin.animation.prop.path.PathBoundProperties
 import gg.aquatic.aquaticcrates.plugin.animation.prop.path.PathProp
-import gg.aquatic.aquaticseries.lib.action.AbstractAction
-import gg.aquatic.aquaticseries.lib.util.argument.AquaticObjectArgument
-import gg.aquatic.aquaticseries.lib.util.argument.impl.PrimitiveObjectArgument
+import gg.aquatic.waves.util.action.AbstractAction
+import gg.aquatic.waves.util.argument.AquaticObjectArgument
+import gg.aquatic.waves.util.argument.impl.PrimitiveObjectArgument
 import org.bukkit.Bukkit
 import org.bukkit.util.Vector
-import java.util.function.BiFunction
 
 class ShowEntityAction : AbstractAction<Animation>() {
 
-    @Suppress("UNCHECKED_CAST")
-    override fun run(binder: Animation, args: Map<String, Any?>, textUpdater: BiFunction<Animation, String, String>) {
+    override val arguments: List<AquaticObjectArgument<*>> = listOf(
+        PrimitiveObjectArgument("id", "example-entity", true),
+        PrimitiveObjectArgument("entity-type", "zombie", true),
+        EntityPropertiesObjectArgument("properties", listOf(), false),
+        VectorArgument("location-offset", Vector(), false),
+        BoundPathObjectArgument(
+            "bound-paths",
+            { _ -> hashMapOf() },
+            false
+        )
+    )
+
+    override fun execute(binder: Animation, args: Map<String, Any?>, textUpdater: (Animation, String) -> String) {
         val id = args["id"] as String
         val type = args["entity-type"] as String
         val properties = args["properties"] as List<EntityProperty>
@@ -42,19 +52,5 @@ class ShowEntityAction : AbstractAction<Animation>() {
         }
 
         binder.props["entity:$id"] = entity
-    }
-
-    override fun arguments(): List<AquaticObjectArgument<*>> {
-        return listOf(
-            PrimitiveObjectArgument("id", "example-entity", true),
-            PrimitiveObjectArgument("entity-type", "zombie", true),
-            EntityPropertiesObjectArgument("properties", listOf(), false),
-            VectorArgument("location-offset", Vector(), false),
-            BoundPathObjectArgument(
-                "bound-paths",
-                { _ -> hashMapOf() },
-                false
-            )
-        )
     }
 }

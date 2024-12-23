@@ -5,19 +5,21 @@ import gg.aquatic.aquaticcrates.api.crate.CrateHandler
 import gg.aquatic.aquaticcrates.api.crate.OpenableCrate
 import gg.aquatic.aquaticcrates.plugin.restriction.OpenData
 import gg.aquatic.aquaticcrates.plugin.restriction.OpenRestriction
-import gg.aquatic.aquaticseries.lib.util.argument.AquaticObjectArgument
-import gg.aquatic.aquaticseries.lib.util.argument.impl.PrimitiveObjectArgument
+import gg.aquatic.waves.util.argument.AquaticObjectArgument
+import gg.aquatic.waves.util.argument.impl.PrimitiveObjectArgument
 
 class AllPlayerOpenRestriction: OpenRestriction() {
 
-    override fun arguments(): List<AquaticObjectArgument<*>> {
-        return listOf(
-            PrimitiveObjectArgument("radius",5, true)
-        )
-    }
+    override val arguments: List<AquaticObjectArgument<*>> = listOf(
+        PrimitiveObjectArgument("radius",5, true)
+    )
 
-    override fun check(binder: OpenData, arguments: Map<String, Any?>): Boolean {
-        val radius = arguments["radius"] as? Int ?: return true
+    override fun execute(
+        binder: OpenData,
+        args: Map<String, Any?>,
+        textUpdater: (OpenData, String) -> String
+    ): Boolean {
+        val radius = args["radius"] as? Int ?: return true
         val player = binder.player
         val location = binder.location
 

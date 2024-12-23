@@ -1,8 +1,8 @@
 package gg.aquatic.aquaticcrates.plugin.animation.action.path
 
 import gg.aquatic.aquaticcrates.plugin.animation.prop.path.PathPoint
-import gg.aquatic.aquaticseries.lib.util.argument.AbstractObjectArgumentSerializer
-import gg.aquatic.aquaticseries.lib.util.argument.AquaticObjectArgument
+import gg.aquatic.waves.util.argument.AbstractObjectArgumentSerializer
+import gg.aquatic.waves.util.argument.AquaticObjectArgument
 import org.bukkit.Bukkit
 import org.bukkit.configuration.ConfigurationSection
 import java.util.TreeMap

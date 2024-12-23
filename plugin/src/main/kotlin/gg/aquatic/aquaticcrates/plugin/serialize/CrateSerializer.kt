@@ -24,18 +24,18 @@ import gg.aquatic.aquaticcrates.plugin.reroll.RerollManagerImpl
 import gg.aquatic.aquaticcrates.plugin.reroll.input.inventory.InventoryRerollInput
 import gg.aquatic.aquaticcrates.plugin.restriction.OpenData
 import gg.aquatic.aquaticcrates.plugin.reward.RewardManagerImpl
-import gg.aquatic.aquaticseries.lib.action.ConfiguredAction
-import gg.aquatic.aquaticseries.lib.block.impl.VanillaBlock
-import gg.aquatic.aquaticseries.lib.util.Config
-import gg.aquatic.aquaticseries.lib.util.getSectionList
 import gg.aquatic.waves.interactable.settings.BlockInteractableSettings
 import gg.aquatic.waves.item.AquaticItem
 import gg.aquatic.waves.item.AquaticItemInteractEvent
-import gg.aquatic.waves.item.loadFromYml
 import gg.aquatic.waves.menu.MenuSerializer
 import gg.aquatic.waves.registry.serializer.ActionSerializer
 import gg.aquatic.waves.registry.serializer.InteractableSerializer
 import gg.aquatic.waves.registry.serializer.RequirementSerializer
+import gg.aquatic.waves.util.Config
+import gg.aquatic.waves.util.block.impl.VanillaBlock
+import gg.aquatic.waves.util.generic.ConfiguredExecutableObject
+import gg.aquatic.waves.util.getSectionList
+import gg.aquatic.waves.util.item.loadFromYml
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.configuration.ConfigurationSection
@@ -148,19 +148,19 @@ object CrateSerializer : BaseSerializer() {
         val interactHandler = { crate: OpenableCrate ->
             val clickActions = loadInteractActions(cfg.getConfigurationSection("interaction"))
             if (clickActions.isEmpty()) {
-                clickActions += AquaticItemInteractEvent.InteractType.LEFT to ConfiguredAction(
+                clickActions += AquaticItemInteractEvent.InteractType.LEFT to ConfiguredExecutableObject(
                     CratePreviewAction(),
                     mapOf()
                 )
-                clickActions += AquaticItemInteractEvent.InteractType.RIGHT to ConfiguredAction(
+                clickActions += AquaticItemInteractEvent.InteractType.RIGHT to ConfiguredExecutableObject(
                     CrateOpenAction(),
                     mapOf()
                 )
-                clickActions += AquaticItemInteractEvent.InteractType.SHIFT_RIGHT to ConfiguredAction(
+                clickActions += AquaticItemInteractEvent.InteractType.SHIFT_RIGHT to ConfiguredExecutableObject(
                     CrateInstantOpenAction(),
                     mapOf()
                 )
-                clickActions += AquaticItemInteractEvent.InteractType.SHIFT_LEFT to ConfiguredAction(
+                clickActions += AquaticItemInteractEvent.InteractType.SHIFT_LEFT to ConfiguredExecutableObject(
                     CrateBreakAction(),
                     mapOf()
                 )
@@ -173,16 +173,12 @@ object CrateSerializer : BaseSerializer() {
         if (previewSection != null) {
             if (!previewSection.contains("pages")) {
                 val settings = loadCratePreviewMenuSettings(previewSection)
-                if (settings != null) {
-                    previewMenuPages += settings
-                }
+                previewMenuPages += settings
             } else {
                 val sections = previewSection.getSectionList("pages")
                 for (section in sections) {
                     val settings = loadCratePreviewMenuSettings(section)
-                    if (settings != null) {
-                        previewMenuPages += settings
-                    }
+                    previewMenuPages += settings
                 }
             }
         }
@@ -236,7 +232,7 @@ object CrateSerializer : BaseSerializer() {
         )
     }
 
-    private fun loadCratePreviewMenuSettings(section: ConfigurationSection): CratePreviewMenuSettings? {
+    private fun loadCratePreviewMenuSettings(section: ConfigurationSection): CratePreviewMenuSettings {
         val rewardSlots = section.getIntegerList("reward-slots")
         val invSettings = MenuSerializer.loadPrivateInventory(section)
         val clearBottomInventory = section.getBoolean("clear-bottom-inventory", false)
@@ -252,8 +248,8 @@ object CrateSerializer : BaseSerializer() {
         )
     }
 
-    fun loadInteractActions(section: ConfigurationSection?): EnumMap<AquaticItemInteractEvent.InteractType, ConfiguredAction<CrateInteractAction>> {
-        val map = EnumMap<AquaticItemInteractEvent.InteractType, ConfiguredAction<CrateInteractAction>>(
+    fun loadInteractActions(section: ConfigurationSection?): EnumMap<AquaticItemInteractEvent.InteractType, ConfiguredExecutableObject<CrateInteractAction,Unit>> {
+        val map = EnumMap<AquaticItemInteractEvent.InteractType, ConfiguredExecutableObject<CrateInteractAction,Unit>>(
             AquaticItemInteractEvent.InteractType::class.java
         )
         section ?: return map
