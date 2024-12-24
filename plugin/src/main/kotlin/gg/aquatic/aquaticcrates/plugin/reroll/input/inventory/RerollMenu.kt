@@ -5,6 +5,8 @@ import gg.aquatic.aquaticcrates.api.reward.Reward
 import gg.aquatic.waves.menu.PrivateAquaticMenu
 import gg.aquatic.waves.menu.SlotSelection
 import gg.aquatic.waves.menu.component.Button
+import gg.aquatic.waves.shadow.com.retrooper.packetevents.wrapper.play.server.WrapperPlayServerCloseWindow
+import gg.aquatic.waves.util.runSync
 import gg.aquatic.waves.util.updatePAPIPlaceholders
 import org.bukkit.Material
 import org.bukkit.entity.Player
@@ -13,7 +15,7 @@ import java.util.concurrent.CompletableFuture
 
 class RerollMenu(
     player: Player,
-    val rewards: List<Reward>,
+    val rewards: Collection<Reward>,
     val settings: RerollInventorySettings,
     val future: CompletableFuture<RerollManager.RerollResult>
 ) : PrivateAquaticMenu(
@@ -59,12 +61,15 @@ class RerollMenu(
                 { str, menu -> str },
                 { e ->
                     if (id == "reroll") {
-                        player.closeInventory()
                         future.complete(RerollManager.RerollResult(true))
-                        player.closeInventory()
+                        runSync {
+                            player.closeInventory()
+                        }
                     } else if (id == "claim") {
                         future.complete(RerollManager.RerollResult(false))
-                        player.closeInventory()
+                        runSync {
+                            player.closeInventory()
+                        }
                     }
                 }
             )

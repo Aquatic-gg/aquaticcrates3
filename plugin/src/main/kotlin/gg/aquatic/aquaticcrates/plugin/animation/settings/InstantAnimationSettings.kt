@@ -62,6 +62,10 @@ class InstantAnimationSettings(
                 object : CrateAnimation() {
                     override val animationManager: CrateAnimationManager = animationManager
                     override val state: State = State.FINISHED
+                    override fun skip() {
+
+                    }
+
                     override val baseLocation: Location = player.location
                     override val player: Player = player
                     override val audience: AquaticAudience = GlobalAudience()

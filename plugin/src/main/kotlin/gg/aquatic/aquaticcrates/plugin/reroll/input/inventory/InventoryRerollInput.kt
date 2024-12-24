@@ -15,7 +15,7 @@ class InventoryRerollInput(
     override fun handle(
         rerollManager: RerollManager,
         player: Player,
-        rewards: List<Reward>
+        rewards: Collection<Reward>
     ): CompletableFuture<RerollManager.RerollResult> {
         val future = CompletableFuture<RerollManager.RerollResult>()
 
@@ -38,7 +38,8 @@ class InventoryRerollInput(
 
     companion object : InputSettingsFactory {
         override fun serialize(cfg: FileConfiguration): RerollInput? {
-            val menuSettings = MenuSerializer.loadPrivateInventory(cfg.getConfigurationSection("reroll.inventory") ?: return null)
+            val menuSettings =
+                MenuSerializer.loadPrivateInventory(cfg.getConfigurationSection("reroll.inventory") ?: return null)
             val clearBottomInventory = cfg.getBoolean("reroll.inventory.clear-bottom-inventory")
             val rewardSlots = MenuSerializer.loadSlotSelection(cfg.getStringList("reroll.inventory.reward-slots"))
             val onCloseAction =

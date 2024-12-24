@@ -98,14 +98,22 @@ object CrateSerializer : BaseSerializer() {
         val openPriceGroups = ArrayList<OpenPriceGroup>()
 
         val rerollInputSection = cfg.getConfigurationSection("reroll")
-        val type = rerollInputSection?.getString("type", "inventory") ?: "inventory"
-        val serializer = rerollInputSerializers[type] ?: InventoryRerollInput.Companion
+        val type = rerollInputSection?.getString("type") ?: "inventory"
+        val serializer = rerollInputSerializers[type.lowercase()] ?: InventoryRerollInput.Companion
         val rerollManager = { crate: OpenableCrate ->
             val input = serializer.serialize(cfg)
             if (input != null) {
-                RerollManagerImpl(crate, hashMapOf(), input)
+                val groups = hashMapOf<String, Int>()
+                Bukkit.getConsoleSender().sendMessage("Loading reroll groups:")
+                for (group in rerollInputSection?.getConfigurationSection("groups")?.getKeys(false) ?: emptyList()) {
+                    val amount = cfg.getInt("reroll.groups.$group")
+                    if (amount <= 0) continue
+                    Bukkit.getConsoleSender().sendMessage("Loaded $group with $amount")
+                    groups[group] = amount
+                }
+                RerollManagerImpl(crate, groups, input)
             }
-            null
+            else null
         }
         val keySection = cfg.getConfigurationSection("key")
         if (keySection == null) {

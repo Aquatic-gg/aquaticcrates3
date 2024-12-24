@@ -9,7 +9,7 @@ import java.util.concurrent.CompletableFuture
 
 class RerollManagerImpl(override val crate: Crate, override val groups: HashMap<String, Int>, override val rerollInput: RerollInput) : RerollManager() {
 
-    override fun openReroll(player: Player, rewards: List<Reward>): CompletableFuture<RerollResult> {
+    override fun openReroll(player: Player, rewards: Collection<Reward>): CompletableFuture<RerollResult> {
         return rerollInput.handle(this, player, rewards)
     }
 

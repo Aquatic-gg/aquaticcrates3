@@ -6,6 +6,6 @@ import java.util.concurrent.CompletableFuture
 
 interface RerollInput {
 
-    fun handle(rerollManager: RerollManager, player: Player, rewards: List<Reward>): CompletableFuture<RerollManager.RerollResult>
+    fun handle(rerollManager: RerollManager, player: Player, rewards: Collection<Reward>): CompletableFuture<RerollManager.RerollResult>
 
 }

@@ -88,7 +88,7 @@ class RegularAnimationImpl(
                 availableRerolls = rerolls
             }
         }
-        if (availableRerolls <= 0) {
+        if (availableRerolls <= usedRerolls) {
             updateState(State.POST_OPEN)
             tick()
             return
