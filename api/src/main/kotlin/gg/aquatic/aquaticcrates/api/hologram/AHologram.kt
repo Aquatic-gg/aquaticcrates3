@@ -1,12 +1,11 @@
 package gg.aquatic.aquaticcrates.api.hologram
 
-import gg.aquatic.aquaticseries.lib.audience.AquaticAudience
-import gg.aquatic.aquaticseries.lib.audience.GlobalAudience
-import gg.aquatic.aquaticseries.lib.betterhologram.AquaticHologram
-import gg.aquatic.aquaticseries.lib.betterhologram.AquaticHologram.Anchor
+import gg.aquatic.waves.hologram.AquaticHologram
+import gg.aquatic.waves.hologram.HologramLine
+import gg.aquatic.waves.util.audience.AquaticAudience
+import gg.aquatic.waves.util.audience.GlobalAudience
 import org.bukkit.Location
 import org.bukkit.entity.Player
-import java.util.function.Consumer
 
 class AHologram(
     location: Location,
@@ -14,55 +13,45 @@ class AHologram(
 ): Hologram(location) {
 
 
-    var lines: MutableList<AquaticHologram.Line> = settings.lines.toMutableList()
+    var lines: MutableSet<HologramLine> = settings.lines.toMutableSet()
         private set
 
     private var audience: AquaticAudience = GlobalAudience()
 
     private var hologram: AquaticHologram? = null
 
-    fun setLines(lines: List<AquaticHologram.Line>) {
-        despawn()
-        this.lines = ArrayList(lines)
-        createHologram()
-        hologram?.update()
+    fun setLines(lines: List<HologramLine>, textUpdater: (Player,String) -> String) {
+        this.lines = lines.toMutableSet()
+        createHologram(textUpdater)
     }
 
-    private fun createHologram() {
-        val lines = ArrayList<AquaticHologram.Line>()
-        for (line in this.lines) {
-            lines.add(line.clone())
-        }
+    private fun createHologram(textUpdater: (Player,String) -> String) {
+        hologram?.destroy()
         hologram = AquaticHologram(
-            { player: Player -> audience.canBeApplied(player) },
-            null,
-            lines,
-            Anchor.MIDDLE,
-            settings.billboard,
             location.clone().add(settings.offset),
-            50.0
+            { player: Player -> audience.canBeApplied(player) },
+            textUpdater,
+            50,
+            lines
         )
-        HologramHandler.holograms.add(hologram ?: return)
     }
 
     override fun move(location: Location) {
         this.location = location
-        hologram?.move(location.clone().add(settings.offset))
+        hologram?.teleport(location.clone().add(settings.offset))
     }
 
     override fun despawn() {
-        HologramHandler.holograms.remove(hologram ?: return)
-        hologram?.despawn()
+        hologram?.destroy()
         hologram = null
     }
 
-    override fun spawn(audience: AquaticAudience, consumer: Consumer<List<String>>) {
+    override fun spawn(audience: AquaticAudience, textUpdater: (Player,String) -> String) {
         despawn()
         this.audience = audience
-        createHologram()
-        hologram?.update()
+        createHologram(textUpdater)
     }
 
-    override fun update(consumer: Consumer<List<String>>) {
+    override fun update(textUpdater: (Player,String) -> String) {
     }
 }

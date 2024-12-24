@@ -1,11 +1,9 @@
 package gg.aquatic.aquaticcrates.plugin.preview
 
 import gg.aquatic.aquaticcrates.plugin.crate.BasicCrate
-import gg.aquatic.aquaticseries.lib.betterinventory2.SlotSelection
-import gg.aquatic.aquaticseries.lib.betterinventory2.component.ButtonComponent
 import gg.aquatic.waves.menu.PrivateAquaticMenu
+import gg.aquatic.waves.menu.SlotSelection
 import gg.aquatic.waves.menu.component.Button
-import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack

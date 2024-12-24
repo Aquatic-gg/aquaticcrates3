@@ -13,6 +13,7 @@ import gg.aquatic.waves.util.argument.AquaticObjectArgument
 import gg.aquatic.waves.util.argument.impl.PrimitiveObjectArgument
 import org.bukkit.Bukkit
 import org.bukkit.util.Vector
+import java.util.concurrent.ConcurrentHashMap
 
 class ShowEntityAction : AbstractAction<Animation>() {
 
@@ -23,7 +24,7 @@ class ShowEntityAction : AbstractAction<Animation>() {
         VectorArgument("location-offset", Vector(), false),
         BoundPathObjectArgument(
             "bound-paths",
-            { _ -> hashMapOf() },
+            { _ -> ConcurrentHashMap() },
             false
         )
     )
@@ -33,7 +34,7 @@ class ShowEntityAction : AbstractAction<Animation>() {
         val type = args["entity-type"] as String
         val properties = args["properties"] as List<EntityProperty>
         val locationOffset = args["location-offset"] as? Vector? ?: Vector()
-        val boundPropertiesFactory = args["bound-paths"] as ((Animation) -> MutableMap<PathProp, PathBoundProperties>)? ?: { _ -> hashMapOf() }
+        val boundPropertiesFactory = args["bound-paths"] as ((Animation) -> ConcurrentHashMap<PathProp, PathBoundProperties>)? ?: { _ -> ConcurrentHashMap() }
 
         val boundPaths = boundPropertiesFactory(binder)
         Bukkit.getConsoleSender().sendMessage("Bound paths: ${boundPaths.size}")

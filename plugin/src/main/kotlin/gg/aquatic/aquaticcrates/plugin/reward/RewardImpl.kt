@@ -5,9 +5,8 @@ import gg.aquatic.aquaticcrates.api.player.CrateProfileEntry
 import gg.aquatic.aquaticcrates.api.reward.Reward
 import gg.aquatic.aquaticcrates.api.reward.RewardAction
 import gg.aquatic.aquaticcrates.api.reward.RewardAmountRange
-import gg.aquatic.aquaticseries.lib.action.ConfiguredAction
-import gg.aquatic.aquaticseries.lib.requirement.ConfiguredRequirement
 import gg.aquatic.waves.item.AquaticItem
+import gg.aquatic.waves.util.requirement.ConfiguredRequirement
 import org.bukkit.entity.Player
 
 class RewardImpl(
@@ -23,5 +22,4 @@ class RewardImpl(
     override val winCrateAnimation: String?,
     override val hologramSettings: AquaticHologramSettings,
     override val amountRanges: MutableList<RewardAmountRange>
-) : Reward {
-}
+) : Reward

@@ -4,10 +4,10 @@ import gg.aquatic.aquaticcrates.api.crate.SpawnedCrate
 import gg.aquatic.aquaticcrates.api.player.crateEntry
 import gg.aquatic.aquaticcrates.api.reward.Reward
 import gg.aquatic.aquaticcrates.plugin.animation.settings.InstantAnimationSettings
-import gg.aquatic.aquaticseries.lib.util.executeActions
-import gg.aquatic.aquaticseries.lib.util.mapPair
-import gg.aquatic.aquaticseries.lib.util.runAsync
 import gg.aquatic.waves.profile.toAquaticPlayer
+import gg.aquatic.waves.util.executeActions
+import gg.aquatic.waves.util.mapPair
+import gg.aquatic.waves.util.runAsync
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import java.util.concurrent.CompletableFuture

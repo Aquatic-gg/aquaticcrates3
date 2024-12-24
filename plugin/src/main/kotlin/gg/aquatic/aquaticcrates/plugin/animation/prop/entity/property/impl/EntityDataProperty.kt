@@ -3,9 +3,9 @@ package gg.aquatic.aquaticcrates.plugin.animation.prop.entity.property.impl
 import gg.aquatic.aquaticcrates.plugin.animation.prop.entity.EntityAnimationProp
 import gg.aquatic.aquaticcrates.plugin.animation.prop.entity.property.EntityProperty
 import gg.aquatic.aquaticcrates.plugin.animation.prop.entity.property.EntityPropertySerializer
-import gg.aquatic.aquaticseries.lib.util.getSectionList
 import gg.aquatic.waves.fake.entity.FakeEntity
 import gg.aquatic.waves.packetevents.EntityDataBuilder
+import gg.aquatic.waves.util.getSectionList
 import org.bukkit.configuration.ConfigurationSection
 
 class EntityDataProperty(

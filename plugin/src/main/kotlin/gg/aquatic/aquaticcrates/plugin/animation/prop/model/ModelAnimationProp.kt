@@ -6,16 +6,11 @@ import gg.aquatic.aquaticcrates.api.animation.prop.AnimationProp
 import gg.aquatic.aquaticcrates.plugin.animation.prop.MovableAnimationProp
 import gg.aquatic.aquaticcrates.plugin.animation.prop.path.PathBoundProperties
 import gg.aquatic.aquaticcrates.plugin.animation.prop.path.PathProp
-import gg.aquatic.aquaticseries.lib.block.AquaticMultiBlock
-import gg.aquatic.aquaticseries.lib.block.BlockShape
-import gg.aquatic.aquaticseries.lib.interactable2.base.TempInteractableBase
-import gg.aquatic.aquaticseries.lib.interactable2.impl.meg.MegInteractable
-import gg.aquatic.aquaticseries.lib.interactable2.impl.meg.SpawnedPacketMegInteractable
+import gg.aquatic.waves.interactable.type.MEGInteractable
 import org.bukkit.Location
 import org.bukkit.entity.Player
 import org.bukkit.util.Vector
-import java.util.*
-import kotlin.collections.HashMap
+import java.util.concurrent.ConcurrentHashMap
 
 class ModelAnimationProp(
     override val animation: Animation,
@@ -23,11 +18,11 @@ class ModelAnimationProp(
     val skin: Player?,
     val modelAnimation: String?,
     override val locationOffset: Vector,
-    override val boundPaths: MutableMap<PathProp, PathBoundProperties>
+    override val boundPaths: ConcurrentHashMap<PathProp, PathBoundProperties>
 ) : AnimationProp(), MovableAnimationProp {
 
-    override val processedPaths: MutableList<PathProp> = ArrayList()
-    val interactable: SpawnedPacketMegInteractable
+    override val processedPaths: MutableSet<PathProp> = ConcurrentHashMap.newKeySet()
+    val interactable: MEGInteractable
 
     init {
         val currentLocation = if (boundPaths.isEmpty()) animation.baseLocation.clone().add(locationOffset)
@@ -40,26 +35,12 @@ class ModelAnimationProp(
             newLocation
         }
 
-        interactable = (MegInteractable(
-            TempInteractableBase(),
-            "animation_${UUID.randomUUID()}",
-            AquaticMultiBlock(
-                BlockShape(
-                    HashMap(),
-                    HashMap()
-                )
-            ),
-            model
-        ) { _, _ ->
-
-        }.spawnPacket(
+        interactable = MEGInteractable(
             currentLocation,
-            animation.audience, register = false, canInteract = false
-        ) as SpawnedPacketMegInteractable).apply {
-            if (skin != null) {
-                setSkin(skin)
-            }
-        }
+            model,
+            animation.audience,
+        ) {}
+        skin?.let { interactable.setSkin(it) }
         if (modelAnimation != null) {
             playAnimation(modelAnimation)
         }
@@ -70,16 +51,16 @@ class ModelAnimationProp(
     }
 
     fun playAnimation(animation: String, fadeIn: Double = 0.0, fadeOut: Double = 0.0, speed: Double = 1.0) {
-        interactable.activeModel!!.animationHandler.playAnimation(animation,fadeIn,fadeOut,speed, true)
+        interactable.activeModel.animationHandler.playAnimation(animation,fadeIn,fadeOut,speed, true)
     }
 
     override fun onAnimationEnd() {
-        interactable.despawn()
+        interactable.destroy()
     }
 
 
     override fun move(location: Location) {
-        val dummy = interactable.modeledEntity!!.base as Dummy<*>
+        val dummy = interactable.modeledEntity.base as Dummy<*>
         dummy.location = location
         dummy.bodyRotationController.yBodyRot = location.yaw
         dummy.bodyRotationController.xHeadRot = location.pitch

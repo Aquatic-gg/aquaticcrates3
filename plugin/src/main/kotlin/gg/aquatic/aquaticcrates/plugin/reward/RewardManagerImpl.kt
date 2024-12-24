@@ -8,8 +8,8 @@ import gg.aquatic.aquaticcrates.api.reward.Reward
 import gg.aquatic.aquaticcrates.api.reward.RewardAmountRange
 import gg.aquatic.aquaticcrates.api.reward.RewardManager
 import gg.aquatic.aquaticcrates.api.reward.RolledReward
-import gg.aquatic.aquaticseries.lib.util.checkRequirements
-import gg.aquatic.aquaticseries.lib.util.randomItem
+import gg.aquatic.waves.util.chance.randomItem
+import gg.aquatic.waves.util.checkRequirements
 import org.bukkit.entity.Player
 
 class RewardManagerImpl(

@@ -11,6 +11,7 @@ import gg.aquatic.waves.util.argument.AquaticObjectArgument
 import gg.aquatic.waves.util.argument.impl.PrimitiveObjectArgument
 import org.bukkit.Bukkit
 import org.bukkit.util.Vector
+import java.util.concurrent.ConcurrentHashMap
 
 class ShowModelAction : AbstractAction<Animation>() {
 
@@ -22,7 +23,7 @@ class ShowModelAction : AbstractAction<Animation>() {
         VectorArgument("location-offset", Vector(), false),
         BoundPathObjectArgument(
             "bound-paths",
-            { _ -> hashMapOf() },
+            { _ -> ConcurrentHashMap() },
             false
         )
     )
@@ -33,7 +34,7 @@ class ShowModelAction : AbstractAction<Animation>() {
         val applySkin = args["apply-skin"] as Boolean
         val animation = args["animation"] as String?
         val boundPropertiesFactory =
-            args["bound-paths"] as? ((Animation) -> MutableMap<PathProp, PathBoundProperties>) ?: { _ -> hashMapOf() }
+            args["bound-paths"] as? ((Animation) -> ConcurrentHashMap<PathProp, PathBoundProperties>) ?: { _ -> ConcurrentHashMap() }
 
         val boundPaths = boundPropertiesFactory(binder)
         val prop = ModelAnimationProp(

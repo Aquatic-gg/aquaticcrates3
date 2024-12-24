@@ -5,9 +5,9 @@ import gg.aquatic.aquaticcrates.api.animation.crate.CrateAnimation
 import gg.aquatic.aquaticcrates.api.animation.crate.CrateAnimationManager
 import gg.aquatic.aquaticcrates.api.animation.prop.AnimationProp
 import gg.aquatic.aquaticcrates.api.reward.RolledReward
-import gg.aquatic.aquaticseries.lib.action.ConfiguredAction
-import gg.aquatic.aquaticseries.lib.audience.AquaticAudience
-import gg.aquatic.aquaticseries.lib.util.executeActions
+import gg.aquatic.waves.util.audience.AquaticAudience
+import gg.aquatic.waves.util.executeActions
+import gg.aquatic.waves.util.generic.ConfiguredExecutableObject
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.entity.Player
@@ -87,7 +87,7 @@ class RegularAnimationImpl(
         completionFuture.complete(null)
     }
 
-    override fun executeActions(actions: List<ConfiguredAction<Animation>>) {
+    override fun executeActions(actions: List<ConfiguredExecutableObject<Animation,Unit>>) {
         actions.executeActions(this) { _, str ->
             var finalString = updatePlaceholders(str)
             finalString

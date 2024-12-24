@@ -6,21 +6,21 @@ import gg.aquatic.aquaticcrates.api.player.CrateProfileEntry
 import gg.aquatic.aquaticcrates.api.reward.Reward
 import gg.aquatic.aquaticcrates.api.reward.RewardAction
 import gg.aquatic.aquaticcrates.api.reward.RewardAmountRange
+import gg.aquatic.aquaticcrates.plugin.hologram.HologramSerializer
 import gg.aquatic.aquaticcrates.plugin.reward.RewardImpl
-import gg.aquatic.aquaticseries.lib.action.ConfiguredAction
-import gg.aquatic.aquaticseries.lib.betterhologram.AquaticHologram.Billboard
-import gg.aquatic.aquaticseries.lib.util.getSectionList
 import gg.aquatic.waves.item.AquaticItem
-import gg.aquatic.waves.item.loadFromYml
 import gg.aquatic.waves.registry.serializer.ActionSerializer
-import gg.aquatic.waves.registry.serializer.HologramSerializer
 import gg.aquatic.waves.registry.serializer.RequirementSerializer
+import gg.aquatic.waves.util.generic.ConfiguredExecutableObject
+import gg.aquatic.waves.util.getSectionList
+import gg.aquatic.waves.util.item.loadFromYml
 import org.bukkit.Bukkit
 import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.entity.Player
 import org.bukkit.util.Vector
 import java.util.*
 import kotlin.collections.ArrayList
+import kotlin.collections.HashSet
 
 abstract class BaseSerializer {
 
@@ -59,7 +59,7 @@ abstract class BaseSerializer {
 
         val requirements = RequirementSerializer.fromSections<Player>(section.getSectionList("requirements"))
         val winCrateAnimation = section.getString("win-crate-animation")
-        val hologramSettings = loadAquaticHologram(section.getConfigurationSection("hologram"))
+        val hologramSettings = HologramSerializer.loadAquaticHologram(section.getConfigurationSection("hologram"))
         val chances = loadRewardRanges(section.getSectionList("amount-ranges"))
 
         return RewardImpl(
@@ -84,11 +84,11 @@ abstract class BaseSerializer {
         }
     }
 
+    /*
     fun loadAquaticHologram(section: ConfigurationSection?): AquaticHologramSettings {
         section ?: return AquaticHologramSettings(
-            ArrayList(),
-            Vector(0, 0, 0),
-            Billboard.CENTER
+            HashSet(),
+            Vector(0, 0, 0)
         )
         val offset =
             section.getString("offset", "0;0;0")!!.split(";".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
@@ -103,6 +103,8 @@ abstract class BaseSerializer {
         return AquaticHologramSettings(lines, vector, billboard)
     }
 
+     */
+
     fun loadRewardRanges(sections: List<ConfigurationSection>): MutableList<RewardAmountRange> {
         if (sections.isEmpty()) return mutableListOf()
         val list = mutableListOf<RewardAmountRange>()
@@ -115,8 +117,8 @@ abstract class BaseSerializer {
         return list
     }
 
-    fun loadAnimationTasks(section: ConfigurationSection?): TreeMap<Int, MutableList<ConfiguredAction<Animation>>> {
-        val tasks = TreeMap<Int, MutableList<ConfiguredAction<Animation>>>()
+    fun loadAnimationTasks(section: ConfigurationSection?): TreeMap<Int, MutableList<ConfiguredExecutableObject<Animation,Unit>>> {
+        val tasks = TreeMap<Int, MutableList<ConfiguredExecutableObject<Animation,Unit>>>()
         if (section == null) return tasks
 
         for (key in section.getKeys(false)) {

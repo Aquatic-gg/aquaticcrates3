@@ -6,9 +6,9 @@ import gg.aquatic.aquaticcrates.api.animation.crate.CrateAnimationManager
 import gg.aquatic.aquaticcrates.api.animation.crate.CrateAnimationSettings
 import gg.aquatic.aquaticcrates.api.reward.RolledReward
 import gg.aquatic.aquaticcrates.plugin.animation.RegularAnimationImpl
-import gg.aquatic.aquaticseries.lib.action.ConfiguredAction
-import gg.aquatic.aquaticseries.lib.audience.FilterAudience
-import gg.aquatic.aquaticseries.lib.audience.GlobalAudience
+import gg.aquatic.waves.util.audience.FilterAudience
+import gg.aquatic.waves.util.audience.GlobalAudience
+import gg.aquatic.waves.util.generic.ConfiguredExecutableObject
 import org.bukkit.Location
 import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.entity.Player
@@ -16,13 +16,13 @@ import java.util.*
 import java.util.concurrent.CompletableFuture
 
 class RegularAnimationSettings(
-    override val animationTasks: TreeMap<Int, MutableList<ConfiguredAction<Animation>>>,
+    override val animationTasks: TreeMap<Int, MutableList<ConfiguredExecutableObject<Animation,Unit>>>,
     override val animationLength: Int,
     override val preAnimationDelay: Int,
-    override val preAnimationTasks: TreeMap<Int, MutableList<ConfiguredAction<Animation>>>,
+    override val preAnimationTasks: TreeMap<Int, MutableList<ConfiguredExecutableObject<Animation,Unit>>>,
     override val postAnimationDelay: Int,
-    override val postAnimationTasks: TreeMap<Int, MutableList<ConfiguredAction<Animation>>>,
-    override val finalAnimationTasks: MutableList<ConfiguredAction<Animation>>,
+    override val postAnimationTasks: TreeMap<Int, MutableList<ConfiguredExecutableObject<Animation,Unit>>>,
+    override val finalAnimationTasks: MutableList<ConfiguredExecutableObject<Animation,Unit>>,
     override val skippable: Boolean,
     val personal: Boolean,
 ) : CrateAnimationSettings() {

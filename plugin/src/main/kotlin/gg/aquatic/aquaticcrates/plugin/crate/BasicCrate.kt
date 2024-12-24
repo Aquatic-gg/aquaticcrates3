@@ -13,15 +13,15 @@ import gg.aquatic.aquaticcrates.plugin.CratesPlugin
 import gg.aquatic.aquaticcrates.plugin.preview.CratePreviewMenuSettings
 import gg.aquatic.aquaticcrates.plugin.restriction.OpenData
 import gg.aquatic.aquaticcrates.plugin.takeKeys
-import gg.aquatic.aquaticseries.lib.action.ConfiguredAction
-import gg.aquatic.aquaticseries.lib.requirement.ConfiguredRequirement
-import gg.aquatic.aquaticseries.lib.util.checkRequirements
-import gg.aquatic.aquaticseries.lib.util.runLaterSync
 import gg.aquatic.waves.interactable.settings.InteractableSettings
 import gg.aquatic.waves.item.AquaticItem
 import gg.aquatic.waves.item.AquaticItemInteractEvent
-import gg.aquatic.waves.item.modifyFastMeta
 import gg.aquatic.waves.registry.register
+import gg.aquatic.waves.util.checkRequirements
+import gg.aquatic.waves.util.generic.ConfiguredExecutableObject
+import gg.aquatic.waves.util.item.modifyFastMeta
+import gg.aquatic.waves.util.requirement.ConfiguredRequirement
+import gg.aquatic.waves.util.runLaterSync
 import net.kyori.adventure.text.Component
 import org.bukkit.Location
 import org.bukkit.Material
@@ -43,8 +43,8 @@ class BasicCrate(
     rewardManager: (BasicCrate) -> RewardManager,
     interactHandler: (BasicCrate) -> CrateInteractHandler,
     val previewMenuSettings: MutableList<CratePreviewMenuSettings>,
-    val massOpenFinalActions: MutableList<ConfiguredAction<Player>>,
-    val massOpenPerRewardActions: MutableList<ConfiguredAction<Player>>,
+    val massOpenFinalActions: MutableList<ConfiguredExecutableObject<Player,Unit>>,
+    val massOpenPerRewardActions: MutableList<ConfiguredExecutableObject<Player,Unit>>,
     val openRestrictions: MutableList<ConfiguredRequirement<OpenData>>
 ) : OpenableCrate() {
 

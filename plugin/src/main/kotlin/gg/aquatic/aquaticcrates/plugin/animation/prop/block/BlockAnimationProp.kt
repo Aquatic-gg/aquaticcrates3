@@ -2,7 +2,8 @@ package gg.aquatic.aquaticcrates.plugin.animation.prop.block
 
 import gg.aquatic.aquaticcrates.api.animation.Animation
 import gg.aquatic.aquaticcrates.api.animation.prop.AnimationProp
-import gg.aquatic.aquaticseries.lib.block.AquaticBlock
+import gg.aquatic.waves.fake.block.FakeBlock
+import gg.aquatic.waves.util.block.AquaticBlock
 import org.bukkit.util.Vector
 
 class BlockAnimationProp(
@@ -11,8 +12,8 @@ class BlockAnimationProp(
     val offset: Vector
 ) : AnimationProp() {
 
-    val packetBlock = block.placePacket(animation.baseLocation.clone().add(offset), animation.audience).apply {
-        spawn()
+    val packetBlock = FakeBlock(block, animation.baseLocation.clone().add(offset), 50, animation.audience).apply {
+        this.register()
     }
 
     override fun tick() {
@@ -20,6 +21,6 @@ class BlockAnimationProp(
     }
 
     override fun onAnimationEnd() {
-        packetBlock.despawn()
+        packetBlock.destroy()
     }
 }

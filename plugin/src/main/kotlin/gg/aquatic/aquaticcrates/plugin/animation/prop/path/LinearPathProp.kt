@@ -3,11 +3,9 @@ package gg.aquatic.aquaticcrates.plugin.animation.prop.path
 import gg.aquatic.aquaticcrates.api.animation.Animation
 import gg.aquatic.aquaticcrates.api.animation.prop.AnimationProp
 import gg.aquatic.aquaticcrates.plugin.animation.prop.MovableAnimationProp
-import gg.aquatic.aquaticseries.lib.util.runAsync
-import gg.aquatic.aquaticseries.lib.util.runSync
-import org.bukkit.Bukkit
-import org.bukkit.Location
+import gg.aquatic.waves.util.runSync
 import java.util.TreeMap
+import java.util.concurrent.CompletableFuture.runAsync
 
 class LinearPathProp(
     override val points: TreeMap<Int, PathPoint>,

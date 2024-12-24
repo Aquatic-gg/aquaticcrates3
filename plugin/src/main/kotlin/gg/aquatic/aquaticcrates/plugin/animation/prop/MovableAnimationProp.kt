@@ -7,13 +7,14 @@ import gg.aquatic.aquaticcrates.plugin.animation.prop.path.PathProp
 import org.bukkit.Location
 import org.bukkit.util.Vector
 import org.joml.Math.toRadians
+import java.util.concurrent.ConcurrentHashMap
 
 interface MovableAnimationProp {
     val locationOffset: Vector
     val animation: Animation
 
-    val boundPaths: MutableMap<PathProp, PathBoundProperties>
-    val processedPaths: MutableList<PathProp>
+    val boundPaths: ConcurrentHashMap<PathProp, PathBoundProperties>
+    val processedPaths: MutableSet<PathProp>
 
     //val boundLocationOffset: Vector?
 
