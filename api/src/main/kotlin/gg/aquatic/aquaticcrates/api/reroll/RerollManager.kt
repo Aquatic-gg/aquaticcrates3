@@ -12,7 +12,7 @@ abstract class RerollManager(
     abstract val groups: HashMap<String,Int>
     abstract val rerollInput: RerollInput
 
-    abstract fun openReroll(player: Player, rewards: List<Reward>): CompletableFuture<RerollResult>
+    abstract fun openReroll(player: Player, rewards: Collection<Reward>): CompletableFuture<RerollResult>
     abstract fun reroll(player: Player)
 
     class RerollResult(

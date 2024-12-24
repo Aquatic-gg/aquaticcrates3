@@ -34,6 +34,8 @@ abstract class CrateAnimation: Animation() {
         }
     }
 
+    abstract fun skip()
+
     enum class State {
         PRE_OPEN,
         OPENING,
