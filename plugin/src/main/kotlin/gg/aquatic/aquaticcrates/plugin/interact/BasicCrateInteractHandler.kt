@@ -21,9 +21,7 @@ class BasicCrateInteractHandler(
         interactedLocation: Location,
         crate: SpawnedCrate?
     ): Boolean {
-        player.sendMessage("You have interacted the crate!")
         val action = clickActions[interactType] ?: return false
-        player.sendMessage("Action found!")
         action.execute(
             CrateInteractAction(
                 this.crate,

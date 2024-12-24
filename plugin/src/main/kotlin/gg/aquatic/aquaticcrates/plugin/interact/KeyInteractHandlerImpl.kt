@@ -20,9 +20,7 @@ class KeyInteractHandlerImpl(
         interactedLocation: Location,
         crate: SpawnedCrate?
     ): Boolean {
-        player.sendMessage("You have interacted with the key!")
         val action = clickActions[interactType] ?: return false
-        player.sendMessage("Action found!")
 
         action.execute(CrateInteractAction(this.key.crate, player, interactType, interactedLocation, crate)) {
                 _, str -> str

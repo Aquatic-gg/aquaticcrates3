@@ -64,8 +64,6 @@ class RegularAnimationImpl(
         for ((_, prop) in props) {
             prop.tick()
         }
-
-        Bukkit.broadcastMessage("Tick: $tick")
         tick++
     }
 
@@ -80,7 +78,6 @@ class RegularAnimationImpl(
         for ((_, prop) in props) {
             prop.onAnimationEnd()
         }
-        player.sendMessage("Finalizing animation")
         for (reward in rewards) {
             reward.give(player, false)
         }
