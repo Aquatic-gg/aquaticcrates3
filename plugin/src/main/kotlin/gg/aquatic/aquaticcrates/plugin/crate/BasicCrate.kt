@@ -26,6 +26,7 @@ import net.kyori.adventure.text.Component
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.entity.Player
+import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.ItemStack
 import java.util.concurrent.CompletableFuture
@@ -70,8 +71,9 @@ class BasicCrate(
         null
     ).apply {
         register("aquaticcrates-crates", identifier) { e->
-            e.isCancelled = true
             val originalEvent = e.originalEvent
+            if (originalEvent is InventoryClickEvent) return@register
+            e.isCancelled = true
             val location = if (originalEvent is PlayerInteractEvent) {
                 originalEvent.clickedBlock?.location ?: originalEvent.player.location
             } else return@register

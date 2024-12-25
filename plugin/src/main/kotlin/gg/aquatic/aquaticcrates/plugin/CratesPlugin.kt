@@ -4,6 +4,7 @@ import gg.aquatic.aquaticcrates.api.AbstractCratesPlugin
 import gg.aquatic.aquaticcrates.api.crate.CrateHandler
 import gg.aquatic.aquaticcrates.api.crate.OpenableCrate
 import gg.aquatic.aquaticcrates.api.player.CrateProfileModule
+import gg.aquatic.aquaticcrates.api.reroll.RerollManager
 import gg.aquatic.aquaticcrates.plugin.animation.action.SetBlockAction
 import gg.aquatic.aquaticcrates.plugin.animation.action.bossbar.*
 import gg.aquatic.aquaticcrates.plugin.animation.action.entity.ShowEntityAction
@@ -15,16 +16,20 @@ import gg.aquatic.aquaticcrates.plugin.animation.action.path.LinearPathAction
 import gg.aquatic.aquaticcrates.plugin.command.CrateCommand
 import gg.aquatic.aquaticcrates.plugin.command.KeyCommand
 import gg.aquatic.aquaticcrates.plugin.interact.action.*
+import gg.aquatic.aquaticcrates.plugin.reroll.input.inventory.InventoryRerollInput
+import gg.aquatic.aquaticcrates.plugin.reroll.input.inventory.RerollMenu
 import gg.aquatic.aquaticcrates.plugin.restriction.impl.*
 import gg.aquatic.aquaticcrates.plugin.serialize.CrateSerializer
 import gg.aquatic.waves.command.AquaticBaseCommand
 import gg.aquatic.waves.command.register
+import gg.aquatic.waves.inventory.event.AsyncPacketInventoryCloseEvent
 import gg.aquatic.waves.profile.ProfilesModule
 import gg.aquatic.waves.registry.WavesRegistry
 import gg.aquatic.waves.registry.registerAction
 import gg.aquatic.waves.registry.registerRequirement
 import gg.aquatic.waves.util.Config
 import gg.aquatic.waves.util.event.event
+import gg.aquatic.waves.util.runAsyncTimer
 import gg.aquatic.waves.util.runSyncTimer
 import org.bukkit.event.world.WorldLoadEvent
 import java.util.concurrent.CompletableFuture
@@ -70,10 +75,27 @@ class CratesPlugin : AbstractCratesPlugin() {
             ),
             listOf()
         ).register("aquaticcrates")
+
+        event<AsyncPacketInventoryCloseEvent> {
+            val inv = it.inventory
+            if (inv !is RerollMenu) return@event
+            if (inv.future.isDone) return@event
+            when(inv.settings.onClose) {
+                InventoryRerollInput.Action.CANCEL -> {
+                    inv.open()
+                }
+                InventoryRerollInput.Action.REROLL -> {
+                    inv.future.complete(RerollManager.RerollResult(true))
+                }
+                else -> {
+                    inv.future.complete(RerollManager.RerollResult(false))
+                }
+            }
+        }
     }
 
     private fun startTicker() {
-        runSyncTimer(1, 1) {
+        runAsyncTimer(1, 1) {
             for ((_, crate) in CrateHandler.crates) {
                 if (crate is OpenableCrate) {
                     crate.animationManager.tick()

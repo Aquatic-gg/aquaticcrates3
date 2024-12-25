@@ -5,6 +5,7 @@ import gg.aquatic.aquaticcrates.api.util.ItemBased
 import gg.aquatic.waves.item.AquaticItem
 import gg.aquatic.waves.item.ItemHandler
 import gg.aquatic.waves.registry.register
+import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType
@@ -44,10 +45,11 @@ abstract class Key(
                 originalEvent.clickedBlock?.location ?: originalEvent.player.location
             } else it.player.location
 
-            it.isCancelled = true
             if (interactHandler.handleInteract(it.player, it.interactType, location, null)) {
                 return@register
             }
+            if (originalEvent is InventoryClickEvent) return@register
+            it.isCancelled = true
         }
     }
 

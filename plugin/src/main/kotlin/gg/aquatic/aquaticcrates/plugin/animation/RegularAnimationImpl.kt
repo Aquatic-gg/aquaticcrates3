@@ -102,6 +102,7 @@ class RegularAnimationImpl(
                 for ((_, prop) in props) {
                     prop.onAnimationEnd()
                 }
+                props.clear()
                 rewards += crate.rewardManager.getRewards(player)
                 tick()
             } else {
@@ -122,6 +123,7 @@ class RegularAnimationImpl(
         for ((_, prop) in props) {
             prop.onAnimationEnd()
         }
+        props.clear()
         for (reward in rewards) {
             reward.give(player, false)
         }
