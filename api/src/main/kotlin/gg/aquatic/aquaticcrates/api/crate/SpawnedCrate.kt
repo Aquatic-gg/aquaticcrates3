@@ -27,4 +27,10 @@ class SpawnedCrate(
             crate.interactHandler.handleInteract(e.player, clickType, location, this)
         }
     }
+
+    fun destroy() {
+        for (spawnedInteractable in spawnedInteractables) {
+            spawnedInteractable.destroy()
+        }
+    }
 }

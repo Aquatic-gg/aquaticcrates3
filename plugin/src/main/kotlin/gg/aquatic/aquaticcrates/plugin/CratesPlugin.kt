@@ -15,6 +15,7 @@ import gg.aquatic.aquaticcrates.plugin.animation.action.model.ShowModelAction
 import gg.aquatic.aquaticcrates.plugin.animation.action.path.LinearPathAction
 import gg.aquatic.aquaticcrates.plugin.command.CrateCommand
 import gg.aquatic.aquaticcrates.plugin.command.KeyCommand
+import gg.aquatic.aquaticcrates.plugin.command.ReloadCommand
 import gg.aquatic.aquaticcrates.plugin.interact.action.*
 import gg.aquatic.aquaticcrates.plugin.reroll.input.inventory.InventoryRerollInput
 import gg.aquatic.aquaticcrates.plugin.reroll.input.inventory.RerollMenu
@@ -71,7 +72,8 @@ class CratesPlugin : AbstractCratesPlugin() {
             ),
             mutableMapOf(
                 "key" to KeyCommand,
-                "crate" to CrateCommand
+                "crate" to CrateCommand,
+                "reload" to ReloadCommand
             ),
             listOf()
         ).register("aquaticcrates")
@@ -92,6 +94,21 @@ class CratesPlugin : AbstractCratesPlugin() {
                 }
             }
         }
+    }
+
+    fun reloadPlugin(): CompletableFuture<Void> {
+        if (loading) return CompletableFuture.completedFuture(null)
+        for (value in CrateHandler.crates.values) {
+            if (value is OpenableCrate) {
+                value.animationManager.forceStopAnimations()
+            }
+        }
+        CrateHandler.crates.clear()
+        for (value in CrateHandler.spawned.values) {
+            value.destroy()
+        }
+        CrateHandler.spawned.clear()
+        return load()
     }
 
     private fun startTicker() {

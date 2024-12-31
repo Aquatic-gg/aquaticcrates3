@@ -27,6 +27,7 @@ abstract class CrateAnimationManager {
     abstract fun skipAnimation(player: Player)
 
     abstract fun forceStopAnimation(player: Player)
+    abstract fun forceStopAnimations()
 
     abstract fun tick()
 

@@ -41,4 +41,13 @@ class AnimationManagerImpl(
     override fun forceStopAnimation(player: Player) {
 
     }
+
+    override fun forceStopAnimations() {
+        for ((_, animations) in playingAnimations) {
+            for (animation in animations) {
+                animation.rewards.forEach { reward -> reward.give(animation.player, false) }
+            }
+        }
+        playingAnimations.clear()
+    }
 }
