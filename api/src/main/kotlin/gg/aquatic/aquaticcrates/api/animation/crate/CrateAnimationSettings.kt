@@ -21,4 +21,11 @@ abstract class CrateAnimationSettings {
 
     abstract fun create(player: Player, animationManager: CrateAnimationManager, location: Location, rolledRewards: MutableList<RolledReward>): CompletableFuture<Void>
 
+    abstract fun canBeOpened(player: Player, animationManager: CrateAnimationManager, location: Location): AnimationResult
+
+    enum class AnimationResult {
+        ALREADY_BEING_OPENED,
+        ALREADY_BEING_OPENED_OTHER,
+        SUCCESS,
+    }
 }

@@ -44,6 +44,10 @@ class InstantAnimationSettings(
         return CompletableFuture.completedFuture(null)
     }
 
+    override fun canBeOpened(player: Player, animationManager: CrateAnimationManager, location: Location): AnimationResult {
+        return AnimationResult.SUCCESS
+    }
+
     companion object : AnimationSettingsFactory() {
         override fun serialize(section: ConfigurationSection?): CrateAnimationSettings {
             if (section == null) return InstantAnimationSettings(mutableListOf())

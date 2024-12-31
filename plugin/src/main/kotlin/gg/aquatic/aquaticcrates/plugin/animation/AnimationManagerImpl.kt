@@ -20,6 +20,7 @@ class AnimationManagerImpl(
     override val playingAnimations: ConcurrentHashMap<UUID, MutableSet<CrateAnimation>> = ConcurrentHashMap()
 
 
+
     override fun playAnimation(animation: CrateAnimation) {
         val animations = playingAnimations.getOrPut(animation.player.uniqueId) { ConcurrentHashMap.newKeySet() }
         animations += animation

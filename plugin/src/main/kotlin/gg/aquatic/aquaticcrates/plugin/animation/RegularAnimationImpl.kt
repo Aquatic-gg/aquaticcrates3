@@ -127,10 +127,17 @@ class RegularAnimationImpl(
         for (reward in rewards) {
             reward.give(player, false)
         }
+        animationManager.playingAnimations[player.uniqueId]?.let {
+            it.remove(this)
+            if (it.isEmpty()) {
+                animationManager.playingAnimations.remove(player.uniqueId)
+            }
+        }
         completionFuture.complete(null)
+
     }
 
-    override fun executeActions(actions: List<ConfiguredExecutableObject<Animation,Unit>>) {
+    override fun executeActions(actions: List<ConfiguredExecutableObject<Animation, Unit>>) {
         actions.executeActions(this) { _, str ->
             var finalString = updatePlaceholders(str)
             finalString

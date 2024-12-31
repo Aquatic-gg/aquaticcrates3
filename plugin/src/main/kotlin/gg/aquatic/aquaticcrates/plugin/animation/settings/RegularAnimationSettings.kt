@@ -45,6 +45,12 @@ class RegularAnimationSettings(
         return animation.completionFuture
     }
 
+    override fun canBeOpened(player: Player, animationManager: CrateAnimationManager, location: Location): AnimationResult {
+        if (animationManager.playingAnimations.isNotEmpty() && !personal) return AnimationResult.ALREADY_BEING_OPENED_OTHER
+        if (personal && animationManager.playingAnimations.containsKey(player.uniqueId)) return AnimationResult.ALREADY_BEING_OPENED
+        return AnimationResult.SUCCESS
+    }
+
     companion object: AnimationSettingsFactory() {
         override fun serialize(section: ConfigurationSection?): CrateAnimationSettings? {
             if (section == null) return null

@@ -9,6 +9,7 @@ import gg.aquatic.aquaticcrates.plugin.animation.prop.path.PathProp
 import gg.aquatic.waves.fake.entity.FakeEntity
 import gg.aquatic.waves.shadow.com.retrooper.packetevents.protocol.entity.type.EntityType
 import gg.aquatic.waves.shadow.com.retrooper.packetevents.protocol.entity.type.EntityTypes
+import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.util.Vector
 import java.util.concurrent.ConcurrentHashMap
@@ -43,6 +44,7 @@ class EntityAnimationProp(
                 break
             }
         }
+        Bukkit.broadcastMessage("Properties: ${properties.size}")
         entity = FakeEntity(peEType!!, currentLocation, 50, animation.audience)
         for (property in properties) {
             property.apply(entity, this@EntityAnimationProp)

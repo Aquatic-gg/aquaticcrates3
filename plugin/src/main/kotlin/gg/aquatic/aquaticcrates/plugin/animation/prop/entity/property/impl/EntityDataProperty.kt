@@ -25,7 +25,7 @@ class EntityDataProperty(
 
     object Serializer : EntityPropertySerializer {
         override fun load(section: ConfigurationSection): EntityProperty {
-            return EntityDataProperty(gg.aquatic.waves.registry.serializer.EntityPropertySerializer.fromSections(section.getSectionList("data")))
+            return EntityDataProperty(gg.aquatic.waves.registry.serializer.EntityPropertySerializer.fromSections(section.getSectionList("properties")))
         }
     }
 }

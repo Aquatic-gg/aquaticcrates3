@@ -1,6 +1,7 @@
 package gg.aquatic.aquaticcrates.plugin.crate
 
 import gg.aquatic.aquaticcrates.api.animation.crate.CrateAnimationManager
+import gg.aquatic.aquaticcrates.api.animation.crate.CrateAnimationSettings
 import gg.aquatic.aquaticcrates.api.crate.CrateHandler
 import gg.aquatic.aquaticcrates.api.interaction.crate.CrateInteractHandler
 import gg.aquatic.aquaticcrates.api.crate.Key
@@ -149,6 +150,18 @@ class BasicCrate(
             if (!openRestrictions.checkRequirements(openData)) {
                 player.sendMessage("You cannot open the crate here!")
                 return false
+            }
+            val animationResult = animationManager.animationSettings.canBeOpened(player,animationManager,openData.location)
+            when (animationResult) {
+                CrateAnimationSettings.AnimationResult.ALREADY_BEING_OPENED -> {
+                    player.sendMessage("You are already opening a crate!")
+                    return false
+                }
+                CrateAnimationSettings.AnimationResult.ALREADY_BEING_OPENED_OTHER -> {
+                    player.sendMessage("Someone else is already opening a crate!")
+                    return false
+                }
+                else -> {}
             }
         }
 
