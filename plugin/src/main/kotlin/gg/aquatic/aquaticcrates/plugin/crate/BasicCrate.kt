@@ -142,10 +142,6 @@ class BasicCrate(
 
 
     fun canBeOpened(player: Player, amount: Int, openData: OpenData?): Boolean {
-        if (!player.takeKeys(identifier, amount)) {
-            player.sendMessage("You do not have enough keys to open this crate!")
-            return false
-        }
         if (openData != null) {
             if (!openRestrictions.checkRequirements(openData)) {
                 player.sendMessage("You cannot open the crate here!")
@@ -164,7 +160,10 @@ class BasicCrate(
                 else -> {}
             }
         }
-
+        if (!player.takeKeys(identifier, amount)) {
+            player.sendMessage("You do not have enough keys to open this crate!")
+            return false
+        }
         return true
     }
 

@@ -20,13 +20,13 @@ class EntityPropertiesObjectArgument(
 
         val factories = mutableMapOf(
             "armor" to EntityArmorProperty.Serializer,
-            "data" to EntityDataProperty.Serializer,
-
         )
 
         override fun load(section: ConfigurationSection, id: String): List<EntityProperty> {
             val properties = mutableListOf<EntityProperty>()
             val s = section.getConfigurationSection(id) ?: return properties
+
+            properties += EntityDataProperty.Serializer.load(s)
             for ((key, factory) in factories) {
                 if (s.contains(key)) {
                     properties += factory.load(s)

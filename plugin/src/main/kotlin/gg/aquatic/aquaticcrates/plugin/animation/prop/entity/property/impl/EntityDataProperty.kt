@@ -5,7 +5,7 @@ import gg.aquatic.aquaticcrates.plugin.animation.prop.entity.property.EntityProp
 import gg.aquatic.aquaticcrates.plugin.animation.prop.entity.property.EntityPropertySerializer
 import gg.aquatic.waves.fake.entity.FakeEntity
 import gg.aquatic.waves.packetevents.EntityDataBuilder
-import gg.aquatic.waves.util.getSectionList
+import org.bukkit.Bukkit
 import org.bukkit.configuration.ConfigurationSection
 
 class EntityDataProperty(
@@ -13,6 +13,7 @@ class EntityDataProperty(
 ): EntityProperty {
     override fun apply(entity: FakeEntity, prop: EntityAnimationProp) {
         val builder = EntityDataBuilder.ANY
+        Bukkit.broadcastMessage("Applying properties: ${data.size}")
         entity.updateEntity {
             for (datum in data) {
                 datum.apply(builder)
@@ -25,7 +26,7 @@ class EntityDataProperty(
 
     object Serializer : EntityPropertySerializer {
         override fun load(section: ConfigurationSection): EntityProperty {
-            return EntityDataProperty(gg.aquatic.waves.registry.serializer.EntityPropertySerializer.fromSections(section.getSectionList("properties")))
+            return EntityDataProperty(gg.aquatic.waves.registry.serializer.EntityPropertySerializer.fromSection(section))
         }
     }
 }
