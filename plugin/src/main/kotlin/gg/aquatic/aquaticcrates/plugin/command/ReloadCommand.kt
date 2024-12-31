@@ -8,7 +8,11 @@ object ReloadCommand : ICommand{
     override fun run(sender: CommandSender, args: Array<out String>) {
         if (!sender.hasPermission("aquaticcrates.admin")) return
         sender.sendMessage("Reloading...")
-        (CratesPlugin.INSTANCE as CratesPlugin).reloadPlugin().thenRun {
+        (CratesPlugin.INSTANCE as CratesPlugin).reloadPlugin().thenAccept {
+            if (!it) {
+                sender.sendMessage("Plugin is not fully loaded!")
+                return@thenAccept
+            }
             sender.sendMessage("Plugin has been reloaded!")
         }
     }

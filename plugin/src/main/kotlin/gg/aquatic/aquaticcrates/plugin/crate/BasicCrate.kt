@@ -18,6 +18,7 @@ import gg.aquatic.waves.interactable.settings.InteractableSettings
 import gg.aquatic.waves.item.AquaticItem
 import gg.aquatic.waves.item.AquaticItemInteractEvent
 import gg.aquatic.waves.registry.register
+import gg.aquatic.waves.registry.setInteractionHandler
 import gg.aquatic.waves.util.checkRequirements
 import gg.aquatic.waves.util.generic.ConfiguredExecutableObject
 import gg.aquatic.waves.util.item.modifyFastMeta
@@ -71,23 +72,26 @@ class BasicCrate(
         null,
         null
     ).apply {
-        register("aquaticcrates-crates", identifier) { e->
+        val consumer: (AquaticItemInteractEvent) -> Unit = { e->
             val originalEvent = e.originalEvent
-            if (originalEvent is InventoryClickEvent) return@register
-            e.isCancelled = true
-            val location = if (originalEvent is PlayerInteractEvent) {
-                originalEvent.clickedBlock?.location ?: originalEvent.player.location
-            } else return@register
-            if (e.interactType == AquaticItemInteractEvent.InteractType.RIGHT) {
-                runLaterSync(2) {
-                    CrateHandler.spawnCrate(this@BasicCrate, location.clone().add(.0, 1.0, .0))
-                    runAsync {
-                        CrateHandler.saveSpawnedCrates(CratesPlugin.spawnedCratesConfig)
+            if (originalEvent !is InventoryClickEvent) {
+                e.isCancelled = true
+                if (originalEvent is PlayerInteractEvent) {
+                    val location = originalEvent.clickedBlock?.location ?: originalEvent.player.location
+                    if (e.interactType == AquaticItemInteractEvent.InteractType.RIGHT) {
+                        runLaterSync(2) {
+                            CrateHandler.spawnCrate(this@BasicCrate, location.clone().add(.0, 1.0, .0))
+                            runAsync {
+                                CrateHandler.saveSpawnedCrates(CratesPlugin.spawnedCratesConfig)
+                            }
+                        }
+                        e.player.sendMessage("Crate Spawned")
                     }
                 }
-                e.player.sendMessage("Crate Spawned")
             }
-
+        }
+        if (!register("aquaticcrates-crates", identifier,consumer)) {
+            setInteractionHandler(consumer)
         }
     }
     override fun tryInstantOpen(

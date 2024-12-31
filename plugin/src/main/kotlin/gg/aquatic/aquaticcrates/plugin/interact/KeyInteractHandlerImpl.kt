@@ -11,7 +11,7 @@ import org.bukkit.entity.Player
 import java.util.EnumMap
 
 class KeyInteractHandlerImpl(
-    override val requiresCrateToOpen: Boolean, override val key: Key,
+    override val key: Key,
     override val clickActions: EnumMap<AquaticItemInteractEvent.InteractType, ConfiguredExecutableObject<CrateInteractAction,Unit>>
 ) : KeyInteractHandler() {
     override fun handleInteract(

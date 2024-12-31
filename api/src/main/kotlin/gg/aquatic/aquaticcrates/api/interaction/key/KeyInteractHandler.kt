@@ -10,7 +10,6 @@ import java.util.EnumMap
 abstract class KeyInteractHandler: InteractHandler() {
 
     abstract val clickActions: EnumMap<AquaticItemInteractEvent.InteractType,ConfiguredExecutableObject<CrateInteractAction,Unit>>
-    abstract val requiresCrateToOpen: Boolean
     abstract val key: Key
 
 }

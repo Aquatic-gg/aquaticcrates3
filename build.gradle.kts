@@ -40,7 +40,7 @@ subprojects {
         compileOnly("org.spigotmc:spigot-api:1.19.4-R0.1-SNAPSHOT")
         compileOnly("com.github.LoneDev6:API-ItemsAdder:3.6.2-beta-r3-b")
         compileOnly ("com.ticxo.modelengine:ModelEngine:R4.0.4")
-        compileOnly("gg.aquatic.waves:Waves:1.1.5:publish")
+        compileOnly("gg.aquatic.waves:Waves:1.1.6:publish")
         //implementation("net.kyori:adventure-api:4.17.0")
     }
 

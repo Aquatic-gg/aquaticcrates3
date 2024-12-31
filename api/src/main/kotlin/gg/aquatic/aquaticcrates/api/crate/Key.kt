@@ -3,8 +3,10 @@ package gg.aquatic.aquaticcrates.api.crate
 import gg.aquatic.aquaticcrates.api.interaction.key.KeyInteractHandler
 import gg.aquatic.aquaticcrates.api.util.ItemBased
 import gg.aquatic.waves.item.AquaticItem
+import gg.aquatic.waves.item.AquaticItemInteractEvent
 import gg.aquatic.waves.item.ItemHandler
 import gg.aquatic.waves.registry.register
+import gg.aquatic.waves.registry.setInteractionHandler
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.ItemStack
@@ -38,18 +40,20 @@ abstract class Key(
     abstract val interactHandler: KeyInteractHandler
 
     init {
-        item.register("aquaticcrates-key", crate.identifier) {
+        val consumer: (AquaticItemInteractEvent) -> Unit = {
             val originalEvent = it.originalEvent
 
             val location = if (originalEvent is PlayerInteractEvent) {
                 originalEvent.clickedBlock?.location ?: originalEvent.player.location
             } else it.player.location
 
-            if (interactHandler.handleInteract(it.player, it.interactType, location, null)) {
-                return@register
+            interactHandler.handleInteract(it.player, it.interactType, location, null)
+            if (originalEvent !is InventoryClickEvent) {
+                it.isCancelled = true
             }
-            if (originalEvent is InventoryClickEvent) return@register
-            it.isCancelled = true
+        }
+        if (!item.register("aquaticcrates-key", crate.identifier, consumer)) {
+            item.setInteractionHandler(consumer)
         }
     }
 

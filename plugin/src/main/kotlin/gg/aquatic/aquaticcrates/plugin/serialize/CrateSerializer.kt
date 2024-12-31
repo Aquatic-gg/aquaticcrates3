@@ -134,7 +134,6 @@ object CrateSerializer : BaseSerializer() {
                 cfg.getBoolean("key.must-be-held", false)
             ) { key ->
                 KeyInteractHandlerImpl(
-                    cfg.getBoolean("key.requires-crate-to-open"),
                     key,
                     keyInteractActions
                 )

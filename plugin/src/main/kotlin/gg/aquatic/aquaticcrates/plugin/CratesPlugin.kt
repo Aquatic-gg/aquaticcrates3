@@ -13,6 +13,9 @@ import gg.aquatic.aquaticcrates.plugin.animation.action.model.HideModelAction
 import gg.aquatic.aquaticcrates.plugin.animation.action.model.PlayModelAnimationAction
 import gg.aquatic.aquaticcrates.plugin.animation.action.model.ShowModelAction
 import gg.aquatic.aquaticcrates.plugin.animation.action.path.LinearPathAction
+import gg.aquatic.aquaticcrates.plugin.awaiters.AbstractAwaiter
+import gg.aquatic.aquaticcrates.plugin.awaiters.IAAwaiter
+import gg.aquatic.aquaticcrates.plugin.awaiters.MEGAwaiter
 import gg.aquatic.aquaticcrates.plugin.command.CrateCommand
 import gg.aquatic.aquaticcrates.plugin.command.KeyCommand
 import gg.aquatic.aquaticcrates.plugin.command.ReloadCommand
@@ -31,7 +34,7 @@ import gg.aquatic.waves.registry.registerRequirement
 import gg.aquatic.waves.util.Config
 import gg.aquatic.waves.util.event.event
 import gg.aquatic.waves.util.runAsyncTimer
-import gg.aquatic.waves.util.runSyncTimer
+import org.bukkit.Bukkit
 import org.bukkit.event.world.WorldLoadEvent
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.CompletableFuture.runAsync
@@ -57,8 +60,32 @@ class CratesPlugin : AbstractCratesPlugin() {
     override fun onEnable() {
         registerObjects()
         ProfilesModule.registerModule(CrateProfileModule)
-        load()
 
+        val awaiters = mutableListOf<AbstractAwaiter>()
+        if (Bukkit.getPluginManager().getPlugin("ModelEngine") != null) {
+            val awaiter = MEGAwaiter()
+            awaiters += awaiter
+            awaiter.future.thenRun {
+                awaiters -= awaiter
+                if (awaiters.isEmpty()) {
+                    load()
+                }
+            }
+        }
+        if (Bukkit.getPluginManager().getPlugin("ItemsAdder") != null) {
+            val awaiter = IAAwaiter()
+            awaiters += awaiter
+            awaiter.future.thenRun {
+                awaiters -= awaiter
+                if (awaiters.isEmpty()) {
+                    load()
+                }
+            }
+        }
+        if (awaiters.isEmpty()) {
+            load()
+        }
+        
         event<WorldLoadEvent> {
             CrateHandler.onWorldLoad(it.world)
         }
@@ -96,8 +123,10 @@ class CratesPlugin : AbstractCratesPlugin() {
         }
     }
 
-    fun reloadPlugin(): CompletableFuture<Void> {
-        if (loading) return CompletableFuture.completedFuture(null)
+    fun reloadPlugin(): CompletableFuture<Boolean> {
+        if (loading) {
+            return CompletableFuture.completedFuture(false)
+        }
         for (value in CrateHandler.crates.values) {
             if (value is OpenableCrate) {
                 value.animationManager.forceStopAnimations()
@@ -108,7 +137,7 @@ class CratesPlugin : AbstractCratesPlugin() {
             value.destroy()
         }
         CrateHandler.spawned.clear()
-        return load()
+        return load().thenApply { true }
     }
 
     private fun startTicker() {
@@ -122,15 +151,15 @@ class CratesPlugin : AbstractCratesPlugin() {
     }
 
     private fun load(): CompletableFuture<Void> {
-        val future = CompletableFuture<Void>()
         loading = true
-        runAsync {
+        return runAsync {
             CrateHandler.crates += CrateSerializer.loadCrates()
             CrateHandler.loadSpawnedCrates(spawnedCratesConfig)
-            future.complete(null)
             loading = false
+        }.exceptionally {
+            it.printStackTrace()
+            null
         }
-        return future
     }
 
     private fun registerObjects() {
