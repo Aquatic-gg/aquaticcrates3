@@ -38,6 +38,7 @@ class CrateProfileEntry(aquaticPlayer: AquaticPlayer, val rewardContainer: Rewar
         newEntries.clear()
     }
 
+    /*
     fun registerCrateOpen(crateId: String, rewards: Map<String,Int>) {
         val entries = newEntries.getOrPut(crateId) { ConcurrentHashMap.newKeySet() }
         entries += OpenHistoryEntry(
@@ -64,6 +65,7 @@ class CrateProfileEntry(aquaticPlayer: AquaticPlayer, val rewardContainer: Rewar
             }
         }
     }
+     */
 
     fun openHistory(crateId: String, historyType: HistoryType): Int {
         var total = 0

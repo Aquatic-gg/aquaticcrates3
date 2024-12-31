@@ -66,14 +66,14 @@ class RewardManagerImpl(
 
             var meetsRequirements = true
             for ((type, limit) in reward.globalLimits) {
-                if (HistoryHandler.history(crate.identifier, id, type) >= limit) {
+                if (HistoryHandler.rewardHistory(crate.identifier, id, type) >= limit) {
                     meetsRequirements = false
                     break
                 }
             }
             if (!meetsRequirements) continue
             for ((type, limit) in reward.perPlayerLimits) {
-                if (HistoryHandler.history(crate.identifier, id, type, player) >= limit) {
+                if (HistoryHandler.rewardHistory(crate.identifier, id, type, player) >= limit) {
                     meetsRequirements = false
                     break
                 }

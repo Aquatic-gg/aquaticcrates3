@@ -1,6 +1,7 @@
 package gg.aquatic.aquaticcrates.plugin.crate
 
 import gg.aquatic.aquaticcrates.api.crate.SpawnedCrate
+import gg.aquatic.aquaticcrates.api.player.HistoryHandler
 import gg.aquatic.aquaticcrates.api.player.crateEntry
 import gg.aquatic.aquaticcrates.api.reward.Reward
 import gg.aquatic.aquaticcrates.plugin.animation.settings.InstantAnimationSettings
@@ -21,20 +22,20 @@ class BasicOpenManager(val crate: BasicCrate) {
     }
 
     fun instantOpen(player: Player, massOpen: Boolean = false) {
-        val crateEntry = player.toAquaticPlayer()?.crateEntry() ?: return
+        player.toAquaticPlayer()?.crateEntry() ?: return
         val rewards = crate.rewardManager.getRewards(player)
         for (reward in rewards) {
             reward.give(player, massOpen)
         }
-        crateEntry.registerCrateOpen(crate.identifier, rewards.mapPair { it.reward.id to it.randomAmount })
+        HistoryHandler.registerCrateOpen(player, crate.identifier, rewards.mapPair { it.reward.id to it.randomAmount })
         InstantAnimationSettings.execute(player, crate.animationManager)
     }
 
     fun open(player: Player, location: org.bukkit.Location, spawnedCrate: SpawnedCrate?): CompletableFuture<Void> {
-        val crateEntry = player.toAquaticPlayer()?.crateEntry() ?: return CompletableFuture.completedFuture(null)
+        player.toAquaticPlayer()?.crateEntry() ?: return CompletableFuture.completedFuture(null)
 
         val rewards = crate.rewardManager.getRewards(player)
-        crateEntry.registerCrateOpen(crate.identifier, rewards.mapPair { it.reward.id to it.randomAmount })
+        HistoryHandler.registerCrateOpen(player, crate.identifier, rewards.mapPair { it.reward.id to it.randomAmount })
 
         Bukkit.broadcastMessage("Opening crate!")
         return crate.animationManager.animationSettings.create(
@@ -70,7 +71,8 @@ class BasicOpenManager(val crate: BasicCrate) {
                         Bukkit.broadcastMessage("Opening $amt crates")
                         for (ignored in 0 until amt) {
                             val rewards = crate.rewardManager.getRewards(player)
-                            crateEntry.registerCrateOpen(
+                            HistoryHandler.registerCrateOpen(
+                                player,
                                 crate.identifier,
                                 rewards.mapPair { it.reward.id to it.randomAmount })
                             for (reward in rewards) {
@@ -114,7 +116,10 @@ class BasicOpenManager(val crate: BasicCrate) {
             val wonRewards = ConcurrentHashMap<Reward, Pair<Int, Int>>()
             for (i in 0 until amount) {
                 val rewards = crate.rewardManager.getRewards(player)
-                crateEntry.registerCrateOpen(crate.identifier, rewards.mapPair { it.reward.id to it.randomAmount })
+                HistoryHandler.registerCrateOpen(
+                    player,
+                    crate.identifier,
+                    rewards.mapPair { it.reward.id to it.randomAmount })
                 for (reward in rewards) {
                     val current = wonRewards[reward.reward] ?: (0 to 0)
                     wonRewards[reward.reward] = current.first + 1 to current.second + reward.randomAmount
