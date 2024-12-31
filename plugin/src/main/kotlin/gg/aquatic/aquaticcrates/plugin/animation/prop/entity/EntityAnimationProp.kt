@@ -44,7 +44,6 @@ class EntityAnimationProp(
                 break
             }
         }
-        Bukkit.broadcastMessage("Properties: ${properties.size}")
         entity = FakeEntity(peEType!!, currentLocation, 50, animation.audience)
         for (property in properties) {
             property.apply(entity, this@EntityAnimationProp)
