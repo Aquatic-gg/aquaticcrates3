@@ -57,7 +57,7 @@ class RewardManagerImpl(
     }
 
     override fun getPossibleRewards(player: Player): MutableMap<String, Reward> {
-        val finalRewards = HashMap<String, Reward>()
+        val finalRewards = LinkedHashMap<String, Reward>()
         for ((id, reward) in rewards) {
             if (!reward.requirements.checkRequirements(player)) continue
 

@@ -4,6 +4,11 @@ import gg.aquatic.aquaticcrates.plugin.crate.BasicCrate
 import gg.aquatic.waves.menu.PrivateAquaticMenu
 import gg.aquatic.waves.menu.SlotSelection
 import gg.aquatic.waves.menu.component.Button
+import gg.aquatic.waves.util.decimals
+import gg.aquatic.waves.util.item.modifyFastMeta
+import gg.aquatic.waves.util.toMMComponent
+import gg.aquatic.waves.util.updatePAPIPlaceholders
+import net.kyori.adventure.text.Component
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.entity.Player
@@ -80,21 +85,30 @@ class CratePreviewMenu(
         }
 
         for ((index, rewardSlot) in settings.rewardSlots.withIndex()) {
-            Bukkit.broadcastMessage("Slot: $rewardSlot")
             //val rewardIndex = page * settings.rewardSlots.size + index
             val rewardIndex = lowerIndex + index
             if (rewardIndex >= rewards.size) break
             val reward = rewards.elementAtOrNull(rewardIndex) ?: break
-            Bukkit.broadcastMessage("Reward: ${reward.id}")
-            val rewardItem = reward.item.getItem()
+            val rewardItem = reward.item.getItem().clone()
+
+            rewardItem.modifyFastMeta {
+                lore = mutableListOf<Component>().apply {
+                    addAll(lore)
+                    addAll(settings.additionalRewardLore.map { it.toMMComponent() })
+                }
+            }
 
             val button = Button(
                 "reward-${reward.id}",
                 rewardItem,
                 SlotSelection.of(rewardSlot).slots,
                 10,
-                10,
-                null
+                settings.updateRewardItemsEvery,
+                null, textUpdater = { str, menu ->
+                    str.updatePAPIPlaceholders(player)
+                        .replace("%chance%", (reward.chance*100.0).decimals(2))
+                        .replace("%rarity%", reward.rarity.displayName)
+                }
             )
             components += button.id to button
         }

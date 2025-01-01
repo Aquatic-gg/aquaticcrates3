@@ -263,11 +263,16 @@ object CrateSerializer : BaseSerializer() {
         val randomRewardsSlots = MenuSerializer.loadSlotSelection(section.getStringList("random-rewards.slots"))
         val changeDuration = section.getInt("random-rewards.change-duration")
 
+        val additionalRewardLore = section.getStringList("reward-lore")
+        val updateRewardItemsEvery = section.getInt("update-reward-items-every", 1)
+
         return CratePreviewMenuSettings(
             invSettings,
             clearBottomInventory,
             rewardSlots.slots,
-            CratePreviewMenuSettings.RandomRewardsSettings(randomRewardsSlots.slots, changeDuration)
+            CratePreviewMenuSettings.RandomRewardsSettings(randomRewardsSlots.slots, changeDuration),
+            additionalRewardLore,
+            updateRewardItemsEvery
         )
     }
 

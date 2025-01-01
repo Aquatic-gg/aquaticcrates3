@@ -20,6 +20,7 @@ import org.bukkit.entity.Player
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
+import kotlin.collections.LinkedHashMap
 
 abstract class BaseSerializer {
 
@@ -27,7 +28,7 @@ abstract class BaseSerializer {
         section: ConfigurationSection,
         rarities: HashMap<String, RewardRarity>
     ): MutableMap<String, Reward> {
-        val rewards = HashMap<String, Reward>()
+        val rewards = LinkedHashMap<String, Reward>()
 
         for (key in section.getKeys(false)) {
             val rewardSection = section.getConfigurationSection(key) ?: continue
