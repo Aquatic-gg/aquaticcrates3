@@ -25,6 +25,7 @@ import gg.aquatic.waves.util.item.modifyFastMeta
 import gg.aquatic.waves.util.requirement.ConfiguredRequirement
 import gg.aquatic.waves.util.runLaterSync
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.format.TextDecoration
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.entity.Player
@@ -61,7 +62,7 @@ class BasicCrate(
     val crateItem = AquaticItem(
         ItemStack(Material.CHEST).apply {
             modifyFastMeta {
-                displayName = Component.text("Crate: $identifier")
+                displayName = Component.text("Crate: $identifier").decoration(TextDecoration.ITALIC,false)
             }
         },
         null,

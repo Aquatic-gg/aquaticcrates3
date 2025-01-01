@@ -9,6 +9,7 @@ import gg.aquatic.waves.util.item.modifyFastMeta
 import gg.aquatic.waves.util.toMMComponent
 import gg.aquatic.waves.util.updatePAPIPlaceholders
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.format.TextDecoration
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.entity.Player
@@ -94,7 +95,7 @@ class CratePreviewMenu(
             rewardItem.modifyFastMeta {
                 lore = mutableListOf<Component>().apply {
                     addAll(lore)
-                    addAll(settings.additionalRewardLore.map { it.toMMComponent() })
+                    addAll(settings.additionalRewardLore.map { it.toMMComponent().decoration(TextDecoration.ITALIC, TextDecoration.State.NOT_SET) })
                 }
             }
 
