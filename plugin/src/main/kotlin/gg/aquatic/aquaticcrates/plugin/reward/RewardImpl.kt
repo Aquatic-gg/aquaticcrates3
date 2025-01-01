@@ -11,7 +11,7 @@ import gg.aquatic.waves.util.requirement.ConfiguredRequirement
 import org.bukkit.entity.Player
 
 class RewardImpl(
-    override val chance: Double,
+    override var chance: Double,
     override val id: String,
     override val item: AquaticItem,
     override val giveItem: Boolean,

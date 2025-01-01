@@ -14,7 +14,7 @@ class RewardManagerImpl(
     val possibleRewardRanges: MutableList<RewardAmountRange>,
     val guaranteedRewards: HashMap<Int,Reward>,
     milestoneManager: (OpenableCrate) -> MilestoneManager,
-    override val rewards: MutableMap<RewardRarity, MutableMap<String, Reward>>
+    override val rewards: MutableMap<String, Reward>
 ) : RewardManager() {
 
     override val milestoneManager = milestoneManager(crate)
@@ -48,8 +48,7 @@ class RewardManagerImpl(
         }
 
         while (amountLeft > 0) {
-            val randomRarity = possibleRewards.keys.randomItem() ?: return finalRewards
-            val randomReward = possibleRewards[randomRarity]!!.values.toList().randomItem() ?: return finalRewards
+            val randomReward = possibleRewards.values.toList().randomItem() ?: return finalRewards
             val previous = finalRewards.getOrPut(randomReward.id) { randomReward to 0 }
             finalRewards[randomReward.id] = previous.first to (previous.second + 1)
             amountLeft--
@@ -57,29 +56,27 @@ class RewardManagerImpl(
         return finalRewards
     }
 
-    override fun getPossibleRewards(player: Player): MutableMap<RewardRarity, MutableMap<String, Reward>> {
-        val finalRewards = HashMap<RewardRarity,MutableMap<String, Reward>>()
-        for ((rarity, rewards) in rewards) {
-            for ((id, reward) in rewards) {
-                if (!reward.requirements.checkRequirements(player)) continue
+    override fun getPossibleRewards(player: Player): MutableMap<String, Reward> {
+        val finalRewards = HashMap<String, Reward>()
+        for ((id, reward) in rewards) {
+            if (!reward.requirements.checkRequirements(player)) continue
 
-                var meetsRequirements = true
-                for ((type, limit) in reward.globalLimits) {
-                    if (HistoryHandler.rewardHistory(crate.identifier, id, type) >= limit) {
-                        meetsRequirements = false
-                        break
-                    }
+            var meetsRequirements = true
+            for ((type, limit) in reward.globalLimits) {
+                if (HistoryHandler.rewardHistory(crate.identifier, id, type) >= limit) {
+                    meetsRequirements = false
+                    break
                 }
-                if (!meetsRequirements) continue
-                for ((type, limit) in reward.perPlayerLimits) {
-                    if (HistoryHandler.rewardHistory(crate.identifier, id, type, player) >= limit) {
-                        meetsRequirements = false
-                        break
-                    }
-                }
-                if (!meetsRequirements) continue
-                finalRewards.getOrPut(rarity) { HashMap() }[id] = reward
             }
+            if (!meetsRequirements) continue
+            for ((type, limit) in reward.perPlayerLimits) {
+                if (HistoryHandler.rewardHistory(crate.identifier, id, type, player) >= limit) {
+                    meetsRequirements = false
+                    break
+                }
+            }
+            if (!meetsRequirements) continue
+            finalRewards[id] = reward
 
         }
         return finalRewards

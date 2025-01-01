@@ -5,12 +5,12 @@ import gg.aquatic.waves.menu.settings.PrivateMenuSettings
 class CratePreviewMenuSettings(
     val invSettings: PrivateMenuSettings,
     val clearBottomInventory: Boolean,
-    val rewardSlots: Set<Int>,
+    val rewardSlots: Collection<Int>,
     val randomRewards: RandomRewardsSettings
 ) {
 
     class RandomRewardsSettings(
-        val slots: Set<Int>,
+        val slots: Collection<Int>,
         val changeDuration: Int
     )
 

@@ -26,14 +26,41 @@ abstract class BaseSerializer {
     fun loadRewards(
         section: ConfigurationSection,
         rarities: HashMap<String, RewardRarity>
-    ): MutableMap<RewardRarity, MutableMap<String, Reward>> {
-        val rewards = HashMap<RewardRarity, MutableMap<String, Reward>>()
+    ): MutableMap<String, Reward> {
+        val rewards = HashMap<String, Reward>()
 
         for (key in section.getKeys(false)) {
             val rewardSection = section.getConfigurationSection(key) ?: continue
             val reward = loadReward(rewardSection, rarities) ?: continue
-            val rarityRewards = rewards.getOrPut(reward.rarity) { HashMap() }
-            rarityRewards[reward.id] = reward
+            rewards[reward.id] = reward
+            Bukkit.getConsoleSender().sendMessage("Loaded Reward: ${reward.id}")
+        }
+
+        val totalRarityChance = rarities.values.sumOf { it.chance }
+        val normalizedRarityChances = rarities.values.associate { it.rarityId to it.chance / totalRarityChance }
+
+        for (rarity in rarities) {
+            val rarityRewards = ArrayList<Reward>()
+            for ((_, reward) in rewards) {
+                if (reward.rarity == rarity.value) {
+                    rarityRewards += reward
+                }
+            }
+
+            val totalRewardChance = rarityRewards.sumOf { it.chance }
+            val normalizedRewards = rarityRewards.map { it to it.chance / totalRewardChance }
+
+            normalizedRewards.forEach { (reward, normalizedRewardChance) ->
+                val rarityChance = normalizedRarityChances[rarity.key] ?: 0.0
+                if (reward is RewardImpl) {
+                    reward.chance = rarityChance * normalizedRewardChance
+                }
+            }
+        }
+
+        Bukkit.getConsoleSender().sendMessage("Loaded Rewards:")
+        rewards.forEach { (_, reward) ->
+            Bukkit.getConsoleSender().sendMessage("- ${reward.id} (Chance: ${reward.chance})")
         }
 
         return rewards

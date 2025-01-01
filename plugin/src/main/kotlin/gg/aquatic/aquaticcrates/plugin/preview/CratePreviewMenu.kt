@@ -1,10 +1,10 @@
 package gg.aquatic.aquaticcrates.plugin.preview
 
-import gg.aquatic.aquaticcrates.api.reward.Reward
 import gg.aquatic.aquaticcrates.plugin.crate.BasicCrate
 import gg.aquatic.waves.menu.PrivateAquaticMenu
 import gg.aquatic.waves.menu.SlotSelection
 import gg.aquatic.waves.menu.component.Button
+import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
@@ -19,13 +19,7 @@ class CratePreviewMenu(
     settings.invSettings.type,
     player
 ) {
-    val rewards = ArrayList<Reward>().apply {
-        for (value in crate.rewardManager.getPossibleRewards(player).values) {
-            for (mutableEntry in value) {
-                this += mutableEntry.value
-            }
-        }
-    }
+    val rewards = crate.rewardManager.getPossibleRewards(player).values
 
     init {
         loadItems()
@@ -68,7 +62,7 @@ class CratePreviewMenu(
             val airButton = Button(
                 "aquaticcrates:clear-button",
                 ItemStack(Material.AIR),
-                SlotSelection(((type.size)..((type.size) + 35)).toMutableSet()).slots,
+                SlotSelection(((type.size)..((type.size) + 35)).toMutableList()).slots,
                 -10,
                 1000,
                 null,
@@ -86,10 +80,12 @@ class CratePreviewMenu(
         }
 
         for ((index, rewardSlot) in settings.rewardSlots.withIndex()) {
+            Bukkit.broadcastMessage("Slot: $rewardSlot")
             //val rewardIndex = page * settings.rewardSlots.size + index
             val rewardIndex = lowerIndex + index
-            if (rewardIndex >= crate.rewardManager.rewards.size) break
+            if (rewardIndex >= rewards.size) break
             val reward = rewards.elementAtOrNull(rewardIndex) ?: break
+            Bukkit.broadcastMessage("Reward: ${reward.id}")
             val rewardItem = reward.item.getItem()
 
             val button = Button(

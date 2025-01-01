@@ -6,8 +6,8 @@ import org.bukkit.entity.Player
 abstract class RewardManager {
 
     abstract val milestoneManager: MilestoneManager
-    abstract val rewards: MutableMap<RewardRarity, MutableMap<String, Reward>>
+    abstract val rewards: MutableMap<String, Reward>
     abstract fun getRewards(player: Player): MutableList<RolledReward>
-    abstract fun getPossibleRewards(player: Player): MutableMap<RewardRarity, MutableMap<String,Reward>>
+    abstract fun getPossibleRewards(player: Player): MutableMap<String,Reward>
 
 }

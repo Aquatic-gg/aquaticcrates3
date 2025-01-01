@@ -79,7 +79,7 @@ class RerollMenu(
             val airButton = Button(
                 "aquaticcrates:clear-button",
                 ItemStack(Material.AIR),
-                SlotSelection(((type.size)..((type.size) + 35)).toMutableSet()).slots,
+                SlotSelection(((type.size)..((type.size) + 35)).toMutableList()).slots,
                 -10,
                 1000,
                 null,
