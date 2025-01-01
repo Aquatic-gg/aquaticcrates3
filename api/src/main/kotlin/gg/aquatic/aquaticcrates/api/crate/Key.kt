@@ -47,8 +47,8 @@ abstract class Key(
                 originalEvent.clickedBlock?.location ?: originalEvent.player.location
             } else it.player.location
 
-            interactHandler.handleInteract(it.player, it.interactType, location, null)
-            if (originalEvent !is InventoryClickEvent) {
+            val actionFound = interactHandler.handleInteract(it.player, it.interactType, location, null)
+            if (originalEvent !is InventoryClickEvent || actionFound) {
                 it.isCancelled = true
             }
         }
