@@ -1,5 +1,6 @@
 package gg.aquatic.aquaticcrates.plugin.preview
 
+import gg.aquatic.aquaticcrates.api.reward.Reward
 import gg.aquatic.aquaticcrates.plugin.crate.BasicCrate
 import gg.aquatic.waves.menu.PrivateAquaticMenu
 import gg.aquatic.waves.menu.SlotSelection
@@ -18,7 +19,13 @@ class CratePreviewMenu(
     settings.invSettings.type,
     player
 ) {
-    val rewards = crate.rewardManager.getPossibleRewards(player).values
+    val rewards = ArrayList<Reward>().apply {
+        for (value in crate.rewardManager.getPossibleRewards(player).values) {
+            for (mutableEntry in value) {
+                this += mutableEntry.value
+            }
+        }
+    }
 
     init {
         loadItems()

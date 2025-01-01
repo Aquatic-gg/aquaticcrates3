@@ -3,6 +3,7 @@ package gg.aquatic.aquaticcrates.plugin.reroll.input.inventory
 import gg.aquatic.aquaticcrates.api.reroll.RerollInput
 import gg.aquatic.aquaticcrates.api.reroll.RerollManager
 import gg.aquatic.aquaticcrates.api.reward.Reward
+import gg.aquatic.aquaticcrates.api.reward.RolledReward
 import gg.aquatic.aquaticcrates.plugin.reroll.input.InputSettingsFactory
 import gg.aquatic.waves.menu.MenuSerializer
 import org.bukkit.configuration.file.FileConfiguration
@@ -15,7 +16,7 @@ class InventoryRerollInput(
     override fun handle(
         rerollManager: RerollManager,
         player: Player,
-        rewards: Collection<Reward>
+        rewards: Collection<RolledReward>
     ): CompletableFuture<RerollManager.RerollResult> {
         val future = CompletableFuture<RerollManager.RerollResult>()
 

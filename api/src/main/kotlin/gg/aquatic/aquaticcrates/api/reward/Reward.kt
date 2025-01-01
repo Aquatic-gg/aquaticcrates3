@@ -22,6 +22,7 @@ interface Reward: IChance {
     val winCrateAnimation: String?
     val hologramSettings: AquaticHologramSettings
     val amountRanges: MutableList<RewardAmountRange>
+    val rarity: RewardRarity
 
     fun give(player: Player, randomAmount: Int, massOpen: Boolean) {
         val crateEntry = player.toAquaticPlayer()?.crateEntry() ?: return

@@ -5,6 +5,7 @@ import gg.aquatic.aquaticcrates.api.crate.OpenableCrate
 import gg.aquatic.aquaticcrates.api.interaction.CrateInteractAction
 import gg.aquatic.aquaticcrates.api.openprice.OpenPriceGroup
 import gg.aquatic.aquaticcrates.api.reward.Reward
+import gg.aquatic.aquaticcrates.api.reward.RewardRarity
 import gg.aquatic.aquaticcrates.plugin.CratesPlugin
 import gg.aquatic.aquaticcrates.plugin.animation.AnimationManagerImpl
 import gg.aquatic.aquaticcrates.plugin.animation.settings.InstantAnimationSettings
@@ -112,8 +113,7 @@ object CrateSerializer : BaseSerializer() {
                     groups[group] = amount
                 }
                 RerollManagerImpl(crate, groups, input)
-            }
-            else null
+            } else null
         }
         val keySection = cfg.getConfigurationSection("key")
         if (keySection == null) {
@@ -196,20 +196,35 @@ object CrateSerializer : BaseSerializer() {
             ?: InstantAnimationSettings.serialize(null)
         Bukkit.getConsoleSender().sendMessage("Loaded ${animationSettings.animationTasks.size} animation tasks")
 
+        val rarities = HashMap<String, RewardRarity>().apply {
+            this += "default" to RewardRarity("default", "Default", 100.0)
+        }
+        cfg.getConfigurationSection("rarities")?.let { section ->
+            for (key in section.getKeys(false)) {
+                val raritySection = section.getConfigurationSection(key) ?: continue
+                val displayName = raritySection.getString("display-name") ?: key
+                val chance = raritySection.getDouble("chance", 1.0)
+                rarities[key] = RewardRarity(key, displayName, chance)
+            }
+        }
+
         val guaranteedRewardsSection = cfg.getConfigurationSection("guaranteed-rewards")
         val guaranteedRewards = HashMap<Int, Reward>()
         if (guaranteedRewardsSection != null) {
             for (milestoneStr in guaranteedRewardsSection.getKeys(false)) {
                 val milestone = milestoneStr.toIntOrNull() ?: continue
                 val section = guaranteedRewardsSection.getConfigurationSection(milestoneStr) ?: continue
-                val reward = loadReward(section) ?: continue
+                val reward = loadReward(section, rarities) ?: continue
                 guaranteedRewards += milestone to reward
             }
         }
 
-        val massOpenFinalActions = ActionSerializer.fromSections<Player>(cfg.getSectionList("mass-open.final-tasks")).toMutableList()
-        val massOpenPerRewardActions = ActionSerializer.fromSections<Player>(cfg.getSectionList("mass-open.per-reward-tasks")).toMutableList()
-        val openRestrictions = RequirementSerializer.fromSections<OpenData>(cfg.getSectionList("open-restrictions")).toMutableList()
+        val massOpenFinalActions =
+            ActionSerializer.fromSections<Player>(cfg.getSectionList("mass-open.final-tasks")).toMutableList()
+        val massOpenPerRewardActions =
+            ActionSerializer.fromSections<Player>(cfg.getSectionList("mass-open.per-reward-tasks")).toMutableList()
+        val openRestrictions =
+            RequirementSerializer.fromSections<OpenData>(cfg.getSectionList("open-restrictions")).toMutableList()
 
         return BasicCrate(
             identifier,
@@ -228,7 +243,8 @@ object CrateSerializer : BaseSerializer() {
             key,
             { bc ->
                 val possibleRewardRanges = loadRewardRanges(cfg.getSectionList("possible-rewards"))
-                val rewards = loadRewards(rewardSection)
+                val rewards = loadRewards(rewardSection, rarities)
+
                 RewardManagerImpl(bc, possibleRewardRanges, guaranteedRewards, milestoneManager, rewards)
             },
             interactHandler,
@@ -240,23 +256,23 @@ object CrateSerializer : BaseSerializer() {
     }
 
     private fun loadCratePreviewMenuSettings(section: ConfigurationSection): CratePreviewMenuSettings {
-        val rewardSlots = section.getIntegerList("reward-slots")
+        val rewardSlots = MenuSerializer.loadSlotSelection(section.getStringList("reward-slots"))
         val invSettings = MenuSerializer.loadPrivateInventory(section)
         val clearBottomInventory = section.getBoolean("clear-bottom-inventory", false)
 
-        val randomRewardsSlots = section.getIntegerList("random-rewards.slots")
+        val randomRewardsSlots = MenuSerializer.loadSlotSelection(section.getStringList("random-rewards.slots"))
         val changeDuration = section.getInt("random-rewards.change-duration")
 
         return CratePreviewMenuSettings(
             invSettings,
             clearBottomInventory,
-            rewardSlots,
-            CratePreviewMenuSettings.RandomRewardsSettings(randomRewardsSlots, changeDuration)
+            rewardSlots.slots,
+            CratePreviewMenuSettings.RandomRewardsSettings(randomRewardsSlots.slots, changeDuration)
         )
     }
 
-    fun loadInteractActions(section: ConfigurationSection?): EnumMap<AquaticItemInteractEvent.InteractType, ConfiguredExecutableObject<CrateInteractAction,Unit>> {
-        val map = EnumMap<AquaticItemInteractEvent.InteractType, ConfiguredExecutableObject<CrateInteractAction,Unit>>(
+    fun loadInteractActions(section: ConfigurationSection?): EnumMap<AquaticItemInteractEvent.InteractType, ConfiguredExecutableObject<CrateInteractAction, Unit>> {
+        val map = EnumMap<AquaticItemInteractEvent.InteractType, ConfiguredExecutableObject<CrateInteractAction, Unit>>(
             AquaticItemInteractEvent.InteractType::class.java
         )
         section ?: return map

@@ -1,11 +1,11 @@
 package gg.aquatic.aquaticcrates.plugin.serialize
 
 import gg.aquatic.aquaticcrates.api.animation.Animation
-import gg.aquatic.aquaticcrates.api.hologram.AquaticHologramSettings
 import gg.aquatic.aquaticcrates.api.player.CrateProfileEntry
 import gg.aquatic.aquaticcrates.api.reward.Reward
 import gg.aquatic.aquaticcrates.api.reward.RewardAction
 import gg.aquatic.aquaticcrates.api.reward.RewardAmountRange
+import gg.aquatic.aquaticcrates.api.reward.RewardRarity
 import gg.aquatic.aquaticcrates.plugin.hologram.HologramSerializer
 import gg.aquatic.aquaticcrates.plugin.reward.RewardImpl
 import gg.aquatic.waves.item.AquaticItem
@@ -17,26 +17,29 @@ import gg.aquatic.waves.util.item.loadFromYml
 import org.bukkit.Bukkit
 import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.entity.Player
-import org.bukkit.util.Vector
 import java.util.*
 import kotlin.collections.ArrayList
-import kotlin.collections.HashSet
+import kotlin.collections.HashMap
 
 abstract class BaseSerializer {
 
-    fun loadRewards(section: ConfigurationSection): HashMap<String, Reward> {
-        val rewards = HashMap<String, Reward>()
+    fun loadRewards(
+        section: ConfigurationSection,
+        rarities: HashMap<String, RewardRarity>
+    ): MutableMap<RewardRarity, MutableMap<String, Reward>> {
+        val rewards = HashMap<RewardRarity, MutableMap<String, Reward>>()
 
         for (key in section.getKeys(false)) {
             val rewardSection = section.getConfigurationSection(key) ?: continue
-            val reward = loadReward(rewardSection) ?: continue
-            rewards[key] = reward
+            val reward = loadReward(rewardSection, rarities) ?: continue
+            val rarityRewards = rewards.getOrPut(reward.rarity) { HashMap() }
+            rarityRewards[reward.id] = reward
         }
 
         return rewards
     }
 
-    fun loadReward(section: ConfigurationSection): Reward? {
+    fun loadReward(section: ConfigurationSection, rarities: HashMap<String, RewardRarity>): Reward? {
         val id = section.name
         val item = AquaticItem.loadFromYml(section.getConfigurationSection("item"))
         if (item == null) {
@@ -62,6 +65,9 @@ abstract class BaseSerializer {
         val hologramSettings = HologramSerializer.loadAquaticHologram(section.getConfigurationSection("hologram"))
         val chances = loadRewardRanges(section.getSectionList("amount-ranges"))
 
+        val rarityId = section.getString("rarity") ?: "default"
+        val rarity = rarities[rarityId] ?: return null
+
         return RewardImpl(
             chance,
             id,
@@ -74,7 +80,8 @@ abstract class BaseSerializer {
             requirements,
             winCrateAnimation,
             hologramSettings,
-            chances
+            chances,
+            rarity
         )
     }
 
@@ -117,8 +124,8 @@ abstract class BaseSerializer {
         return list
     }
 
-    fun loadAnimationTasks(section: ConfigurationSection?): TreeMap<Int, MutableList<ConfiguredExecutableObject<Animation,Unit>>> {
-        val tasks = TreeMap<Int, MutableList<ConfiguredExecutableObject<Animation,Unit>>>()
+    fun loadAnimationTasks(section: ConfigurationSection?): TreeMap<Int, MutableList<ConfiguredExecutableObject<Animation, Unit>>> {
+        val tasks = TreeMap<Int, MutableList<ConfiguredExecutableObject<Animation, Unit>>>()
         if (section == null) return tasks
 
         for (key in section.getKeys(false)) {

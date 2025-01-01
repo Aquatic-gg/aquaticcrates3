@@ -95,7 +95,7 @@ class RegularAnimationImpl(
         }
         updateState(State.ROLLING)
         usedRerolls++
-        rerollManager.openReroll(player, crate.rewardManager.getPossibleRewards(player).values).thenAccept { result ->
+        rerollManager.openReroll(player, rewards).thenAccept { result ->
             if (result.reroll) {
                 updateState(State.OPENING)
                 rewards.clear()

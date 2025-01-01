@@ -2,6 +2,7 @@ package gg.aquatic.aquaticcrates.plugin.reroll.input.inventory
 
 import gg.aquatic.aquaticcrates.api.reroll.RerollManager
 import gg.aquatic.aquaticcrates.api.reward.Reward
+import gg.aquatic.aquaticcrates.api.reward.RolledReward
 import gg.aquatic.waves.menu.PrivateAquaticMenu
 import gg.aquatic.waves.menu.SlotSelection
 import gg.aquatic.waves.menu.component.Button
@@ -15,7 +16,7 @@ import java.util.concurrent.CompletableFuture
 
 class RerollMenu(
     player: Player,
-    val rewards: Collection<Reward>,
+    val rewards: Collection<RolledReward>,
     val settings: RerollInventorySettings,
     val future: CompletableFuture<RerollManager.RerollResult>
 ) : PrivateAquaticMenu(
@@ -39,9 +40,9 @@ class RerollMenu(
     private fun loadRewardButtons() {
         for ((index, slot) in settings.rewardSlots.slots.withIndex()) {
             val reward = rewards.elementAtOrNull(index) ?: break
-            val rewardItem = reward.item.getItem()
+            val rewardItem = reward.reward.item.getItem()
             val button = Button(
-                "reward-${reward.id}",
+                "reward-${reward.reward.id}",
                 rewardItem,
                 listOf(slot),
                 10,

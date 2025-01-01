@@ -1,11 +1,12 @@
 package gg.aquatic.aquaticcrates.api.reroll
 
 import gg.aquatic.aquaticcrates.api.reward.Reward
+import gg.aquatic.aquaticcrates.api.reward.RolledReward
 import org.bukkit.entity.Player
 import java.util.concurrent.CompletableFuture
 
 interface RerollInput {
 
-    fun handle(rerollManager: RerollManager, player: Player, rewards: Collection<Reward>): CompletableFuture<RerollManager.RerollResult>
+    fun handle(rerollManager: RerollManager, player: Player, rewards: Collection<RolledReward>): CompletableFuture<RerollManager.RerollResult>
 
 }

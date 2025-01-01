@@ -4,10 +4,7 @@ import gg.aquatic.aquaticcrates.api.crate.OpenableCrate
 import gg.aquatic.aquaticcrates.api.milestone.MilestoneManager
 import gg.aquatic.aquaticcrates.api.player.CrateProfileEntry
 import gg.aquatic.aquaticcrates.api.player.HistoryHandler
-import gg.aquatic.aquaticcrates.api.reward.Reward
-import gg.aquatic.aquaticcrates.api.reward.RewardAmountRange
-import gg.aquatic.aquaticcrates.api.reward.RewardManager
-import gg.aquatic.aquaticcrates.api.reward.RolledReward
+import gg.aquatic.aquaticcrates.api.reward.*
 import gg.aquatic.waves.util.chance.randomItem
 import gg.aquatic.waves.util.checkRequirements
 import org.bukkit.entity.Player
@@ -17,7 +14,7 @@ class RewardManagerImpl(
     val possibleRewardRanges: MutableList<RewardAmountRange>,
     val guaranteedRewards: HashMap<Int,Reward>,
     milestoneManager: (OpenableCrate) -> MilestoneManager,
-    override val rewards: HashMap<String, Reward>
+    override val rewards: MutableMap<RewardRarity, MutableMap<String, Reward>>
 ) : RewardManager() {
 
     override val milestoneManager = milestoneManager(crate)
@@ -40,7 +37,7 @@ class RewardManagerImpl(
         val finalRewards = HashMap<String,Pair<Reward, Int>>()
         var amountLeft = amount
 
-        val possibleRewards = getPossibleRewards(player).values.toList()
+        val possibleRewards = getPossibleRewards(player)
         if (possibleRewards.isEmpty()) return finalRewards
 
         val alltimeHistory = HistoryHandler.history(crate.identifier, CrateProfileEntry.HistoryType.ALLTIME, player)
@@ -51,7 +48,8 @@ class RewardManagerImpl(
         }
 
         while (amountLeft > 0) {
-            val randomReward = possibleRewards.toList().randomItem() ?: return finalRewards
+            val randomRarity = possibleRewards.keys.randomItem() ?: return finalRewards
+            val randomReward = possibleRewards[randomRarity]!!.values.toList().randomItem() ?: return finalRewards
             val previous = finalRewards.getOrPut(randomReward.id) { randomReward to 0 }
             finalRewards[randomReward.id] = previous.first to (previous.second + 1)
             amountLeft--
@@ -59,27 +57,30 @@ class RewardManagerImpl(
         return finalRewards
     }
 
-    override fun getPossibleRewards(player: Player): HashMap<String, Reward> {
-        val finalRewards = HashMap<String, Reward>()
-        for ((id, reward) in rewards) {
-            if (!reward.requirements.checkRequirements(player)) continue
+    override fun getPossibleRewards(player: Player): MutableMap<RewardRarity, MutableMap<String, Reward>> {
+        val finalRewards = HashMap<RewardRarity,MutableMap<String, Reward>>()
+        for ((rarity, rewards) in rewards) {
+            for ((id, reward) in rewards) {
+                if (!reward.requirements.checkRequirements(player)) continue
 
-            var meetsRequirements = true
-            for ((type, limit) in reward.globalLimits) {
-                if (HistoryHandler.rewardHistory(crate.identifier, id, type) >= limit) {
-                    meetsRequirements = false
-                    break
+                var meetsRequirements = true
+                for ((type, limit) in reward.globalLimits) {
+                    if (HistoryHandler.rewardHistory(crate.identifier, id, type) >= limit) {
+                        meetsRequirements = false
+                        break
+                    }
                 }
-            }
-            if (!meetsRequirements) continue
-            for ((type, limit) in reward.perPlayerLimits) {
-                if (HistoryHandler.rewardHistory(crate.identifier, id, type, player) >= limit) {
-                    meetsRequirements = false
-                    break
+                if (!meetsRequirements) continue
+                for ((type, limit) in reward.perPlayerLimits) {
+                    if (HistoryHandler.rewardHistory(crate.identifier, id, type, player) >= limit) {
+                        meetsRequirements = false
+                        break
+                    }
                 }
+                if (!meetsRequirements) continue
+                finalRewards.getOrPut(rarity) { HashMap() }[id] = reward
             }
-            if (!meetsRequirements) continue
-            finalRewards[id] = reward
+
         }
         return finalRewards
     }
