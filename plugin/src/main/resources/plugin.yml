@@ -3,5 +3,6 @@ version: '${project.version}'
 main: gg.aquatic.aquaticcrates.plugin.CratesPlugin
 api-version: 1.19
 author: LARKYY
+folia-supported: true
 depend:
   - Waves

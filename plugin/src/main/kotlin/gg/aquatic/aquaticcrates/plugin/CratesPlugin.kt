@@ -5,7 +5,9 @@ import gg.aquatic.aquaticcrates.api.crate.CrateHandler
 import gg.aquatic.aquaticcrates.api.crate.OpenableCrate
 import gg.aquatic.aquaticcrates.api.player.CrateProfileModule
 import gg.aquatic.aquaticcrates.api.reroll.RerollManager
-import gg.aquatic.aquaticcrates.plugin.animation.action.SetBlockAction
+import gg.aquatic.aquaticcrates.plugin.animation.action.SoundAction
+import gg.aquatic.aquaticcrates.plugin.animation.action.block.SetBlockAction
+import gg.aquatic.aquaticcrates.plugin.animation.action.block.SetMultiblockAction
 import gg.aquatic.aquaticcrates.plugin.animation.action.bossbar.*
 import gg.aquatic.aquaticcrates.plugin.animation.action.entity.ShowEntityAction
 import gg.aquatic.aquaticcrates.plugin.animation.action.entity.UpdateEntityPropertiesAction
@@ -173,9 +175,11 @@ class CratesPlugin : AbstractCratesPlugin() {
         WavesRegistry.registerAction("show-entity", ShowEntityAction())
         WavesRegistry.registerAction("update-entity-properties", UpdateEntityPropertiesAction())
         WavesRegistry.registerAction("set-block", SetBlockAction())
+        WavesRegistry.registerAction("set-multiblock", SetMultiblockAction())
         WavesRegistry.registerAction("show-model", ShowModelAction())
         WavesRegistry.registerAction("play-model-animation", PlayModelAnimationAction())
         WavesRegistry.registerAction("hide-model", HideModelAction())
+        WavesRegistry.registerAction("play-sound", SoundAction())
 
         WavesRegistry.registerAction("open-crate", CrateOpenAction())
         WavesRegistry.registerAction("open-crate-instant", CrateInstantOpenAction())

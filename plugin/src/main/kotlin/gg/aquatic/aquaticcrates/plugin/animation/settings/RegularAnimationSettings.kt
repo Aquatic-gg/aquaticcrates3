@@ -4,11 +4,13 @@ import gg.aquatic.aquaticcrates.api.animation.Animation
 import gg.aquatic.aquaticcrates.api.animation.crate.AnimationSettingsFactory
 import gg.aquatic.aquaticcrates.api.animation.crate.CrateAnimationManager
 import gg.aquatic.aquaticcrates.api.animation.crate.CrateAnimationSettings
+import gg.aquatic.aquaticcrates.api.crate.CrateHandler
 import gg.aquatic.aquaticcrates.api.reward.RolledReward
 import gg.aquatic.aquaticcrates.plugin.animation.RegularAnimationImpl
 import gg.aquatic.waves.util.audience.FilterAudience
 import gg.aquatic.waves.util.audience.GlobalAudience
 import gg.aquatic.waves.util.generic.ConfiguredExecutableObject
+import gg.aquatic.waves.util.runLaterSync
 import org.bukkit.Location
 import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.entity.Player
@@ -41,8 +43,27 @@ class RegularAnimationSettings(
             if (personal) FilterAudience { it == player } else GlobalAudience(),
             CompletableFuture()
         )
+
+        val spawnedCrate = CrateHandler.spawned[location]
+        runLaterSync(1) {
+            if (!personal) {
+                spawnedCrate?.destroy()
+            } else {
+                spawnedCrate?.spawnedInteractables?.forEach { it.removeViewer(player) }
+            }
+        }
+
+
         animationManager.playAnimation(animation)
-        return animation.completionFuture
+        return animation.completionFuture.thenRun {
+            if (!personal) {
+                if (spawnedCrate != null) {
+                    CrateHandler.spawnCrate(spawnedCrate.crate, location)
+                }
+            } else {
+                spawnedCrate?.spawnedInteractables?.forEach { it.addViewer(player) }
+            }
+        }
     }
 
     override fun canBeOpened(player: Player, animationManager: CrateAnimationManager, location: Location): AnimationResult {

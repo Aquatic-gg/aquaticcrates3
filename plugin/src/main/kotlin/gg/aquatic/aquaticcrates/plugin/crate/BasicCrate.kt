@@ -80,7 +80,7 @@ class BasicCrate(
                     val location = originalEvent.clickedBlock?.location ?: originalEvent.player.location
                     if (e.interactType == AquaticItemInteractEvent.InteractType.RIGHT) {
                         runLaterSync(2) {
-                            CrateHandler.spawnCrate(this@BasicCrate, location.clone().add(.0, 1.0, .0))
+                            CrateHandler.spawnCrate(this@BasicCrate, location.clone().add(.5, 1.0, .5))
                             runAsync {
                                 CrateHandler.saveSpawnedCrates(CratesPlugin.spawnedCratesConfig)
                             }

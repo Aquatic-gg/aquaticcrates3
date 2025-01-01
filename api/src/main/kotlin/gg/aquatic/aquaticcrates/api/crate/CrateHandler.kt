@@ -14,8 +14,7 @@ object CrateHandler {
 
     fun spawnCrate(crate: Crate, location: Location): SpawnedCrate {
         val spawnedCrate = SpawnedCrate(crate, location)
-        val blockLoc = location.block.location.clone()
-        spawned[blockLoc] = spawnedCrate
+        spawned[location.clone()] = spawnedCrate
         return spawnedCrate
     }
 

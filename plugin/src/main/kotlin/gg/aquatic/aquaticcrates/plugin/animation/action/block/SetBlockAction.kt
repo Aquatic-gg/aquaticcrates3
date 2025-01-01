@@ -1,4 +1,4 @@
-package gg.aquatic.aquaticcrates.plugin.animation.action
+package gg.aquatic.aquaticcrates.plugin.animation.action.block
 
 import gg.aquatic.aquaticcrates.api.animation.Animation
 import gg.aquatic.aquaticcrates.api.util.VectorArgument
