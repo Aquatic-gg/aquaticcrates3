@@ -9,6 +9,7 @@ import gg.aquatic.aquaticcrates.api.reward.RolledReward
 import gg.aquatic.waves.util.audience.AquaticAudience
 import gg.aquatic.waves.util.executeActions
 import gg.aquatic.waves.util.generic.ConfiguredExecutableObject
+import gg.aquatic.waves.util.runSync
 import org.bukkit.Location
 import org.bukkit.entity.Player
 import java.util.concurrent.CompletableFuture
@@ -124,8 +125,10 @@ class RegularAnimationImpl(
             prop.onAnimationEnd()
         }
         props.clear()
-        for (reward in rewards) {
-            reward.give(player, false)
+        runSync {
+            for (reward in rewards) {
+                reward.give(player, false)
+            }
         }
         animationManager.playingAnimations[player.uniqueId]?.let {
             it.remove(this)
