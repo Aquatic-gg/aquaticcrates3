@@ -35,11 +35,15 @@ class AnimationManagerImpl(
     }
 
     override fun skipAnimation(player: Player) {
-
+        playingAnimations[player.uniqueId]?.forEach { it.skip() }
     }
 
     override fun forceStopAnimation(player: Player) {
-
+        playingAnimations.remove(player.uniqueId)?.forEach {
+            for (reward in it.rewards) {
+                reward.give(player, false)
+            }
+        }
     }
 
     override fun forceStopAnimations() {

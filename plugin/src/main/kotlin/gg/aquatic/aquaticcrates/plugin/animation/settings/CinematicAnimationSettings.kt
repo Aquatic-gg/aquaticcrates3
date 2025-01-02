@@ -16,6 +16,7 @@ import org.bukkit.entity.Player
 import org.bukkit.util.Vector
 import java.util.*
 import java.util.concurrent.CompletableFuture
+import java.util.concurrent.ConcurrentHashMap
 
 class CinematicAnimationSettings(
     override val animationTasks: TreeMap<Int, MutableList<ConfiguredExecutableObject<Animation, Unit>>>,
@@ -47,11 +48,13 @@ class CinematicAnimationSettings(
         )
 
         val cameraLocation = cinematicLocation.clone().apply {
-            add(cameraLocation.first)
+            x = cameraLocation.first.x
+            y = cameraLocation.first.y
+            z = cameraLocation.first.z
             yaw = cameraLocation.second.first
             pitch = cameraLocation.second.second
         }
-        val cameraProp = CameraAnimationProp(animation, cameraLocation)
+        val cameraProp = CameraAnimationProp(animation, cameraLocation, Vector(), ConcurrentHashMap())
         animation.props["camera"] = cameraProp
 
         animationManager.playAnimation(animation)
@@ -83,7 +86,7 @@ class CinematicAnimationSettings(
             val cameraPitch = cameraSection.getDouble("pitch").toFloat()
             val cameraYaw = cameraSection.getDouble("yaw").toFloat()
 
-            val cameraLocation = Pair(Vector(cameraX, cameraY, cameraZ), Pair(cameraPitch, cameraYaw))
+            val cameraLocation = Pair(Vector(cameraX, cameraY, cameraZ), Pair(cameraYaw, cameraPitch))
 
             return CinematicAnimationSettings(
                 loadAnimationTasks(section.getConfigurationSection("tasks")),

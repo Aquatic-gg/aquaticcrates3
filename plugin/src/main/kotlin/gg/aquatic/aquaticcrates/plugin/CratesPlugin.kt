@@ -41,6 +41,8 @@ import gg.aquatic.waves.util.Config
 import gg.aquatic.waves.util.event.event
 import gg.aquatic.waves.util.runAsyncTimer
 import org.bukkit.Bukkit
+import org.bukkit.event.player.PlayerQuitEvent
+import org.bukkit.event.player.PlayerToggleSneakEvent
 import org.bukkit.event.world.WorldLoadEvent
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.CompletableFuture.runAsync
@@ -94,6 +96,23 @@ class CratesPlugin : AbstractCratesPlugin() {
         
         event<WorldLoadEvent> {
             CrateHandler.onWorldLoad(it.world)
+        }
+
+        event<PlayerQuitEvent> {
+            for (crate in CrateHandler.crates.values) {
+                if (crate is OpenableCrate) {
+                    crate.animationManager.forceStopAnimation(it.player)
+                }
+            }
+        }
+        event<PlayerToggleSneakEvent> {
+            if (it.isSneaking) {
+                for (crate in CrateHandler.crates.values) {
+                    if (crate is OpenableCrate) {
+                        crate.animationManager.forceStopAnimation(it.player)
+                    }
+                }
+            }
         }
 
         startTicker()
