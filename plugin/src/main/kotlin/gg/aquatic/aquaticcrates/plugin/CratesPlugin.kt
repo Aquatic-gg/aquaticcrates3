@@ -17,6 +17,7 @@ import gg.aquatic.aquaticcrates.plugin.animation.action.model.HideModelAction
 import gg.aquatic.aquaticcrates.plugin.animation.action.model.PlayModelAnimationAction
 import gg.aquatic.aquaticcrates.plugin.animation.action.model.ShowModelAction
 import gg.aquatic.aquaticcrates.plugin.animation.action.path.LinearPathAction
+import gg.aquatic.aquaticcrates.plugin.animation.action.path.SmoothPathAction
 import gg.aquatic.aquaticcrates.plugin.animation.condition.CustomCondition
 import gg.aquatic.aquaticcrates.plugin.awaiters.AbstractAwaiter
 import gg.aquatic.aquaticcrates.plugin.awaiters.IAAwaiter
@@ -176,6 +177,7 @@ class CratesPlugin : AbstractCratesPlugin() {
         WavesRegistry.registerAction("set-bossbar-style", SetBossbarStyleAction())
         WavesRegistry.registerAction("set-bossbar-progress", SetBossbarProgressAction())
         WavesRegistry.registerAction("linear-path", LinearPathAction())
+        WavesRegistry.registerAction("smooth-path", SmoothPathAction())
         WavesRegistry.registerAction("show-entity", ShowEntityAction())
         WavesRegistry.registerAction("update-entity-properties", UpdateEntityPropertiesAction())
         WavesRegistry.registerAction("set-block", SetBlockAction())

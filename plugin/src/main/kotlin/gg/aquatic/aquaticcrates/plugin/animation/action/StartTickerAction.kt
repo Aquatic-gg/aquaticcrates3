@@ -19,9 +19,10 @@ class StartTickerAction : AbstractAction<Animation>() {
     override fun execute(binder: Animation, args: Map<String, Any?>, textUpdater: (Animation, String) -> String) {
         val actions = args["actions"] as List<ConfiguredExecutableObject<Animation, Unit>>
         val tickEvery = args["tick-every"] as Int
+        val repeatLimit = args["repeat-limit"] as Int
         val id = args["id"] as String
 
-        val prop = TickerAnimationProp(binder, id, tickEvery, actions)
+        val prop = TickerAnimationProp(binder, id, tickEvery, actions, repeatLimit)
         binder.props["ticker:$id"] = prop
     }
 }

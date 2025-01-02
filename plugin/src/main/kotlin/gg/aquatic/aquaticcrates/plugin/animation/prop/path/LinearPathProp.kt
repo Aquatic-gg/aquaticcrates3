@@ -53,10 +53,8 @@ class LinearPathProp(
             val point = PathPoint(interpolatedX, interpolatedY, interpolatedZ, interpolatedYaw, interpolatedPitch)
             currentPoint = point
 
-            runSync {
-                for ((prop, _) in boundProps) {
-                    prop.processPath(this@LinearPathProp, point)
-                }
+            for ((prop, _) in boundProps) {
+                prop.processPath(this@LinearPathProp, point)
             }
 
 
