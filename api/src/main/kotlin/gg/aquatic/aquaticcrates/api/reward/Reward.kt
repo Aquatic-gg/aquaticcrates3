@@ -6,11 +6,13 @@ import gg.aquatic.aquaticcrates.api.player.crateEntry
 import gg.aquatic.waves.item.AquaticItem
 import gg.aquatic.waves.profile.toAquaticPlayer
 import gg.aquatic.waves.util.chance.IChance
+import gg.aquatic.waves.util.decimals
 import gg.aquatic.waves.util.requirement.ConfiguredRequirement
+import gg.aquatic.waves.util.updatePAPIPlaceholders
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 
-interface Reward: IChance {
+interface Reward : IChance {
     val id: String
     val item: AquaticItem
     val giveItem: Boolean
@@ -31,7 +33,7 @@ interface Reward: IChance {
             val toDrop = player.inventory.addItem(item)
 
             for (value in toDrop.values) {
-                var foundItem: Pair<ItemStack,Int>? = null
+                var foundItem: Pair<ItemStack, Int>? = null
                 for ((containerItem, amount) in crateEntry.rewardContainer.items) {
                     if (containerItem.isSimilar(value)) {
                         foundItem = containerItem to amount
@@ -51,7 +53,12 @@ interface Reward: IChance {
         }
         for (action in actions) {
             if (!action.massOpenExecute && massOpen) continue
-            action.action.execute(player) { p, str -> str.replace("%player%", p.name).replace("%random-amount%", randomAmount.toString()) }
+            action.action.execute(player) { p, str ->
+                str.updatePAPIPlaceholders(player).replace("%player%", p.name)
+                    .replace("%random-amount%", randomAmount.toString())
+                    .replace("%reward-name%", displayName)
+                    .replace("%chance%", chance.decimals(2))
+            }
         }
     }
 }

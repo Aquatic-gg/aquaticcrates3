@@ -5,7 +5,9 @@ import gg.aquatic.aquaticcrates.api.crate.CrateHandler
 import gg.aquatic.aquaticcrates.api.crate.OpenableCrate
 import gg.aquatic.aquaticcrates.api.player.CrateProfileModule
 import gg.aquatic.aquaticcrates.api.reroll.RerollManager
+import gg.aquatic.aquaticcrates.plugin.animation.action.ConditionalActionsAction
 import gg.aquatic.aquaticcrates.plugin.animation.action.SoundAction
+import gg.aquatic.aquaticcrates.plugin.animation.action.StartTickerAction
 import gg.aquatic.aquaticcrates.plugin.animation.action.block.SetBlockAction
 import gg.aquatic.aquaticcrates.plugin.animation.action.block.SetMultiblockAction
 import gg.aquatic.aquaticcrates.plugin.animation.action.bossbar.*
@@ -15,6 +17,7 @@ import gg.aquatic.aquaticcrates.plugin.animation.action.model.HideModelAction
 import gg.aquatic.aquaticcrates.plugin.animation.action.model.PlayModelAnimationAction
 import gg.aquatic.aquaticcrates.plugin.animation.action.model.ShowModelAction
 import gg.aquatic.aquaticcrates.plugin.animation.action.path.LinearPathAction
+import gg.aquatic.aquaticcrates.plugin.animation.condition.CustomCondition
 import gg.aquatic.aquaticcrates.plugin.awaiters.AbstractAwaiter
 import gg.aquatic.aquaticcrates.plugin.awaiters.IAAwaiter
 import gg.aquatic.aquaticcrates.plugin.awaiters.MEGAwaiter
@@ -165,6 +168,7 @@ class CratesPlugin : AbstractCratesPlugin() {
     }
 
     private fun registerObjects() {
+        // Animation Actions
         WavesRegistry.registerAction("show-bossbar", ShowBossbarAction())
         WavesRegistry.registerAction("hide-bossbar", HideBossbarAction())
         WavesRegistry.registerAction("set-bossbar-message", SetBossbarTextAction())
@@ -180,18 +184,25 @@ class CratesPlugin : AbstractCratesPlugin() {
         WavesRegistry.registerAction("play-model-animation", PlayModelAnimationAction())
         WavesRegistry.registerAction("hide-model", HideModelAction())
         WavesRegistry.registerAction("play-sound", SoundAction())
+        WavesRegistry.registerAction("conditional-actions", ConditionalActionsAction())
+        WavesRegistry.registerAction("start-ticker", StartTickerAction())
 
+        // Interaction Actions
         WavesRegistry.registerAction("open-crate", CrateOpenAction())
         WavesRegistry.registerAction("open-crate-instant", CrateInstantOpenAction())
         WavesRegistry.registerAction("preview-crate", CratePreviewAction())
         WavesRegistry.registerAction("destroy-crate", CrateBreakAction())
         WavesRegistry.registerAction("execute-actions", CrateExecuteActionsAction())
 
+        // Open Restrictions
         WavesRegistry.registerRequirement("player", PlayerOpenRestriction())
         WavesRegistry.registerRequirement("global", GlobalOpenRestriction())
         WavesRegistry.registerRequirement("all_player", AllPlayerOpenRestriction())
         WavesRegistry.registerRequirement("all_global", AllGlobalOpenRestriction())
         WavesRegistry.registerRequirement("world_blacklist", WorldBlacklistOpenRestriction())
+
+        // Animation Action Conditions
+        WavesRegistry.registerRequirement("custom", CustomCondition())
 
     }
 }

@@ -26,11 +26,14 @@ abstract class CrateAnimation: Animation() {
 
     open fun executeActions(actions: List<ConfiguredExecutableObject<Animation,Unit>>) {
         actions.executeActions(this) { _, str ->
+            updatePlaceholders(str)
+            /*
             var finalString = str.replace("%player%", player.name)
             for ((i, reward) in rewards.withIndex()) {
                 finalString = finalString.replace("%random-amount:$i",reward.randomAmount.toString())
             }
             finalString.updatePAPIPlaceholders(player)
+             */
         }
     }
 

@@ -26,7 +26,7 @@ class ShowBossbarAction : AbstractAction<Animation>() {
 
         val prop = BossbarAnimationProp(
             binder,
-            message,
+            textUpdater(binder, message),
             BossBar.Color.valueOf(color.uppercase()),
             BossBar.Overlay.valueOf(style.uppercase()),
             progress

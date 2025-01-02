@@ -6,14 +6,10 @@ import gg.aquatic.aquaticcrates.plugin.animation.prop.entity.property.EntityProp
 import gg.aquatic.aquaticcrates.plugin.animation.prop.entity.property.EntityPropertySerializer
 import gg.aquatic.waves.fake.entity.FakeEntity
 import gg.aquatic.waves.packetevents.EntityDataBuilder
-import gg.aquatic.waves.packetevents.type.ItemDisplayEntityDataBuilder
 import gg.aquatic.waves.shadow.com.retrooper.packetevents.protocol.entity.type.EntityTypes
 import gg.aquatic.waves.shadow.com.retrooper.packetevents.protocol.player.EquipmentSlot
 import gg.aquatic.waves.util.mapPair
 import org.bukkit.configuration.ConfigurationSection
-import org.bukkit.entity.Entity
-import org.bukkit.entity.ItemDisplay
-import org.bukkit.entity.LivingEntity
 
 class EntityArmorProperty(
     val helmet: ArgumentItem?,

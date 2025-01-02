@@ -13,7 +13,9 @@ import gg.aquatic.waves.registry.serializer.ActionSerializer
 import gg.aquatic.waves.registry.serializer.RequirementSerializer
 import gg.aquatic.waves.util.generic.ConfiguredExecutableObject
 import gg.aquatic.waves.util.getSectionList
+import gg.aquatic.waves.util.item.fastMeta
 import gg.aquatic.waves.util.item.loadFromYml
+import gg.aquatic.waves.util.toMMString
 import org.bukkit.Bukkit
 import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.entity.Player
@@ -76,7 +78,6 @@ abstract class BaseSerializer {
         }
         val chance = section.getDouble("chance", 1.0)
         val giveItem = section.getBoolean("give-item", false)
-        val displayName = section.getString("display-name") ?: id
         val globalLimits: HashMap<CrateProfileEntry.HistoryType, Int> = HashMap()
         val perPlayerLimits: HashMap<CrateProfileEntry.HistoryType, Int> = HashMap()
 
@@ -101,7 +102,7 @@ abstract class BaseSerializer {
             id,
             item,
             giveItem,
-            displayName,
+            item.getItem().fastMeta().displayName?.toMMString() ?: id,
             globalLimits,
             perPlayerLimits,
             actions,

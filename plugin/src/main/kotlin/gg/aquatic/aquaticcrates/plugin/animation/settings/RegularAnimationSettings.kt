@@ -45,7 +45,7 @@ class RegularAnimationSettings(
         )
 
         val spawnedCrate = CrateHandler.spawned[location]
-        runLaterSync(3) {
+        runLaterSync(1) {
             if (!personal) {
                 spawnedCrate?.destroy()
             } else {

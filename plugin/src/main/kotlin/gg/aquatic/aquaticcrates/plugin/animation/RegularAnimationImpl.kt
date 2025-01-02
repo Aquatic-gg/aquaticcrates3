@@ -139,7 +139,7 @@ class RegularAnimationImpl(
 
     override fun executeActions(actions: List<ConfiguredExecutableObject<Animation, Unit>>) {
         actions.executeActions(this) { _, str ->
-            var finalString = updatePlaceholders(str)
+            val finalString = updatePlaceholders(str)
             finalString
         }
     }
