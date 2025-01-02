@@ -9,21 +9,25 @@ class TickerAnimationProp(
     override val animation: Animation,
     val id: String,
     val tickEvery: Int,
-    val actions: List<ConfiguredExecutableObject<Animation,Unit>>) : AnimationProp() {
+    val actions: List<ConfiguredExecutableObject<Animation,Unit>>,
+    val repeatLimit: Int) : AnimationProp() {
 
     var tick = 0
     var actualTick = 0
 
     override fun tick() {
+        if (repeatLimit in 1..<actualTick) {
+            return
+        }
+        tick++
         if (tick >= tickEvery) {
             tick = 0
+            actualTick++
             actions.executeActions(animation) { _, str ->
                 animation.updatePlaceholders(str)
                     .replace("%tick:$id%", actualTick.toString())
             }
-            actualTick++
         }
-        tick++
     }
 
     override fun onAnimationEnd() {

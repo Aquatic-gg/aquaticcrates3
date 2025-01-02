@@ -12,7 +12,8 @@ class StartTickerAction : AbstractAction<Animation>() {
     override val arguments: List<AquaticObjectArgument<*>> = listOf(
         ActionsArgument("actions", listOf(), true),
         PrimitiveObjectArgument("tick-every", 1, false),
-        PrimitiveObjectArgument("id", "example", false)
+        PrimitiveObjectArgument("id", "example", false),
+        PrimitiveObjectArgument("repeat-limit", -1, false)
     )
 
     override fun execute(binder: Animation, args: Map<String, Any?>, textUpdater: (Animation, String) -> String) {
