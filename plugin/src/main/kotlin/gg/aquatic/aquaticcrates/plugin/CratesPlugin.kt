@@ -8,6 +8,7 @@ import gg.aquatic.aquaticcrates.api.reroll.RerollManager
 import gg.aquatic.aquaticcrates.plugin.animation.action.ConditionalActionsAction
 import gg.aquatic.aquaticcrates.plugin.animation.action.SoundAction
 import gg.aquatic.aquaticcrates.plugin.animation.action.StartTickerAction
+import gg.aquatic.aquaticcrates.plugin.animation.action.StringDeobfuscationAction
 import gg.aquatic.aquaticcrates.plugin.animation.action.block.SetBlockAction
 import gg.aquatic.aquaticcrates.plugin.animation.action.block.SetMultiblockAction
 import gg.aquatic.aquaticcrates.plugin.animation.action.bossbar.*
@@ -16,6 +17,7 @@ import gg.aquatic.aquaticcrates.plugin.animation.action.entity.UpdateEntityPrope
 import gg.aquatic.aquaticcrates.plugin.animation.action.model.HideModelAction
 import gg.aquatic.aquaticcrates.plugin.animation.action.model.PlayModelAnimationAction
 import gg.aquatic.aquaticcrates.plugin.animation.action.model.ShowModelAction
+import gg.aquatic.aquaticcrates.plugin.animation.action.path.BindPathAction
 import gg.aquatic.aquaticcrates.plugin.animation.action.path.LinearPathAction
 import gg.aquatic.aquaticcrates.plugin.animation.action.path.SmoothPathAction
 import gg.aquatic.aquaticcrates.plugin.animation.condition.CustomCondition
@@ -207,6 +209,8 @@ class CratesPlugin : AbstractCratesPlugin() {
         WavesRegistry.registerAction("play-sound", SoundAction())
         WavesRegistry.registerAction("conditional-actions", ConditionalActionsAction())
         WavesRegistry.registerAction("start-ticker", StartTickerAction())
+        WavesRegistry.registerAction("bind-path", BindPathAction())
+        WavesRegistry.registerAction("string-deobfuscation", StringDeobfuscationAction())
 
         // Interaction Actions
         WavesRegistry.registerAction("open-crate", CrateOpenAction())

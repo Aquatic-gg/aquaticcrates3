@@ -24,6 +24,8 @@ abstract class Animation {
     abstract fun tickOpening()
     abstract fun tickPostOpen()
 
+    val extraPlaceholders = ArrayList<(String) -> String>()
+
     fun updatePlaceholders(str: String): String {
         var finalString = str.updatePAPIPlaceholders(player).replace("%player%", player.name)
 
@@ -33,6 +35,10 @@ abstract class Animation {
                 .replace("%reward-name:$i%", reward.reward.displayName)
                 .replace("%reward-id:$i%", reward.reward.id)
                 .replace("%reward-chance:$i%", reward.reward.chance.toString())
+        }
+
+        for (extraPlaceholder in extraPlaceholders) {
+            finalString = extraPlaceholder(finalString)
         }
 
         return finalString
