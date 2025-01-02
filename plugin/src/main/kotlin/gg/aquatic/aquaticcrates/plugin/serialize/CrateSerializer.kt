@@ -8,6 +8,7 @@ import gg.aquatic.aquaticcrates.api.reward.Reward
 import gg.aquatic.aquaticcrates.api.reward.RewardRarity
 import gg.aquatic.aquaticcrates.plugin.CratesPlugin
 import gg.aquatic.aquaticcrates.plugin.animation.AnimationManagerImpl
+import gg.aquatic.aquaticcrates.plugin.animation.settings.CinematicAnimationSettings
 import gg.aquatic.aquaticcrates.plugin.animation.settings.InstantAnimationSettings
 import gg.aquatic.aquaticcrates.plugin.animation.settings.RegularAnimationSettings
 import gg.aquatic.aquaticcrates.plugin.crate.BasicCrate
@@ -52,6 +53,7 @@ object CrateSerializer : BaseSerializer() {
     val animationSerializers = hashMapOf(
         "instant" to InstantAnimationSettings.Companion,
         "regular" to RegularAnimationSettings.Companion,
+        "cinematic" to CinematicAnimationSettings.Companion,
     )
     val rerollInputSerializers = hashMapOf(
         "inventory" to InventoryRerollInput.Companion
