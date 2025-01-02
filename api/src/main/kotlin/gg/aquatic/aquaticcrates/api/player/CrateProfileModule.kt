@@ -22,5 +22,5 @@ object CrateProfileModule: ProfileModule {
 }
 
 fun AquaticPlayer.crateEntry(): CrateProfileEntry {
-    return this.entries[CrateProfileModule.id] as CrateProfileEntry
+    return this.entries.getOrPut(CrateProfileModule.id) { CrateProfileEntry(this, RewardContainer()) } as CrateProfileEntry
 }

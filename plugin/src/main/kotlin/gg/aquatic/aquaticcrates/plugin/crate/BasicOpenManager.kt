@@ -37,7 +37,6 @@ class BasicOpenManager(val crate: BasicCrate) {
         val rewards = crate.rewardManager.getRewards(player)
         HistoryHandler.registerCrateOpen(player, crate.identifier, rewards.mapPair { it.reward.id to it.randomAmount })
 
-        Bukkit.broadcastMessage("Opening crate!")
         return crate.animationManager.animationSettings.create(
             player, crate.animationManager, location, rewards
         ).thenRun {
@@ -68,7 +67,6 @@ class BasicOpenManager(val crate: BasicCrate) {
                 for (i in 0 until threads) {
                     val amt = if (i == threads - 1) lastAmount else separated
                     tasksToJoin += CompletableFuture.runAsync {
-                        Bukkit.broadcastMessage("Opening $amt crates")
                         for (ignored in 0 until amt) {
                             val rewards = crate.rewardManager.getRewards(player)
                             HistoryHandler.registerCrateOpen(

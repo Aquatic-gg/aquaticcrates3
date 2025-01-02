@@ -16,7 +16,6 @@ class CrateInstantOpenAction: AbstractAction<CrateInteractAction>() {
         args: Map<String, Any?>,
         textUpdater: (CrateInteractAction, String) -> String
     ) {
-        Bukkit.broadcastMessage("Instant Opening crate!")
         val crate = binder.crate
         val player = binder.player
         if (crate is OpenableCrate) {

@@ -22,7 +22,7 @@ interface Reward : IChance {
     val actions: List<RewardAction>
     val requirements: List<ConfiguredRequirement<Player>>
     val winCrateAnimation: String?
-    val hologramSettings: AquaticHologramSettings
+    //val hologramSettings: AquaticHologramSettings
     val amountRanges: MutableList<RewardAmountRange>
     val rarity: RewardRarity
 

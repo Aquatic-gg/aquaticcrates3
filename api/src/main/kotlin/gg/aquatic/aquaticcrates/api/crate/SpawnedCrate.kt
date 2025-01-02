@@ -9,6 +9,8 @@ class SpawnedCrate(
     val location: Location
 ) {
 
+    val hologram = crate.hologramSettings.create(location)
+
     val spawnedInteractables = crate.interactables.map {
         it.build(location, GlobalAudience()) { e ->
             val clickType = if (e.isLeft) {
@@ -32,5 +34,6 @@ class SpawnedCrate(
         for (spawnedInteractable in spawnedInteractables) {
             spawnedInteractable.destroy()
         }
+        hologram.despawn()
     }
 }

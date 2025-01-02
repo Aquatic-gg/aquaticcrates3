@@ -21,7 +21,7 @@ class RewardImpl(
     override val actions: List<RewardAction>,
     override val requirements: List<ConfiguredRequirement<Player>>,
     override val winCrateAnimation: String?,
-    override val hologramSettings: AquaticHologramSettings,
+    //override val hologramSettings: AquaticHologramSettings,
     override val amountRanges: MutableList<RewardAmountRange>,
     override val rarity: RewardRarity
 ) : Reward
