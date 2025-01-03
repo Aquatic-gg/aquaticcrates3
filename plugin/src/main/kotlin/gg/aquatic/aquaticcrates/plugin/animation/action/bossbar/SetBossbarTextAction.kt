@@ -17,6 +17,6 @@ class SetBossbarTextAction : AbstractAction<Animation>() {
         val id = args["id"] as String
         val message = args["message"] as String
         val prop = binder.props["bossbar:$id"] as? BossbarAnimationProp? ?: return
-        prop.text = textUpdater(binder, message)
+        prop.text = message
     }
 }

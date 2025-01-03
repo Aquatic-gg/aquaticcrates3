@@ -6,6 +6,7 @@ import gg.aquatic.waves.util.audience.AquaticAudience
 import gg.aquatic.waves.util.updatePAPIPlaceholders
 import org.bukkit.Location
 import org.bukkit.entity.Player
+import java.util.concurrent.ConcurrentHashMap
 
 abstract class Animation {
 
@@ -24,7 +25,7 @@ abstract class Animation {
     abstract fun tickOpening()
     abstract fun tickPostOpen()
 
-    val extraPlaceholders = ArrayList<(String) -> String>()
+    val extraPlaceholders = ConcurrentHashMap<String,(String) -> String>()
 
     fun updatePlaceholders(str: String): String {
         var finalString = str.updatePAPIPlaceholders(player).replace("%player%", player.name)
@@ -37,7 +38,7 @@ abstract class Animation {
                 .replace("%reward-chance:$i%", reward.reward.chance.toString())
         }
 
-        for (extraPlaceholder in extraPlaceholders) {
+        for ((_, extraPlaceholder) in extraPlaceholders) {
             finalString = extraPlaceholder(finalString)
         }
 

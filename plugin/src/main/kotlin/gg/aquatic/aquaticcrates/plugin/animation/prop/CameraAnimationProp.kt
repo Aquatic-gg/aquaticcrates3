@@ -115,7 +115,7 @@ class CameraAnimationProp(
                     it.sendPacket(WrapperPlayServerCamera(animation.player.toUser().entityId))
                     it.sendPacket(gameModePacket)
                 }
-                animation.player.gameMode = org.bukkit.GameMode.SURVIVAL
+                animation.player.gameMode = previousGamemode
                 animation.player.teleport(previousLocation)
             } catch (ex: Exception) {
                 ex.printStackTrace()

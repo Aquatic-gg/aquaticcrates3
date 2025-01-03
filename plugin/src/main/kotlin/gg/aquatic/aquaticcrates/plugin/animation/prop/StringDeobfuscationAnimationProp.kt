@@ -4,8 +4,12 @@ import gg.aquatic.aquaticcrates.api.animation.Animation
 import gg.aquatic.aquaticcrates.api.animation.prop.AnimationProp
 import gg.aquatic.waves.util.executeActions
 import gg.aquatic.waves.util.generic.ConfiguredExecutableObject
+import gg.aquatic.waves.util.toMMComponent
+import gg.aquatic.waves.util.toUser
+import org.bukkit.Bukkit
 
 class StringDeobfuscationAnimationProp(
+    val id: String,
     override val animation: Animation,
     val deobfuscateEvery: Int,
     deobfuscationString: String,
@@ -18,16 +22,18 @@ class StringDeobfuscationAnimationProp(
     val length = obfuscationString.length
     var deobfuscated = 0
 
-    var currentString = "$obfuscatedFormat$obfuscationString"
+    @Volatile
+    private var currentString = "$obfuscatedFormat$obfuscationString"
 
     init {
-        animation.extraPlaceholders += { str ->
-            str.replace(obfuscatedFormat, currentString)
+        animation.extraPlaceholders += "stringdeobfuscation:$id" to { str ->
+            str.replace("%stringdeobfuscation:$id%", currentString)
         }
     }
 
     private var tick = 0
     override fun tick() {
+        tick++
         if (tick >= deobfuscateEvery) {
             tick = 0
             deobfuscateNext()
@@ -35,17 +41,20 @@ class StringDeobfuscationAnimationProp(
     }
 
     private fun deobfuscateNext() {
-        if (deobfuscated >= length) return
         deobfuscated++
+        if (deobfuscated >= length) return
 
         val obfuscated = obfuscationString.substring(0, (length-1)-deobfuscated)
-        val deobfuscated = obfuscationString.substring((length-1)-deobfuscated, length-1)
+        val deobfuscated = obfuscationString.substring((length-1)-deobfuscated, length)
 
         currentString = "$obfuscatedFormat$obfuscated$deobfuscatedFormat$deobfuscated"
         deobfuscationActions.executeActions(animation) { animation, s ->
             animation.updatePlaceholders(s)
         }
-
+        Bukkit.broadcastMessage("New string: $currentString")
+        val updatedString = animation.updatePlaceholders("%stringdeobfuscation:$id%")
+        Bukkit.broadcastMessage("Updated string: $updatedString")
+        animation.player.toUser().sendMessage(updatedString.toMMComponent())
     }
 
     override fun onAnimationEnd() {

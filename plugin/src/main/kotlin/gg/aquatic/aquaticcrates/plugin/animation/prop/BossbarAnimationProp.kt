@@ -4,7 +4,9 @@ import gg.aquatic.aquaticcrates.api.animation.Animation
 import gg.aquatic.aquaticcrates.api.animation.prop.AnimationProp
 import gg.aquatic.waves.util.bossbar.AquaticBossBar
 import gg.aquatic.waves.util.toMMComponent
+import gg.aquatic.waves.util.toUser
 import net.kyori.adventure.bossbar.BossBar
+import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 
 class BossbarAnimationProp(
@@ -23,7 +25,10 @@ class BossbarAnimationProp(
     }
 
     override fun tick() {
-        bossBar.message = textUpdater(animation.player,text).toMMComponent()
+        val newMsg = textUpdater(animation.player,animation.updatePlaceholders(text)).toMMComponent()
+        bossBar.message = newMsg
+        val updatedText = animation.updatePlaceholders(text)
+        Bukkit.broadcastMessage("Updated text from BossbarAnimationProp: $updatedText")
     }
 
     override fun onAnimationEnd() {

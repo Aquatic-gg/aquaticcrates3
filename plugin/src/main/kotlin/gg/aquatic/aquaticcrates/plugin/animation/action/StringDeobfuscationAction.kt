@@ -11,6 +11,7 @@ import gg.aquatic.waves.util.generic.ConfiguredExecutableObject
 class StringDeobfuscationAction: AbstractAction<Animation>() {
     override val arguments: List<AquaticObjectArgument<*>> = listOf(
         PrimitiveObjectArgument("deobfuscate-every",1,false),
+        PrimitiveObjectArgument("id","example",false),
         PrimitiveObjectArgument("deobfuscation-string","example",true),
         PrimitiveObjectArgument("obfuscated-format","<obfuscated><gray>",true),
         PrimitiveObjectArgument("deobfuscated-format","<white>",true),
@@ -23,8 +24,10 @@ class StringDeobfuscationAction: AbstractAction<Animation>() {
         val obfuscatedFormat = args["obfuscated-format"] as String
         val deobfuscatedFormat = args["deobfuscated-format"] as String
         val deobfuscationActions = args["deobfuscation-actions"] as List<ConfiguredExecutableObject<Animation, Unit>>
+        val id = args["id"] as String
 
         val prop = StringDeobfuscationAnimationProp(
+            id,
             binder,
             deobfuscateEvery,
             deobfuscationString,
@@ -32,6 +35,6 @@ class StringDeobfuscationAction: AbstractAction<Animation>() {
             deobfuscatedFormat,
             deobfuscationActions
         )
-        binder.props["deobfuscation:$deobfuscationString"] = prop
+        binder.props["deobfuscation:$id"] = prop
     }
 }
