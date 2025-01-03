@@ -4,6 +4,7 @@ import gg.aquatic.aquaticcrates.api.animation.Animation
 import gg.aquatic.aquaticcrates.api.animation.prop.AnimationProp
 import gg.aquatic.waves.util.executeActions
 import gg.aquatic.waves.util.generic.ConfiguredExecutableObject
+import org.bukkit.Bukkit
 
 class TickerAnimationProp(
     override val animation: Animation,
@@ -16,7 +17,7 @@ class TickerAnimationProp(
     var actualTick = 0
 
     override fun tick() {
-        if (repeatLimit in 1..<actualTick) {
+        if (repeatLimit > 0 && actualTick >= repeatLimit) {
             return
         }
         tick++

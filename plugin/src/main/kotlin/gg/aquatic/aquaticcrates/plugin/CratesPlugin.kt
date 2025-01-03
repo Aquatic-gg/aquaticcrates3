@@ -8,10 +8,7 @@ import gg.aquatic.aquaticcrates.api.crate.OpenableCrate
 import gg.aquatic.aquaticcrates.api.player.CrateProfileModule
 import gg.aquatic.aquaticcrates.api.reroll.RerollManager
 import gg.aquatic.aquaticcrates.plugin.animation.AnimationManagerImpl
-import gg.aquatic.aquaticcrates.plugin.animation.action.ConditionalActionsAction
-import gg.aquatic.aquaticcrates.plugin.animation.action.SoundAction
-import gg.aquatic.aquaticcrates.plugin.animation.action.StartTickerAction
-import gg.aquatic.aquaticcrates.plugin.animation.action.StringDeobfuscationAction
+import gg.aquatic.aquaticcrates.plugin.animation.action.*
 import gg.aquatic.aquaticcrates.plugin.animation.action.block.SetBlockAction
 import gg.aquatic.aquaticcrates.plugin.animation.action.block.SetMultiblockAction
 import gg.aquatic.aquaticcrates.plugin.animation.action.bossbar.*
@@ -248,6 +245,7 @@ class CratesPlugin : AbstractCratesPlugin() {
         WavesRegistry.registerAction("conditional-actions", ConditionalActionsAction())
         WavesRegistry.registerAction("start-ticker", StartTickerAction())
         WavesRegistry.registerAction("bind-path", BindPathAction())
+        WavesRegistry.registerAction("title", TitleAction())
         WavesRegistry.registerAction("string-deobfuscation", StringDeobfuscationAction())
 
         // Interaction Actions
