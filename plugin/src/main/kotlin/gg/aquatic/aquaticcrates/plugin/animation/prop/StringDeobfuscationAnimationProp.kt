@@ -51,10 +51,6 @@ class StringDeobfuscationAnimationProp(
         deobfuscationActions.executeActions(animation) { animation, s ->
             animation.updatePlaceholders(s)
         }
-        Bukkit.broadcastMessage("New string: $currentString")
-        val updatedString = animation.updatePlaceholders("%stringdeobfuscation:$id%")
-        Bukkit.broadcastMessage("Updated string: $updatedString")
-        animation.player.toUser().sendMessage(updatedString.toMMComponent())
     }
 
     override fun onAnimationEnd() {
