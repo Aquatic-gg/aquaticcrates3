@@ -1,10 +1,13 @@
 package gg.aquatic.aquaticcrates.plugin
 
 import gg.aquatic.aquaticcrates.api.AbstractCratesPlugin
+import gg.aquatic.aquaticcrates.api.animation.crate.CrateAnimation
+import gg.aquatic.aquaticcrates.api.animation.crate.CrateAnimationManager
 import gg.aquatic.aquaticcrates.api.crate.CrateHandler
 import gg.aquatic.aquaticcrates.api.crate.OpenableCrate
 import gg.aquatic.aquaticcrates.api.player.CrateProfileModule
 import gg.aquatic.aquaticcrates.api.reroll.RerollManager
+import gg.aquatic.aquaticcrates.plugin.animation.AnimationManagerImpl
 import gg.aquatic.aquaticcrates.plugin.animation.action.ConditionalActionsAction
 import gg.aquatic.aquaticcrates.plugin.animation.action.SoundAction
 import gg.aquatic.aquaticcrates.plugin.animation.action.StartTickerAction
@@ -28,6 +31,7 @@ import gg.aquatic.aquaticcrates.plugin.command.CrateCommand
 import gg.aquatic.aquaticcrates.plugin.command.KeyCommand
 import gg.aquatic.aquaticcrates.plugin.command.ReloadCommand
 import gg.aquatic.aquaticcrates.plugin.interact.action.*
+import gg.aquatic.aquaticcrates.plugin.reroll.input.interaction.InteractionInputHandler
 import gg.aquatic.aquaticcrates.plugin.reroll.input.inventory.InventoryRerollInput
 import gg.aquatic.aquaticcrates.plugin.reroll.input.inventory.RerollMenu
 import gg.aquatic.aquaticcrates.plugin.restriction.impl.*
@@ -39,8 +43,13 @@ import gg.aquatic.waves.profile.ProfilesModule
 import gg.aquatic.waves.registry.WavesRegistry
 import gg.aquatic.waves.registry.registerAction
 import gg.aquatic.waves.registry.registerRequirement
+import gg.aquatic.waves.shadow.com.retrooper.packetevents.event.PacketReceiveEvent
+import gg.aquatic.waves.shadow.com.retrooper.packetevents.protocol.packettype.PacketType
+import gg.aquatic.waves.shadow.com.retrooper.packetevents.wrapper.play.client.WrapperPlayClientInteractEntity
 import gg.aquatic.waves.util.Config
 import gg.aquatic.waves.util.event.event
+import gg.aquatic.waves.util.packetEvent
+import gg.aquatic.waves.util.player
 import gg.aquatic.waves.util.runAsyncTimer
 import org.bukkit.Bukkit
 import org.bukkit.event.player.PlayerQuitEvent
@@ -109,11 +118,20 @@ class CratesPlugin : AbstractCratesPlugin() {
         }
         event<PlayerToggleSneakEvent> {
             if (it.isSneaking) {
+                var animationhandler: CrateAnimationManager? = null
                 for (crate in CrateHandler.crates.values) {
                     if (crate is OpenableCrate) {
-                        crate.animationManager.forceStopAnimation(it.player)
+                        if(crate.animationManager.playingAnimations.containsKey(it.player.uniqueId)) {
+                            animationhandler = crate.animationManager
+                            break
+                        }
                     }
                 }
+                if (animationhandler != null) {
+                    animationhandler.skipAnimation(it.player)
+                    InteractionInputHandler.onSneak(it)
+                }
+
             }
         }
 
@@ -145,6 +163,26 @@ class CratesPlugin : AbstractCratesPlugin() {
                 }
                 else -> {
                     inv.future.complete(RerollManager.RerollResult(false))
+                }
+            }
+        }
+
+        packetEvent<PacketReceiveEvent> {
+            if (packetType == PacketType.Play.Client.INTERACT_ENTITY) {
+                val packet = WrapperPlayClientInteractEntity(this)
+                val player = player() ?: return@packetEvent
+                var isInAnimation = false
+                for (crate in CrateHandler.crates.values) {
+                    if (crate is OpenableCrate) {
+                        if(crate.animationManager.playingAnimations.containsKey(player.uniqueId)) {
+                            isInAnimation = true
+                            break
+                        }
+                    }
+                }
+                if (isInAnimation) {
+                    isCancelled = true
+                    InteractionInputHandler.onInteract(this,packet)
                 }
             }
         }

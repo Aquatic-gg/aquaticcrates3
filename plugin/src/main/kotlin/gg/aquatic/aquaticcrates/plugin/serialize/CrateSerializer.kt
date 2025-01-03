@@ -23,6 +23,7 @@ import gg.aquatic.aquaticcrates.plugin.interact.action.CratePreviewAction
 import gg.aquatic.aquaticcrates.plugin.milestone.MilestoneManagerImpl
 import gg.aquatic.aquaticcrates.plugin.preview.CratePreviewMenuSettings
 import gg.aquatic.aquaticcrates.plugin.reroll.RerollManagerImpl
+import gg.aquatic.aquaticcrates.plugin.reroll.input.interaction.InteractionRerollInput
 import gg.aquatic.aquaticcrates.plugin.reroll.input.inventory.InventoryRerollInput
 import gg.aquatic.aquaticcrates.plugin.restriction.OpenData
 import gg.aquatic.aquaticcrates.plugin.reward.RewardManagerImpl
@@ -56,7 +57,8 @@ object CrateSerializer : BaseSerializer() {
         "cinematic" to CinematicAnimationSettings.Companion,
     )
     val rerollInputSerializers = hashMapOf(
-        "inventory" to InventoryRerollInput.Companion
+        "inventory" to InventoryRerollInput.Companion,
+        "interaction" to InteractionRerollInput.Companion
     )
 
     fun loadCrates(): HashMap<String, Crate> {

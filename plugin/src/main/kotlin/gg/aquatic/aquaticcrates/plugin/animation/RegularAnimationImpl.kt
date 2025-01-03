@@ -148,6 +148,7 @@ class RegularAnimationImpl(
     }
 
     override fun skip() {
+        if (state == State.ROLLING || state == State.FINISHED) return
         tryReroll()
     }
 }
