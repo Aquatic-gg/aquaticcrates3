@@ -12,8 +12,7 @@ class AHologram(
     val settings: AquaticHologramSettings
 ): Hologram(location) {
 
-
-    var lines: MutableSet<HologramLine> = settings.lines.toMutableSet()
+    var lines: MutableSet<HologramLine> = settings.lines.map { it.create() }.toMutableSet()
         private set
 
     private var audience: AquaticAudience = GlobalAudience()

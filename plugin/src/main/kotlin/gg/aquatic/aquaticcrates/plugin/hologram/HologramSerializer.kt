@@ -1,6 +1,8 @@
 package gg.aquatic.aquaticcrates.plugin.hologram
 
 import gg.aquatic.aquaticcrates.api.hologram.AquaticHologramSettings
+import gg.aquatic.waves.hologram.HologramSerializer
+import gg.aquatic.waves.util.getSectionList
 import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.util.Vector
 
@@ -18,6 +20,9 @@ object HologramSerializer {
             offset[1].toDouble(),
             offset[2].toDouble()
         )
+
+        val lines = HologramSerializer.loadLines(section.getSectionList("lines"))
+
         /*
         val lines = HologramSerializer.load(section.getSectionList("lines"))
         for (line in lines) {
@@ -30,7 +35,7 @@ object HologramSerializer {
         return AquaticHologramSettings(lines, vector)
          */
         return AquaticHologramSettings(
-            HashSet(),
+            lines,
             vector,
         )
     }
