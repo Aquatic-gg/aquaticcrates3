@@ -3,6 +3,7 @@ package gg.aquatic.aquaticcrates.plugin.command
 import gg.aquatic.aquaticcrates.api.crate.CrateHandler
 import gg.aquatic.aquaticcrates.api.crate.OpenableCrate
 import gg.aquatic.aquaticcrates.plugin.crate.BasicCrate
+import gg.aquatic.aquaticcrates.plugin.preview.CratePreviewMenu
 import gg.aquatic.waves.command.ICommand
 import org.bukkit.Bukkit
 import org.bukkit.command.CommandSender
@@ -24,6 +25,29 @@ object CrateCommand : ICommand {
             return
         }
         when (args[1].lowercase()) {
+            "preview" -> {
+                if (args.size < 4) {
+                    sender.sendMessage("Usage: /acrates crate preview <crate> <player>")
+                    return
+                }
+                val crateName = args[2]
+                val crate = CrateHandler.crates[crateName]
+                if (crate == null) {
+                    sender.sendMessage("Crate $crateName not found")
+                    return
+                }
+                if (crate !is BasicCrate) return
+                val playerName = args[3]
+                val player = sender.server.getPlayer(playerName)
+                if (player == null) {
+                    sender.sendMessage("Player $playerName not found")
+                    return
+                }
+
+                val menu = CratePreviewMenu(player, crate, crate.previewMenuSettings.firstOrNull() ?: return, 0)
+                menu.open()
+            }
+
             "give" -> {
                 if (args.size < 3) {
                     sender.sendMessage("Usage: /acrates crate give <crate>")
@@ -128,7 +152,8 @@ object CrateCommand : ICommand {
             return listOf(
                 "give",
                 "open",
-                "massopen"
+                "massopen",
+                "preview"
             )
         }
         return when (args[0].lowercase()) {
@@ -137,6 +162,14 @@ object CrateCommand : ICommand {
                     CrateHandler.crates.keys.toList()
                 } else {
                     listOf()
+                }
+            }
+
+            "preview" -> {
+                if (args.size == 2) {
+                    CrateHandler.crates.keys.toList()
+                } else {
+                    Bukkit.getOnlinePlayers().map { it.name }
                 }
             }
 

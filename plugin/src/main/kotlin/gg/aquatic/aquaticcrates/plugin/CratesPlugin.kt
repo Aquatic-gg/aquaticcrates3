@@ -43,11 +43,8 @@ import gg.aquatic.waves.registry.registerRequirement
 import gg.aquatic.waves.shadow.com.retrooper.packetevents.event.PacketReceiveEvent
 import gg.aquatic.waves.shadow.com.retrooper.packetevents.protocol.packettype.PacketType
 import gg.aquatic.waves.shadow.com.retrooper.packetevents.wrapper.play.client.WrapperPlayClientInteractEntity
-import gg.aquatic.waves.util.Config
+import gg.aquatic.waves.util.*
 import gg.aquatic.waves.util.event.event
-import gg.aquatic.waves.util.packetEvent
-import gg.aquatic.waves.util.player
-import gg.aquatic.waves.util.runAsyncTimer
 import org.bukkit.Bukkit
 import org.bukkit.event.player.PlayerQuitEvent
 import org.bukkit.event.player.PlayerToggleSneakEvent
@@ -203,7 +200,7 @@ class CratesPlugin : AbstractCratesPlugin() {
     }
 
     private fun startTicker() {
-        runAsyncTimer(1, 1) {
+        runSyncTimer(1, 1) {
             for ((_, crate) in CrateHandler.crates) {
                 if (crate is OpenableCrate) {
                     crate.animationManager.tick()

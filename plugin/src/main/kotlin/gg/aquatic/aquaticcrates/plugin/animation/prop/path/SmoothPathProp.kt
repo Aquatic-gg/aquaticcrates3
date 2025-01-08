@@ -3,6 +3,7 @@ package gg.aquatic.aquaticcrates.plugin.animation.prop.path
 import gg.aquatic.aquaticcrates.api.animation.Animation
 import gg.aquatic.aquaticcrates.api.animation.prop.AnimationProp
 import gg.aquatic.aquaticcrates.plugin.animation.prop.MovableAnimationProp
+import gg.aquatic.waves.util.runAsync
 import org.bukkit.util.Vector
 import java.util.TreeMap
 
@@ -16,14 +17,16 @@ class SmoothPathProp(
     override val boundProps: MutableMap<MovableAnimationProp, PathBoundProperties> = HashMap()
     var tick = 0
     override fun tick() {
-        val point = points[tick] ?: return
-        currentPoint = point
+        runAsync {
+            val point = points[tick] ?: return@runAsync
+            currentPoint = point
 
-        for ((prop, _) in boundProps) {
-            prop.processPath(this, point)
+            for ((prop, _) in boundProps) {
+                prop.processPath(this, point)
+            }
+
+            tick++
         }
-
-        tick++
     }
 
     override fun onAnimationEnd() {
