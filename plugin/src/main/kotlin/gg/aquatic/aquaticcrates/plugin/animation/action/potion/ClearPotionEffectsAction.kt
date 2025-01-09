@@ -17,7 +17,10 @@ class ClearPotionEffectsAction: AbstractAction<PlayerBoundAnimation>() {
         args: Map<String, Any?>,
         textUpdater: (PlayerBoundAnimation, String) -> String
     ) {
-        TODO("Not yet implemented")
+        val potions = args["potions"] as? List<PotionEffectType> ?: listOf()
+        for (type in potions) {
+            binder.player.removePotionEffect(type)
+        }
     }
 
     class PotionsArgument(
@@ -31,10 +34,10 @@ class ClearPotionEffectsAction: AbstractAction<PlayerBoundAnimation>() {
         }
 
         companion object : AbstractObjectArgumentSerializer<List<PotionEffectType>?>() {
-            override fun load(section: ConfigurationSection, id: String): List<PotionEffectType>? {
+            override fun load(section: ConfigurationSection, id: String): List<PotionEffectType> {
                 val list = mutableListOf<PotionEffectType>()
                 for (s in section.getStringList(id)) {
-                    PotionEffectType.getByName(s) ?: continue
+                    list += PotionEffectType.getByName(s) ?: continue
                 }
                 return list
             }

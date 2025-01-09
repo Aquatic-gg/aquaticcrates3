@@ -45,6 +45,8 @@ interface MovableAnimationProp {
             val offset = properties.offset
 
             val pointVector = Vector(po.x, po.y, po.z)
+                .rotateAroundY(-toRadians(currentPoint.yaw.toDouble()))
+                .rotateAroundX(-toRadians(currentPoint.pitch.toDouble()))
 
             var yaw: Float
             var pitch: Float
@@ -68,9 +70,11 @@ interface MovableAnimationProp {
                     pitch
                 )
             } else {
-                val newV = pointVector.clone().add(offset.vector)
-                    .rotateAroundY(-toRadians(po.yaw).toDouble())
-                    .rotateAroundX(-toRadians(po.pitch).toDouble())
+                val newV = pointVector.clone().add(
+                    offset.vector
+                        .rotateAroundY(-toRadians(po.yaw).toDouble())
+                        .rotateAroundX(-toRadians(po.pitch).toDouble())
+                )
                 val x = newV.x + currentPoint.x
                 val y = newV.y + currentPoint.y
                 val z = newV.z + currentPoint.z
