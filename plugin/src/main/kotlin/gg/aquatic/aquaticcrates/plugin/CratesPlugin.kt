@@ -15,6 +15,7 @@ import gg.aquatic.aquaticcrates.plugin.animation.action.entity.UpdateEntityPrope
 import gg.aquatic.aquaticcrates.plugin.animation.action.inventory.CloseInventoryAction
 import gg.aquatic.aquaticcrates.plugin.animation.action.inventory.OpenInventoryAction
 import gg.aquatic.aquaticcrates.plugin.animation.action.inventory.SetInventoryItemsAction
+import gg.aquatic.aquaticcrates.plugin.animation.action.inventory.SetInventoryTitleAction
 import gg.aquatic.aquaticcrates.plugin.animation.action.model.HideModelAction
 import gg.aquatic.aquaticcrates.plugin.animation.action.model.PlayModelAnimationAction
 import gg.aquatic.aquaticcrates.plugin.animation.action.model.ShowModelAction
@@ -279,6 +280,7 @@ class CratesPlugin : AbstractCratesPlugin() {
         WavesRegistry.registerAction("push-player", PushPlayerAction())
         WavesRegistry.registerAction("open-inventory", OpenInventoryAction())
         WavesRegistry.registerAction("set-inventory-items", SetInventoryItemsAction())
+        WavesRegistry.registerAction("set-inventory-title", SetInventoryTitleAction())
         WavesRegistry.registerAction("close-inventory", CloseInventoryAction())
 
         // Interaction Actions
