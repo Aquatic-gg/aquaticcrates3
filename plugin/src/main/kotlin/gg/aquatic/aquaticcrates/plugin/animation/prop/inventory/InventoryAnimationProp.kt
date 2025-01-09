@@ -47,6 +47,6 @@ class InventoryAnimationProp(
     }
 
     override fun onAnimationEnd() {
-        animation.player.closeInventory()
+        menu.close()
     }
 }
