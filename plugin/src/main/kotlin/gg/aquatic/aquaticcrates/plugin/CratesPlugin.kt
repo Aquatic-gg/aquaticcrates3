@@ -244,6 +244,7 @@ class CratesPlugin : AbstractCratesPlugin() {
         WavesRegistry.registerAction("bind-path", BindPathAction())
         WavesRegistry.registerAction("title", TitleAction())
         WavesRegistry.registerAction("string-deobfuscation", StringDeobfuscationAction())
+        WavesRegistry.registerAction("push-player", PushPlayerAction())
 
         // Interaction Actions
         WavesRegistry.registerAction("open-crate", CrateOpenAction())
