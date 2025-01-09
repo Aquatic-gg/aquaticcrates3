@@ -6,6 +6,8 @@ import gg.aquatic.aquaticcrates.api.animation.crate.CrateAnimationManager
 import gg.aquatic.aquaticcrates.api.animation.prop.AnimationProp
 import gg.aquatic.aquaticcrates.api.crate.OpenableCrate
 import gg.aquatic.aquaticcrates.api.reward.RolledReward
+import gg.aquatic.aquaticcrates.plugin.animation.prop.inventory.AnimationMenu
+import gg.aquatic.aquaticcrates.plugin.animation.prop.inventory.InventoryAnimationProp
 import gg.aquatic.waves.util.audience.AquaticAudience
 import gg.aquatic.waves.util.executeActions
 import gg.aquatic.waves.util.generic.ConfiguredExecutableObject
@@ -94,6 +96,9 @@ class RegularAnimationImpl(
             tick()
             return
         }
+        val animationMenu = props["inventory"] as? InventoryAnimationProp
+        animationMenu?.menu?.close()
+
         updateState(State.ROLLING)
         usedRerolls++
         rerollManager.openReroll(player, rewards).thenAccept { result ->

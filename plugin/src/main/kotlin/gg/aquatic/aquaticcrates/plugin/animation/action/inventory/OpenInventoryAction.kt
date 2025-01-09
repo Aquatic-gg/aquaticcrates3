@@ -31,6 +31,9 @@ class OpenInventoryAction : AbstractAction<PlayerBoundAnimation>() {
             binder,
             title, size, items
         )
+        val animationMenu = binder.props["inventory"] as? InventoryAnimationProp
+        animationMenu?.menu?.close()
+
         binder.props["inventory"] = prop
         prop.menu.open()
     }
