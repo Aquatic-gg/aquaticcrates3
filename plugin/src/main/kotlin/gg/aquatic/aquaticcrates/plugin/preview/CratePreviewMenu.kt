@@ -7,10 +7,10 @@ import gg.aquatic.waves.menu.component.Button
 import gg.aquatic.waves.util.decimals
 import gg.aquatic.waves.util.item.modifyFastMeta
 import gg.aquatic.waves.util.toMMComponent
+import gg.aquatic.waves.util.toMMString
 import gg.aquatic.waves.util.updatePAPIPlaceholders
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.TextDecoration
-import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
@@ -21,7 +21,7 @@ class CratePreviewMenu(
     val settings: CratePreviewMenuSettings,
     val page: Int
 ) : PrivateAquaticMenu(
-    settings.invSettings.title,
+    settings.invSettings.title.toMMString().updatePAPIPlaceholders(player).toMMComponent(),
     settings.invSettings.type,
     player
 ) {

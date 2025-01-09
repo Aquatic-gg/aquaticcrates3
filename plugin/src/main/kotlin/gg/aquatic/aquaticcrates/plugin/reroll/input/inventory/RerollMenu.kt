@@ -8,6 +8,8 @@ import gg.aquatic.waves.menu.SlotSelection
 import gg.aquatic.waves.menu.component.Button
 import gg.aquatic.waves.shadow.com.retrooper.packetevents.wrapper.play.server.WrapperPlayServerCloseWindow
 import gg.aquatic.waves.util.runSync
+import gg.aquatic.waves.util.toMMComponent
+import gg.aquatic.waves.util.toMMString
 import gg.aquatic.waves.util.updatePAPIPlaceholders
 import org.bukkit.Material
 import org.bukkit.entity.Player
@@ -20,7 +22,7 @@ class RerollMenu(
     val settings: RerollInventorySettings,
     val future: CompletableFuture<RerollManager.RerollResult>
 ) : PrivateAquaticMenu(
-    settings.inventorySettings.title,
+    settings.inventorySettings.title.toMMString().updatePAPIPlaceholders(player).toMMComponent(),
     settings.inventorySettings.type,
     player
 ) {

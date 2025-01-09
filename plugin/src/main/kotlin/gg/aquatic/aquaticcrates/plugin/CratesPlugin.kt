@@ -12,6 +12,7 @@ import gg.aquatic.aquaticcrates.plugin.animation.action.block.SetMultiblockActio
 import gg.aquatic.aquaticcrates.plugin.animation.action.bossbar.*
 import gg.aquatic.aquaticcrates.plugin.animation.action.entity.ShowEntityAction
 import gg.aquatic.aquaticcrates.plugin.animation.action.entity.UpdateEntityPropertiesAction
+import gg.aquatic.aquaticcrates.plugin.animation.action.inventory.OpenInventoryAction
 import gg.aquatic.aquaticcrates.plugin.animation.action.model.HideModelAction
 import gg.aquatic.aquaticcrates.plugin.animation.action.model.PlayModelAnimationAction
 import gg.aquatic.aquaticcrates.plugin.animation.action.model.ShowModelAction
@@ -210,11 +211,17 @@ class CratesPlugin : AbstractCratesPlugin() {
 
     private fun load(): CompletableFuture<Void> {
         loading = true
-        return runAsync {
+
+        try {
             Messages.load()
             CrateHandler.crates += CrateSerializer.loadCrates()
             CrateHandler.loadSpawnedCrates(spawnedCratesConfig)
-            loading = false
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        loading = false
+
+        return runAsync {
         }.exceptionally {
             it.printStackTrace()
             null
@@ -245,6 +252,7 @@ class CratesPlugin : AbstractCratesPlugin() {
         WavesRegistry.registerAction("title", TitleAction())
         WavesRegistry.registerAction("string-deobfuscation", StringDeobfuscationAction())
         WavesRegistry.registerAction("push-player", PushPlayerAction())
+        WavesRegistry.registerAction("open-inventory", OpenInventoryAction())
 
         // Interaction Actions
         WavesRegistry.registerAction("open-crate", CrateOpenAction())
