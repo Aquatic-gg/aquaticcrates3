@@ -22,6 +22,8 @@ import gg.aquatic.aquaticcrates.plugin.animation.action.model.ShowModelAction
 import gg.aquatic.aquaticcrates.plugin.animation.action.path.BindPathAction
 import gg.aquatic.aquaticcrates.plugin.animation.action.path.LinearPathAction
 import gg.aquatic.aquaticcrates.plugin.animation.action.path.SmoothPathAction
+import gg.aquatic.aquaticcrates.plugin.animation.action.potion.ClearPotionEffectsAction
+import gg.aquatic.aquaticcrates.plugin.animation.action.potion.PotionEffectsAction
 import gg.aquatic.aquaticcrates.plugin.animation.condition.CustomCondition
 import gg.aquatic.aquaticcrates.plugin.animation.prop.inventory.AnimationMenu
 import gg.aquatic.aquaticcrates.plugin.awaiters.AbstractAwaiter
@@ -42,7 +44,6 @@ import gg.aquatic.waves.command.AquaticBaseCommand
 import gg.aquatic.waves.command.register
 import gg.aquatic.waves.inventory.InventoryManager
 import gg.aquatic.waves.inventory.event.AsyncPacketInventoryCloseEvent
-import gg.aquatic.waves.menu.MenuHandler
 import gg.aquatic.waves.profile.ProfilesModule
 import gg.aquatic.waves.registry.WavesRegistry
 import gg.aquatic.waves.registry.registerAction
@@ -282,6 +283,8 @@ class CratesPlugin : AbstractCratesPlugin() {
         WavesRegistry.registerAction("set-inventory-items", SetInventoryItemsAction())
         WavesRegistry.registerAction("set-inventory-title", SetInventoryTitleAction())
         WavesRegistry.registerAction("close-inventory", CloseInventoryAction())
+        WavesRegistry.registerAction("add-potion-effects", PotionEffectsAction())
+        WavesRegistry.registerAction("remove-potion-effects", ClearPotionEffectsAction())
 
         // Interaction Actions
         WavesRegistry.registerAction("open-crate", CrateOpenAction())
