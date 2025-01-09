@@ -13,6 +13,7 @@ import gg.aquatic.aquaticcrates.plugin.animation.action.bossbar.*
 import gg.aquatic.aquaticcrates.plugin.animation.action.entity.ShowEntityAction
 import gg.aquatic.aquaticcrates.plugin.animation.action.entity.UpdateEntityPropertiesAction
 import gg.aquatic.aquaticcrates.plugin.animation.action.inventory.OpenInventoryAction
+import gg.aquatic.aquaticcrates.plugin.animation.action.inventory.SetInventoryItemsAction
 import gg.aquatic.aquaticcrates.plugin.animation.action.model.HideModelAction
 import gg.aquatic.aquaticcrates.plugin.animation.action.model.PlayModelAnimationAction
 import gg.aquatic.aquaticcrates.plugin.animation.action.model.ShowModelAction
@@ -253,6 +254,7 @@ class CratesPlugin : AbstractCratesPlugin() {
         WavesRegistry.registerAction("string-deobfuscation", StringDeobfuscationAction())
         WavesRegistry.registerAction("push-player", PushPlayerAction())
         WavesRegistry.registerAction("open-inventory", OpenInventoryAction())
+        WavesRegistry.registerAction("set-inventory-items", SetInventoryItemsAction())
 
         // Interaction Actions
         WavesRegistry.registerAction("open-crate", CrateOpenAction())
