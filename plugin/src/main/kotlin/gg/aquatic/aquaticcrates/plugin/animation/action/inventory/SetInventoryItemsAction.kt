@@ -2,7 +2,7 @@ package gg.aquatic.aquaticcrates.plugin.animation.action.inventory
 
 import gg.aquatic.aquaticcrates.api.animation.PlayerBoundAnimation
 import gg.aquatic.aquaticcrates.plugin.animation.action.inventory.OpenInventoryAction.ItemsArgument
-import gg.aquatic.aquaticcrates.plugin.animation.prop.InventoryAnimationProp
+import gg.aquatic.aquaticcrates.plugin.animation.prop.inventory.InventoryAnimationProp
 import gg.aquatic.waves.item.AquaticItem
 import gg.aquatic.waves.menu.component.Button
 import gg.aquatic.waves.util.action.AbstractAction
@@ -32,7 +32,7 @@ class SetInventoryItemsAction: AbstractAction<PlayerBoundAnimation>() {
                 null,
                 { _ -> true },
                 { str, _ -> binder.updatePlaceholders(str) },
-                { e -> }
+                { _ -> }
             )
             menu.menu.components[component.id] = component
             menu.menu.updateComponent(component)

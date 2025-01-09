@@ -1,10 +1,9 @@
-package gg.aquatic.aquaticcrates.plugin.animation.prop
+package gg.aquatic.aquaticcrates.plugin.animation.prop.inventory
 
 import gg.aquatic.aquaticcrates.api.animation.PlayerBoundAnimation
 import gg.aquatic.aquaticcrates.api.animation.prop.PlayerBoundAnimationProp
 import gg.aquatic.waves.inventory.InventoryType
 import gg.aquatic.waves.item.AquaticItem
-import gg.aquatic.waves.menu.PrivateAquaticMenu
 import gg.aquatic.waves.menu.component.Button
 import gg.aquatic.waves.util.toMMComponent
 
@@ -15,7 +14,7 @@ class InventoryAnimationProp(
     items: Map<Int, AquaticItem>
 ) : PlayerBoundAnimationProp() {
 
-    val menu = PrivateAquaticMenu(
+    val menu = AnimationMenu(
         animation.updatePlaceholders(title).toMMComponent(),
         when (size) {
             54 -> InventoryType.GENERIC9X6

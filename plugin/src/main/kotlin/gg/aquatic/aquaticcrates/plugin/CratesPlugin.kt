@@ -21,6 +21,7 @@ import gg.aquatic.aquaticcrates.plugin.animation.action.path.BindPathAction
 import gg.aquatic.aquaticcrates.plugin.animation.action.path.LinearPathAction
 import gg.aquatic.aquaticcrates.plugin.animation.action.path.SmoothPathAction
 import gg.aquatic.aquaticcrates.plugin.animation.condition.CustomCondition
+import gg.aquatic.aquaticcrates.plugin.animation.prop.inventory.AnimationMenu
 import gg.aquatic.aquaticcrates.plugin.awaiters.AbstractAwaiter
 import gg.aquatic.aquaticcrates.plugin.awaiters.IAAwaiter
 import gg.aquatic.aquaticcrates.plugin.awaiters.MEGAwaiter
@@ -29,6 +30,7 @@ import gg.aquatic.aquaticcrates.plugin.command.KeyCommand
 import gg.aquatic.aquaticcrates.plugin.command.ReloadCommand
 import gg.aquatic.aquaticcrates.plugin.interact.action.*
 import gg.aquatic.aquaticcrates.plugin.misc.Messages
+import gg.aquatic.aquaticcrates.plugin.preview.CratePreviewMenu
 import gg.aquatic.aquaticcrates.plugin.reroll.input.interaction.InteractionInputHandler
 import gg.aquatic.aquaticcrates.plugin.reroll.input.inventory.InventoryRerollInput
 import gg.aquatic.aquaticcrates.plugin.reroll.input.inventory.RerollMenu
@@ -36,7 +38,9 @@ import gg.aquatic.aquaticcrates.plugin.restriction.impl.*
 import gg.aquatic.aquaticcrates.plugin.serialize.CrateSerializer
 import gg.aquatic.waves.command.AquaticBaseCommand
 import gg.aquatic.waves.command.register
+import gg.aquatic.waves.inventory.InventoryManager
 import gg.aquatic.waves.inventory.event.AsyncPacketInventoryCloseEvent
+import gg.aquatic.waves.menu.MenuHandler
 import gg.aquatic.waves.profile.ProfilesModule
 import gg.aquatic.waves.registry.WavesRegistry
 import gg.aquatic.waves.registry.registerAction
@@ -47,6 +51,8 @@ import gg.aquatic.waves.shadow.com.retrooper.packetevents.wrapper.play.client.Wr
 import gg.aquatic.waves.util.*
 import gg.aquatic.waves.util.event.event
 import org.bukkit.Bukkit
+import org.bukkit.entity.Player
+import org.bukkit.event.inventory.InventoryInteractEvent
 import org.bukkit.event.player.PlayerQuitEvent
 import org.bukkit.event.player.PlayerToggleSneakEvent
 import org.bukkit.event.world.WorldLoadEvent
@@ -99,7 +105,7 @@ class CratesPlugin : AbstractCratesPlugin() {
         if (awaiters.isEmpty()) {
             load()
         }
-        
+
         event<WorldLoadEvent> {
             CrateHandler.onWorldLoad(it.world)
         }
@@ -116,7 +122,7 @@ class CratesPlugin : AbstractCratesPlugin() {
                 var animationhandler: CrateAnimationManager? = null
                 for (crate in CrateHandler.crates.values) {
                     if (crate is OpenableCrate) {
-                        if(crate.animationManager.playingAnimations.containsKey(it.player.uniqueId)) {
+                        if (crate.animationManager.playingAnimations.containsKey(it.player.uniqueId)) {
                             animationhandler = crate.animationManager
                             break
                         }
@@ -147,18 +153,35 @@ class CratesPlugin : AbstractCratesPlugin() {
 
         event<AsyncPacketInventoryCloseEvent> {
             val inv = it.inventory
+            if (inv is AnimationMenu) {
+                if (!inv.closed) inv.open()
+                return@event
+            }
             if (inv !is RerollMenu) return@event
             if (inv.future.isDone) return@event
-            when(inv.settings.onClose) {
+            when (inv.settings.onClose) {
                 InventoryRerollInput.Action.CANCEL -> {
                     inv.open()
                 }
+
                 InventoryRerollInput.Action.REROLL -> {
                     inv.future.complete(RerollManager.RerollResult(true))
                 }
+
                 else -> {
                     inv.future.complete(RerollManager.RerollResult(false))
                 }
+            }
+        }
+
+        event<InventoryInteractEvent> {
+            val player = it.whoClicked as? Player ?: return@event
+            val inv = InventoryManager.openedInventories[player] ?: return@event
+
+            if (inv is AnimationMenu || inv is RerollMenu || inv is CratePreviewMenu) {
+                inv.updateItems(player)
+                it.isCancelled = true
+                return@event
             }
         }
 
@@ -169,7 +192,7 @@ class CratesPlugin : AbstractCratesPlugin() {
                 var isInAnimation = false
                 for (crate in CrateHandler.crates.values) {
                     if (crate is OpenableCrate) {
-                        if(crate.animationManager.playingAnimations.containsKey(player.uniqueId)) {
+                        if (crate.animationManager.playingAnimations.containsKey(player.uniqueId)) {
                             isInAnimation = true
                             break
                         }
@@ -177,7 +200,7 @@ class CratesPlugin : AbstractCratesPlugin() {
                 }
                 if (isInAnimation) {
                     isCancelled = true
-                    InteractionInputHandler.onInteract(this,packet)
+                    InteractionInputHandler.onInteract(this, packet)
                 }
             }
         }

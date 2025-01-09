@@ -1,7 +1,7 @@
 package gg.aquatic.aquaticcrates.plugin.animation.action.inventory
 
 import gg.aquatic.aquaticcrates.api.animation.PlayerBoundAnimation
-import gg.aquatic.aquaticcrates.plugin.animation.prop.InventoryAnimationProp
+import gg.aquatic.aquaticcrates.plugin.animation.prop.inventory.InventoryAnimationProp
 import gg.aquatic.waves.item.AquaticItem
 import gg.aquatic.waves.menu.MenuSerializer
 import gg.aquatic.waves.util.action.AbstractAction
