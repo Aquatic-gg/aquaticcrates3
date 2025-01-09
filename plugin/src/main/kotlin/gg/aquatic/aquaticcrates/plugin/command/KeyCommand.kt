@@ -3,6 +3,7 @@ package gg.aquatic.aquaticcrates.plugin.command
 import gg.aquatic.aquaticcrates.api.crate.CrateHandler
 import gg.aquatic.aquaticcrates.api.crate.OpenableCrate
 import gg.aquatic.aquaticcrates.api.player.crateEntry
+import gg.aquatic.aquaticcrates.plugin.misc.Messages
 import gg.aquatic.waves.command.ICommand
 import gg.aquatic.waves.profile.toAquaticPlayer
 import org.bukkit.Bukkit
@@ -11,6 +12,7 @@ import org.bukkit.command.CommandSender
 object KeyCommand : ICommand {
     override fun run(sender: CommandSender, args: Array<out String>) {
         if (!sender.hasPermission("aquaticcrates.admin")) {
+            Messages.NO_PERMISSION.message.send(sender)
             return
         }
         // acrates key give <crate> <player> <amount> [-s] [-off]
@@ -30,12 +32,12 @@ object KeyCommand : ICommand {
                 val crateId = args[2]
                 val crate = CrateHandler.crates[crateId]
                 if (crate == null) {
-                    sender.sendMessage("Crate $crateId not found")
+                    Messages.UNKNOWN_CRATE.message.send(sender)
                     return
                 }
                 val playerName = args[3]
                 val amount = args[4].toIntOrNull() ?: run {
-                    sender.sendMessage("Invalid amount specified.")
+                    Messages.UNKNOWN_NUMBER.message.send(sender)
                     return
                 }
 
@@ -50,7 +52,7 @@ object KeyCommand : ICommand {
                         sender.sendMessage("Trying to give the key to offline player...")
                         return
                     }
-                    sender.sendMessage("Player $playerName not found")
+                    Messages.UNKNOWN_PLAYER.message.send(sender)
                     return
                 }
 
@@ -82,11 +84,11 @@ object KeyCommand : ICommand {
                 val crateId = args[2]
                 val crate = CrateHandler.crates[crateId]
                 if (crate == null) {
-                    sender.sendMessage("Crate $crateId not found")
+                    Messages.UNKNOWN_CRATE.message.send(sender)
                     return
                 }
                 val amount = args[3].toIntOrNull() ?: run {
-                    sender.sendMessage("Invalid amount specified.")
+                    Messages.UNKNOWN_NUMBER.message.send(sender)
                     return
                 }
 

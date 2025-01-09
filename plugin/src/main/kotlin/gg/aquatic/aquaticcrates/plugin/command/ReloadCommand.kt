@@ -1,12 +1,16 @@
 package gg.aquatic.aquaticcrates.plugin.command
 
 import gg.aquatic.aquaticcrates.plugin.CratesPlugin
+import gg.aquatic.aquaticcrates.plugin.misc.Messages
 import gg.aquatic.waves.command.ICommand
 import org.bukkit.command.CommandSender
 
 object ReloadCommand : ICommand{
     override fun run(sender: CommandSender, args: Array<out String>) {
-        if (!sender.hasPermission("aquaticcrates.admin")) return
+        if (!sender.hasPermission("aquaticcrates.admin")) {
+            Messages.NO_PERMISSION.message.send(sender)
+            return
+        }
         sender.sendMessage("Reloading...")
         (CratesPlugin.INSTANCE as CratesPlugin).reloadPlugin().thenAccept {
             if (!it) {

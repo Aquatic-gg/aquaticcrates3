@@ -13,7 +13,7 @@ import org.bukkit.entity.Player
 object CrateCommand : ICommand {
     override fun run(sender: CommandSender, args: Array<out String>) {
         if (!sender.hasPermission("aquaticcrates.admin")) {
-            if (sender is Player) Messages.NO_PERMISSION.message.send(sender)
+            Messages.NO_PERMISSION.message.send(sender)
             return
         }
         if (sender !is Player) {
@@ -35,14 +35,14 @@ object CrateCommand : ICommand {
                 val crateName = args[2]
                 val crate = CrateHandler.crates[crateName]
                 if (crate == null) {
-                    sender.sendMessage("Crate $crateName not found")
+                    Messages.UNKNOWN_CRATE.message.send(sender)
                     return
                 }
                 if (crate !is BasicCrate) return
                 val playerName = args[3]
                 val player = sender.server.getPlayer(playerName)
                 if (player == null) {
-                    sender.sendMessage("Player $playerName not found")
+                    Messages.UNKNOWN_PLAYER.message.send(sender)
                     return
                 }
 
@@ -58,7 +58,7 @@ object CrateCommand : ICommand {
                 val crateName = args[2]
                 val crate = CrateHandler.crates[crateName]
                 if (crate == null) {
-                    sender.sendMessage("Crate $crateName not found")
+                    Messages.UNKNOWN_CRATE.message.send(sender)
                     return
                 }
 
@@ -74,14 +74,14 @@ object CrateCommand : ICommand {
                 val crateName = args[2]
                 val crate = CrateHandler.crates[crateName]
                 if (crate == null) {
-                    sender.sendMessage("Crate $crateName not found")
+                    Messages.UNKNOWN_CRATE.message.send(sender)
                     return
                 }
                 if (crate !is BasicCrate) return
                 val playerName = args[3]
                 val player = sender.server.getPlayer(playerName)
                 if (player == null) {
-                    sender.sendMessage("Player $playerName not found")
+                    Messages.UNKNOWN_PLAYER.message.send(sender)
                     return
                 }
                 val noKey = args.contains("-nokey")
@@ -110,22 +110,22 @@ object CrateCommand : ICommand {
                 val playerName = args[3]
                 val player = Bukkit.getPlayer(playerName)
                 if (player == null) {
-                    sender.sendMessage("Player $playerName not found")
+                    Messages.UNKNOWN_PLAYER.message.send(sender)
                     return
                 }
                 val crateName = args[2]
                 val crate = CrateHandler.crates[crateName]
                 if (crate == null) {
-                    sender.sendMessage("Crate $crateName not found")
+                    Messages.UNKNOWN_CRATE.message.send(sender)
                     return
                 }
                 val amount = args[4].toIntOrNull()
                 if (amount == null) {
-                    sender.sendMessage("Amount must be a number")
+                    Messages.UNKNOWN_NUMBER.message.send(sender)
                     return
                 }
 
-                var noKey = args.contains("-nokey")
+                val noKey = args.contains("-nokey")
                 var threadsAmount = 4
                 if (args.size > 5) {
                     threadsAmount = args[5].toIntOrNull() ?: 4
