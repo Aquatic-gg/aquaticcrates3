@@ -1,6 +1,7 @@
 package gg.aquatic.aquaticcrates.plugin.animation.action.model
 
 import gg.aquatic.aquaticcrates.api.animation.Animation
+import gg.aquatic.aquaticcrates.api.animation.PlayerBoundAnimation
 import gg.aquatic.aquaticcrates.api.util.VectorArgument
 import gg.aquatic.aquaticcrates.plugin.animation.prop.entity.BoundPathObjectArgument
 import gg.aquatic.aquaticcrates.plugin.animation.prop.model.ModelAnimationProp
@@ -40,7 +41,7 @@ class ShowModelAction : AbstractAction<Animation>() {
         val prop = ModelAnimationProp(
             binder,
             model,
-            if (applySkin) binder.player else null,
+            if (applySkin && binder is PlayerBoundAnimation) binder.player else null,
             animation,
             args["location-offset"] as Vector,
             boundPaths

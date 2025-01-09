@@ -1,39 +1,51 @@
 package gg.aquatic.aquaticcrates.api.animation.crate
 
-import gg.aquatic.aquaticcrates.api.animation.Animation
+import gg.aquatic.aquaticcrates.api.animation.PlayerBoundAnimation
+import gg.aquatic.aquaticcrates.api.reward.RolledReward
 import gg.aquatic.waves.util.executeActions
-import gg.aquatic.waves.util.generic.ConfiguredExecutableObject
+import gg.aquatic.waves.util.updatePAPIPlaceholders
 
-abstract class CrateAnimation: Animation() {
+abstract class CrateAnimation: PlayerBoundAnimation() {
 
     abstract val animationManager: CrateAnimationManager
 
     abstract val state: State
 
+    abstract val rewards: MutableList<RolledReward>
 
-    override fun tickPreOpen() {
+    fun tickPreOpen() {
         executeActions(animationManager.animationSettings.preAnimationTasks[tick] ?: return)
     }
 
-    override fun tickOpening() {
+    fun tickOpening() {
         executeActions(animationManager.animationSettings.animationTasks[tick] ?: return)
     }
 
-    override fun tickPostOpen() {
+    fun tickPostOpen() {
         executeActions(animationManager.animationSettings.postAnimationTasks[tick] ?: return)
     }
 
-    open fun executeActions(actions: List<ConfiguredExecutableObject<Animation,Unit>>) {
-        actions.executeActions(this) { _, str ->
-            updatePlaceholders(str)
-            /*
-            var finalString = str.replace("%player%", player.name)
-            for ((i, reward) in rewards.withIndex()) {
-                finalString = finalString.replace("%random-amount:$i",reward.randomAmount.toString())
-            }
-            finalString.updatePAPIPlaceholders(player)
-             */
+    open fun executeActions(actions: CrateAnimationActions) {
+        actions.animationActions.executeActions(this) { _, str -> updatePlaceholders(str) }
+        actions.playerBoundActions.executeActions(this) { _, str -> updatePlaceholders(str) }
+    }
+
+    override fun updatePlaceholders(str: String): String {
+        var finalString = str.updatePAPIPlaceholders(player).replace("%player%", player.name)
+
+        for ((i, reward) in rewards.withIndex()) {
+            finalString = finalString
+                .replace("%random-amount:$i%", reward.randomAmount.toString())
+                .replace("%reward-name:$i%", reward.reward.displayName)
+                .replace("%reward-id:$i%", reward.reward.id)
+                .replace("%reward-chance:$i%", reward.reward.chance.toString())
         }
+
+        for ((_, extraPlaceholder) in extraPlaceholders) {
+            finalString = extraPlaceholder(finalString)
+        }
+
+        return finalString
     }
 
     abstract fun skip()

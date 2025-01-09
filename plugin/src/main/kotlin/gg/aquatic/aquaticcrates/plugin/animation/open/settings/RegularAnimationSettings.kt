@@ -1,12 +1,13 @@
-package gg.aquatic.aquaticcrates.plugin.animation.settings
+package gg.aquatic.aquaticcrates.plugin.animation.open.settings
 
 import gg.aquatic.aquaticcrates.api.animation.Animation
 import gg.aquatic.aquaticcrates.api.animation.crate.AnimationSettingsFactory
+import gg.aquatic.aquaticcrates.api.animation.crate.CrateAnimationActions
 import gg.aquatic.aquaticcrates.api.animation.crate.CrateAnimationManager
 import gg.aquatic.aquaticcrates.api.animation.crate.CrateAnimationSettings
 import gg.aquatic.aquaticcrates.api.crate.CrateHandler
 import gg.aquatic.aquaticcrates.api.reward.RolledReward
-import gg.aquatic.aquaticcrates.plugin.animation.RegularAnimationImpl
+import gg.aquatic.aquaticcrates.plugin.animation.open.RegularAnimationImpl
 import gg.aquatic.waves.util.audience.FilterAudience
 import gg.aquatic.waves.util.audience.GlobalAudience
 import gg.aquatic.waves.util.generic.ConfiguredExecutableObject
@@ -18,13 +19,13 @@ import java.util.*
 import java.util.concurrent.CompletableFuture
 
 class RegularAnimationSettings(
-    override val animationTasks: TreeMap<Int, MutableList<ConfiguredExecutableObject<Animation,Unit>>>,
+    override val animationTasks: TreeMap<Int, CrateAnimationActions>,
     override val animationLength: Int,
     override val preAnimationDelay: Int,
-    override val preAnimationTasks: TreeMap<Int, MutableList<ConfiguredExecutableObject<Animation,Unit>>>,
+    override val preAnimationTasks: TreeMap<Int,CrateAnimationActions>,
     override val postAnimationDelay: Int,
-    override val postAnimationTasks: TreeMap<Int, MutableList<ConfiguredExecutableObject<Animation,Unit>>>,
-    override val finalAnimationTasks: MutableList<ConfiguredExecutableObject<Animation,Unit>>,
+    override val postAnimationTasks: TreeMap<Int, CrateAnimationActions>,
+    override val finalAnimationTasks: CrateAnimationActions,
     override val skippable: Boolean,
     val personal: Boolean,
 ) : CrateAnimationSettings() {

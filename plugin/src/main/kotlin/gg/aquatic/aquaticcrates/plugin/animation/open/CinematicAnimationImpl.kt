@@ -1,13 +1,14 @@
-package gg.aquatic.aquaticcrates.plugin.animation
+package gg.aquatic.aquaticcrates.plugin.animation.open
 
 import gg.aquatic.aquaticcrates.api.animation.Animation
 import gg.aquatic.aquaticcrates.api.animation.crate.CrateAnimation
+import gg.aquatic.aquaticcrates.api.animation.crate.CrateAnimationActions
 import gg.aquatic.aquaticcrates.api.animation.crate.CrateAnimationManager
 import gg.aquatic.aquaticcrates.api.animation.prop.AnimationProp
 import gg.aquatic.aquaticcrates.api.crate.OpenableCrate
 import gg.aquatic.aquaticcrates.api.reward.RolledReward
 import gg.aquatic.aquaticcrates.plugin.animation.prop.CameraAnimationProp
-import gg.aquatic.aquaticcrates.plugin.animation.settings.CinematicAnimationSettings
+import gg.aquatic.aquaticcrates.plugin.animation.open.settings.CinematicAnimationSettings
 import gg.aquatic.waves.util.audience.AquaticAudience
 import gg.aquatic.waves.util.executeActions
 import gg.aquatic.waves.util.generic.ConfiguredExecutableObject
@@ -148,14 +149,6 @@ class CinematicAnimationImpl(
             }
         }
         completionFuture.complete(null)
-
-    }
-
-    override fun executeActions(actions: List<ConfiguredExecutableObject<Animation, Unit>>) {
-        actions.executeActions(this) { _, str ->
-            val finalString = updatePlaceholders(str)
-            finalString
-        }
     }
 
     override fun skip() {

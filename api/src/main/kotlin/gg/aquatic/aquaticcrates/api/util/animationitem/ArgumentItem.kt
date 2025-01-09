@@ -1,6 +1,7 @@
 package gg.aquatic.aquaticcrates.api.util.animationitem
 
 import gg.aquatic.aquaticcrates.api.animation.Animation
+import gg.aquatic.aquaticcrates.api.animation.crate.CrateAnimation
 import gg.aquatic.waves.item.AquaticItem
 import gg.aquatic.waves.util.item.loadFromYml
 import gg.aquatic.waves.util.item.toCustomItem
@@ -15,8 +16,9 @@ class ArgumentItem(
     fun getActualItem(animation: Animation): AquaticItem {
         if (type.startsWith("rewarditem:")) {
             val rewardIndex = type.substringAfter("rewarditem:").toIntOrNull() ?: 0
-            val item = (animation.rewards.getOrNull(rewardIndex) ?: animation.rewards.firstOrNull())?.reward?.item ?: baseItem ?: Material.STONE.toCustomItem()
-            return item
+            return if (animation is CrateAnimation) {
+                (animation.rewards.getOrNull(rewardIndex) ?: animation.rewards.firstOrNull())?.reward?.item ?: baseItem ?: Material.STONE.toCustomItem()
+            } else Material.STONE.toCustomItem()
         }
         return baseItem ?: Material.STONE.toCustomItem()
     }

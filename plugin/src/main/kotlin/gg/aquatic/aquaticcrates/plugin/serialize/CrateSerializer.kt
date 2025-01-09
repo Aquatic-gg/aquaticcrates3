@@ -7,10 +7,10 @@ import gg.aquatic.aquaticcrates.api.openprice.OpenPriceGroup
 import gg.aquatic.aquaticcrates.api.reward.Reward
 import gg.aquatic.aquaticcrates.api.reward.RewardRarity
 import gg.aquatic.aquaticcrates.plugin.CratesPlugin
-import gg.aquatic.aquaticcrates.plugin.animation.AnimationManagerImpl
-import gg.aquatic.aquaticcrates.plugin.animation.settings.CinematicAnimationSettings
-import gg.aquatic.aquaticcrates.plugin.animation.settings.InstantAnimationSettings
-import gg.aquatic.aquaticcrates.plugin.animation.settings.RegularAnimationSettings
+import gg.aquatic.aquaticcrates.plugin.animation.open.AnimationManagerImpl
+import gg.aquatic.aquaticcrates.plugin.animation.open.settings.CinematicAnimationSettings
+import gg.aquatic.aquaticcrates.plugin.animation.open.settings.InstantAnimationSettings
+import gg.aquatic.aquaticcrates.plugin.animation.open.settings.RegularAnimationSettings
 import gg.aquatic.aquaticcrates.plugin.crate.BasicCrate
 import gg.aquatic.aquaticcrates.plugin.crate.KeyImpl
 import gg.aquatic.aquaticcrates.plugin.interact.KeyInteractHandlerImpl

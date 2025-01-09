@@ -79,6 +79,7 @@ class BasicCrate(
                 e.isCancelled = true
                 if (originalEvent is PlayerInteractEvent) {
                     val location = originalEvent.clickedBlock?.location ?: originalEvent.player.location
+                    location.yaw = originalEvent.player.location.yaw - 180
                     if (e.interactType == AquaticItemInteractEvent.InteractType.RIGHT) {
                         runLaterSync(2) {
                             CrateHandler.spawnCrate(this@BasicCrate, location.clone().add(.5, 1.0, .5))
@@ -117,6 +118,7 @@ class BasicCrate(
 
     override fun tryOpen(player: Player, location: Location, spawnedCrate: SpawnedCrate?): CompletableFuture<Void> {
         if (!canBeOpened(player,1,OpenData(player,location,this))) {
+
             return CompletableFuture.completedFuture(null)
         }
         return open(player, location, spawnedCrate)

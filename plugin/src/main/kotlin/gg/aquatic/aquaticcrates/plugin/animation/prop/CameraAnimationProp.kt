@@ -1,7 +1,7 @@
 package gg.aquatic.aquaticcrates.plugin.animation.prop
 
-import gg.aquatic.aquaticcrates.api.animation.Animation
-import gg.aquatic.aquaticcrates.api.animation.prop.AnimationProp
+import gg.aquatic.aquaticcrates.api.animation.PlayerBoundAnimation
+import gg.aquatic.aquaticcrates.api.animation.prop.PlayerBoundAnimationProp
 import gg.aquatic.aquaticcrates.plugin.animation.prop.path.PathBoundProperties
 import gg.aquatic.aquaticcrates.plugin.animation.prop.path.PathProp
 import gg.aquatic.waves.packetevents.EntityDataBuilder
@@ -24,11 +24,11 @@ import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 
 class CameraAnimationProp(
-    override val animation: Animation,
+    override val animation: PlayerBoundAnimation,
     val location: Location,
     override val locationOffset: Vector,
     override val boundPaths: ConcurrentHashMap<PathProp, PathBoundProperties>,
-) : AnimationProp(), MovableAnimationProp {
+) : PlayerBoundAnimationProp(), MovableAnimationProp {
 
     override val processedPaths: MutableSet<PathProp> = ConcurrentHashMap.newKeySet()
     override fun move(location: Location) {

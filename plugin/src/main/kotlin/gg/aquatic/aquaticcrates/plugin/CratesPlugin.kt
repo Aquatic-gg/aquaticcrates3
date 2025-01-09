@@ -1,13 +1,11 @@
 package gg.aquatic.aquaticcrates.plugin
 
 import gg.aquatic.aquaticcrates.api.AbstractCratesPlugin
-import gg.aquatic.aquaticcrates.api.animation.crate.CrateAnimation
 import gg.aquatic.aquaticcrates.api.animation.crate.CrateAnimationManager
 import gg.aquatic.aquaticcrates.api.crate.CrateHandler
 import gg.aquatic.aquaticcrates.api.crate.OpenableCrate
 import gg.aquatic.aquaticcrates.api.player.CrateProfileModule
 import gg.aquatic.aquaticcrates.api.reroll.RerollManager
-import gg.aquatic.aquaticcrates.plugin.animation.AnimationManagerImpl
 import gg.aquatic.aquaticcrates.plugin.animation.action.*
 import gg.aquatic.aquaticcrates.plugin.animation.action.block.SetBlockAction
 import gg.aquatic.aquaticcrates.plugin.animation.action.block.SetMultiblockAction
@@ -28,6 +26,7 @@ import gg.aquatic.aquaticcrates.plugin.command.CrateCommand
 import gg.aquatic.aquaticcrates.plugin.command.KeyCommand
 import gg.aquatic.aquaticcrates.plugin.command.ReloadCommand
 import gg.aquatic.aquaticcrates.plugin.interact.action.*
+import gg.aquatic.aquaticcrates.plugin.misc.Messages
 import gg.aquatic.aquaticcrates.plugin.reroll.input.interaction.InteractionInputHandler
 import gg.aquatic.aquaticcrates.plugin.reroll.input.inventory.InventoryRerollInput
 import gg.aquatic.aquaticcrates.plugin.reroll.input.inventory.RerollMenu
@@ -212,6 +211,7 @@ class CratesPlugin : AbstractCratesPlugin() {
     private fun load(): CompletableFuture<Void> {
         loading = true
         return runAsync {
+            Messages.load()
             CrateHandler.crates += CrateSerializer.loadCrates()
             CrateHandler.loadSpawnedCrates(spawnedCratesConfig)
             loading = false

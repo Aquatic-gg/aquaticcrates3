@@ -1,4 +1,4 @@
-package gg.aquatic.aquaticcrates.plugin.animation
+package gg.aquatic.aquaticcrates.plugin.animation.open
 
 import gg.aquatic.aquaticcrates.api.animation.Animation
 import gg.aquatic.aquaticcrates.api.animation.crate.CrateAnimation
@@ -138,13 +138,6 @@ class RegularAnimationImpl(
         }
         completionFuture.complete(null)
 
-    }
-
-    override fun executeActions(actions: List<ConfiguredExecutableObject<Animation, Unit>>) {
-        actions.executeActions(this) { _, str ->
-            val finalString = updatePlaceholders(str)
-            finalString
-        }
     }
 
     override fun skip() {

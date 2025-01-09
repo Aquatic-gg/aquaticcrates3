@@ -14,7 +14,7 @@ class EntityDataProperty(
         val builder = EntityDataBuilder.ANY
         entity.updateEntity {
             for (datum in data) {
-                datum.apply(builder, prop.animation.player) { p, str ->
+                datum.apply(builder) { str ->
                     prop.animation.updatePlaceholders(str)
                 }
             }

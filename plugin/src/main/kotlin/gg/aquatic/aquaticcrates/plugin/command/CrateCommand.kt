@@ -3,6 +3,7 @@ package gg.aquatic.aquaticcrates.plugin.command
 import gg.aquatic.aquaticcrates.api.crate.CrateHandler
 import gg.aquatic.aquaticcrates.api.crate.OpenableCrate
 import gg.aquatic.aquaticcrates.plugin.crate.BasicCrate
+import gg.aquatic.aquaticcrates.plugin.misc.Messages
 import gg.aquatic.aquaticcrates.plugin.preview.CratePreviewMenu
 import gg.aquatic.waves.command.ICommand
 import org.bukkit.Bukkit
@@ -12,6 +13,7 @@ import org.bukkit.entity.Player
 object CrateCommand : ICommand {
     override fun run(sender: CommandSender, args: Array<out String>) {
         if (!sender.hasPermission("aquaticcrates.admin")) {
+            if (sender is Player) Messages.NO_PERMISSION.message.send(sender)
             return
         }
         if (sender !is Player) {
@@ -140,8 +142,6 @@ object CrateCommand : ICommand {
                 }
             }
         }
-
-
     }
 
     override fun tabComplete(

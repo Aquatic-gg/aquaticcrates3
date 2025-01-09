@@ -1,4 +1,4 @@
-package gg.aquatic.aquaticcrates.plugin.animation
+package gg.aquatic.aquaticcrates.plugin.animation.open
 
 import gg.aquatic.aquaticcrates.api.animation.crate.CrateAnimation
 import gg.aquatic.aquaticcrates.api.animation.crate.CrateAnimationManager
@@ -8,7 +8,6 @@ import gg.aquatic.aquaticcrates.api.reroll.RerollManager
 import org.bukkit.entity.Player
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
-import kotlin.collections.HashMap
 
 class AnimationManagerImpl(
     override val crate: OpenableCrate,
