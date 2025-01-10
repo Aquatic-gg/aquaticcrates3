@@ -35,20 +35,24 @@ class ShowModelAction : AbstractAction<Animation>() {
         val applySkin = args["apply-skin"] as Boolean
         val animation = args["animation"] as String?
         val boundPropertiesFactory =
-            args["bound-paths"] as? ((Animation) -> ConcurrentHashMap<PathProp, PathBoundProperties>) ?: { _ -> ConcurrentHashMap() }
+            args["bound-paths"] as? ((Animation) -> ConcurrentHashMap<PathProp, PathBoundProperties>)
+                ?: { _ -> ConcurrentHashMap() }
 
         val boundPaths = boundPropertiesFactory(binder)
+        var i = 0
         val prop = ModelAnimationProp(
             binder,
             model,
             if (applySkin && binder is PlayerBoundAnimation) binder.player else null,
             animation,
             args["location-offset"] as Vector,
-            boundPaths
+            ConcurrentHashMap(boundPaths.mapValues {
+                i++
+                it.value to i
+            })
         )
 
         for ((path, pathProperties) in boundPaths) {
-            Bukkit.getConsoleSender().sendMessage("Binding model to the animation!")
             path.boundProps += prop to pathProperties
         }
 

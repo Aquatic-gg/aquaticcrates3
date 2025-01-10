@@ -27,7 +27,7 @@ class CameraAnimationProp(
     override val animation: PlayerBoundAnimation,
     val location: Location,
     override val locationOffset: Vector,
-    override val boundPaths: ConcurrentHashMap<PathProp, PathBoundProperties>,
+    override val boundPaths: ConcurrentHashMap<PathProp, Pair<PathBoundProperties, Int>>,
 ) : PlayerBoundAnimationProp(), MovableAnimationProp {
 
     override val processedPaths: MutableSet<PathProp> = ConcurrentHashMap.newKeySet()
@@ -90,7 +90,7 @@ class CameraAnimationProp(
     }
 
     fun smoothTeleport(location: Location) {
-        setTeleportInterpolation(1)
+        setTeleportInterpolation(2)
         val teleportPacket =
             WrapperPlayServerEntityTeleport(entityId, SpigotConversionUtil.fromBukkitLocation(location), false)
         animation.player.toUser().sendPacket(teleportPacket)

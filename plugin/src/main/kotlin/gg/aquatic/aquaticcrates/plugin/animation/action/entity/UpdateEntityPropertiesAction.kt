@@ -22,11 +22,9 @@ class UpdateEntityPropertiesAction : AbstractAction<Animation>() {
 
         val entityProp = binder.props["entity:$id"] as? EntityAnimationProp? ?: return
 
-        runAsync {
-            entityProp.entity.updateEntity {
-                for (property in properties) {
-                    property.apply(this, entityProp)
-                }
+        entityProp.entity.updateEntity {
+            for (property in properties) {
+                property.apply(this, entityProp)
             }
         }
     }

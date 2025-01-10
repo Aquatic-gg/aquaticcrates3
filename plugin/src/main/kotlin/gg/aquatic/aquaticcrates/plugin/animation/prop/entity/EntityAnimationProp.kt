@@ -17,7 +17,7 @@ import java.util.concurrent.ConcurrentHashMap
 class EntityAnimationProp(
     override val animation: Animation,
     override val locationOffset: Vector,
-    override val boundPaths: ConcurrentHashMap<PathProp, PathBoundProperties>,
+    override val boundPaths: ConcurrentHashMap<PathProp, Pair<PathBoundProperties, Int>>,
     entityType: String,
     properties: List<EntityProperty>
 ) : AnimationProp(), MovableAnimationProp {

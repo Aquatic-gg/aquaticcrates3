@@ -227,7 +227,7 @@ class CratesPlugin : AbstractCratesPlugin() {
     }
 
     private fun startTicker() {
-        runSyncTimer(1, 1) {
+        runAsyncTimer(1, 1) {
             for ((_, crate) in CrateHandler.crates) {
                 if (crate is OpenableCrate) {
                     crate.animationManager.tick()

@@ -25,13 +25,17 @@ class BindPathAction : AbstractAction<Animation>(){
         val objectId = args["object-id"] as String
 
         val boundPropertiesFactory = args["bound-paths"] as ((Animation) -> ConcurrentHashMap<PathProp, PathBoundProperties>)? ?: { _ -> ConcurrentHashMap() }
-        val boundPaths = boundPropertiesFactory(binder)
 
         val prop = binder.props[objectId] as? MovableAnimationProp ?: return
+        var i = 0
+        val boundPaths = boundPropertiesFactory(binder)
 
-        prop.boundPaths += boundPaths
+
+        prop.boundPaths += boundPaths.mapValues {
+            i++
+            it.value to prop.boundPaths.size + i
+        }
         for ((path, pathProperties) in boundPaths) {
-            Bukkit.getConsoleSender().sendMessage("Binding entity to the animation!")
             path.boundProps += prop to pathProperties
         }
     }

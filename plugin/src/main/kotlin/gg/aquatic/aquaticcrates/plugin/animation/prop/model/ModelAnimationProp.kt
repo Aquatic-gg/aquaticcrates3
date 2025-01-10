@@ -18,7 +18,7 @@ class ModelAnimationProp(
     val skin: Player?,
     val modelAnimation: String?,
     override val locationOffset: Vector,
-    override val boundPaths: ConcurrentHashMap<PathProp, PathBoundProperties>
+    override val boundPaths: ConcurrentHashMap<PathProp, Pair<PathBoundProperties, Int>>
 ) : AnimationProp(), MovableAnimationProp {
 
     override val processedPaths: MutableSet<PathProp> = ConcurrentHashMap.newKeySet()

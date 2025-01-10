@@ -1,6 +1,5 @@
 package gg.aquatic.aquaticcrates.plugin.reward
 
-import gg.aquatic.aquaticcrates.api.hologram.AquaticHologramSettings
 import gg.aquatic.aquaticcrates.api.player.CrateProfileEntry
 import gg.aquatic.aquaticcrates.api.reward.Reward
 import gg.aquatic.aquaticcrates.api.reward.RewardAction

@@ -4,6 +4,7 @@ import gg.aquatic.aquaticcrates.api.animation.Animation
 import gg.aquatic.aquaticcrates.plugin.animation.prop.path.PathBoundProperties
 import gg.aquatic.aquaticcrates.plugin.animation.prop.path.PathPoint
 import gg.aquatic.aquaticcrates.plugin.animation.prop.path.PathProp
+import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.util.Vector
 import org.joml.Math.toRadians
@@ -13,7 +14,7 @@ interface MovableAnimationProp {
     val locationOffset: Vector
     val animation: Animation
 
-    val boundPaths: ConcurrentHashMap<PathProp, PathBoundProperties>
+    val boundPaths: ConcurrentHashMap<PathProp, Pair<PathBoundProperties, Int>>
     val processedPaths: MutableSet<PathProp>
 
     //val boundLocationOffset: Vector?
@@ -40,13 +41,19 @@ interface MovableAnimationProp {
 
     fun calculatePoint(): PathPoint {
         var currentPoint = PathPoint(0.0, 0.0, 0.0, 0f, 0f)
-        for ((p, properties) in boundPaths) {
+        Bukkit.broadcastMessage(" ")
+        for ((p, pair) in boundPaths.entries.sortedBy { it.value.second }) {
+            Bukkit.broadcastMessage("Index: ${pair.second}")
+            val (properties, _) = pair
             val po = p.currentPoint
             val offset = properties.offset
 
             val pointVector = Vector(po.x, po.y, po.z)
+            /*
                 .rotateAroundY(-toRadians(currentPoint.yaw.toDouble()))
                 .rotateAroundX(-toRadians(currentPoint.pitch.toDouble()))
+
+             */
 
             var yaw: Float
             var pitch: Float

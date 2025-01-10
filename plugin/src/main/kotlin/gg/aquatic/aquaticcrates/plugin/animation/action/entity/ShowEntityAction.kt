@@ -34,21 +34,24 @@ class ShowEntityAction : AbstractAction<Animation>() {
         val type = args["entity-type"] as String
         val properties = args["properties"] as List<EntityProperty>
         val locationOffset = args["location-offset"] as? Vector? ?: Vector()
-        val boundPropertiesFactory = args["bound-paths"] as ((Animation) -> ConcurrentHashMap<PathProp, PathBoundProperties>)? ?: { _ -> ConcurrentHashMap() }
+        val boundPropertiesFactory =
+            args["bound-paths"] as ((Animation) -> ConcurrentHashMap<PathProp, PathBoundProperties>)?
+                ?: { _ -> ConcurrentHashMap() }
 
         val boundPaths = boundPropertiesFactory(binder)
-        Bukkit.getConsoleSender().sendMessage("Bound paths: ${boundPaths.size}")
-
+        var i = 0
         val entity = EntityAnimationProp(
             binder,
             locationOffset,
-            boundPaths,
+            ConcurrentHashMap(boundPaths.mapValues {
+                i++
+                it.value to i
+            }),
             type,
             properties
         )
 
         for ((path, pathProperties) in boundPaths) {
-            Bukkit.getConsoleSender().sendMessage("Binding entity to the animation!")
             path.boundProps += entity to pathProperties
         }
 
