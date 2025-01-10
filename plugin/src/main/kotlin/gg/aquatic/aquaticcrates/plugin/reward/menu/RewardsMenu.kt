@@ -20,7 +20,7 @@ class RewardsMenu(val settings: RewardsMenuSettings, player: Player) : PrivateAq
     init {
         val crateEntry = player.toAquaticPlayer()?.crateEntry()
         for ((id, component) in settings.invSettings.components) {
-            component.create({ str, _ ->
+            addComponent(component.create({ str, _ ->
                 str.updatePAPIPlaceholders(player)
             }, { _ ->
                 if (id == "next-page") {
@@ -35,7 +35,7 @@ class RewardsMenu(val settings: RewardsMenuSettings, player: Player) : PrivateAq
                     rewardComponents.forEach { removeComponent(it) }
                     loadRewards()
                 }
-            })
+            }))
         }
         loadRewards()
     }
