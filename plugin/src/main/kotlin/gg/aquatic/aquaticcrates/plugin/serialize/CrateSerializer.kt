@@ -27,10 +27,13 @@ import gg.aquatic.aquaticcrates.plugin.reroll.input.interaction.InteractionRerol
 import gg.aquatic.aquaticcrates.plugin.reroll.input.inventory.InventoryRerollInput
 import gg.aquatic.aquaticcrates.plugin.restriction.OpenData
 import gg.aquatic.aquaticcrates.plugin.reward.RewardManagerImpl
+import gg.aquatic.aquaticcrates.plugin.reward.menu.RewardsMenuSettings
 import gg.aquatic.waves.interactable.settings.BlockInteractableSettings
+import gg.aquatic.waves.inventory.InventoryType
 import gg.aquatic.waves.item.AquaticItem
 import gg.aquatic.waves.item.AquaticItemInteractEvent
 import gg.aquatic.waves.menu.MenuSerializer
+import gg.aquatic.waves.menu.settings.PrivateMenuSettings
 import gg.aquatic.waves.registry.serializer.ActionSerializer
 import gg.aquatic.waves.registry.serializer.InteractableSerializer
 import gg.aquatic.waves.registry.serializer.RequirementSerializer
@@ -39,6 +42,7 @@ import gg.aquatic.waves.util.block.impl.VanillaBlock
 import gg.aquatic.waves.util.generic.ConfiguredExecutableObject
 import gg.aquatic.waves.util.getSectionList
 import gg.aquatic.waves.util.item.loadFromYml
+import gg.aquatic.waves.util.toMMComponent
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.configuration.ConfigurationSection
@@ -60,6 +64,28 @@ object CrateSerializer : BaseSerializer() {
         "inventory" to InventoryRerollInput.Companion,
         "interaction" to InteractionRerollInput.Companion
     )
+
+    fun loadRewardMenuSettings(): RewardsMenuSettings {
+        val config = Config("config.yml", CratesPlugin.INSTANCE)
+        config.load()
+        val cfg = config.getConfiguration()!!
+
+        val rewardMenuSection = cfg.getConfigurationSection("reward-menu")
+            ?: return RewardsMenuSettings(
+                PrivateMenuSettings(
+                    InventoryType.GENERIC9X1,
+                    "Example Title".toMMComponent(),
+                    hashMapOf()
+                ),
+                listOf()
+            )
+        val menu = MenuSerializer.loadPrivateInventory(rewardMenuSection)
+        val rewardSlots = MenuSerializer.loadSlotSelection(rewardMenuSection.getStringList("reward-slots"))
+        return RewardsMenuSettings(
+            menu,
+            rewardSlots.slots
+        )
+    }
 
     fun loadCrates(): HashMap<String, Crate> {
         CratesPlugin.INSTANCE.dataFolder.mkdirs()

@@ -32,6 +32,7 @@ import gg.aquatic.aquaticcrates.plugin.awaiters.MEGAwaiter
 import gg.aquatic.aquaticcrates.plugin.command.CrateCommand
 import gg.aquatic.aquaticcrates.plugin.command.KeyCommand
 import gg.aquatic.aquaticcrates.plugin.command.ReloadCommand
+import gg.aquatic.aquaticcrates.plugin.command.RewardMenuCommand
 import gg.aquatic.aquaticcrates.plugin.interact.action.*
 import gg.aquatic.aquaticcrates.plugin.misc.Messages
 import gg.aquatic.aquaticcrates.plugin.preview.CratePreviewMenu
@@ -39,6 +40,7 @@ import gg.aquatic.aquaticcrates.plugin.reroll.input.interaction.InteractionInput
 import gg.aquatic.aquaticcrates.plugin.reroll.input.inventory.InventoryRerollInput
 import gg.aquatic.aquaticcrates.plugin.reroll.input.inventory.RerollMenu
 import gg.aquatic.aquaticcrates.plugin.restriction.impl.*
+import gg.aquatic.aquaticcrates.plugin.reward.menu.RewardsMenuSettings
 import gg.aquatic.aquaticcrates.plugin.serialize.CrateSerializer
 import gg.aquatic.waves.command.AquaticBaseCommand
 import gg.aquatic.waves.command.register
@@ -78,6 +80,9 @@ class CratesPlugin : AbstractCratesPlugin() {
     }
 
     var loading = true
+        private set
+
+    lateinit var rewardsMenuSettings: RewardsMenuSettings
         private set
 
     override fun onEnable() {
@@ -149,7 +154,8 @@ class CratesPlugin : AbstractCratesPlugin() {
             mutableMapOf(
                 "key" to KeyCommand,
                 "crate" to CrateCommand,
-                "reload" to ReloadCommand
+                "reload" to ReloadCommand,
+                "rewardmenu" to RewardMenuCommand
             ),
             listOf()
         ).register("aquaticcrates")
@@ -238,17 +244,16 @@ class CratesPlugin : AbstractCratesPlugin() {
 
     private fun load(): CompletableFuture<Void> {
         loading = true
-
-        try {
-            Messages.load()
-            CrateHandler.crates += CrateSerializer.loadCrates()
-            CrateHandler.loadSpawnedCrates(spawnedCratesConfig)
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-        loading = false
-
+        rewardsMenuSettings = CrateSerializer.loadRewardMenuSettings()
         return runAsync {
+            try {
+                Messages.load()
+                CrateHandler.crates += CrateSerializer.loadCrates()
+                CrateHandler.loadSpawnedCrates(spawnedCratesConfig)
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+            loading = false
         }.exceptionally {
             it.printStackTrace()
             null
