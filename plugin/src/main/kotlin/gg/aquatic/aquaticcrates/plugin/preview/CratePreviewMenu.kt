@@ -80,7 +80,7 @@ class CratePreviewMenu(
 
     private fun loadRewards() {
         var lowerIndex = 0
-        for ((index,page) in crate.previewMenuSettings.withIndex()) {
+        for ((index, page) in crate.previewMenuSettings.withIndex()) {
             if (index == this.page) break
             lowerIndex += page.rewardSlots.size
         }
@@ -95,7 +95,9 @@ class CratePreviewMenu(
             rewardItem.modifyFastMeta {
                 lore = mutableListOf<Component>().apply {
                     addAll(lore)
-                    addAll(settings.additionalRewardLore.map { it.toMMComponent().decoration(TextDecoration.ITALIC, TextDecoration.State.NOT_SET) })
+                    addAll(settings.additionalRewardLore.map {
+                        it.toMMComponent().decoration(TextDecoration.ITALIC, TextDecoration.State.NOT_SET)
+                    })
                 }
             }
 
@@ -107,7 +109,7 @@ class CratePreviewMenu(
                 settings.updateRewardItemsEvery,
                 null, textUpdater = { str, menu ->
                     str.updatePAPIPlaceholders(player)
-                        .replace("%chance%", (reward.chance*100.0).decimals(2))
+                        .replace("%chance%", (reward.chance * 100.0).decimals(2))
                         .replace("%rarity%", reward.rarity.displayName)
                 }
             )
@@ -126,7 +128,8 @@ class CratePreviewMenu(
                 },
                 10,
                 listOf(slot),
-                { str, menu -> str}
+                { str, _ -> str.updatePAPIPlaceholders(player) },
+                settings
             )
             components += button.id to button
         }

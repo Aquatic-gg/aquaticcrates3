@@ -5,7 +5,9 @@ import gg.aquatic.aquaticcrates.plugin.crate.BasicCrate
 import gg.aquatic.waves.inventory.event.AsyncPacketInventoryInteractEvent
 import gg.aquatic.waves.menu.AquaticMenu
 import gg.aquatic.waves.menu.MenuComponent
+import gg.aquatic.waves.util.decimals
 import gg.aquatic.waves.util.item.modifyFastMeta
+import gg.aquatic.waves.util.toMMComponent
 import net.kyori.adventure.text.format.TextDecoration
 import net.kyori.adventure.text.minimessage.MiniMessage
 import org.bukkit.inventory.ItemStack
@@ -19,19 +21,33 @@ class RandomRewardComponent(
     override val priority: Int,
     override val slots: Collection<Int>,
     val textUpdater: (String, AquaticMenu) -> String,
+    val settings: CratePreviewMenuSettings
 ) : MenuComponent() {
 
     override val id: String = "random-reward:${UUID.randomUUID()}"
-    var currentRewardItem = rewards.random().item.getItem()
+    var currentReward = rewards.random()
     override fun itemstack(menu: AquaticMenu): ItemStack {
-        val iS = currentRewardItem.clone()
+        val iS = currentReward.item.getItem().clone()
         iS.modifyFastMeta {
             this.displayName = this.displayName?.let { comp ->
                 MiniMessage.miniMessage().deserialize(textUpdater(MiniMessage.miniMessage().serialize(comp), menu))
                     .decoration(TextDecoration.ITALIC, false)
             }
-            this.lore = this.lore.map {
-                MiniMessage.miniMessage().deserialize(textUpdater(MiniMessage.miniMessage().serialize(it), menu))
+            this.lore = this.lore.toMutableList().apply {
+                addAll(
+                    settings.additionalRewardLore.map {
+                        it.toMMComponent()
+                    }
+                )
+            }.map {
+                MiniMessage.miniMessage().deserialize(
+                    textUpdater(
+                        MiniMessage.miniMessage().serialize(it)
+                            .replace("%chance%", (currentReward.chance * 100.0).decimals(2))
+                            .replace("%rarity%", currentReward.rarity.displayName),
+                        menu
+                    )
+                )
                     .decoration(TextDecoration.ITALIC, false)
             }
         }
@@ -44,7 +60,7 @@ class RandomRewardComponent(
         changeTick++
         if (changeTick >= changeEvery) {
             changeTick = 0
-            currentRewardItem = rewards.random().item.getItem()
+            currentReward = rewards.random()
             menu.updateComponent(this)
         }
     }
