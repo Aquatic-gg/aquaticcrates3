@@ -1,6 +1,7 @@
 package gg.aquatic.aquaticcrates.plugin.animation.action
 
 import gg.aquatic.aquaticcrates.api.animation.Animation
+import gg.aquatic.aquaticcrates.api.animation.crate.CrateAnimationActions
 import gg.aquatic.aquaticcrates.api.util.ActionsArgument
 import gg.aquatic.aquaticcrates.plugin.animation.prop.StringDeobfuscationAnimationProp
 import gg.aquatic.waves.util.action.AbstractAction
@@ -15,7 +16,7 @@ class StringDeobfuscationAction: AbstractAction<Animation>() {
         PrimitiveObjectArgument("deobfuscation-string","example",true),
         PrimitiveObjectArgument("obfuscated-format","<obfuscated><gray>",true),
         PrimitiveObjectArgument("deobfuscated-format","<white>",true),
-        ActionsArgument("deobfuscation-actions", listOf(),false)
+        ActionsArgument("deobfuscation-actions", CrateAnimationActions(mutableListOf(), mutableListOf()),false)
     )
 
     override fun execute(binder: Animation, args: Map<String, Any?>, textUpdater: (Animation, String) -> String) {
@@ -23,7 +24,7 @@ class StringDeobfuscationAction: AbstractAction<Animation>() {
         val deobfuscationString = args["deobfuscation-string"] as String
         val obfuscatedFormat = args["obfuscated-format"] as String
         val deobfuscatedFormat = args["deobfuscated-format"] as String
-        val deobfuscationActions = args["deobfuscation-actions"] as List<ConfiguredExecutableObject<Animation, Unit>>
+        val deobfuscationActions = args["deobfuscation-actions"] as CrateAnimationActions
         val id = args["id"] as String
 
         val prop = StringDeobfuscationAnimationProp(

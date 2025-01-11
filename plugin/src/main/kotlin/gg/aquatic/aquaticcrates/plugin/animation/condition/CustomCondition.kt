@@ -34,10 +34,14 @@ class CustomCondition: AbstractRequirement<Animation>() {
         }
     }
 
-    // Supports basic comparisons like ==, !=, <, >, <=, >= for numbers AND strings
+    // Evaluate simple conditions, supporting arithmetic and comparison operations
     fun evaluateSimpleCondition(condition: String): Boolean {
+        // First handle arithmetic operations (% + - * /)
+        val evaluatedExpression = evaluateMathOperations(condition)
+
+        // Then handle logical comparisons
         val comparatorRegex = Regex("(.*)\\s*(==|!=|<|>|<=|>=)\\s*(.*)")
-        val matchResult = comparatorRegex.find(condition) ?: return false
+        val matchResult = comparatorRegex.find(evaluatedExpression) ?: return false
 
         val leftOperand = matchResult.groupValues[1].trim()
         val operator = matchResult.groupValues[2].trim()
@@ -53,6 +57,37 @@ class CustomCondition: AbstractRequirement<Animation>() {
                 compareStrings(leftOperand, rightOperand, operator)
             }
         }
+    }
+
+    // Evaluates arithmetic expressions (% + - * /)
+    fun evaluateMathOperations(expression: String): String {
+        // Remove any spaces for simpler parsing
+        var mathExpression = expression.replace("\\s+".toRegex(), "")
+
+        // Regex to find and evaluate math operations
+        val mathRegex = Regex("(\\d+\\.?\\d*)\\s*([%+\\-*/])\\s*(\\d+\\.?\\d*)")
+
+        while (mathRegex.containsMatchIn(mathExpression)) {
+            val matchResult = mathRegex.find(mathExpression) ?: break
+
+            val leftOperand = matchResult.groupValues[1].toDouble()
+            val operator = matchResult.groupValues[2]
+            val rightOperand = matchResult.groupValues[3].toDouble()
+
+            val result = when (operator) {
+                "%" -> leftOperand % rightOperand
+                "+" -> leftOperand + rightOperand
+                "-" -> leftOperand - rightOperand
+                "*" -> leftOperand * rightOperand
+                "/" -> if (rightOperand != 0.0) leftOperand / rightOperand else throw IllegalArgumentException("Division by zero.")
+                else -> throw IllegalArgumentException("Unsupported operator: $operator")
+            }
+
+            // Replace the matched portion with the result in the string
+            mathExpression = mathExpression.replace(matchResult.value, result.toString())
+        }
+
+        return mathExpression
     }
 
     fun compareNumbers(left: Double, right: Double, operator: String): Boolean {

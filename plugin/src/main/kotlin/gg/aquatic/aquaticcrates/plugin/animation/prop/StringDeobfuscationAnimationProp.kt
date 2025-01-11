@@ -1,6 +1,8 @@
 package gg.aquatic.aquaticcrates.plugin.animation.prop
 
 import gg.aquatic.aquaticcrates.api.animation.Animation
+import gg.aquatic.aquaticcrates.api.animation.PlayerBoundAnimation
+import gg.aquatic.aquaticcrates.api.animation.crate.CrateAnimationActions
 import gg.aquatic.aquaticcrates.api.animation.prop.AnimationProp
 import gg.aquatic.waves.util.executeActions
 import gg.aquatic.waves.util.generic.ConfiguredExecutableObject
@@ -15,7 +17,7 @@ class StringDeobfuscationAnimationProp(
     deobfuscationString: String,
     val obfuscatedFormat: String,
     val deobfuscatedFormat: String,
-    val deobfuscationActions: List<ConfiguredExecutableObject<Animation,Unit>>
+    val deobfuscationActions: CrateAnimationActions
 ) : AnimationProp() {
 
     val obfuscationString = animation.updatePlaceholders(deobfuscationString)
@@ -48,9 +50,15 @@ class StringDeobfuscationAnimationProp(
         val deobfuscated = obfuscationString.substring((length-1)-deobfuscated, length)
 
         currentString = "$obfuscatedFormat$obfuscated$deobfuscatedFormat$deobfuscated"
-        deobfuscationActions.executeActions(animation) { animation, s ->
+        deobfuscationActions.animationActions.executeActions(animation) { animation, s ->
             animation.updatePlaceholders(s)
         }
+        if (animation is PlayerBoundAnimation) {
+            deobfuscationActions.playerBoundActions.executeActions(animation) { animation, s ->
+                animation.updatePlaceholders(s)
+            }
+        }
+
     }
 
     override fun onAnimationEnd() {

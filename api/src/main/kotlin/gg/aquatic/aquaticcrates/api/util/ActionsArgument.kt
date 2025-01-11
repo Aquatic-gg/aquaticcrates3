@@ -1,6 +1,8 @@
 package gg.aquatic.aquaticcrates.api.util
 
 import gg.aquatic.aquaticcrates.api.animation.Animation
+import gg.aquatic.aquaticcrates.api.animation.PlayerBoundAnimation
+import gg.aquatic.aquaticcrates.api.animation.crate.CrateAnimationActions
 import gg.aquatic.waves.registry.serializer.ActionSerializer
 import gg.aquatic.waves.util.argument.AbstractObjectArgumentSerializer
 import gg.aquatic.waves.util.argument.AquaticObjectArgument
@@ -9,22 +11,26 @@ import gg.aquatic.waves.util.getSectionList
 import org.bukkit.configuration.ConfigurationSection
 
 class ActionsArgument(id: String,
-                      defaultValue: List<ConfiguredExecutableObject<Animation, Unit>>?, required: Boolean
-) : AquaticObjectArgument<List<ConfiguredExecutableObject<Animation,Unit>>>(id, defaultValue, required) {
-    override val serializer: AbstractObjectArgumentSerializer<List<ConfiguredExecutableObject<Animation, Unit>>?>
+                      defaultValue: CrateAnimationActions?, required: Boolean
+) : AquaticObjectArgument<CrateAnimationActions>(id, defaultValue, required) {
+    override val serializer: AbstractObjectArgumentSerializer<CrateAnimationActions?>
         get() = Serializer
 
-    override fun load(section: ConfigurationSection): List<ConfiguredExecutableObject<Animation, Unit>>? {
+    override fun load(section: ConfigurationSection): CrateAnimationActions? {
         return Serializer.load(section, id)
     }
 
-    object Serializer: AbstractObjectArgumentSerializer<List<ConfiguredExecutableObject<Animation, Unit>>?>() {
+    object Serializer: AbstractObjectArgumentSerializer<CrateAnimationActions?>() {
         override fun load(
             section: ConfigurationSection,
             id: String
-        ): List<ConfiguredExecutableObject<Animation, Unit>> {
+        ): CrateAnimationActions {
             val actions = ActionSerializer.fromSections<Animation>(section.getSectionList(id))
-            return actions
+            val playerBoundActions = ActionSerializer.fromSections<PlayerBoundAnimation>(section.getSectionList(id))
+            return CrateAnimationActions(
+                actions.toMutableList(),
+                playerBoundActions.toMutableList()
+            )
         }
 
     }
