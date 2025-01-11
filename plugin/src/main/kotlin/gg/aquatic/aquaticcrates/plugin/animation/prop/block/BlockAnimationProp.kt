@@ -4,6 +4,7 @@ import gg.aquatic.aquaticcrates.api.animation.Animation
 import gg.aquatic.aquaticcrates.api.animation.prop.AnimationProp
 import gg.aquatic.waves.fake.block.FakeBlock
 import gg.aquatic.waves.util.block.AquaticBlock
+import gg.aquatic.waves.util.blockLocation
 import org.bukkit.util.Vector
 
 class BlockAnimationProp(
@@ -12,7 +13,7 @@ class BlockAnimationProp(
     val offset: Vector
 ) : AnimationProp() {
 
-    val packetBlock = FakeBlock(block, animation.baseLocation.clone().add(offset), 50, animation.audience).apply {
+    val packetBlock = FakeBlock(block, animation.baseLocation.clone().add(offset).blockLocation(), 50, animation.audience).apply {
         this.register()
     }
 
