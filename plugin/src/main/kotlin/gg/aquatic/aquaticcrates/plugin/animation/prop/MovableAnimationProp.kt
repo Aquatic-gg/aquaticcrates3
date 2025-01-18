@@ -41,9 +41,7 @@ interface MovableAnimationProp {
 
     fun calculatePoint(): PathPoint {
         var currentPoint = PathPoint(0.0, 0.0, 0.0, 0f, 0f)
-        Bukkit.broadcastMessage(" ")
         for ((p, pair) in boundPaths.entries.sortedBy { it.value.second }) {
-            Bukkit.broadcastMessage("Index: ${pair.second}")
             val (properties, _) = pair
             val po = p.currentPoint
             val offset = properties.offset
