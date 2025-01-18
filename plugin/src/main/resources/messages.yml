@@ -1,0 +1,9 @@
+help:
+  - "To be done"
+plugin-reloaded: "Plugin has been reloaded!"
+no-permission: "You do not have permissions to do that!"
+unknown-crate: "Unknown crate!"
+unknown-number: "Unknown number format!"
+unknown-player: "Unknown player!"
+no-key: "You do not have key to open this crate!"
+plugin-is-not-loaded: "Plugin is not fully loaded!"

@@ -14,10 +14,10 @@ object ReloadCommand : ICommand{
         sender.sendMessage("Reloading...")
         (CratesPlugin.INSTANCE as CratesPlugin).reloadPlugin().thenAccept {
             if (!it) {
-                sender.sendMessage("Plugin is not fully loaded!")
+                Messages.PLUGIN_IS_NOT_LOADED.send(sender)
                 return@thenAccept
             }
-            sender.sendMessage("Plugin has been reloaded!")
+            Messages.PLUGIN_RELOADED.send(sender)
         }
     }
 

@@ -3,6 +3,7 @@ package gg.aquatic.aquaticcrates.plugin.misc
 import gg.aquatic.aquaticcrates.plugin.CratesPlugin
 import gg.aquatic.waves.util.Config
 import gg.aquatic.waves.util.Message
+import org.bukkit.command.CommandSender
 import org.bukkit.configuration.file.FileConfiguration
 
 enum class Messages(
@@ -22,7 +23,8 @@ enum class Messages(
     UNKNOWN_CRATE("unknown-crate", "Unknown crate!"),
     UNKNOWN_NUMBER("unknown-number", "Unknown number format!"),
     UNKNOWN_PLAYER("unknown-player", "Unknown player!"),
-    NO_KEY("no-key", "You do not have key to open this crate!")
+    NO_KEY("no-key", "You do not have key to open this crate!"),
+    PLUGIN_IS_NOT_LOADED("plugin-is-not-loaded", "Plugin is not loaded!"),
     ;
 
     val message: Message
@@ -33,6 +35,8 @@ enum class Messages(
             } else
                 Message(value.toString())
         }
+
+    fun send(sender: CommandSender) = message.send(sender)
 
     companion object {
         private val config = Config("messages.yml", CratesPlugin.INSTANCE)
