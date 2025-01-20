@@ -7,3 +7,7 @@ unknown-number: "Unknown number format!"
 unknown-player: "Unknown player!"
 no-key: "You do not have key to open this crate!"
 plugin-is-not-loaded: "Plugin is not fully loaded!"
+keys-bank:
+  header: "Your virtual keys: "
+  entry: "- %key%: %amount%"
+  footer: ""

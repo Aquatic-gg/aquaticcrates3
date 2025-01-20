@@ -1,6 +1,7 @@
 package gg.aquatic.aquaticcrates.plugin.command
 
 import gg.aquatic.aquaticcrates.api.crate.CrateHandler
+import gg.aquatic.aquaticcrates.api.crate.Key
 import gg.aquatic.aquaticcrates.api.crate.OpenableCrate
 import gg.aquatic.aquaticcrates.api.player.crateEntry
 import gg.aquatic.aquaticcrates.plugin.misc.Messages
@@ -8,6 +9,7 @@ import gg.aquatic.waves.command.ICommand
 import gg.aquatic.waves.profile.toAquaticPlayer
 import org.bukkit.Bukkit
 import org.bukkit.command.CommandSender
+import org.bukkit.entity.Player
 
 object KeyCommand : ICommand {
     override fun run(sender: CommandSender, args: Array<out String>) {
@@ -17,6 +19,7 @@ object KeyCommand : ICommand {
         }
         // acrates key give <crate> <player> <amount> [-s] [-off]
         // acrates key giveall <crate> <amount> [-s] [-off]
+        // acrates key bank [player]
 
         if (args.size < 2) {
             sender.sendMessage("Invalid command usage. Please specify a subcommand.")
@@ -24,6 +27,58 @@ object KeyCommand : ICommand {
         }
 
         when (args[1].lowercase()) { // Start from args[1] to account for "key"
+            "bank" -> {
+                if (!sender.hasPermission("aquaticcrates.command.key.bank")) {
+                    Messages.NO_PERMISSION.message.send(sender)
+                    return
+                }
+                if (args.size == 3) {
+                    if (!sender.hasPermission("aquaticcrates.command.key.bank.other")) {
+                        Messages.NO_PERMISSION.message.send(sender)
+                        return
+                    }
+                    val playerName = args[2]
+                    val player = Bukkit.getPlayer(playerName)
+                    if (player == null) {
+                        Messages.UNKNOWN_PLAYER.message.send(sender)
+                        return
+                    }
+
+                    val entry = player.toAquaticPlayer()?.crateEntry()
+                    if (entry == null) {
+                        sender.sendMessage("Player is not initialized!")
+                        return
+                    }
+
+                    Messages.KEY_BANK_HEADER.send(sender)
+                    for ((crateId, amount) in entry.balance) {
+                        val key = Key.get(crateId) ?: continue
+                        Messages.KEY_BANK_ENTRY.message.replace("%key%", key.crate.displayName)
+                            .replace("%amount%", amount.toString()).send(sender)
+                    }
+                    Messages.KEY_BANK_FOOTER.send(sender)
+
+                    return
+                }
+
+                if (sender !is Player) {
+                    return
+                }
+                val entry = sender.toAquaticPlayer()?.crateEntry()
+                if (entry == null) {
+                    sender.sendMessage("Player is not initialized!")
+                    return
+                }
+
+                Messages.KEY_BANK_HEADER.send(sender)
+                for ((crateId, amount) in entry.balance) {
+                    val key = Key.get(crateId) ?: continue
+                    Messages.KEY_BANK_ENTRY.message.replace("%key%", key.crate.displayName)
+                        .replace("%amount%", amount.toString()).send(sender)
+                }
+                Messages.KEY_BANK_FOOTER.send(sender)
+            }
+
             "give" -> {
                 if (args.size < 5) { // Ensure enough arguments for "give"
                     sender.sendMessage("Usage: /acrates key give <crate> <player> <amount> [-s] [-off] [-v]")
@@ -142,45 +197,63 @@ object KeyCommand : ICommand {
         if (args.size == 1) {
             return listOf(
                 "give",
-                "giveall"
+                "giveall",
+                "bank"
             )
         } else {
-            if (args[0].equals("give", ignoreCase = true)) {
-                return when(args.size) {
-                    2 -> {
-                        CrateHandler.crates.keys.toList()
-                    }
-                    3 -> {
-                        Bukkit.getOnlinePlayers().map { it.name }
-                    }
-                    4 -> {
-                        listOf("1", "2", "3", "4", "5", "6", "7", "8", "9", "10")
-                    }
-                    else -> {
-                        listOf(
-                            "-s",
-                            "-off",
-                            "-v"
-                        )
+            when (args[0].lowercase()) {
+                "give" -> {
+                    if (!sender.hasPermission("aquaticcrates.admin")) return emptyList()
+                    return when (args.size) {
+                        2 -> {
+                            CrateHandler.crates.keys.toList()
+                        }
+
+                        3 -> {
+                            Bukkit.getOnlinePlayers().map { it.name }
+                        }
+
+                        4 -> {
+                            listOf("1", "2", "3", "4", "5", "6", "7", "8", "9", "10")
+                        }
+
+                        else -> {
+                            listOf(
+                                "-s",
+                                "-off",
+                                "-v"
+                            )
+                        }
                     }
                 }
-            } else if (args[0].equals("giveall", ignoreCase = true)) {
-                return when(args.size) {
-                    2 -> {
-                        CrateHandler.crates.keys.toList()
-                    }
 
-                    3 -> {
-                        listOf("1", "2", "3", "4", "5", "6", "7", "8", "9", "10")
-                    }
+                "giveall" -> {
+                    if (!sender.hasPermission("aquaticcrates.admin")) return emptyList()
+                    return when (args.size) {
+                        2 -> {
+                            CrateHandler.crates.keys.toList()
+                        }
 
-                    else -> {
-                        listOf(
-                            "-s",
-                            "-off",
-                            "-v"
-                        )
+                        3 -> {
+                            listOf("1", "2", "3", "4", "5", "6", "7", "8", "9", "10")
+                        }
+
+                        else -> {
+                            listOf(
+                                "-s",
+                                "-off",
+                                "-v"
+                            )
+                        }
                     }
+                }
+
+                "bank" -> {
+                    if (args.size != 2) return emptyList()
+                    if (!sender.hasPermission("aquaticcrates.command.key.bank.other")) {
+                        return emptyList()
+                    }
+                    return Bukkit.getOnlinePlayers().map { it.name }
                 }
             }
         }
