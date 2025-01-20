@@ -3,6 +3,7 @@ package gg.aquatic.aquaticcrates.api.player
 import gg.aquatic.aquaticcrates.api.player.CrateProfileEntry.HistoryType
 import gg.aquatic.aquaticcrates.api.player.CrateProfileEntry.OpenHistoryEntry
 import gg.aquatic.waves.profile.toAquaticPlayer
+import gg.aquatic.waves.util.runAsync
 import org.bukkit.entity.Player
 import java.util.concurrent.ConcurrentHashMap
 
@@ -52,7 +53,9 @@ object HistoryHandler {
         for ((_, histories) in newEntries) {
             totalSize += histories.size
             if (totalSize >= 500) {
-                crateEntry.saveAndPrune()
+                runAsync {
+                    crateEntry.saveAndPrune()
+                }
                 break
             }
         }
