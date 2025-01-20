@@ -5,6 +5,8 @@ import gg.aquatic.aquaticcrates.api.animation.crate.CrateAnimationManager
 import gg.aquatic.aquaticcrates.api.crate.CrateHandler
 import gg.aquatic.aquaticcrates.api.crate.OpenableCrate
 import gg.aquatic.aquaticcrates.api.player.CrateProfileModule
+import gg.aquatic.aquaticcrates.api.player.PlayerHandler
+import gg.aquatic.aquaticcrates.api.player.crateEntry
 import gg.aquatic.aquaticcrates.api.reroll.RerollManager
 import gg.aquatic.aquaticcrates.plugin.animation.action.*
 import gg.aquatic.aquaticcrates.plugin.animation.action.block.SetBlockAction
@@ -47,6 +49,7 @@ import gg.aquatic.waves.command.register
 import gg.aquatic.waves.inventory.InventoryManager
 import gg.aquatic.waves.inventory.event.AsyncPacketInventoryCloseEvent
 import gg.aquatic.waves.profile.ProfilesModule
+import gg.aquatic.waves.profile.toAquaticPlayer
 import gg.aquatic.waves.registry.WavesRegistry
 import gg.aquatic.waves.registry.registerAction
 import gg.aquatic.waves.registry.registerRequirement
@@ -88,6 +91,7 @@ class CratesPlugin : AbstractCratesPlugin() {
     override fun onEnable() {
         registerObjects()
         ProfilesModule.registerModule(CrateProfileModule)
+        registerPAPIHook()
 
         val awaiters = mutableListOf<AbstractAwaiter>()
         if (Bukkit.getPluginManager().getPlugin("ModelEngine") != null) {
@@ -307,6 +311,31 @@ class CratesPlugin : AbstractCratesPlugin() {
 
         // Animation Action Conditions
         WavesRegistry.registerRequirement("custom", CustomCondition())
+    }
 
+    private fun registerPAPIHook() {
+        PAPIUtil.registerExtension("Larkyy", "aquaticcrates") { offlinePlayer, str ->
+            val args = str.split("_")
+            if (args.isEmpty()) return@registerExtension ""
+
+            when (args[0].lowercase()) {
+                "keys" -> {
+                    if (args.size < 2) return@registerExtension ""
+                    val player = offlinePlayer.player ?: return@registerExtension ""
+
+                    val id = args.getOrNull(1) ?: return@registerExtension ""
+                    return@registerExtension PlayerHandler.virtualKeys(player, id)?.toString() ?: ""
+                }
+                "totalkeys" -> {
+                    if (args.size < 2) return@registerExtension ""
+                    val player = offlinePlayer.player ?: return@registerExtension ""
+                    val id = args.getOrNull(1) ?: return@registerExtension ""
+
+                    return@registerExtension PlayerHandler.totalKeys(player, id)?.toString() ?: ""
+                }
+            }
+
+            return@registerExtension ""
+        }
     }
 }

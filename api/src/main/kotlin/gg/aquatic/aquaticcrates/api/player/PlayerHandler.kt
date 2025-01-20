@@ -11,6 +11,10 @@ object PlayerHandler {
         return player.toAquaticPlayer()?.crateEntry()?.balance(id)
     }
 
+    fun virtualKeys(player: Player, key: Key): Int? {
+        return virtualKeys(player, key.crate.identifier)
+    }
+
     fun physicalKeys(player: Player, key: Key): Int? {
         player.toAquaticPlayer()?.crateEntry() ?: return null
         var amt = 0
@@ -22,9 +26,24 @@ object PlayerHandler {
         return amt
     }
 
+    fun physicalKeys(player: Player, id: String): Int? {
+        player.toAquaticPlayer()?.crateEntry() ?: return null
+        var amt = 0
+        for (stack in player.inventory.storageContents) {
+            if (Key.get(stack ?: continue)?.crate?.identifier == id) {
+                amt += stack.amount
+            }
+        }
+        return amt
+    }
+
     fun totalKeys(player: Player, key: Key): Int? {
-        val vKeys = virtualKeys(player,key.crate.identifier) ?: return null
-        val pKeys = physicalKeys(player, key) ?: return null
+        return totalKeys(player, key.crate.identifier)
+    }
+
+    fun totalKeys(player: Player, id: String): Int? {
+        val vKeys = virtualKeys(player, id) ?: return null
+        val pKeys = physicalKeys(player, id) ?: return null
         return vKeys + pKeys
     }
 
@@ -67,21 +86,21 @@ object PlayerHandler {
             if (pkey.crate.identifier != id) continue
             if (storageContent.amount < amount) continue
             items.add(storageContent)
-            currentAmount+=storageContent.amount
+            currentAmount += storageContent.amount
             if (currentAmount >= amount) {
-                currentAmount=amount
+                currentAmount = amount
                 break
             }
         }
         if (currentAmount < amount) return false
         for (item in items) {
             if (item.amount > currentAmount) {
-                item.amount-=currentAmount
+                item.amount -= currentAmount
                 return true
             }
             val toRemove = item.amount
             item.amount = 0
-            currentAmount-=toRemove
+            currentAmount -= toRemove
             if (currentAmount == 0) return true
         }
         if (currentAmount > 0) {
