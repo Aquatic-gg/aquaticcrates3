@@ -51,7 +51,7 @@ class ModelAnimationProp(
     }
 
     fun playAnimation(animation: String, fadeIn: Double = 0.0, fadeOut: Double = 0.0, speed: Double = 1.0) {
-        interactable.activeModel.animationHandler.playAnimation(animation,fadeIn,fadeOut,speed, true)
+        interactable.activeModel?.animationHandler?.playAnimation(animation,fadeIn,fadeOut,speed, true)
     }
 
     override fun onAnimationEnd() {
@@ -60,7 +60,7 @@ class ModelAnimationProp(
 
 
     override fun move(location: Location) {
-        val dummy = interactable.modeledEntity.base as Dummy<*>
+        val dummy = interactable.modeledEntity?.base as? Dummy<*> ?: return
         dummy.location = location
         dummy.bodyRotationController.yBodyRot = location.yaw
         dummy.bodyRotationController.xHeadRot = location.pitch
