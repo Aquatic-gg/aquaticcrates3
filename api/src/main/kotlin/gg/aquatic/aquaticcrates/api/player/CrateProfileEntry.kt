@@ -6,16 +6,19 @@ import gg.aquatic.waves.profile.module.ProfileModuleEntry
 import java.sql.Connection
 import java.util.concurrent.ConcurrentHashMap
 
-class CrateProfileEntry(aquaticPlayer: AquaticPlayer, val rewardContainer: RewardContainer) : ProfileModuleEntry(aquaticPlayer) {
+class CrateProfileEntry(aquaticPlayer: AquaticPlayer, val rewardContainer: RewardContainer) :
+    ProfileModuleEntry(aquaticPlayer) {
 
     val balance = hashMapOf<String, Int>()
 
     // CrateId, Entry
-    val newEntries = ConcurrentHashMap<String,MutableSet<OpenHistoryEntry>>()
+    val newEntries = ConcurrentHashMap<String, MutableSet<OpenHistoryEntry>>()
+
     // CrateId, Daily/Weekly/Monthly/Alltime, Amount
     val openHistory = ConcurrentHashMap<String, ConcurrentHashMap<HistoryType, Int>>()
+
     // CrateId:RewardId, Daily/Weekly/Monthly/Alltime, Amount
-    val rewardHistory = ConcurrentHashMap<String,ConcurrentHashMap<HistoryType, Int>>()
+    val rewardHistory = ConcurrentHashMap<String, ConcurrentHashMap<HistoryType, Int>>()
 
     fun openHistory(historyType: HistoryType): Int {
         var total = 0
@@ -25,6 +28,7 @@ class CrateProfileEntry(aquaticPlayer: AquaticPlayer, val rewardContainer: Rewar
         }
         return total
     }
+
     fun rewardHistory(historyType: HistoryType): Int {
         var total = 0
         for ((_, history) in rewardHistory) {
@@ -34,7 +38,7 @@ class CrateProfileEntry(aquaticPlayer: AquaticPlayer, val rewardContainer: Rewar
     }
 
     fun saveAndPrune() {
-        // TODO: SAVE
+        CrateProfileDriver.saveHistory(this)
         newEntries.clear()
     }
 
@@ -72,6 +76,7 @@ class CrateProfileEntry(aquaticPlayer: AquaticPlayer, val rewardContainer: Rewar
         openHistory[crateId]?.get(historyType)?.let { total += it }
         return total
     }
+
     fun rewardHistory(crateId: String, rewardId: String, historyType: HistoryType): Int {
         var total = 0
         val rewardHistory = rewardHistory["$crateId:$rewardId"] ?: return total
@@ -80,7 +85,7 @@ class CrateProfileEntry(aquaticPlayer: AquaticPlayer, val rewardContainer: Rewar
     }
 
     override fun save(connection: Connection) {
-
+        CrateProfileDriver.save(connection, this)
     }
 
     fun balance(id: String): Int {
@@ -110,7 +115,7 @@ class CrateProfileEntry(aquaticPlayer: AquaticPlayer, val rewardContainer: Rewar
     class OpenHistoryEntry(
         val timestamp: Long,
         val crateId: String,
-        val rewardIds: HashMap<String,Int>,
+        val rewardIds: HashMap<String, Int>,
     ) {
 
     }

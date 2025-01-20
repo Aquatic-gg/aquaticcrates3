@@ -14,10 +14,7 @@ object CrateProfileModule: ProfileModule {
     }
 
     override fun loadEntry(player: AquaticPlayer): ProfileModuleEntry {
-        return CrateProfileEntry(
-            player,
-            RewardContainer()
-        )
+        return CrateProfileDriver.get(player)
     }
 }
 
