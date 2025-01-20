@@ -23,7 +23,7 @@ object CrateProfileDriver {
             setInt(1, entry.aquaticPlayer.index)
         }, {
             while (next()) {
-                val key = getString("key")
+                val key = getString("key_id")
                 val value = getInt("amount")
 
                 CrateHandler.crates[key] ?: continue
