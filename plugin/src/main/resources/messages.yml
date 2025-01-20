@@ -11,3 +11,5 @@ keys-bank:
   header: "Your virtual keys: "
   entry: "- %key%: %amount%"
   footer: ""
+non-initialized-player: "Player's profile has not been completely loaded yet!"
+non-initialized-player-self: "Your player profile has not been completely loaded yet!"

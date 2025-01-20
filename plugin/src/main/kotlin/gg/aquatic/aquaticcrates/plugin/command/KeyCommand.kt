@@ -46,7 +46,7 @@ object KeyCommand : ICommand {
 
                     val entry = player.toAquaticPlayer()?.crateEntry()
                     if (entry == null) {
-                        sender.sendMessage("Player is not initialized!")
+                        Messages.NON_INITIALIZED_PLAYER.send(sender)
                         return
                     }
 
@@ -66,7 +66,7 @@ object KeyCommand : ICommand {
                 }
                 val entry = sender.toAquaticPlayer()?.crateEntry()
                 if (entry == null) {
-                    sender.sendMessage("Player is not initialized!")
+                    Messages.NON_INITIALIZED_PLAYER_SELF.send(sender)
                     return
                 }
 

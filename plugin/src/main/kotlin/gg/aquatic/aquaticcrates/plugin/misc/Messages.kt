@@ -28,6 +28,8 @@ enum class Messages(
     KEY_BANK_HEADER("key-bank.header", "Your virtual keys: "),
     KEY_BANK_ENTRY("key-bank.entry", "&7- &f%key%: %amount%"),
     KEY_BANK_FOOTER("key-bank.footer", ""),
+    NON_INITIALIZED_PLAYER("non-initialized-player", "Player is not initialized!"),
+    NON_INITIALIZED_PLAYER_SELF("non-initialized-player-self", "Your profile is not initialized!"),
     ;
 
     val message: Message
