@@ -30,7 +30,7 @@ object CrateProfileModule: ProfileModule {
                     "user_id INTEGER NOT NULL, " +
                     "open_timestamp INTEGER NOT NULL, " +
                     "crate_id NVARCHAR(64) NOT NULL, " +
-                    "FOREIGN KEY (user_id) REFERENCES aquaticprofiles(id), " +
+                    "FOREIGN KEY (user_id) REFERENCES aquaticprofiles(id)" +
                     ")"
         ).use {
             it.execute()
