@@ -7,6 +7,7 @@ import gg.aquatic.aquaticcrates.plugin.animation.prop.MovableAnimationProp
 import gg.aquatic.aquaticcrates.plugin.animation.prop.path.PathBoundProperties
 import gg.aquatic.aquaticcrates.plugin.animation.prop.path.PathProp
 import gg.aquatic.waves.interactable.type.MEGInteractable
+import gg.aquatic.waves.util.runSync
 import org.bukkit.Location
 import org.bukkit.entity.Player
 import org.bukkit.util.Vector
@@ -22,7 +23,8 @@ class ModelAnimationProp(
 ) : AnimationProp(), MovableAnimationProp {
 
     override val processedPaths: MutableSet<PathProp> = ConcurrentHashMap.newKeySet()
-    val interactable: MEGInteractable
+    var interactable: MEGInteractable? = null
+        private set
 
     init {
         val currentLocation = if (boundPaths.isEmpty()) animation.baseLocation.clone().add(locationOffset)
@@ -35,14 +37,16 @@ class ModelAnimationProp(
             newLocation
         }
 
-        interactable = MEGInteractable(
-            currentLocation,
-            model,
-            animation.audience,
-        ) {}
-        skin?.let { interactable.setSkin(it) }
-        if (modelAnimation != null) {
-            playAnimation(modelAnimation)
+        runSync {
+            interactable = MEGInteractable(
+                currentLocation,
+                model,
+                animation.audience,
+            ) {}
+            skin?.let { interactable!!.setSkin(it) }
+            if (modelAnimation != null) {
+                playAnimation(modelAnimation)
+            }
         }
     }
 
@@ -51,21 +55,27 @@ class ModelAnimationProp(
     }
 
     fun playAnimation(animation: String, fadeIn: Double = 0.0, fadeOut: Double = 0.0, speed: Double = 1.0) {
-        interactable.activeModel?.animationHandler?.playAnimation(animation,fadeIn,fadeOut,speed, true)
+        runSync {
+            interactable?.activeModel?.animationHandler?.playAnimation(animation, fadeIn, fadeOut, speed, true)
+        }
     }
 
     override fun onAnimationEnd() {
-        interactable.destroy()
+        runSync {
+            interactable?.destroy()
+        }
     }
 
 
     override fun move(location: Location) {
-        val dummy = interactable.modeledEntity?.base as? Dummy<*> ?: return
-        dummy.location = location
-        dummy.bodyRotationController.yBodyRot = location.yaw
-        dummy.bodyRotationController.xHeadRot = location.pitch
-        dummy.bodyRotationController.yHeadRot = location.yaw
-        dummy.yHeadRot = location.yaw
-        dummy.yBodyRot = location.yaw
+        runSync {
+            val dummy = interactable?.modeledEntity?.base as? Dummy<*> ?: return@runSync
+            dummy.location = location
+            dummy.bodyRotationController.yBodyRot = location.yaw
+            dummy.bodyRotationController.xHeadRot = location.pitch
+            dummy.bodyRotationController.yHeadRot = location.yaw
+            dummy.yHeadRot = location.yaw
+            dummy.yBodyRot = location.yaw
+        }
     }
 }
