@@ -112,7 +112,7 @@ class CrateProfileEntry(aquaticPlayer: AquaticPlayer, val rewardContainer: Rewar
         return balance(id) >= amount
     }
 
-    class OpenHistoryEntry(
+    data class OpenHistoryEntry(
         val timestamp: Long,
         val crateId: String,
         val rewardIds: HashMap<String, Int>,
