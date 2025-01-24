@@ -3,7 +3,7 @@ plugins {
     id("com.github.johnrengelman.shadow") version "7.1.2"
 }
 
-val projectVersion = "3.0.2-Alpha"
+val projectVersion = "3.0.3-Alpha"
 group = "gg.aquatic.aquaticcrates"
 version = projectVersion
 
@@ -40,7 +40,7 @@ subprojects {
         compileOnly("org.spigotmc:spigot-api:1.19.4-R0.1-SNAPSHOT")
         compileOnly("com.github.LoneDev6:API-ItemsAdder:3.6.2-beta-r3-b")
         compileOnly ("com.ticxo.modelengine:ModelEngine:R4.0.8")
-        compileOnly("gg.aquatic.waves:Waves:1.1.20:publish")
+        compileOnly("gg.aquatic.waves:Waves:1.1.21:publish")
         //implementation("net.kyori:adventure-api:4.17.0")
     }
 

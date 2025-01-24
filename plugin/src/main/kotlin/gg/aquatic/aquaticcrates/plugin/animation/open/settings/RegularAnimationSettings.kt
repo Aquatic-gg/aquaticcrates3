@@ -1,10 +1,7 @@
 package gg.aquatic.aquaticcrates.plugin.animation.open.settings
 
 import gg.aquatic.aquaticcrates.api.animation.Animation
-import gg.aquatic.aquaticcrates.api.animation.crate.AnimationSettingsFactory
-import gg.aquatic.aquaticcrates.api.animation.crate.CrateAnimationActions
-import gg.aquatic.aquaticcrates.api.animation.crate.CrateAnimationManager
-import gg.aquatic.aquaticcrates.api.animation.crate.CrateAnimationSettings
+import gg.aquatic.aquaticcrates.api.animation.crate.*
 import gg.aquatic.aquaticcrates.api.crate.CrateHandler
 import gg.aquatic.aquaticcrates.api.reward.RolledReward
 import gg.aquatic.aquaticcrates.plugin.animation.open.RegularAnimationImpl
@@ -46,17 +43,21 @@ class RegularAnimationSettings(
         )
 
         val spawnedCrate = CrateHandler.spawned[location]
+        var despawned = false
+        animation.tick()
         runLaterSync(1) {
+            if (animation.state == CrateAnimation.State.FINISHED) return@runLaterSync
             if (!personal) {
                 spawnedCrate?.destroy()
             } else {
                 spawnedCrate?.spawnedInteractables?.forEach { it.removeViewer(player) }
             }
+            despawned = true
         }
-
 
         animationManager.playAnimation(animation)
         return animation.completionFuture.thenRun {
+            if (!despawned) return@thenRun
             if (!personal) {
                 if (spawnedCrate != null) {
                     CrateHandler.spawnCrate(spawnedCrate.crate, location)

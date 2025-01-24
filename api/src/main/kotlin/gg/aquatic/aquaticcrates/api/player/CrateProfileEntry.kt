@@ -38,8 +38,10 @@ class CrateProfileEntry(aquaticPlayer: AquaticPlayer, val rewardContainer: Rewar
     }
 
     fun saveAndPrune() {
-        CrateProfileDriver.saveHistory(this)
-        newEntries.clear()
+        CrateProfileDriver.driver.useConnection {
+            CrateProfileDriver.saveHistory(this,this@CrateProfileEntry)
+            newEntries.clear()
+        }
     }
 
     /*
