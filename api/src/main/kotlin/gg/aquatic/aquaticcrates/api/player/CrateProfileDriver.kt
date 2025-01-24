@@ -7,6 +7,7 @@ import gg.aquatic.waves.data.DataDriver
 import gg.aquatic.waves.module.WaveModules
 import gg.aquatic.waves.profile.AquaticPlayer
 import gg.aquatic.waves.profile.ProfilesModule
+import org.intellij.lang.annotations.Language
 import java.sql.Connection
 import java.sql.PreparedStatement
 import java.util.concurrent.ConcurrentHashMap
@@ -22,7 +23,9 @@ object CrateProfileDriver {
     }
 
     fun loadKeys(entry: CrateProfileEntry) {
-        driver.executeQuery("SELECT * FROM aquaticcrates_keys WHERE id = ?", {
+        @Language("SQL")
+        val sql = "SELECT * FROM aquaticcrates_keys WHERE id = ?"
+        driver.executeQuery(sql, {
             setInt(1, entry.aquaticPlayer.index)
         }, {
             while (next()) {
@@ -137,6 +140,7 @@ object CrateProfileDriver {
     }
 
     fun loadHistory(entry: CrateProfileEntry) {
+        @Language("SQL")
         val crateHistorySql = "SELECT crate_id, " +
                 "       COUNT(*) AS all_time, " +
                 "       SUM(CASE WHEN open_timestamp >= strftime('%s', 'now', '-1 day') THEN 1 ELSE 0 END) AS daily, " +
@@ -159,6 +163,7 @@ object CrateProfileDriver {
             }
         })
 
+        @Language("SQL")
         val rewardHistorySql = "SELECT o.crate_id || ':' || r.reward_id AS crate_reward_id, " +
                 "       COUNT(*) AS all_time, " +
                 "       SUM(CASE WHEN o.open_timestamp >= strftime('%s', 'now', '-1 day') THEN 1 ELSE 0 END) AS daily, " +
