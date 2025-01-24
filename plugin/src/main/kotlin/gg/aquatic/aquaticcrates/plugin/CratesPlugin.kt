@@ -4,9 +4,7 @@ import gg.aquatic.aquaticcrates.api.AbstractCratesPlugin
 import gg.aquatic.aquaticcrates.api.animation.crate.CrateAnimationManager
 import gg.aquatic.aquaticcrates.api.crate.CrateHandler
 import gg.aquatic.aquaticcrates.api.crate.OpenableCrate
-import gg.aquatic.aquaticcrates.api.player.CrateProfileModule
-import gg.aquatic.aquaticcrates.api.player.PlayerHandler
-import gg.aquatic.aquaticcrates.api.player.crateEntry
+import gg.aquatic.aquaticcrates.api.player.*
 import gg.aquatic.aquaticcrates.api.reroll.RerollManager
 import gg.aquatic.aquaticcrates.plugin.animation.action.*
 import gg.aquatic.aquaticcrates.plugin.animation.action.block.SetBlockAction
@@ -49,7 +47,6 @@ import gg.aquatic.waves.command.register
 import gg.aquatic.waves.inventory.InventoryManager
 import gg.aquatic.waves.inventory.event.AsyncPacketInventoryCloseEvent
 import gg.aquatic.waves.profile.ProfilesModule
-import gg.aquatic.waves.profile.toAquaticPlayer
 import gg.aquatic.waves.registry.WavesRegistry
 import gg.aquatic.waves.registry.registerAction
 import gg.aquatic.waves.registry.registerRequirement
@@ -114,6 +111,14 @@ class CratesPlugin : AbstractCratesPlugin() {
                 }
             }
         }
+
+        HistoryHandler.rewardHistory.clear()
+        HistoryHandler.openHistory.clear()
+
+        val (openHistory, rewardHistory) = CrateProfileDriver.loadGlobalHistory()
+        HistoryHandler.openHistory += openHistory
+        HistoryHandler.rewardHistory += rewardHistory
+
         if (awaiters.isEmpty()) {
             load()
         }
@@ -326,6 +331,7 @@ class CratesPlugin : AbstractCratesPlugin() {
                     val id = args.getOrNull(1) ?: return@registerExtension ""
                     return@registerExtension PlayerHandler.virtualKeys(player, id)?.toString() ?: ""
                 }
+
                 "totalkeys" -> {
                     if (args.size < 2) return@registerExtension ""
                     val player = offlinePlayer.player ?: return@registerExtension ""
@@ -333,8 +339,95 @@ class CratesPlugin : AbstractCratesPlugin() {
 
                     return@registerExtension PlayerHandler.totalKeys(player, id)?.toString() ?: ""
                 }
-            }
+                // %aquaticcrates_statistic_crate_all_<alltime>%
+                // %aquaticcrates_statistic_crate_<crateid>_<alltime>%
+                // %aquaticcrates_statistic_crate_all_<alltime>_<player>%
+                // %aquaticcrates_statistic_crate_all_<alltime>_self%
+                // %aquaticcrates_statistic_crate_<crateid>_<alltime>_<player>%
+                // %aquaticcrates_statistic_crate_<crateid>_<alltime>_self%
 
+                // %aquaticcrates_statistic_reward_<crateid:rewardid>_<alltime>%
+                // %aquaticcrates_statistic_reward_<crateid:rewardid>_<alltime>_player%
+                // %aquaticcrates_statistic_reward_<crateid:rewardid>_<alltime>_self%
+                "statistic" -> {
+                    if (args.size < 2) return@registerExtension ""
+                    if (args[1].lowercase() == "crate") {
+                        if (args.size < 4) return@registerExtension ""
+                        val crateId = args[2]
+
+                        val crate = if (crateId.lowercase() == "all") {
+                            null
+                        } else {
+                            CrateHandler.crates[crateId] ?: return@registerExtension ""
+                        }
+
+                        val timeframe =
+                            CrateProfileEntry.HistoryType.valueOf((args.getOrNull(3) ?: "alltime").uppercase())
+                        if (args.size >= 5) {
+                            val playerName = buildString {
+                                args.subList(4, args.size).forEach { append(it) }
+                            }
+                            if (playerName.lowercase() == "self") {
+                                if (crate != null) {
+                                    return@registerExtension HistoryHandler.history(
+                                        crate.identifier,
+                                        timeframe,
+                                        offlinePlayer.player ?: return@registerExtension ""
+                                    ).toString()
+                                }
+                                return@registerExtension HistoryHandler.history(
+                                    timeframe,
+                                    offlinePlayer.player ?: return@registerExtension ""
+                                ).toString()
+                            }
+                            val player = Bukkit.getPlayer(playerName) ?: return@registerExtension ""
+                            if (crate != null) {
+                                return@registerExtension HistoryHandler.history(crate.identifier, timeframe, player)
+                                    .toString()
+                            }
+                            return@registerExtension HistoryHandler.history(timeframe, player).toString()
+                        }
+
+                        if (crate != null) {
+                            return@registerExtension HistoryHandler.history(crate.identifier, timeframe).toString()
+                        }
+                        return@registerExtension HistoryHandler.history(timeframe).toString()
+                    } else if (args[1].lowercase() == "reward") {
+                        if (args.size < 4) return@registerExtension ""
+                        val pairId = args[2].split(":")
+                        if (pairId.size != 2) return@registerExtension ""
+                        val crateId = pairId[0]
+                        val rewardId = pairId[1]
+
+                        val crate = CrateHandler.crates[crateId] ?: return@registerExtension ""
+
+                        val timeframe =
+                            CrateProfileEntry.HistoryType.valueOf((args.getOrNull(3) ?: "alltime").uppercase())
+                        if (args.size >= 5) {
+                            val playerName = buildString {
+                                args.subList(4, args.size).forEach { append(it) }
+                            }
+                            if (playerName.lowercase() == "self") {
+                                return@registerExtension HistoryHandler.rewardHistory(
+                                    crate.identifier, rewardId,
+                                    timeframe,
+                                    offlinePlayer.player ?: return@registerExtension ""
+                                ).toString()
+                            }
+                            val player = Bukkit.getPlayer(playerName) ?: return@registerExtension ""
+                            return@registerExtension HistoryHandler.rewardHistory(
+                                crate.identifier,
+                                rewardId,
+                                timeframe,
+                                player
+                            ).toString()
+                        }
+
+                        return@registerExtension HistoryHandler.rewardHistory(crate.identifier, rewardId, timeframe)
+                            .toString()
+                    }
+                }
+            }
             return@registerExtension ""
         }
     }

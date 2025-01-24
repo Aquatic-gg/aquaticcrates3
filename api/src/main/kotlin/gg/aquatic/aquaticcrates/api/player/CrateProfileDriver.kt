@@ -1,6 +1,7 @@
 package gg.aquatic.aquaticcrates.api.player
 
 import gg.aquatic.aquaticcrates.api.crate.CrateHandler
+import gg.aquatic.aquaticcrates.api.player.CrateProfileEntry.HistoryType
 import gg.aquatic.aquaticcrates.api.reward.RewardContainer
 import gg.aquatic.waves.Waves
 import gg.aquatic.waves.data.DataDriver
@@ -156,10 +157,10 @@ object CrateProfileDriver {
                 val daily = getInt("daily")
                 val weekly = getInt("weekly")
                 val monthly = getInt("monthly")
-                entry.openHistory.getOrPut(crateId) { ConcurrentHashMap() }[CrateProfileEntry.HistoryType.ALLTIME] = allTime
-                entry.openHistory.getOrPut(crateId) { ConcurrentHashMap() }[CrateProfileEntry.HistoryType.DAILY] = daily
-                entry.openHistory.getOrPut(crateId) { ConcurrentHashMap() }[CrateProfileEntry.HistoryType.WEEKLY] = weekly
-                entry.openHistory.getOrPut(crateId) { ConcurrentHashMap() }[CrateProfileEntry.HistoryType.MONTHLY] = monthly
+                entry.openHistory.getOrPut(crateId) { ConcurrentHashMap() }[HistoryType.ALLTIME] = allTime
+                entry.openHistory.getOrPut(crateId) { ConcurrentHashMap() }[HistoryType.DAILY] = daily
+                entry.openHistory.getOrPut(crateId) { ConcurrentHashMap() }[HistoryType.WEEKLY] = weekly
+                entry.openHistory.getOrPut(crateId) { ConcurrentHashMap() }[HistoryType.MONTHLY] = monthly
             }
         })
 
@@ -179,11 +180,66 @@ object CrateProfileDriver {
                 val daily = getInt("daily")
                 val weekly = getInt("weekly")
                 val monthly = getInt("monthly")
-                entry.rewardHistory.getOrPut(crateRewardId) { ConcurrentHashMap() }[CrateProfileEntry.HistoryType.ALLTIME] = allTime
-                entry.rewardHistory.getOrPut(crateRewardId) { ConcurrentHashMap() }[CrateProfileEntry.HistoryType.DAILY] = daily
-                entry.rewardHistory.getOrPut(crateRewardId) { ConcurrentHashMap() }[CrateProfileEntry.HistoryType.WEEKLY] = weekly
-                entry.rewardHistory.getOrPut(crateRewardId) { ConcurrentHashMap() }[CrateProfileEntry.HistoryType.MONTHLY] = monthly
+                entry.rewardHistory.getOrPut(crateRewardId) { ConcurrentHashMap() }[HistoryType.ALLTIME] = allTime
+                entry.rewardHistory.getOrPut(crateRewardId) { ConcurrentHashMap() }[HistoryType.DAILY] = daily
+                entry.rewardHistory.getOrPut(crateRewardId) { ConcurrentHashMap() }[HistoryType.WEEKLY] = weekly
+                entry.rewardHistory.getOrPut(crateRewardId) { ConcurrentHashMap() }[HistoryType.MONTHLY] = monthly
             }
         })
+    }
+
+    fun loadGlobalHistory(): Pair<ConcurrentHashMap<String, ConcurrentHashMap<HistoryType, Int>>, ConcurrentHashMap<String, ConcurrentHashMap<HistoryType, Int>>> {
+        // CrateId, Daily/Weekly/Monthly/Alltime, Amount
+        val openHistory = ConcurrentHashMap<String, ConcurrentHashMap<HistoryType, Int>>()
+
+        // CrateId:RewardId, Daily/Weekly/Monthly/Alltime, Amount
+        val rewardHistory = ConcurrentHashMap<String, ConcurrentHashMap<HistoryType, Int>>()
+
+        @Language("SQL")
+        val crateHistorySql = "SELECT crate_id, " +
+                "       COUNT(*) AS all_time, " +
+                "       SUM(CASE WHEN open_timestamp >= strftime('%s', 'now', '-1 day') THEN 1 ELSE 0 END) AS daily, " +
+                "       SUM(CASE WHEN open_timestamp >= strftime('%s', 'now', '-7 days') THEN 1 ELSE 0 END) AS weekly, " +
+                "       SUM(CASE WHEN open_timestamp >= strftime('%s', 'now', '-1 month') THEN 1 ELSE 0 END) AS monthly " +
+                "FROM aquaticcrates_opens " +
+                "GROUP BY crate_id;"
+
+        driver.executeQuery(crateHistorySql, { }, {
+            while (next()) {
+                val crateId = getString("crate_id")
+                val allTime = getInt("all_time")
+                val daily = getInt("daily")
+                val weekly = getInt("weekly")
+                val monthly = getInt("monthly")
+                openHistory.getOrPut(crateId) { ConcurrentHashMap() }[HistoryType.ALLTIME] = allTime
+                openHistory.getOrPut(crateId) { ConcurrentHashMap() }[HistoryType.DAILY] = daily
+                openHistory.getOrPut(crateId) { ConcurrentHashMap() }[HistoryType.WEEKLY] = weekly
+                openHistory.getOrPut(crateId) { ConcurrentHashMap() }[HistoryType.MONTHLY] = monthly
+            }
+        })
+
+        @Language("SQL")
+        val rewardHistorySql = "SELECT o.crate_id || ':' || r.reward_id AS crate_reward_id, " +
+                "       COUNT(*) AS all_time, " +
+                "       SUM(CASE WHEN o.open_timestamp >= strftime('%s', 'now', '-1 day') THEN 1 ELSE 0 END) AS daily, " +
+                "       SUM(CASE WHEN o.open_timestamp >= strftime('%s', 'now', '-7 days') THEN 1 ELSE 0 END) AS weekly, " +
+                "       SUM(CASE WHEN o.open_timestamp >= strftime('%s', 'now', '-1 month') THEN 1 ELSE 0 END) AS monthly " +
+                "FROM aquaticcrates_opens o " +
+                "         JOIN aquaticcrates_rewards r ON o.id = r.open_id " +
+                "GROUP BY crate_reward_id;"
+        driver.executeQuery(rewardHistorySql, { }, {
+            while (next()) {
+                val crateRewardId = getString("crate_reward_id")
+                val allTime = getInt("all_time")
+                val daily = getInt("daily")
+                val weekly = getInt("weekly")
+                val monthly = getInt("monthly")
+                rewardHistory.getOrPut(crateRewardId) { ConcurrentHashMap() }[HistoryType.ALLTIME] = allTime
+                rewardHistory.getOrPut(crateRewardId) { ConcurrentHashMap() }[HistoryType.DAILY] = daily
+                rewardHistory.getOrPut(crateRewardId) { ConcurrentHashMap() }[HistoryType.WEEKLY] = weekly
+                rewardHistory.getOrPut(crateRewardId) { ConcurrentHashMap() }[HistoryType.MONTHLY] = monthly
+            }
+        })
+        return openHistory to rewardHistory
     }
 }
