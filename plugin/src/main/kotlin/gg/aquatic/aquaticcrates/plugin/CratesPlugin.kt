@@ -56,6 +56,7 @@ import gg.aquatic.waves.shadow.com.retrooper.packetevents.wrapper.play.client.Wr
 import gg.aquatic.waves.util.*
 import gg.aquatic.waves.util.event.event
 import org.bukkit.Bukkit
+import org.bukkit.OfflinePlayer
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryInteractEvent
 import org.bukkit.event.player.PlayerQuitEvent
@@ -367,20 +368,11 @@ class CratesPlugin : AbstractCratesPlugin() {
                             val playerName = buildString {
                                 args.subList(4, args.size).forEach { append(it) }
                             }
-                            if (playerName.lowercase() == "self") {
-                                if (crate != null) {
-                                    return@registerExtension HistoryHandler.history(
-                                        crate.identifier,
-                                        timeframe,
-                                        offlinePlayer.player ?: return@registerExtension ""
-                                    ).toString()
-                                }
-                                return@registerExtension HistoryHandler.history(
-                                    timeframe,
-                                    offlinePlayer.player ?: return@registerExtension ""
-                                ).toString()
+                            val player = if (playerName.lowercase() == "self") {
+                                offlinePlayer.player ?: return@registerExtension ""
+                            } else {
+                                Bukkit.getPlayer(playerName) ?: return@registerExtension ""
                             }
-                            val player = Bukkit.getPlayer(playerName) ?: return@registerExtension ""
                             if (crate != null) {
                                 return@registerExtension HistoryHandler.history(crate.identifier, timeframe, player)
                                     .toString()
@@ -407,14 +399,11 @@ class CratesPlugin : AbstractCratesPlugin() {
                             val playerName = buildString {
                                 args.subList(4, args.size).forEach { append(it) }
                             }
-                            if (playerName.lowercase() == "self") {
-                                return@registerExtension HistoryHandler.rewardHistory(
-                                    crate.identifier, rewardId,
-                                    timeframe,
-                                    offlinePlayer.player ?: return@registerExtension ""
-                                ).toString()
+                            val player = if (playerName.lowercase() == "self") {
+                                offlinePlayer.player ?: return@registerExtension ""
+                            } else {
+                                Bukkit.getPlayer(playerName) ?: return@registerExtension ""
                             }
-                            val player = Bukkit.getPlayer(playerName) ?: return@registerExtension ""
                             return@registerExtension HistoryHandler.rewardHistory(
                                 crate.identifier,
                                 rewardId,
