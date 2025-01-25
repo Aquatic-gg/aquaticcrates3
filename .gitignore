@@ -17,6 +17,8 @@ out/
 !**/src/test/**/out/
 .idea
 *.sqlite
+.env
+*.env
 
 ### Eclipse ###
 .apt_generated

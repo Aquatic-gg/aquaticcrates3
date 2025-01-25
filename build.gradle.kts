@@ -1,6 +1,7 @@
 plugins {
     kotlin("jvm") version "2.0.21"
     id("com.github.johnrengelman.shadow") version "7.1.2"
+    id("co.uzzu.dotenv.gradle") version "2.0.0"
 }
 
 val projectVersion = "3.0.4-Alpha"
