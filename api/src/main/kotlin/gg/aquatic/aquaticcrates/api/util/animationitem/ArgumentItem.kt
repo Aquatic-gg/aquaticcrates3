@@ -2,6 +2,7 @@ package gg.aquatic.aquaticcrates.api.util.animationitem
 
 import gg.aquatic.aquaticcrates.api.animation.Animation
 import gg.aquatic.aquaticcrates.api.animation.crate.CrateAnimation
+import gg.aquatic.aquaticcrates.api.crate.OpenableCrate
 import gg.aquatic.waves.item.AquaticItem
 import gg.aquatic.waves.util.item.loadFromYml
 import gg.aquatic.waves.util.item.toCustomItem
@@ -18,6 +19,16 @@ class ArgumentItem(
             val rewardIndex = type.substringAfter("rewarditem:").toIntOrNull() ?: 0
             return if (animation is CrateAnimation) {
                 (animation.rewards.getOrNull(rewardIndex) ?: animation.rewards.firstOrNull())?.reward?.item ?: baseItem ?: Material.STONE.toCustomItem()
+            } else Material.STONE.toCustomItem()
+        }
+        if (type.lowercase() == "randomrewarditem") {
+            return if (animation is CrateAnimation) {
+                val crate = animation.animationManager.crate
+                if (crate is OpenableCrate) {
+                    val randomReward = crate.rewardManager.rewards.values.randomOrNull() ?: return Material.STONE.toCustomItem()
+                    return randomReward.item
+                }
+                Material.STONE.toCustomItem()
             } else Material.STONE.toCustomItem()
         }
         return baseItem ?: Material.STONE.toCustomItem()

@@ -3,6 +3,7 @@ package gg.aquatic.aquaticcrates.plugin.hologram
 import gg.aquatic.aquaticcrates.api.hologram.AquaticHologramSettings
 import gg.aquatic.waves.hologram.HologramSerializer
 import gg.aquatic.waves.util.getSectionList
+import org.bukkit.Bukkit
 import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.util.Vector
 
@@ -22,7 +23,7 @@ object HologramSerializer {
         )
 
         val lines = HologramSerializer.loadLines(section.getSectionList("lines"))
-
+        Bukkit.getConsoleSender().sendMessage("Loaded hologram with ${lines.size} lines")
         /*
         val lines = HologramSerializer.load(section.getSectionList("lines"))
         for (line in lines) {

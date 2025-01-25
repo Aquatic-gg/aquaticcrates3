@@ -3,12 +3,16 @@ package gg.aquatic.aquaticcrates.plugin.animation.prop.entity
 import gg.aquatic.aquaticcrates.api.animation.Animation
 import gg.aquatic.aquaticcrates.api.animation.prop.AnimationProp
 import gg.aquatic.aquaticcrates.plugin.animation.prop.MovableAnimationProp
+import gg.aquatic.aquaticcrates.plugin.animation.prop.ThrowableAnimationProp
 import gg.aquatic.aquaticcrates.plugin.animation.prop.entity.property.EntityProperty
 import gg.aquatic.aquaticcrates.plugin.animation.prop.path.PathBoundProperties
 import gg.aquatic.aquaticcrates.plugin.animation.prop.path.PathProp
 import gg.aquatic.waves.fake.entity.FakeEntity
 import gg.aquatic.waves.shadow.com.retrooper.packetevents.protocol.entity.type.EntityType
 import gg.aquatic.waves.shadow.com.retrooper.packetevents.protocol.entity.type.EntityTypes
+import gg.aquatic.waves.shadow.com.retrooper.packetevents.util.Vector3d
+import gg.aquatic.waves.shadow.com.retrooper.packetevents.wrapper.play.server.WrapperPlayServerEntityVelocity
+import gg.aquatic.waves.util.toUser
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.util.Vector
@@ -20,7 +24,7 @@ class EntityAnimationProp(
     override val boundPaths: ConcurrentHashMap<PathProp, Pair<PathBoundProperties, Int>>,
     entityType: String,
     properties: List<EntityProperty>
-) : AnimationProp(), MovableAnimationProp {
+) : AnimationProp(), MovableAnimationProp, ThrowableAnimationProp {
 
     var entity: FakeEntity
 
@@ -60,5 +64,12 @@ class EntityAnimationProp(
 
     override fun move(location: Location) {
         entity.teleport(location)
+    }
+
+    override fun throwObject(vector: Vector) {
+        val packet = WrapperPlayServerEntityVelocity(entity.entityId, Vector3d(vector.x, vector.y, vector.z))
+        for (viewer in entity.viewers) {
+            viewer.toUser().sendPacket(packet)
+        }
     }
 }
