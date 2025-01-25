@@ -5,6 +5,7 @@ import gg.aquatic.aquaticcrates.api.player.CrateProfileEntry.HistoryType
 import gg.aquatic.aquaticcrates.api.reward.RewardContainer
 import gg.aquatic.waves.Waves
 import gg.aquatic.waves.data.DataDriver
+import gg.aquatic.waves.data.MySqlDriver
 import gg.aquatic.waves.module.WaveModules
 import gg.aquatic.waves.profile.AquaticPlayer
 import gg.aquatic.waves.profile.ProfilesModule
@@ -96,10 +97,10 @@ object CrateProfileDriver {
 
         // Insert into `aquaticcrates_opens` and retrieve auto-generated keys
         connection.prepareStatement(insertOpensQuery, PreparedStatement.RETURN_GENERATED_KEYS).use { opensStmt ->
-            for ((userId, entries) in profileEntry.newEntries) {
+            for ((_, entries) in profileEntry.newEntries) {
                 for (entry in entries) {
                     // Prepare batch for "opens" table inserts
-                    opensStmt.setInt(1, userId.toInt()) // Assuming userId is numeric in string form
+                    opensStmt.setInt(1, profileEntry.aquaticPlayer.index) // Assuming userId is numeric in string form
                     opensStmt.setLong(2, entry.timestamp) // Set timestamp
                     opensStmt.setString(3, entry.crateId) // Set crateId
                     opensStmt.addBatch() // Add to batch
@@ -116,7 +117,8 @@ object CrateProfileDriver {
                     if (generatedKeys.next()) {
                         val openId = generatedKeys.getInt(1) // Auto-generated `open_id`
                         // Map this `open_id` to the rewards from `rewardIds`
-                        val rewards = entry.rewardIds.map { it.key to it.value } // Convert rewardIds into list of (rewardId, amount)
+                        val rewards =
+                            entry.rewardIds.map { it.key to it.value } // Convert rewardIds into list of (rewardId, amount)
                         openIdToRewards.add(openId to rewards) // Add to mapping
                     }
                 }
@@ -142,13 +144,23 @@ object CrateProfileDriver {
 
     fun loadHistory(entry: CrateProfileEntry) {
         @Language("SQL")
-        val crateHistorySql = "SELECT crate_id, " +
-                "       COUNT(*) AS all_time, " +
-                "       SUM(CASE WHEN open_timestamp >= strftime('%s', 'now', '-1 day') THEN 1 ELSE 0 END) AS daily, " +
-                "       SUM(CASE WHEN open_timestamp >= strftime('%s', 'now', '-7 days') THEN 1 ELSE 0 END) AS weekly, " +
-                "       SUM(CASE WHEN open_timestamp >= strftime('%s', 'now', '-1 month') THEN 1 ELSE 0 END) AS monthly " +
-                "FROM aquaticcrates_opens " +
-                "GROUP BY crate_id;"
+        val crateHistorySql = if (driver is MySqlDriver)
+            "SELECT crate_id, " +
+                    "       COUNT(*) AS all_time, " +
+                    "       SUM(CASE WHEN open_timestamp >= UNIX_TIMESTAMP(DATE_SUB(NOW(), INTERVAL 1 DAY)) THEN 1 ELSE 0 END) AS daily, " +
+                    "       SUM(CASE WHEN open_timestamp >= UNIX_TIMESTAMP(DATE_SUB(NOW(), INTERVAL 7 DAY)) THEN 1 ELSE 0 END) AS weekly, " +
+                    "       SUM(CASE WHEN open_timestamp >= UNIX_TIMESTAMP(DATE_SUB(NOW(), INTERVAL 1 MONTH)) THEN 1 ELSE 0 END) AS monthly " +
+                    "FROM aquaticcrates_opens " +
+                    "GROUP BY crate_id;"
+        else
+            "SELECT crate_id, " +
+                    "       COUNT(*) AS all_time, " +
+                    "       SUM(CASE WHEN open_timestamp >= strftime('%s', 'now', '-1 day') THEN 1 ELSE 0 END) AS daily, " +
+                    "       SUM(CASE WHEN open_timestamp >= strftime('%s', 'now', '-7 days') THEN 1 ELSE 0 END) AS weekly, " +
+                    "       SUM(CASE WHEN open_timestamp >= strftime('%s', 'now', '-1 month') THEN 1 ELSE 0 END) AS monthly " +
+                    "FROM aquaticcrates_opens " +
+                    "GROUP BY crate_id;"
+
 
         driver.executeQuery(crateHistorySql, { }, {
             while (next()) {
@@ -165,7 +177,16 @@ object CrateProfileDriver {
         })
 
         @Language("SQL")
-        val rewardHistorySql = "SELECT o.crate_id || ':' || r.reward_id AS crate_reward_id, " +
+        val rewardHistorySql = if (driver is MySqlDriver)
+            "SELECT CONCAT(o.crate_id, ':', r.reward_id) AS crate_reward_id, " +
+                    "       COUNT(*) AS all_time, " +
+                    "       SUM(CASE WHEN o.open_timestamp >= UNIX_TIMESTAMP(DATE_SUB(NOW(), INTERVAL 1 DAY)) THEN 1 ELSE 0 END) AS daily, " +
+                    "       SUM(CASE WHEN o.open_timestamp >= UNIX_TIMESTAMP(DATE_SUB(NOW(), INTERVAL 7 DAY)) THEN 1 ELSE 0 END) AS weekly, " +
+                    "       SUM(CASE WHEN o.open_timestamp >= UNIX_TIMESTAMP(DATE_SUB(NOW(), INTERVAL 1 MONTH)) THEN 1 ELSE 0 END) AS monthly " +
+                    "FROM aquaticcrates_opens o " +
+                    "         JOIN aquaticcrates_rewards r ON o.id = r.open_id " +
+                    "GROUP BY crate_reward_id;"
+        else "SELECT o.crate_id || ':' || r.reward_id AS crate_reward_id, " +
                 "       COUNT(*) AS all_time, " +
                 "       SUM(CASE WHEN o.open_timestamp >= strftime('%s', 'now', '-1 day') THEN 1 ELSE 0 END) AS daily, " +
                 "       SUM(CASE WHEN o.open_timestamp >= strftime('%s', 'now', '-7 days') THEN 1 ELSE 0 END) AS weekly, " +
@@ -196,7 +217,14 @@ object CrateProfileDriver {
         val rewardHistory = ConcurrentHashMap<String, ConcurrentHashMap<HistoryType, Int>>()
 
         @Language("SQL")
-        val crateHistorySql = "SELECT crate_id, " +
+        val crateHistorySql = if (driver is MySqlDriver) "SELECT crate_id, " +
+                "       COUNT(*) AS all_time, " +
+                "       SUM(CASE WHEN open_timestamp >= UNIX_TIMESTAMP(DATE_SUB(NOW(), INTERVAL 1 DAY)) THEN 1 ELSE 0 END) AS daily, " +
+                "       SUM(CASE WHEN open_timestamp >= UNIX_TIMESTAMP(DATE_SUB(NOW(), INTERVAL 7 DAY)) THEN 1 ELSE 0 END) AS weekly, " +
+                "       SUM(CASE WHEN open_timestamp >= UNIX_TIMESTAMP(DATE_SUB(NOW(), INTERVAL 1 MONTH)) THEN 1 ELSE 0 END) AS monthly " +
+                "FROM aquaticcrates_opens " +
+                "GROUP BY crate_id;"
+        else "SELECT crate_id, " +
                 "       COUNT(*) AS all_time, " +
                 "       SUM(CASE WHEN open_timestamp >= strftime('%s', 'now', '-1 day') THEN 1 ELSE 0 END) AS daily, " +
                 "       SUM(CASE WHEN open_timestamp >= strftime('%s', 'now', '-7 days') THEN 1 ELSE 0 END) AS weekly, " +
@@ -219,7 +247,15 @@ object CrateProfileDriver {
         })
 
         @Language("SQL")
-        val rewardHistorySql = "SELECT o.crate_id || ':' || r.reward_id AS crate_reward_id, " +
+        val rewardHistorySql = if (driver is MySqlDriver) "SELECT CONCAT(o.crate_id, ':', r.reward_id) AS crate_reward_id, " +
+                "       COUNT(*) AS all_time, " +
+                "       SUM(CASE WHEN o.open_timestamp >= UNIX_TIMESTAMP(DATE_SUB(NOW(), INTERVAL 1 DAY)) THEN 1 ELSE 0 END) AS daily, " +
+                "       SUM(CASE WHEN o.open_timestamp >= UNIX_TIMESTAMP(DATE_SUB(NOW(), INTERVAL 7 DAY)) THEN 1 ELSE 0 END) AS weekly, " +
+                "       SUM(CASE WHEN o.open_timestamp >= UNIX_TIMESTAMP(DATE_SUB(NOW(), INTERVAL 1 MONTH)) THEN 1 ELSE 0 END) AS monthly " +
+                "FROM aquaticcrates_opens o " +
+                "         JOIN aquaticcrates_rewards r ON o.id = r.open_id " +
+                "GROUP BY crate_reward_id;"
+        else "SELECT o.crate_id || ':' || r.reward_id AS crate_reward_id, " +
                 "       COUNT(*) AS all_time, " +
                 "       SUM(CASE WHEN o.open_timestamp >= strftime('%s', 'now', '-1 day') THEN 1 ELSE 0 END) AS daily, " +
                 "       SUM(CASE WHEN o.open_timestamp >= strftime('%s', 'now', '-7 days') THEN 1 ELSE 0 END) AS weekly, " +

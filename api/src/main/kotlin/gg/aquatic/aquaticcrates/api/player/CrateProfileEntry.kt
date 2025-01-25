@@ -87,7 +87,11 @@ class CrateProfileEntry(aquaticPlayer: AquaticPlayer, val rewardContainer: Rewar
     }
 
     override fun save(connection: Connection) {
-        CrateProfileDriver.save(connection, this)
+        try {
+            CrateProfileDriver.save(connection, this)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 
     fun balance(id: String): Int {
