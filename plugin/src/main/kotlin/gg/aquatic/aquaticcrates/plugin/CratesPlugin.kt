@@ -284,6 +284,7 @@ class CratesPlugin : AbstractCratesPlugin() {
         WavesRegistry.registerAction("linear-path", LinearPathAction())
         WavesRegistry.registerAction("smooth-path", SmoothPathAction())
         WavesRegistry.registerAction("show-entity", ShowEntityAction())
+        WavesRegistry.registerAction("throw-entity", ThrowEntityAction())
         WavesRegistry.registerAction("update-entity-properties", UpdateEntityPropertiesAction())
         WavesRegistry.registerAction("set-block", SetBlockAction())
         WavesRegistry.registerAction("set-multiblock", SetMultiblockAction())
