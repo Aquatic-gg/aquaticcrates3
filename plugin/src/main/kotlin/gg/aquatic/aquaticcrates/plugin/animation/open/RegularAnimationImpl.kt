@@ -101,7 +101,7 @@ class RegularAnimationImpl(
 
         updateState(State.ROLLING)
         usedRerolls++
-        rerollManager.openReroll(player, rewards).thenAccept { result ->
+        rerollManager.openReroll(player, rewards).thenAcceptAsync { result ->
             if (result.reroll) {
                 updateState(State.OPENING)
                 rewards.clear()
@@ -115,6 +115,9 @@ class RegularAnimationImpl(
                 updateState(State.POST_OPEN)
                 tick()
             }
+        }.exceptionally {
+            it.printStackTrace()
+            null
         }
     }
 

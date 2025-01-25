@@ -31,9 +31,11 @@ class SpawnedRewardAnimationProp(
     var finished = false
         private set
 
+    @Volatile
     var previousReward: Reward? = null
         private set
 
+    @Volatile
     var entity: FakeEntity? = null
         private set
 
@@ -116,6 +118,7 @@ class SpawnedRewardAnimationProp(
         data += builder.build()
 
         val entity = FakeEntity(EntityTypes.ITEM, location, 50, animation.audience)
+        this.entity = entity
         entity.updateEntity {
             this.entityData += data.mapPair { it.index to it }
         }

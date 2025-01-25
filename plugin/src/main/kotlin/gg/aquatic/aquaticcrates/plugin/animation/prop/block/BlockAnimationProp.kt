@@ -5,6 +5,7 @@ import gg.aquatic.aquaticcrates.api.animation.prop.AnimationProp
 import gg.aquatic.waves.fake.block.FakeBlock
 import gg.aquatic.waves.util.block.AquaticBlock
 import gg.aquatic.waves.util.blockLocation
+import gg.aquatic.waves.util.runSync
 import org.bukkit.util.Vector
 
 class BlockAnimationProp(
@@ -22,6 +23,8 @@ class BlockAnimationProp(
     }
 
     override fun onAnimationEnd() {
-        packetBlock.destroy()
+        runSync {
+            packetBlock.destroy()
+        }
     }
 }

@@ -24,6 +24,7 @@ class SetBlockAction : AbstractAction<Animation>() {
         val offset = args["offset"] as Vector
         val block = args["block"] as VanillaBlock
 
+        binder.props["block:$id"]?.onAnimationEnd()
         val prop = BlockAnimationProp(binder, block, offset)
         binder.props["block:$id"] = prop
     }

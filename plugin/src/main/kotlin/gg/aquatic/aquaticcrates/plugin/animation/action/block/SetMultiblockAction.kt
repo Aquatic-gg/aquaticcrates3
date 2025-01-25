@@ -24,6 +24,7 @@ class SetMultiblockAction : AbstractAction<Animation>() {
         val offsets = args["offsets"] as List<Vector>
         val block = args["block"] as VanillaBlock
 
+        binder.props["multiblock:$id"]?.onAnimationEnd()
         val prop = MultiblockAnimationProp(binder, block, offsets.toHashSet())
         binder.props["multiblock:$id"] = prop
     }
