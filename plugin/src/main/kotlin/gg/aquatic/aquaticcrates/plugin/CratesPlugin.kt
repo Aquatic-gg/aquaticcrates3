@@ -11,6 +11,7 @@ import gg.aquatic.aquaticcrates.plugin.animation.action.block.SetBlockAction
 import gg.aquatic.aquaticcrates.plugin.animation.action.block.SetMultiblockAction
 import gg.aquatic.aquaticcrates.plugin.animation.action.bossbar.*
 import gg.aquatic.aquaticcrates.plugin.animation.action.entity.ShowEntityAction
+import gg.aquatic.aquaticcrates.plugin.animation.action.entity.SpawnRewardAction
 import gg.aquatic.aquaticcrates.plugin.animation.action.entity.UpdateEntityPropertiesAction
 import gg.aquatic.aquaticcrates.plugin.animation.action.inventory.CloseInventoryAction
 import gg.aquatic.aquaticcrates.plugin.animation.action.inventory.OpenInventoryAction
@@ -304,6 +305,7 @@ class CratesPlugin : AbstractCratesPlugin() {
         WavesRegistry.registerAction("close-inventory", CloseInventoryAction())
         WavesRegistry.registerAction("add-potion-effects", PotionEffectsAction())
         WavesRegistry.registerAction("remove-potion-effects", ClearPotionEffectsAction())
+        WavesRegistry.registerAction("spawn-reward", SpawnRewardAction())
 
         // Interaction Actions
         WavesRegistry.registerAction("open-crate", CrateOpenAction())
