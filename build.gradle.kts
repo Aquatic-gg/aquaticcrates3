@@ -3,7 +3,7 @@ plugins {
     id("com.github.johnrengelman.shadow") version "7.1.2"
 }
 
-val projectVersion = "3.0.3-Alpha"
+val projectVersion = "3.0.4-Alpha"
 group = "gg.aquatic.aquaticcrates"
 version = projectVersion
 

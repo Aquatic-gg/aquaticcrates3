@@ -247,22 +247,23 @@ object CrateProfileDriver {
         })
 
         @Language("SQL")
-        val rewardHistorySql = if (driver is MySqlDriver) "SELECT CONCAT(o.crate_id, ':', r.reward_id) AS crate_reward_id, " +
-                "       COUNT(*) AS all_time, " +
-                "       SUM(CASE WHEN o.open_timestamp >= UNIX_TIMESTAMP(DATE_SUB(NOW(), INTERVAL 1 DAY)) THEN 1 ELSE 0 END) AS daily, " +
-                "       SUM(CASE WHEN o.open_timestamp >= UNIX_TIMESTAMP(DATE_SUB(NOW(), INTERVAL 7 DAY)) THEN 1 ELSE 0 END) AS weekly, " +
-                "       SUM(CASE WHEN o.open_timestamp >= UNIX_TIMESTAMP(DATE_SUB(NOW(), INTERVAL 1 MONTH)) THEN 1 ELSE 0 END) AS monthly " +
-                "FROM aquaticcrates_opens o " +
-                "         JOIN aquaticcrates_rewards r ON o.id = r.open_id " +
-                "GROUP BY crate_reward_id;"
-        else "SELECT o.crate_id || ':' || r.reward_id AS crate_reward_id, " +
-                "       COUNT(*) AS all_time, " +
-                "       SUM(CASE WHEN o.open_timestamp >= strftime('%s', 'now', '-1 day') THEN 1 ELSE 0 END) AS daily, " +
-                "       SUM(CASE WHEN o.open_timestamp >= strftime('%s', 'now', '-7 days') THEN 1 ELSE 0 END) AS weekly, " +
-                "       SUM(CASE WHEN o.open_timestamp >= strftime('%s', 'now', '-1 month') THEN 1 ELSE 0 END) AS monthly " +
-                "FROM aquaticcrates_opens o " +
-                "         JOIN aquaticcrates_rewards r ON o.id = r.open_id " +
-                "GROUP BY crate_reward_id;"
+        val rewardHistorySql =
+            if (driver is MySqlDriver) "SELECT CONCAT(o.crate_id, ':', r.reward_id) AS crate_reward_id, " +
+                    "       COUNT(*) AS all_time, " +
+                    "       SUM(CASE WHEN o.open_timestamp >= UNIX_TIMESTAMP(DATE_SUB(NOW(), INTERVAL 1 DAY)) THEN 1 ELSE 0 END) AS daily, " +
+                    "       SUM(CASE WHEN o.open_timestamp >= UNIX_TIMESTAMP(DATE_SUB(NOW(), INTERVAL 7 DAY)) THEN 1 ELSE 0 END) AS weekly, " +
+                    "       SUM(CASE WHEN o.open_timestamp >= UNIX_TIMESTAMP(DATE_SUB(NOW(), INTERVAL 1 MONTH)) THEN 1 ELSE 0 END) AS monthly " +
+                    "FROM aquaticcrates_opens o " +
+                    "         JOIN aquaticcrates_rewards r ON o.id = r.open_id " +
+                    "GROUP BY crate_reward_id;"
+            else "SELECT o.crate_id || ':' || r.reward_id AS crate_reward_id, " +
+                    "       COUNT(*) AS all_time, " +
+                    "       SUM(CASE WHEN o.open_timestamp >= strftime('%s', 'now', '-1 day') THEN 1 ELSE 0 END) AS daily, " +
+                    "       SUM(CASE WHEN o.open_timestamp >= strftime('%s', 'now', '-7 days') THEN 1 ELSE 0 END) AS weekly, " +
+                    "       SUM(CASE WHEN o.open_timestamp >= strftime('%s', 'now', '-1 month') THEN 1 ELSE 0 END) AS monthly " +
+                    "FROM aquaticcrates_opens o " +
+                    "         JOIN aquaticcrates_rewards r ON o.id = r.open_id " +
+                    "GROUP BY crate_reward_id;"
         driver.executeQuery(rewardHistorySql, { }, {
             while (next()) {
                 val crateRewardId = getString("crate_reward_id")
@@ -278,4 +279,109 @@ object CrateProfileDriver {
         })
         return openHistory to rewardHistory
     }
+
+    fun loadLogEntries(
+        offset: Int,
+        limit: Int,
+        playerName: String?,
+        crateId: String?,
+        sorting: Sorting?,
+    ): MutableMap<Int, Pair<String, CrateProfileEntry.OpenHistoryEntry>> {
+        val resultMap: MutableMap<Int, Pair<String, CrateProfileEntry.OpenHistoryEntry>> = mutableMapOf()
+
+        try {
+            // Construct the query dynamically based on nullable parameters
+            val queryBuilder = StringBuilder(
+                """
+            SELECT o.id AS open_id, o.user_id, o.open_timestamp, o.crate_id, r.reward_id, r.amount, p.username
+            FROM aquaticcrates_opens o
+            LEFT JOIN aquaticcrates_rewards r ON o.id = r.open_id
+            LEFT JOIN aquaticprofiles p ON o.user_id = p.id
+            """.trimIndent()
+            )
+
+            // Add WHERE conditions based on the provided filters
+            val conditions = mutableListOf<String>()
+            if (playerName != null) {
+                conditions.add("p.username = ?")
+            }
+            if (crateId != null) {
+                conditions.add("o.crate_id = ?")
+            }
+
+            if (conditions.isNotEmpty()) {
+                queryBuilder.append(" WHERE ").append(conditions.joinToString(" AND "))
+            }
+
+            // Add sorting based on the Sorting enum (NEWEST or OLDEST)
+            when (sorting) {
+                Sorting.NEWEST -> queryBuilder.append(" ORDER BY o.open_timestamp DESC")
+                Sorting.OLDEST -> queryBuilder.append(" ORDER BY o.open_timestamp ASC")
+                else -> queryBuilder.append(" ORDER BY o.open_timestamp DESC") // Default to NEWEST
+            }
+
+            // Add pagination with LIMIT and OFFSET
+            queryBuilder.append(" LIMIT ? OFFSET ?")
+
+            // Prepare the statement and bind parameters
+            driver.useConnection {
+                prepareStatement(queryBuilder.toString()).use { statement ->
+                    var parameterIndex = 1
+
+                    // Bind the playerName if provided
+                    if (playerName != null) {
+                        statement.setString(parameterIndex++, playerName)
+                    }
+
+                    // Bind the crateId if provided
+                    if (crateId != null) {
+                        statement.setString(parameterIndex++, crateId)
+                    }
+
+                    // Bind the limit and offset for pagination
+                    statement.setInt(parameterIndex++, limit)
+                    statement.setInt(parameterIndex, offset)
+
+                    // Execute the query
+                    val resultSet = statement.executeQuery()
+
+                    // Populate the resultMap
+                    while (resultSet.next()) {
+                        val openId = resultSet.getInt("open_id")
+                        val timestamp = resultSet.getLong("open_timestamp")
+                        val crateIdResult = resultSet.getString("crate_id")
+                        val rewardId = resultSet.getString("reward_id")
+                        val rewardAmount = resultSet.getInt("amount")
+                        val username = resultSet.getString("username")
+
+                        // Check if an OpenHistoryEntry already exists for this `openId`
+                        val existingEntry = resultMap[openId]
+
+                        if (existingEntry != null) {
+                            // Update reward information in the existing OpenHistoryEntry
+                            val updatedEntry = existingEntry.second
+                            updatedEntry.rewardIds[rewardId] = (updatedEntry.rewardIds[rewardId] ?: 0) + rewardAmount
+                        } else {
+                            // Create a new OpenHistoryEntry and add it to the map
+                            val newEntry = CrateProfileEntry.OpenHistoryEntry(
+                                timestamp = timestamp,
+                                crateId = crateIdResult,
+                                rewardIds = hashMapOf(rewardId to rewardAmount)
+                            )
+                            resultMap[openId] = Pair(username, newEntry)
+                        }
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+
+        return resultMap
+    }
+
+    enum class Sorting {
+        NEWEST, OLDEST
+    }
+
 }

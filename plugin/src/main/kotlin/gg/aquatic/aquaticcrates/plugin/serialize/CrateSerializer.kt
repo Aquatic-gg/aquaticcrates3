@@ -20,6 +20,7 @@ import gg.aquatic.aquaticcrates.plugin.interact.action.CrateBreakAction
 import gg.aquatic.aquaticcrates.plugin.interact.action.CrateInstantOpenAction
 import gg.aquatic.aquaticcrates.plugin.interact.action.CrateOpenAction
 import gg.aquatic.aquaticcrates.plugin.interact.action.CratePreviewAction
+import gg.aquatic.aquaticcrates.plugin.log.LogMenuSettings
 import gg.aquatic.aquaticcrates.plugin.milestone.MilestoneManagerImpl
 import gg.aquatic.aquaticcrates.plugin.preview.CratePreviewMenuSettings
 import gg.aquatic.aquaticcrates.plugin.reroll.RerollManagerImpl
@@ -64,6 +65,26 @@ object CrateSerializer : BaseSerializer() {
         "inventory" to InventoryRerollInput.Companion,
         "interaction" to InteractionRerollInput.Companion
     )
+
+    fun loadLogMenuSettings(): LogMenuSettings {
+        val config = Config("config.yml", CratesPlugin.INSTANCE)
+        config.load()
+        val cfg = config.getConfiguration()!!
+
+        val logSection = cfg.getConfigurationSection("log-menu") ?: return LogMenuSettings(
+            PrivateMenuSettings(
+                InventoryType.GENERIC9X1,
+                "Example Title".toMMComponent(),
+                hashMapOf()
+            ),
+            listOf()
+        )
+        val menu = MenuSerializer.loadPrivateInventory(logSection)
+        return LogMenuSettings(
+            menu,
+            MenuSerializer.loadSlotSelection(logSection.getStringList("log-slots")).slots
+        )
+    }
 
     fun loadRewardMenuSettings(): RewardsMenuSettings {
         val config = Config("config.yml", CratesPlugin.INSTANCE)

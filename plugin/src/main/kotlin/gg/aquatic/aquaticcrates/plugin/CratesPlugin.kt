@@ -29,11 +29,9 @@ import gg.aquatic.aquaticcrates.plugin.animation.prop.inventory.AnimationMenu
 import gg.aquatic.aquaticcrates.plugin.awaiters.AbstractAwaiter
 import gg.aquatic.aquaticcrates.plugin.awaiters.IAAwaiter
 import gg.aquatic.aquaticcrates.plugin.awaiters.MEGAwaiter
-import gg.aquatic.aquaticcrates.plugin.command.CrateCommand
-import gg.aquatic.aquaticcrates.plugin.command.KeyCommand
-import gg.aquatic.aquaticcrates.plugin.command.ReloadCommand
-import gg.aquatic.aquaticcrates.plugin.command.RewardMenuCommand
+import gg.aquatic.aquaticcrates.plugin.command.*
 import gg.aquatic.aquaticcrates.plugin.interact.action.*
+import gg.aquatic.aquaticcrates.plugin.log.LogMenuSettings
 import gg.aquatic.aquaticcrates.plugin.misc.Messages
 import gg.aquatic.aquaticcrates.plugin.preview.CratePreviewMenu
 import gg.aquatic.aquaticcrates.plugin.reroll.input.interaction.InteractionInputHandler
@@ -84,6 +82,9 @@ class CratesPlugin : AbstractCratesPlugin() {
         private set
 
     lateinit var rewardsMenuSettings: RewardsMenuSettings
+        private set
+
+    lateinit var logMenuSettings: LogMenuSettings
         private set
 
     override fun onEnable() {
@@ -165,7 +166,8 @@ class CratesPlugin : AbstractCratesPlugin() {
                 "key" to KeyCommand,
                 "crate" to CrateCommand,
                 "reload" to ReloadCommand,
-                "rewardmenu" to RewardMenuCommand
+                "rewardmenu" to RewardMenuCommand,
+                "log" to LogCommand
             ),
             listOf()
         ).register("aquaticcrates")
@@ -255,6 +257,7 @@ class CratesPlugin : AbstractCratesPlugin() {
     private fun load(): CompletableFuture<Void> {
         loading = true
         rewardsMenuSettings = CrateSerializer.loadRewardMenuSettings()
+        logMenuSettings = CrateSerializer.loadLogMenuSettings()
         return runAsync {
             try {
                 Messages.load()
