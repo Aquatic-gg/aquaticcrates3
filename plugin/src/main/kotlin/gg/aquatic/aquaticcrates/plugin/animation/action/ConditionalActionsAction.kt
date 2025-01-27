@@ -4,7 +4,6 @@ import gg.aquatic.aquaticcrates.api.animation.Animation
 import gg.aquatic.aquaticcrates.api.util.ConditionalActionsArgument
 import gg.aquatic.waves.util.action.AbstractAction
 import gg.aquatic.waves.util.argument.AquaticObjectArgument
-import gg.aquatic.waves.util.generic.ConfiguredExecutableObjectsWithConditions
 
 class ConditionalActionsAction: AbstractAction<Animation>() {
     override val arguments: List<AquaticObjectArgument<*>> = listOf(
@@ -12,8 +11,8 @@ class ConditionalActionsAction: AbstractAction<Animation>() {
     )
 
     override fun execute(binder: Animation, args: Map<String, Any?>, textUpdater: (Animation, String) -> String) {
-        val actions = args["actions"] as ConfiguredExecutableObjectsWithConditions<Animation,Unit>?
+        val actions = args["actions"] as ConditionalActionsArgument.ConditionalAnimationActions?
 
-        actions?.tryExecute(binder, textUpdater)
+        actions?.tryExecute(binder)
     }
 }
