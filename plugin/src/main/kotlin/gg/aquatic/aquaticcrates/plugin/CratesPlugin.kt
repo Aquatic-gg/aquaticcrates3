@@ -306,6 +306,7 @@ class CratesPlugin : AbstractCratesPlugin() {
         WavesRegistry.registerAction("add-potion-effects", PotionEffectsAction())
         WavesRegistry.registerAction("remove-potion-effects", ClearPotionEffectsAction())
         WavesRegistry.registerAction("spawn-reward", SpawnRewardAction())
+        WavesRegistry.registerAction("timed-actions", TimedActionsAction())
 
         // Interaction Actions
         WavesRegistry.registerAction("open-crate", CrateOpenAction())
