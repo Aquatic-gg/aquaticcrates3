@@ -26,6 +26,7 @@ import gg.aquatic.aquaticcrates.plugin.animation.action.path.SmoothPathAction
 import gg.aquatic.aquaticcrates.plugin.animation.action.potion.ClearPotionEffectsAction
 import gg.aquatic.aquaticcrates.plugin.animation.action.potion.PotionEffectsAction
 import gg.aquatic.aquaticcrates.plugin.animation.action.timer.LaterActionsAction
+import gg.aquatic.aquaticcrates.plugin.animation.action.timer.StartTickerAction
 import gg.aquatic.aquaticcrates.plugin.animation.action.timer.TimedActionsAction
 import gg.aquatic.aquaticcrates.plugin.animation.condition.CustomCondition
 import gg.aquatic.aquaticcrates.plugin.animation.prop.inventory.AnimationMenu

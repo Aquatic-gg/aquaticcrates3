@@ -1,4 +1,4 @@
-package gg.aquatic.aquaticcrates.plugin.animation.prop
+package gg.aquatic.aquaticcrates.plugin.animation.prop.timer
 
 import gg.aquatic.aquaticcrates.api.animation.Animation
 import gg.aquatic.aquaticcrates.api.animation.PlayerBoundAnimation
