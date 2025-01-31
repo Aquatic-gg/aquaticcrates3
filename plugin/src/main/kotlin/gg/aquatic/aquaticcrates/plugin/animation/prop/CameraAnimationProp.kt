@@ -84,7 +84,7 @@ class CameraAnimationProp(
     }
 
     fun setTeleportInterpolation(interpolation: Int) {
-        val dataBuilder = EntityDataBuilder.BLOCK_DISPLAY.setPosRotInterpolationDuration(interpolation)
+        val dataBuilder = EntityDataBuilder.BLOCK_DISPLAY().setPosRotInterpolationDuration(interpolation)
         val metadataPacket = WrapperPlayServerEntityMetadata(entityId, dataBuilder.build())
         animation.player.toUser().sendPacket(metadataPacket)
     }

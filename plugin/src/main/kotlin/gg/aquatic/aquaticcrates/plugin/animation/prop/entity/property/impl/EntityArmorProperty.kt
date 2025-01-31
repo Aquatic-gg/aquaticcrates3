@@ -38,7 +38,7 @@ class EntityArmorProperty(
         } else {
             entity.updateEntity {
                 helmet?.getActualItem(prop.animation)?.getItem()?.let {
-                    entityData += EntityDataBuilder.ITEM_DISPLAY.setItem(it).build()
+                    entityData += EntityDataBuilder.ITEM_DISPLAY().setItem(it).build()
                         .mapPair { value -> value.index to value }
                 }
             }

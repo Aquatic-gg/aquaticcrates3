@@ -10,7 +10,7 @@ import gg.aquatic.waves.util.argument.impl.PrimitiveObjectArgument
 class ThrowEntityAction: AbstractAction<Animation>() {
     override val arguments: List<AquaticObjectArgument<*>> = listOf(
         VectorArgument("velocity", null, false),
-        PrimitiveObjectArgument("power", "double", true),
+        PrimitiveObjectArgument("power", 1.0, true),
         PrimitiveObjectArgument("prop", "entity:example", true)
     )
 
@@ -22,6 +22,6 @@ class ThrowEntityAction: AbstractAction<Animation>() {
         val prop = binder.props[property] ?: return
         if (prop !is ThrowableAnimationProp) return
 
-        prop.throwObject(velocity.clone().normalize().multiply(power))
+        prop.throwObject(velocity.clone().multiply(power))
     }
 }

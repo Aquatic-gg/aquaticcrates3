@@ -3,11 +3,10 @@ package gg.aquatic.aquaticcrates.plugin.animation.action
 import gg.aquatic.aquaticcrates.api.animation.Animation
 import gg.aquatic.aquaticcrates.api.animation.crate.CrateAnimationActions
 import gg.aquatic.aquaticcrates.api.util.ActionsArgument
-import gg.aquatic.aquaticcrates.plugin.animation.prop.TickerAnimationProp
+import gg.aquatic.aquaticcrates.plugin.animation.prop.timer.TickerAnimationProp
 import gg.aquatic.waves.util.action.AbstractAction
 import gg.aquatic.waves.util.argument.AquaticObjectArgument
 import gg.aquatic.waves.util.argument.impl.PrimitiveObjectArgument
-import gg.aquatic.waves.util.generic.ConfiguredExecutableObject
 
 class StartTickerAction : AbstractAction<Animation>() {
     override val arguments: List<AquaticObjectArgument<*>> = listOf(

@@ -1,14 +1,15 @@
 package gg.aquatic.aquaticcrates.plugin.animation.open.settings
 
-import gg.aquatic.aquaticcrates.api.animation.Animation
 import gg.aquatic.aquaticcrates.api.animation.crate.*
 import gg.aquatic.aquaticcrates.api.crate.CrateHandler
 import gg.aquatic.aquaticcrates.api.reward.RolledReward
 import gg.aquatic.aquaticcrates.plugin.animation.open.RegularAnimationImpl
+import gg.aquatic.aquaticcrates.api.util.ACGlobalAudience
 import gg.aquatic.waves.util.audience.FilterAudience
 import gg.aquatic.waves.util.audience.GlobalAudience
-import gg.aquatic.waves.util.generic.ConfiguredExecutableObject
 import gg.aquatic.waves.util.runLaterSync
+import gg.aquatic.waves.util.runSync
+import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.entity.Player
@@ -43,27 +44,45 @@ class RegularAnimationSettings(
         )
 
         val spawnedCrate = CrateHandler.spawned[location]
-        var despawned = false
         animation.tick()
         runLaterSync(1) {
-            if (animation.state == CrateAnimation.State.FINISHED) return@runLaterSync
             if (!personal) {
-                spawnedCrate?.destroy()
+                spawnedCrate?.spawnedInteractables?.forEach {
+                    val audience = it.audience
+                    if (audience is ACGlobalAudience) {
+                        audience.hidden = true
+                    }
+                    for (uuid in audience.uuids) {
+                        val op = Bukkit.getPlayer(uuid)
+                        if (op != null) {
+                            it.removeViewer(op)
+                        }
+                    }
+                }
             } else {
                 spawnedCrate?.spawnedInteractables?.forEach { it.removeViewer(player) }
             }
-            despawned = true
         }
 
         animationManager.playAnimation(animation)
         return animation.completionFuture.thenRun {
-            if (!despawned) return@thenRun
-            if (!personal) {
-                if (spawnedCrate != null) {
-                    CrateHandler.spawnCrate(spawnedCrate.crate, location)
+            runSync {
+                if (!personal) {
+                    if (spawnedCrate != null) {
+                        for (spawnedInteractable in spawnedCrate.spawnedInteractables) {
+                            val audience = spawnedInteractable.audience
+                            if (audience is ACGlobalAudience) {
+                                audience.hidden = false
+
+                                spawnedInteractable.updateViewers()
+                                continue
+                            }
+                            spawnedInteractable.updateViewers()
+                        }
+                    }
+                } else {
+                    spawnedCrate?.spawnedInteractables?.forEach { it.addViewer(player) }
                 }
-            } else {
-                spawnedCrate?.spawnedInteractables?.forEach { it.addViewer(player) }
             }
         }
     }

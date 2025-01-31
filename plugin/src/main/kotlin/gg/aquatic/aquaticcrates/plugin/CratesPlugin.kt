@@ -25,6 +25,8 @@ import gg.aquatic.aquaticcrates.plugin.animation.action.path.LinearPathAction
 import gg.aquatic.aquaticcrates.plugin.animation.action.path.SmoothPathAction
 import gg.aquatic.aquaticcrates.plugin.animation.action.potion.ClearPotionEffectsAction
 import gg.aquatic.aquaticcrates.plugin.animation.action.potion.PotionEffectsAction
+import gg.aquatic.aquaticcrates.plugin.animation.action.timer.LaterActionsAction
+import gg.aquatic.aquaticcrates.plugin.animation.action.timer.TimedActionsAction
 import gg.aquatic.aquaticcrates.plugin.animation.condition.CustomCondition
 import gg.aquatic.aquaticcrates.plugin.animation.prop.inventory.AnimationMenu
 import gg.aquatic.aquaticcrates.plugin.awaiters.AbstractAwaiter
@@ -55,7 +57,6 @@ import gg.aquatic.waves.shadow.com.retrooper.packetevents.wrapper.play.client.Wr
 import gg.aquatic.waves.util.*
 import gg.aquatic.waves.util.event.event
 import org.bukkit.Bukkit
-import org.bukkit.OfflinePlayer
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryInteractEvent
 import org.bukkit.event.player.PlayerQuitEvent
@@ -307,6 +308,7 @@ class CratesPlugin : AbstractCratesPlugin() {
         WavesRegistry.registerAction("remove-potion-effects", ClearPotionEffectsAction())
         WavesRegistry.registerAction("spawn-reward", SpawnRewardAction())
         WavesRegistry.registerAction("timed-actions", TimedActionsAction())
+        WavesRegistry.registerAction("later-actions", LaterActionsAction())
 
         // Interaction Actions
         WavesRegistry.registerAction("open-crate", CrateOpenAction())
