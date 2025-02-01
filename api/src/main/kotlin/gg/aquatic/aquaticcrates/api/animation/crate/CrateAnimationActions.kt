@@ -6,9 +6,11 @@ import gg.aquatic.waves.util.executeActions
 import gg.aquatic.waves.util.generic.ConfiguredExecutableObject
 
 data class CrateAnimationActions(
-    val animationActions: MutableList<ConfiguredExecutableObject<Animation, Unit>>,
-    val playerBoundActions: MutableList<ConfiguredExecutableObject<PlayerBoundAnimation, Unit>>
+    val animationActions: MutableCollection<ConfiguredExecutableObject<Animation, Unit>>,
+    val playerBoundActions: MutableCollection<ConfiguredExecutableObject<PlayerBoundAnimation, Unit>>
 ) {
+
+    constructor() : this(mutableListOf(), mutableListOf())
 
     fun execute(animation: Animation) {
         animationActions.executeActions(animation) { a, str -> a.updatePlaceholders(str) }

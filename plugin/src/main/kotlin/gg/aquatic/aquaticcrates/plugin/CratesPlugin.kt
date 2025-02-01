@@ -11,7 +11,7 @@ import gg.aquatic.aquaticcrates.plugin.animation.action.block.SetBlockAction
 import gg.aquatic.aquaticcrates.plugin.animation.action.block.SetMultiblockAction
 import gg.aquatic.aquaticcrates.plugin.animation.action.bossbar.*
 import gg.aquatic.aquaticcrates.plugin.animation.action.entity.ShowEntityAction
-import gg.aquatic.aquaticcrates.plugin.animation.action.entity.SpawnRewardAction
+import gg.aquatic.aquaticcrates.plugin.animation.action.SpawnRewardAction
 import gg.aquatic.aquaticcrates.plugin.animation.action.entity.UpdateEntityPropertiesAction
 import gg.aquatic.aquaticcrates.plugin.animation.action.inventory.CloseInventoryAction
 import gg.aquatic.aquaticcrates.plugin.animation.action.inventory.OpenInventoryAction
@@ -310,6 +310,7 @@ class CratesPlugin : AbstractCratesPlugin() {
         WavesRegistry.registerAction("spawn-reward", SpawnRewardAction())
         WavesRegistry.registerAction("timed-actions", TimedActionsAction())
         WavesRegistry.registerAction("later-actions", LaterActionsAction())
+        WavesRegistry.registerAction("rumbling-reward", RumblingRewardAction())
 
         // Interaction Actions
         WavesRegistry.registerAction("open-crate", CrateOpenAction())
@@ -321,9 +322,9 @@ class CratesPlugin : AbstractCratesPlugin() {
         // Open Restrictions
         WavesRegistry.registerRequirement("player", PlayerOpenRestriction())
         WavesRegistry.registerRequirement("global", GlobalOpenRestriction())
-        WavesRegistry.registerRequirement("all_player", AllPlayerOpenRestriction())
-        WavesRegistry.registerRequirement("all_global", AllGlobalOpenRestriction())
-        WavesRegistry.registerRequirement("world_blacklist", WorldBlacklistOpenRestriction())
+        WavesRegistry.registerRequirement("all-player", AllPlayerOpenRestriction())
+        WavesRegistry.registerRequirement("all-global", AllGlobalOpenRestriction())
+        WavesRegistry.registerRequirement("world-blacklist", WorldBlacklistOpenRestriction())
 
         // Animation Action Conditions
         WavesRegistry.registerRequirement("custom", CustomCondition())

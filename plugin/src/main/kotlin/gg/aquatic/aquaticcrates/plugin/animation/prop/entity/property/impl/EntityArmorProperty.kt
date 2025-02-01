@@ -19,7 +19,15 @@ class EntityArmorProperty(
 ) : EntityProperty {
     override fun apply(entity: FakeEntity, prop: EntityAnimationProp) {
 
-        if (entity.type != EntityTypes.ITEM_DISPLAY) {
+        if (entity.type == EntityTypes.ITEM) {
+            entity.updateEntity {
+                helmet?.getActualItem(prop.animation)?.getItem()?.let {
+                    entityData += EntityDataBuilder.ITEM().setItem(it).build()
+                        .mapPair { value -> value.index to value }
+                }
+            }
+        }
+        else if (entity.type != EntityTypes.ITEM_DISPLAY) {
             entity.updateEntity {
                 helmet?.getActualItem(prop.animation)?.getItem()?.let {
                     equipment[EquipmentSlot.HELMET] = it

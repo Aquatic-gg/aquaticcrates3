@@ -2,6 +2,7 @@ package gg.aquatic.aquaticcrates.api.util.animationitem
 
 import gg.aquatic.aquaticcrates.api.animation.Animation
 import gg.aquatic.aquaticcrates.api.animation.crate.CrateAnimation
+import gg.aquatic.aquaticcrates.api.animation.prop.ItemBasedProp
 import gg.aquatic.aquaticcrates.api.crate.OpenableCrate
 import gg.aquatic.waves.item.AquaticItem
 import gg.aquatic.waves.util.item.loadFromYml
@@ -15,11 +16,15 @@ class ArgumentItem(
 ) {
 
     fun getActualItem(animation: Animation): AquaticItem {
-        if (type.startsWith("rewarditem:")) {
+        if (type.lowercase().startsWith("rewarditem:")) {
             val rewardIndex = type.substringAfter("rewarditem:").toIntOrNull() ?: 0
             return if (animation is CrateAnimation) {
                 (animation.rewards.getOrNull(rewardIndex) ?: animation.rewards.firstOrNull())?.reward?.item ?: baseItem ?: Material.STONE.toCustomItem()
             } else Material.STONE.toCustomItem()
+        }
+        if (type.lowercase().startsWith("rumbling-reward:")) {
+            val rewardId = type.substringAfter("rumbling-reward:")
+            return (animation.props["rumbling-reward:$rewardId"] as? ItemBasedProp)?.item() ?: Material.STONE.toCustomItem()
         }
         if (type.lowercase() == "randomrewarditem") {
             return if (animation is CrateAnimation) {

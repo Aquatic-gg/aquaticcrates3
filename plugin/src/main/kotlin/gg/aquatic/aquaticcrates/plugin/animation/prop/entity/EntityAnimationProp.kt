@@ -13,7 +13,6 @@ import gg.aquatic.waves.shadow.com.retrooper.packetevents.protocol.entity.type.E
 import gg.aquatic.waves.shadow.com.retrooper.packetevents.util.Vector3d
 import gg.aquatic.waves.shadow.com.retrooper.packetevents.wrapper.play.server.WrapperPlayServerEntityVelocity
 import gg.aquatic.waves.util.toUser
-import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.util.Vector
 import java.util.concurrent.ConcurrentHashMap
@@ -23,7 +22,7 @@ class EntityAnimationProp(
     override val locationOffset: Vector,
     override val boundPaths: ConcurrentHashMap<PathProp, Pair<PathBoundProperties, Int>>,
     entityType: String,
-    properties: List<EntityProperty>
+    properties: Collection<EntityProperty>
 ) : AnimationProp(), MovableAnimationProp, ThrowableAnimationProp {
 
     var entity: FakeEntity

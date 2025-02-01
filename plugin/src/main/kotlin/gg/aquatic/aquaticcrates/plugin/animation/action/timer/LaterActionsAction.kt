@@ -7,16 +7,15 @@ import gg.aquatic.aquaticcrates.plugin.animation.prop.timer.LaterActionsAnimatio
 import gg.aquatic.waves.util.action.AbstractAction
 import gg.aquatic.waves.util.argument.AquaticObjectArgument
 import gg.aquatic.waves.util.argument.impl.PrimitiveObjectArgument
+import java.util.UUID
 
 class LaterActionsAction: AbstractAction<Animation>() {
     override val arguments: List<AquaticObjectArgument<*>> = listOf(
-        PrimitiveObjectArgument("id", "example", true),
         PrimitiveObjectArgument("delay", 0, true),
         ActionsArgument("actions", null, true),
     )
 
     override fun execute(binder: Animation, args: Map<String, Any?>, textUpdater: (Animation, String) -> String) {
-        val id = args["id"] as String
         val delay = args["delay"] as Int
         val actions = args["actions"] as? CrateAnimationActions ?: return
         val prop = LaterActionsAnimationProp(
@@ -24,6 +23,6 @@ class LaterActionsAction: AbstractAction<Animation>() {
             actions,
             delay
         )
-        binder.props["later-actions:$id"] = prop
+        binder.props["later-actions:${UUID.randomUUID()}"] = prop
     }
 }

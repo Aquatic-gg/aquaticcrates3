@@ -86,12 +86,7 @@ class InstantAnimationSettings(
                 }
             }
 
-            finalAnimationTasks.animationActions.executeActions(
-                obj
-            ) { _, str -> str }
-            finalAnimationTasks.playerBoundActions.executeActions(
-                obj
-            ) { _, str -> str }
+            finalAnimationTasks.execute(obj)
         }
     }
 }

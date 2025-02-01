@@ -1,10 +1,13 @@
 package gg.aquatic.aquaticcrates.plugin.animation.prop
 
+import gg.aquatic.aquaticcrates.api.animation.prop.ItemBasedProp
 import gg.aquatic.aquaticcrates.api.animation.crate.CrateAnimation
 import gg.aquatic.aquaticcrates.api.animation.crate.CrateAnimationActions
 import gg.aquatic.aquaticcrates.api.animation.prop.AnimationProp
 import gg.aquatic.aquaticcrates.api.crate.OpenableCrate
 import gg.aquatic.aquaticcrates.api.reward.Reward
+import gg.aquatic.waves.item.AquaticItem
+import org.bukkit.inventory.ItemStack
 
 class RumblingRewardProp(
     override val animation: CrateAnimation,
@@ -13,12 +16,15 @@ class RumblingRewardProp(
     val easeOut: Boolean,
     val rewardIndex: Int,
     val onRumbleActions: CrateAnimationActions,
-    val onFinishActions: CrateAnimationActions
-) : AnimationProp() {
+    val onFinishActions: CrateAnimationActions,
+    val onUpdate: (Reward, Boolean) -> Unit = { _, _ -> }
+) : AnimationProp(), ItemBasedProp {
 
+    @Volatile
     var tick = -1
         private set
 
+    @Volatile
     var finished = false
         private set
 
@@ -32,9 +38,7 @@ class RumblingRewardProp(
             return
         }
         if (tick >= rumblingLength) {
-            currentReward = animation.rewards.getOrNull(rewardIndex)?.reward ?: animation.rewards.first().reward
-            onFinishActions.execute(animation)
-            finished = true
+            onUpdate(animation.rewards.getOrNull(rewardIndex)?.reward ?: animation.rewards.first().reward, true)
             return
         }
 
@@ -53,9 +57,18 @@ class RumblingRewardProp(
             if (currentReward != null) {
                 rewards.remove(currentReward)
             }
-            currentReward = rewards.random()
+            onUpdate(rewards.random(), false)
+        }
+    }
+
+    private fun onUpdate(reward: Reward, final: Boolean) {
+        currentReward = reward
+        onUpdate.invoke(reward, final)
+        if (final) {
+            onFinishActions.execute(animation)
+            finished = true
+        } else {
             onRumbleActions.execute(animation)
-            //updateItem(previousReward!!)
         }
     }
 
@@ -77,5 +90,9 @@ class RumblingRewardProp(
 
     override fun onAnimationEnd() {
 
+    }
+
+    override fun item(): AquaticItem? {
+        return currentReward?.item
     }
 }

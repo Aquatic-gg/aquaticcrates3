@@ -1,14 +1,10 @@
 package gg.aquatic.aquaticcrates.plugin.animation.prop
 
 import gg.aquatic.aquaticcrates.api.animation.Animation
-import gg.aquatic.aquaticcrates.api.animation.PlayerBoundAnimation
 import gg.aquatic.aquaticcrates.api.animation.crate.CrateAnimationActions
 import gg.aquatic.aquaticcrates.api.animation.prop.AnimationProp
-import gg.aquatic.waves.util.executeActions
-import gg.aquatic.waves.util.generic.ConfiguredExecutableObject
 import gg.aquatic.waves.util.toMMComponent
-import gg.aquatic.waves.util.toUser
-import org.bukkit.Bukkit
+import gg.aquatic.waves.util.toPlain
 
 class StringDeobfuscationAnimationProp(
     val id: String,
@@ -17,10 +13,12 @@ class StringDeobfuscationAnimationProp(
     deobfuscationString: String,
     val obfuscatedFormat: String,
     val deobfuscatedFormat: String,
-    val deobfuscationActions: CrateAnimationActions
+    val deobfuscationActions: CrateAnimationActions,
+    stripColors: Boolean
 ) : AnimationProp() {
 
-    val obfuscationString = animation.updatePlaceholders(deobfuscationString)
+    val obfuscationString = if (stripColors) animation.updatePlaceholders(deobfuscationString).toMMComponent()
+        .toPlain() else animation.updatePlaceholders(deobfuscationString)
     val length = obfuscationString.length
     var deobfuscated = 0
 
@@ -46,19 +44,11 @@ class StringDeobfuscationAnimationProp(
         deobfuscated++
         if (deobfuscated >= length) return
 
-        val obfuscated = obfuscationString.substring(0, (length-1)-deobfuscated)
-        val deobfuscated = obfuscationString.substring((length-1)-deobfuscated, length)
-
+        val obfuscated = obfuscationString.substring(0, (length - 1) - deobfuscated)
+        val deobfuscated = obfuscationString.substring((length - 1) - deobfuscated, length)
         currentString = "$obfuscatedFormat$obfuscated$deobfuscatedFormat$deobfuscated"
-        deobfuscationActions.animationActions.executeActions(animation) { animation, s ->
-            animation.updatePlaceholders(s)
-        }
-        if (animation is PlayerBoundAnimation) {
-            deobfuscationActions.playerBoundActions.executeActions(animation) { animation, s ->
-                animation.updatePlaceholders(s)
-            }
-        }
 
+        deobfuscationActions.execute(animation)
     }
 
     override fun onAnimationEnd() {

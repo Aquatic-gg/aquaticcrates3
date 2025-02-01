@@ -6,7 +6,6 @@ import gg.aquatic.aquaticcrates.api.animation.crate.CrateAnimationActions
 import gg.aquatic.waves.registry.serializer.ActionSerializer
 import gg.aquatic.waves.util.argument.AbstractObjectArgumentSerializer
 import gg.aquatic.waves.util.argument.AquaticObjectArgument
-import gg.aquatic.waves.util.generic.ConfiguredExecutableObject
 import gg.aquatic.waves.util.getSectionList
 import org.bukkit.configuration.ConfigurationSection
 
@@ -27,6 +26,7 @@ class ActionsArgument(id: String,
         ): CrateAnimationActions {
             val actions = ActionSerializer.fromSections<Animation>(section.getSectionList(id))
             val playerBoundActions = ActionSerializer.fromSections<PlayerBoundAnimation>(section.getSectionList(id))
+
             return CrateAnimationActions(
                 actions.toMutableList(),
                 playerBoundActions.toMutableList()

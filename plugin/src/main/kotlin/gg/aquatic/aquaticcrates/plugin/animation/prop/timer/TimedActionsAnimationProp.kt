@@ -1,10 +1,8 @@
 package gg.aquatic.aquaticcrates.plugin.animation.prop.timer
 
 import gg.aquatic.aquaticcrates.api.animation.Animation
-import gg.aquatic.aquaticcrates.api.animation.PlayerBoundAnimation
 import gg.aquatic.aquaticcrates.api.animation.crate.CrateAnimationActions
 import gg.aquatic.aquaticcrates.api.animation.prop.AnimationProp
-import gg.aquatic.waves.util.executeActions
 
 class TimedActionsAnimationProp(override val animation: Animation, val actions: HashMap<Int, CrateAnimationActions>) :
     AnimationProp() {
@@ -13,12 +11,7 @@ class TimedActionsAnimationProp(override val animation: Animation, val actions: 
         private set
 
     override fun tick() {
-        actions[tick]?.animationActions?.executeActions(animation) { _, str ->
-            animation.updatePlaceholders(str)
-        }
-        if (animation is PlayerBoundAnimation) actions[tick]?.playerBoundActions?.executeActions(animation) { _, str ->
-            animation.updatePlaceholders(str)
-        }
+        actions[tick]?.execute(animation)
         tick++
     }
 

@@ -16,6 +16,12 @@ class TickerAnimationProp(
     var tick = 0
     var actualTick = 0
 
+    init {
+        animation.extraPlaceholders += "tick:$id" to { str ->
+            str.replace("%tick:$id%", actualTick.toString())
+        }
+    }
+
     override fun tick() {
         if (repeatLimit > 0 && actualTick >= repeatLimit) {
             return
@@ -24,16 +30,7 @@ class TickerAnimationProp(
         if (tick >= tickEvery) {
             tick = 0
             actualTick++
-            actions.animationActions.executeActions(animation) { _, str ->
-                animation.updatePlaceholders(str)
-                    .replace("%tick:$id%", actualTick.toString())
-            }
-            if (animation is PlayerBoundAnimation) {
-                actions.playerBoundActions.executeActions(animation) { _, str ->
-                    animation.updatePlaceholders(str)
-                        .replace("%tick:$id%", actualTick.toString())
-                }
-            }
+            actions.execute(animation)
         }
     }
 

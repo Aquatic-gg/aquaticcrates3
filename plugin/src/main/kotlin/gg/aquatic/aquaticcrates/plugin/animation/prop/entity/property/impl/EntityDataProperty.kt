@@ -8,7 +8,7 @@ import gg.aquatic.waves.packetevents.toEntityDataBuilder
 import org.bukkit.configuration.ConfigurationSection
 
 class EntityDataProperty(
-    val data: List<gg.aquatic.waves.interactable.settings.entityproperty.EntityProperty>
+    val data: Collection<gg.aquatic.waves.interactable.settings.entityproperty.EntityProperty>
 ): EntityProperty {
     override fun apply(entity: FakeEntity, prop: EntityAnimationProp) {
         val builder = entity.type.toEntityDataBuilder()

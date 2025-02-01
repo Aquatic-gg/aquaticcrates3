@@ -10,13 +10,13 @@ import gg.aquatic.waves.util.argument.impl.PrimitiveObjectArgument
 class ThrowEntityAction: AbstractAction<Animation>() {
     override val arguments: List<AquaticObjectArgument<*>> = listOf(
         VectorArgument("velocity", null, false),
-        PrimitiveObjectArgument("power", 1.0, true),
+        PrimitiveObjectArgument("power", 1.0, false),
         PrimitiveObjectArgument("prop", "entity:example", true)
     )
 
     override fun execute(binder: Animation, args: Map<String, Any?>, textUpdater: (Animation, String) -> String) {
         val velocity = args["velocity"] as? org.bukkit.util.Vector? ?: return
-        val power = args["power"]?.toString()?.toDouble() ?: return
+        val power = args["power"]?.toString()?.toDouble() ?: 0.0
         val property = args["prop"]?.toString() ?: "entity:example"
 
         val prop = binder.props[property] ?: return

@@ -26,8 +26,7 @@ abstract class CrateAnimation: PlayerBoundAnimation() {
     }
 
     open fun executeActions(actions: CrateAnimationActions) {
-        actions.animationActions.executeActions(this) { _, str -> updatePlaceholders(str) }
-        actions.playerBoundActions.executeActions(this) { _, str -> updatePlaceholders(str) }
+        actions.execute(this)
     }
 
     override fun updatePlaceholders(str: String): String {

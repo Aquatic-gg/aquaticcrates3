@@ -7,7 +7,6 @@ import gg.aquatic.aquaticcrates.plugin.animation.prop.entity.property.EntityProp
 import gg.aquatic.waves.util.action.AbstractAction
 import gg.aquatic.waves.util.argument.AquaticObjectArgument
 import gg.aquatic.waves.util.argument.impl.PrimitiveObjectArgument
-import java.util.concurrent.CompletableFuture.runAsync
 
 class UpdateEntityPropertiesAction : AbstractAction<Animation>() {
 
@@ -18,7 +17,7 @@ class UpdateEntityPropertiesAction : AbstractAction<Animation>() {
 
     override fun execute(binder: Animation, args: Map<String, Any?>, textUpdater: (Animation, String) -> String) {
         val id = args["id"] as String
-        val properties = args["properties"] as List<EntityProperty>
+        val properties = args["properties"] as Collection<EntityProperty>
 
         val entityProp = binder.props["entity:$id"] as? EntityAnimationProp? ?: return
 
