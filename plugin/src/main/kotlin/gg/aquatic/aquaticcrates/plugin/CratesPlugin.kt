@@ -354,6 +354,7 @@ class CratesPlugin : AbstractCratesPlugin() {
         WavesRegistry.registerAction("later-actions", LaterActionsAction())
         WavesRegistry.registerAction("rumbling-reward", RumblingRewardAction())
         WavesRegistry.registerAction("player-equipment", EquipmentAnimationAction())
+        WavesRegistry.registerAction("player-actions", PlayerActionsAction())
 
         // Interaction Actions
         WavesRegistry.registerAction("open-crate", CrateOpenAction())
