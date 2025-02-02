@@ -29,7 +29,7 @@ abstract class CrateAnimation: PlayerBoundAnimation() {
     }
 
     override fun updatePlaceholders(str: String): String {
-        var finalString = str.updatePAPIPlaceholders(player).replace("%player%", player.name)
+        var finalString = str.replace("%player%", player.name).updatePAPIPlaceholders(player)
 
         for ((i, reward) in rewards.withIndex()) {
             finalString = finalString
