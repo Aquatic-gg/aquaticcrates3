@@ -2,13 +2,13 @@ package gg.aquatic.aquaticcrates.plugin.animation.action.inventory
 
 import gg.aquatic.aquaticcrates.api.animation.PlayerBoundAnimation
 import gg.aquatic.aquaticcrates.plugin.animation.prop.inventory.InventoryAnimationProp
-import gg.aquatic.waves.util.action.AbstractAction
 import gg.aquatic.waves.util.argument.AquaticObjectArgument
 import gg.aquatic.waves.util.argument.ObjectArguments
 import gg.aquatic.waves.util.argument.impl.PrimitiveObjectArgument
+import gg.aquatic.waves.util.generic.Action
 import gg.aquatic.waves.util.toMMComponent
 
-class SetInventoryTitleAction: AbstractAction<PlayerBoundAnimation>() {
+class SetInventoryTitleAction: Action<PlayerBoundAnimation> {
     override val arguments: List<AquaticObjectArgument<*>> = listOf(
         PrimitiveObjectArgument("title", "Example", true)
     )

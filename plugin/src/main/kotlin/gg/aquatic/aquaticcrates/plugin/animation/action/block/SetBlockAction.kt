@@ -4,16 +4,16 @@ import gg.aquatic.aquaticcrates.api.animation.Animation
 import gg.aquatic.aquaticcrates.api.util.VectorArgument
 import gg.aquatic.aquaticcrates.api.util.animationitem.BlockArgument
 import gg.aquatic.aquaticcrates.plugin.animation.prop.block.BlockAnimationProp
-import gg.aquatic.waves.util.action.AbstractAction
 import gg.aquatic.waves.util.argument.AquaticObjectArgument
 import gg.aquatic.waves.util.argument.ObjectArguments
 import gg.aquatic.waves.util.argument.impl.PrimitiveObjectArgument
 import gg.aquatic.waves.util.block.AquaticBlock
 import gg.aquatic.waves.util.block.impl.VanillaBlock
+import gg.aquatic.waves.util.generic.Action
 import org.bukkit.Material
 import org.bukkit.util.Vector
 
-class SetBlockAction : AbstractAction<Animation>() {
+class SetBlockAction : Action<Animation> {
 
     override val arguments: List<AquaticObjectArgument<*>> = listOf(
         PrimitiveObjectArgument("id", "example", true),

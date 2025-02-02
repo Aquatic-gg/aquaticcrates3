@@ -4,14 +4,14 @@ import gg.aquatic.aquaticcrates.api.animation.PlayerBoundAnimation
 import gg.aquatic.waves.shadow.com.retrooper.packetevents.wrapper.play.server.WrapperPlayServerSetTitleSubtitle
 import gg.aquatic.waves.shadow.com.retrooper.packetevents.wrapper.play.server.WrapperPlayServerSetTitleText
 import gg.aquatic.waves.shadow.com.retrooper.packetevents.wrapper.play.server.WrapperPlayServerSetTitleTimes
-import gg.aquatic.waves.util.action.AbstractAction
 import gg.aquatic.waves.util.argument.AquaticObjectArgument
 import gg.aquatic.waves.util.argument.ObjectArguments
 import gg.aquatic.waves.util.argument.impl.PrimitiveObjectArgument
+import gg.aquatic.waves.util.generic.Action
 import gg.aquatic.waves.util.toMMComponent
 import gg.aquatic.waves.util.toUser
 
-class TitleAction : AbstractAction<PlayerBoundAnimation>() {
+class TitleAction : Action<PlayerBoundAnimation> {
     override val arguments: List<AquaticObjectArgument<*>> = listOf(
         PrimitiveObjectArgument("title", "", true),
         PrimitiveObjectArgument("subtitle", "", false),

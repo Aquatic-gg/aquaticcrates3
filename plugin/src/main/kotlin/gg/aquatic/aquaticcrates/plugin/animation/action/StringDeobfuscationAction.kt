@@ -4,12 +4,12 @@ import gg.aquatic.aquaticcrates.api.animation.Animation
 import gg.aquatic.aquaticcrates.api.animation.crate.CrateAnimationActions
 import gg.aquatic.aquaticcrates.api.util.ActionsArgument
 import gg.aquatic.aquaticcrates.plugin.animation.prop.StringDeobfuscationAnimationProp
-import gg.aquatic.waves.util.action.AbstractAction
 import gg.aquatic.waves.util.argument.AquaticObjectArgument
 import gg.aquatic.waves.util.argument.ObjectArguments
 import gg.aquatic.waves.util.argument.impl.PrimitiveObjectArgument
+import gg.aquatic.waves.util.generic.Action
 
-class StringDeobfuscationAction : AbstractAction<Animation>() {
+class StringDeobfuscationAction : Action<Animation> {
     override val arguments: List<AquaticObjectArgument<*>> = listOf(
         PrimitiveObjectArgument("deobfuscate-every", 1, false),
         PrimitiveObjectArgument("id", "example", false),

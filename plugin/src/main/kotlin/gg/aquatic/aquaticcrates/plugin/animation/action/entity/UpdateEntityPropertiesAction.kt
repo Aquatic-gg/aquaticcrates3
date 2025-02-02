@@ -4,12 +4,12 @@ import gg.aquatic.aquaticcrates.api.animation.Animation
 import gg.aquatic.aquaticcrates.plugin.animation.prop.entity.EntityAnimationProp
 import gg.aquatic.aquaticcrates.plugin.animation.prop.entity.property.EntityPropertiesObjectArgument
 import gg.aquatic.aquaticcrates.plugin.animation.prop.entity.property.EntityProperty
-import gg.aquatic.waves.util.action.AbstractAction
 import gg.aquatic.waves.util.argument.AquaticObjectArgument
 import gg.aquatic.waves.util.argument.ObjectArguments
 import gg.aquatic.waves.util.argument.impl.PrimitiveObjectArgument
+import gg.aquatic.waves.util.generic.Action
 
-class UpdateEntityPropertiesAction : AbstractAction<Animation>() {
+class UpdateEntityPropertiesAction : Action<Animation> {
 
     override val arguments: List<AquaticObjectArgument<*>> = listOf(
         PrimitiveObjectArgument("id", "example-entity", true),

@@ -1,14 +1,14 @@
 package gg.aquatic.aquaticcrates.plugin.animation.action.potion
 
 import gg.aquatic.aquaticcrates.api.animation.PlayerBoundAnimation
-import gg.aquatic.waves.util.action.AbstractAction
 import gg.aquatic.waves.util.argument.AbstractObjectArgumentSerializer
 import gg.aquatic.waves.util.argument.AquaticObjectArgument
 import gg.aquatic.waves.util.argument.ObjectArguments
+import gg.aquatic.waves.util.generic.Action
 import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.potion.PotionEffectType
 
-class ClearPotionEffectsAction: AbstractAction<PlayerBoundAnimation>() {
+class ClearPotionEffectsAction: Action<PlayerBoundAnimation> {
     override val arguments: List<AquaticObjectArgument<*>> = listOf(
         PotionsArgument("potions", listOf(), true)
     )

@@ -4,14 +4,14 @@ import gg.aquatic.aquaticcrates.api.animation.PlayerBoundAnimation
 import gg.aquatic.aquaticcrates.api.animation.crate.CrateAnimation
 import gg.aquatic.aquaticcrates.plugin.animation.prop.EquipmentAnimationProp
 import gg.aquatic.waves.item.AquaticItem
-import gg.aquatic.waves.util.action.AbstractAction
 import gg.aquatic.waves.util.argument.AquaticObjectArgument
 import gg.aquatic.waves.util.argument.ObjectArguments
 import gg.aquatic.waves.util.argument.impl.ItemObjectArgument
+import gg.aquatic.waves.util.generic.Action
 import gg.aquatic.waves.util.item.toCustomItem
 import org.bukkit.Material
 
-class EquipmentAnimationAction: AbstractAction<PlayerBoundAnimation>() {
+class EquipmentAnimationAction: Action<PlayerBoundAnimation> {
     override val arguments: List<AquaticObjectArgument<*>> = listOf(
         ItemObjectArgument("helmet", Material.AIR.toCustomItem(), false),
         ItemObjectArgument("chestplate", Material.AIR.toCustomItem(), false),

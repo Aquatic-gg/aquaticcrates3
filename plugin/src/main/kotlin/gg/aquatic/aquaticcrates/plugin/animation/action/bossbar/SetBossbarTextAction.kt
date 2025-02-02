@@ -2,12 +2,12 @@ package gg.aquatic.aquaticcrates.plugin.animation.action.bossbar
 
 import gg.aquatic.aquaticcrates.api.animation.Animation
 import gg.aquatic.aquaticcrates.plugin.animation.prop.BossbarAnimationProp
-import gg.aquatic.waves.util.action.AbstractAction
 import gg.aquatic.waves.util.argument.AquaticObjectArgument
 import gg.aquatic.waves.util.argument.ObjectArguments
 import gg.aquatic.waves.util.argument.impl.PrimitiveObjectArgument
+import gg.aquatic.waves.util.generic.Action
 
-class SetBossbarTextAction : AbstractAction<Animation>() {
+class SetBossbarTextAction : Action<Animation> {
 
     override val arguments: List<AquaticObjectArgument<*>> = listOf(
         PrimitiveObjectArgument("id", "bossbar", true),

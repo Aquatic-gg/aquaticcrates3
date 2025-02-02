@@ -1,6 +1,6 @@
 package gg.aquatic.aquaticcrates.plugin.restriction
 
-import gg.aquatic.waves.util.requirement.AbstractRequirement
+import gg.aquatic.waves.util.generic.Condition
 
-abstract class OpenRestriction: AbstractRequirement<OpenData>() {
+abstract class OpenRestriction: Condition<OpenData> {
 }

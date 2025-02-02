@@ -1,22 +1,20 @@
 package gg.aquatic.aquaticcrates.plugin.animation.action.entity
 
 import gg.aquatic.aquaticcrates.api.animation.Animation
-import gg.aquatic.aquaticcrates.api.util.VectorArgument
 import gg.aquatic.aquaticcrates.plugin.animation.prop.entity.BoundPathObjectArgument
 import gg.aquatic.aquaticcrates.plugin.animation.prop.entity.EntityAnimationProp
 import gg.aquatic.aquaticcrates.plugin.animation.prop.entity.property.EntityPropertiesObjectArgument
 import gg.aquatic.aquaticcrates.plugin.animation.prop.entity.property.EntityProperty
 import gg.aquatic.aquaticcrates.plugin.animation.prop.path.PathBoundProperties
 import gg.aquatic.aquaticcrates.plugin.animation.prop.path.PathProp
-import gg.aquatic.waves.util.action.AbstractAction
 import gg.aquatic.waves.util.argument.AquaticObjectArgument
 import gg.aquatic.waves.util.argument.ObjectArguments
 import gg.aquatic.waves.util.argument.impl.PrimitiveObjectArgument
-import org.bukkit.Bukkit
+import gg.aquatic.waves.util.generic.Action
 import org.bukkit.util.Vector
 import java.util.concurrent.ConcurrentHashMap
 
-class ShowEntityAction : AbstractAction<Animation>() {
+class ShowEntityAction : Action<Animation> {
 
     override val arguments: List<AquaticObjectArgument<*>> = listOf(
         PrimitiveObjectArgument("id", "example-entity", true),

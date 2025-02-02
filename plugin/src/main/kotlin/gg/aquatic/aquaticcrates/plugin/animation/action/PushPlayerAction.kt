@@ -2,13 +2,12 @@ package gg.aquatic.aquaticcrates.plugin.animation.action
 
 import gg.aquatic.aquaticcrates.api.animation.PlayerBoundAnimation
 import gg.aquatic.aquaticcrates.api.util.VectorArgument
-import gg.aquatic.waves.util.action.AbstractAction
 import gg.aquatic.waves.util.argument.AquaticObjectArgument
 import gg.aquatic.waves.util.argument.ObjectArguments
 import gg.aquatic.waves.util.argument.impl.PrimitiveObjectArgument
-import org.bukkit.util.Vector
+import gg.aquatic.waves.util.generic.Action
 
-class PushPlayerAction : AbstractAction<PlayerBoundAnimation>() {
+class PushPlayerAction : Action<PlayerBoundAnimation> {
     override val arguments: List<AquaticObjectArgument<*>> = listOf(
         VectorArgument("velocity", null, false),
         PrimitiveObjectArgument("power", "double", true)

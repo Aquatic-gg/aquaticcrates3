@@ -2,12 +2,11 @@ package gg.aquatic.aquaticcrates.plugin.animation.action
 
 import gg.aquatic.aquaticcrates.api.animation.Animation
 import gg.aquatic.aquaticcrates.api.util.ConditionalActionsArgument
-import gg.aquatic.waves.util.action.AbstractAction
 import gg.aquatic.waves.util.argument.AquaticObjectArgument
 import gg.aquatic.waves.util.argument.ObjectArguments
-import org.bukkit.Bukkit
+import gg.aquatic.waves.util.generic.Action
 
-class ConditionalActionsAction: AbstractAction<Animation>() {
+class ConditionalActionsAction: Action<Animation> {
     override val arguments: List<AquaticObjectArgument<*>> = listOf(
         ConditionalActionsArgument("actions", null, true)
     )

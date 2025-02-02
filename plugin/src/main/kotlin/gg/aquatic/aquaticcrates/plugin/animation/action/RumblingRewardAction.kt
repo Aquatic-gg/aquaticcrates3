@@ -5,12 +5,12 @@ import gg.aquatic.aquaticcrates.api.animation.crate.CrateAnimation
 import gg.aquatic.aquaticcrates.api.animation.crate.CrateAnimationActions
 import gg.aquatic.aquaticcrates.api.util.ActionsArgument
 import gg.aquatic.aquaticcrates.plugin.animation.prop.RumblingRewardProp
-import gg.aquatic.waves.util.action.AbstractAction
 import gg.aquatic.waves.util.argument.AquaticObjectArgument
 import gg.aquatic.waves.util.argument.ObjectArguments
 import gg.aquatic.waves.util.argument.impl.PrimitiveObjectArgument
+import gg.aquatic.waves.util.generic.Action
 
-class RumblingRewardAction : AbstractAction<Animation>() {
+class RumblingRewardAction : Action<Animation> {
     override val arguments: List<AquaticObjectArgument<*>> = listOf(
         PrimitiveObjectArgument("id", "example", true),
         PrimitiveObjectArgument("rumbling-length", 0, false),

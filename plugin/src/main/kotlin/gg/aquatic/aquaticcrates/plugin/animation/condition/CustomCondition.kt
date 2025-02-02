@@ -4,10 +4,9 @@ import gg.aquatic.aquaticcrates.api.animation.Animation
 import gg.aquatic.waves.util.argument.AquaticObjectArgument
 import gg.aquatic.waves.util.argument.ObjectArguments
 import gg.aquatic.waves.util.argument.impl.PrimitiveObjectArgument
-import gg.aquatic.waves.util.requirement.AbstractRequirement
-import org.bukkit.Bukkit
+import gg.aquatic.waves.util.generic.Condition
 
-class CustomCondition : AbstractRequirement<Animation>() {
+class CustomCondition : Condition<Animation> {
     override val arguments: List<AquaticObjectArgument<*>> = listOf(
         PrimitiveObjectArgument("condition", "", true)
     )
