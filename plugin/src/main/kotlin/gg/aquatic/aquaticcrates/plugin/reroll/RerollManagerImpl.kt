@@ -1,5 +1,6 @@
 package gg.aquatic.aquaticcrates.plugin.reroll
 
+import gg.aquatic.aquaticcrates.api.animation.crate.CrateAnimation
 import gg.aquatic.aquaticcrates.api.crate.Crate
 import gg.aquatic.aquaticcrates.api.reroll.RerollInput
 import gg.aquatic.aquaticcrates.api.reroll.RerollManager
@@ -10,8 +11,12 @@ import java.util.concurrent.CompletableFuture
 
 class RerollManagerImpl(override val crate: Crate, override val groups: HashMap<String, Int>, override val rerollInput: RerollInput) : RerollManager() {
 
-    override fun openReroll(player: Player, rewards: Collection<RolledReward>): CompletableFuture<RerollResult> {
-        return rerollInput.handle(this, player, rewards)
+    override fun openReroll(
+        player: Player,
+        animation: CrateAnimation,
+        rewards: Collection<RolledReward>
+    ): CompletableFuture<RerollResult> {
+        return rerollInput.handle(this, animation, player, rewards)
     }
 
     override fun reroll(player: Player) {

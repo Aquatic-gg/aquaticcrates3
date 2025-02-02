@@ -4,7 +4,7 @@ import gg.aquatic.aquaticcrates.api.animation.PlayerBoundAnimation
 import gg.aquatic.aquaticcrates.api.reward.RolledReward
 import gg.aquatic.waves.util.updatePAPIPlaceholders
 
-abstract class CrateAnimation: PlayerBoundAnimation() {
+abstract class CrateAnimation : PlayerBoundAnimation() {
 
     abstract val animationManager: CrateAnimationManager
 
@@ -38,6 +38,11 @@ abstract class CrateAnimation: PlayerBoundAnimation() {
                 .replace("%reward-id:$i%", reward.reward.id)
                 .replace("%reward-chance:$i%", reward.reward.chance.toString())
         }
+        val available = animationManager.rerollManager?.availableRerolls(player) ?: 0
+        finalString = finalString
+            .replace("%rerolls-total%", available.toString())
+            .replace("%rerolls-used%", usedRerolls.toString())
+            .replace("%rerolls-remaining%", (available - usedRerolls).toString())
 
         for ((_, extraPlaceholder) in extraPlaceholders) {
             finalString = extraPlaceholder(finalString)
@@ -45,6 +50,8 @@ abstract class CrateAnimation: PlayerBoundAnimation() {
 
         return finalString
     }
+
+    var usedRerolls = 0
 
     abstract fun skip()
 

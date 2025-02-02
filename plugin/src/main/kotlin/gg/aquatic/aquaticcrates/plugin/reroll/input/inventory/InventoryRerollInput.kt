@@ -1,5 +1,6 @@
 package gg.aquatic.aquaticcrates.plugin.reroll.input.inventory
 
+import gg.aquatic.aquaticcrates.api.animation.crate.CrateAnimation
 import gg.aquatic.aquaticcrates.api.reroll.RerollInput
 import gg.aquatic.aquaticcrates.api.reroll.RerollManager
 import gg.aquatic.aquaticcrates.api.reward.Reward
@@ -15,6 +16,7 @@ class InventoryRerollInput(
 ) : RerollInput {
     override fun handle(
         rerollManager: RerollManager,
+        animation: CrateAnimation,
         player: Player,
         rewards: Collection<RolledReward>
     ): CompletableFuture<RerollManager.RerollResult> {
@@ -24,6 +26,7 @@ class InventoryRerollInput(
             player,
             rewards,
             settings,
+            animation,
             future
         )
         menu.open()

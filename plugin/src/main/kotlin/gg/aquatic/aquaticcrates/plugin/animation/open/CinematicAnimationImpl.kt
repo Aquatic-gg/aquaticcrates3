@@ -68,7 +68,6 @@ class CinematicAnimationImpl(
         tick++
     }
 
-    var usedRerolls = 0
     private fun tryReroll() {
         val crate = animationManager.crate
 
@@ -84,21 +83,14 @@ class CinematicAnimationImpl(
             tick()
             return
         }
-        var availableRerolls = 0
-        for ((id, rerolls) in rerollManager.groups) {
-            if (!player.hasPermission("aquaticcrates.reroll.$id")) continue
-            if (rerolls > availableRerolls) {
-                availableRerolls = rerolls
-            }
-        }
+        val availableRerolls = rerollManager.availableRerolls(player)
         if (availableRerolls <= usedRerolls) {
             updateState(State.POST_OPEN)
             tick()
             return
         }
         updateState(State.ROLLING)
-        usedRerolls++
-        rerollManager.openReroll(player, rewards).thenAccept { result ->
+        rerollManager.openReroll(player, this, rewards).thenAccept { result ->
             if (result.reroll) {
                 updateState(State.OPENING)
                 rewards.clear()
@@ -118,6 +110,7 @@ class CinematicAnimationImpl(
                 tick()
             }
         }
+        usedRerolls++
     }
 
     private var attached = false

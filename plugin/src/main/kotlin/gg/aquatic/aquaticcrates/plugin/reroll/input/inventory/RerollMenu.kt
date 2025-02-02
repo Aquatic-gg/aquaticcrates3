@@ -1,5 +1,6 @@
 package gg.aquatic.aquaticcrates.plugin.reroll.input.inventory
 
+import gg.aquatic.aquaticcrates.api.animation.crate.CrateAnimation
 import gg.aquatic.aquaticcrates.api.reroll.RerollManager
 import gg.aquatic.aquaticcrates.api.reward.Reward
 import gg.aquatic.aquaticcrates.api.reward.RolledReward
@@ -20,9 +21,10 @@ class RerollMenu(
     player: Player,
     val rewards: Collection<RolledReward>,
     val settings: RerollInventorySettings,
+    val animation: CrateAnimation,
     val future: CompletableFuture<RerollManager.RerollResult>
 ) : PrivateAquaticMenu(
-    settings.inventorySettings.title.toMMString().updatePAPIPlaceholders(player).toMMComponent(),
+    animation.updatePlaceholders(settings.inventorySettings.title.toMMString()).updatePAPIPlaceholders(player).toMMComponent(),
     settings.inventorySettings.type,
     player
 ) {
@@ -51,7 +53,7 @@ class RerollMenu(
                 10,
                 null,
                 { true },
-                { str, _ -> str.updatePAPIPlaceholders(player) },
+                { str, _ -> animation.updatePlaceholders(str).updatePAPIPlaceholders(player) },
             )
 
             components += button.id to button
@@ -61,7 +63,7 @@ class RerollMenu(
     private fun loadButtons() {
         for ((id, button) in settings.inventorySettings.components) {
             components += id to button.create(
-                { str, menu -> str },
+                { str, menu -> animation.updatePlaceholders(str) },
                 { e ->
                     if (id == "reroll") {
                         future.complete(RerollManager.RerollResult(true))

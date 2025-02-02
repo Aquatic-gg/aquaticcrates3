@@ -47,6 +47,7 @@ class CameraAnimationProp(
             0
         } else 5
         animation.player.teleport(location.clone().add(Vector(0.0, 2.5, 0.0)))
+        animation.player.isInvisible = true
         runLaterSync(delay.toLong()) {
             val spawnPacket = WrapperPlayServerSpawnEntity(
                 entityId,
@@ -107,6 +108,7 @@ class CameraAnimationProp(
     override fun onAnimationEnd() {
         runSync {
             try {
+                animation.player.isInvisible = false
                 detach()
                 animation.player.gameMode = previousGamemode
                 animation.player.teleport(previousLocation)

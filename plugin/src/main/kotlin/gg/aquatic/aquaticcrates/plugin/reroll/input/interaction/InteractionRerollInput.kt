@@ -1,5 +1,6 @@
 package gg.aquatic.aquaticcrates.plugin.reroll.input.interaction
 
+import gg.aquatic.aquaticcrates.api.animation.crate.CrateAnimation
 import gg.aquatic.aquaticcrates.api.reroll.RerollInput
 import gg.aquatic.aquaticcrates.api.reroll.RerollManager
 import gg.aquatic.aquaticcrates.api.reward.RolledReward
@@ -16,8 +17,9 @@ class InteractionRerollInput(
 
     override fun handle(
         rerollManager: RerollManager,
+        animation: CrateAnimation,
         player: Player,
-        rewards: Collection<RolledReward>,
+        rewards: Collection<RolledReward>
     ): CompletableFuture<RerollManager.RerollResult> {
         val future = CompletableFuture<RerollManager.RerollResult>()
         InteractionInputHandler.awaiting += player.uniqueId to (future to interactions)

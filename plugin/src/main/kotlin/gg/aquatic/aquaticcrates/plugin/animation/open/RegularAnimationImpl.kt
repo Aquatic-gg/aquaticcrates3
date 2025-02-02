@@ -64,7 +64,6 @@ class RegularAnimationImpl(
         tick++
     }
 
-    var usedRerolls = 0
     private fun tryReroll() {
         val crate = animationManager.crate
 
@@ -80,13 +79,7 @@ class RegularAnimationImpl(
             tick()
             return
         }
-        var availableRerolls = 0
-        for ((id, rerolls) in rerollManager.groups) {
-            if (!player.hasPermission("aquaticcrates.reroll.$id")) continue
-            if (rerolls > availableRerolls) {
-                availableRerolls = rerolls
-            }
-        }
+        val availableRerolls = rerollManager.availableRerolls(player)
         if (availableRerolls <= usedRerolls) {
             updateState(State.POST_OPEN)
             tick()
@@ -96,8 +89,7 @@ class RegularAnimationImpl(
         animationMenu?.menu?.close()
 
         updateState(State.ROLLING)
-        usedRerolls++
-        rerollManager.openReroll(player, rewards).thenAcceptAsync { result ->
+        rerollManager.openReroll(player, this, rewards).thenAcceptAsync { result ->
             if (result.reroll) {
                 updateState(State.OPENING)
                 rewards.clear()
@@ -115,6 +107,7 @@ class RegularAnimationImpl(
             it.printStackTrace()
             null
         }
+        usedRerolls++
     }
 
     private fun updateState(state: State) {
