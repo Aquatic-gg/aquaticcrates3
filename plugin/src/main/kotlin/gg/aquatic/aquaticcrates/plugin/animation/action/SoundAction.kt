@@ -3,6 +3,7 @@ package gg.aquatic.aquaticcrates.plugin.animation.action
 import gg.aquatic.aquaticcrates.api.animation.Animation
 import gg.aquatic.waves.util.action.AbstractAction
 import gg.aquatic.waves.util.argument.AquaticObjectArgument
+import gg.aquatic.waves.util.argument.ObjectArguments
 import gg.aquatic.waves.util.argument.impl.PrimitiveObjectArgument
 import org.bukkit.Bukkit
 
@@ -13,10 +14,10 @@ class SoundAction : AbstractAction<Animation>() {
         PrimitiveObjectArgument("volume",100f,false)
     )
 
-    override fun execute(binder: Animation, args: Map<String, Any?>, textUpdater: (Animation, String) -> String) {
-        val sound = args["sound"] as String
-        val pitch = args["pitch"].toString().toFloat()
-        val volume = args["volume"].toString().toFloat()
+    override fun execute(binder: Animation, args: ObjectArguments, textUpdater: (Animation, String) -> String) {
+        val sound = args.string("sound") { textUpdater(binder, it)} ?: return
+        val pitch = args.float("pitch") { textUpdater(binder, it)} ?: return
+        val volume = args.float("volume") { textUpdater(binder, it)} ?: return
 
         for (uuid in binder.audience.uuids) {
             val player = Bukkit.getPlayer(uuid) ?: continue

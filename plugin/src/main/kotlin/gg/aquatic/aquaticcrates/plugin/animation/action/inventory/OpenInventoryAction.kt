@@ -7,6 +7,7 @@ import gg.aquatic.waves.menu.MenuSerializer
 import gg.aquatic.waves.util.action.AbstractAction
 import gg.aquatic.waves.util.argument.AbstractObjectArgumentSerializer
 import gg.aquatic.waves.util.argument.AquaticObjectArgument
+import gg.aquatic.waves.util.argument.ObjectArguments
 import gg.aquatic.waves.util.argument.impl.PrimitiveObjectArgument
 import gg.aquatic.waves.util.getSectionList
 import org.bukkit.configuration.ConfigurationSection
@@ -20,12 +21,12 @@ class OpenInventoryAction : AbstractAction<PlayerBoundAnimation>() {
 
     override fun execute(
         binder: PlayerBoundAnimation,
-        args: Map<String, Any?>,
+        args: ObjectArguments,
         textUpdater: (PlayerBoundAnimation, String) -> String
     ) {
-        val size = args["size"] as? Int ?: 9
-        val title = args["title"] as? String ?: "Inventory"
-        val items = args["items"] as? Map<Int, ArgumentItem> ?: mapOf()
+        val size = args.int("size") { textUpdater(binder, it) } ?: 9
+        val title = args.string("title") { textUpdater(binder, it) } ?: "Inventory"
+        val items = args.typed<Map<Int, ArgumentItem>>("items") { textUpdater(binder, it) } ?: mapOf()
         val prop = InventoryAnimationProp(
             binder,
             title, size, items.mapValues { it.value.getActualItem(binder) }

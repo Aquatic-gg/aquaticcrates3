@@ -6,6 +6,7 @@ import gg.aquatic.aquaticcrates.api.util.ActionsArgument
 import gg.aquatic.aquaticcrates.plugin.animation.prop.timer.LaterActionsAnimationProp
 import gg.aquatic.waves.util.action.AbstractAction
 import gg.aquatic.waves.util.argument.AquaticObjectArgument
+import gg.aquatic.waves.util.argument.ObjectArguments
 import gg.aquatic.waves.util.argument.impl.PrimitiveObjectArgument
 import java.util.UUID
 
@@ -15,9 +16,9 @@ class LaterActionsAction: AbstractAction<Animation>() {
         ActionsArgument("actions", null, true),
     )
 
-    override fun execute(binder: Animation, args: Map<String, Any?>, textUpdater: (Animation, String) -> String) {
-        val delay = args["delay"] as Int
-        val actions = args["actions"] as? CrateAnimationActions ?: return
+    override fun execute(binder: Animation, args: ObjectArguments, textUpdater: (Animation, String) -> String) {
+        val delay = args.int("delay") { textUpdater(binder, it) } ?: return
+        val actions = args.typed<CrateAnimationActions>("actions") ?: return
         val prop = LaterActionsAnimationProp(
             binder,
             actions,

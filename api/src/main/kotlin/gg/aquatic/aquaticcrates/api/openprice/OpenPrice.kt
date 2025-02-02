@@ -1,6 +1,6 @@
 package gg.aquatic.aquaticcrates.api.openprice
 
-import gg.aquatic.waves.util.executeActions
+import gg.aquatic.waves.util.collection.executeActions
 import gg.aquatic.waves.util.generic.ConfiguredExecutableObject
 import gg.aquatic.waves.util.price.ConfiguredPrice
 import org.bukkit.entity.Player

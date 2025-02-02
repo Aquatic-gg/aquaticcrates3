@@ -2,21 +2,26 @@ package gg.aquatic.aquaticcrates.plugin.animation.condition
 
 import gg.aquatic.aquaticcrates.api.animation.Animation
 import gg.aquatic.waves.util.argument.AquaticObjectArgument
+import gg.aquatic.waves.util.argument.ObjectArguments
 import gg.aquatic.waves.util.argument.impl.PrimitiveObjectArgument
 import gg.aquatic.waves.util.requirement.AbstractRequirement
+import org.bukkit.Bukkit
 
-class CustomCondition: AbstractRequirement<Animation>() {
+class CustomCondition : AbstractRequirement<Animation>() {
     override val arguments: List<AquaticObjectArgument<*>> = listOf(
         PrimitiveObjectArgument("condition", "", true)
     )
 
     override fun execute(
         binder: Animation,
-        args: Map<String, Any?>,
+        args: ObjectArguments,
         textUpdater: (Animation, String) -> String
     ): Boolean {
-        val condition = args["condition"] as String
-        return evaluateLogicalCondition(textUpdater(binder, condition))
+        val condition = binder.updatePlaceholders(
+            textUpdater(
+                binder,
+                args.string("condition") { textUpdater(binder, it) } ?: return false))
+        return evaluateLogicalCondition(condition)
     }
 
     // Evaluates logical conditions with support for && and ||
@@ -52,6 +57,7 @@ class CustomCondition: AbstractRequirement<Animation>() {
                 // Numeric comparison
                 compareNumbers(leftOperand.toDouble(), rightOperand.toDouble(), operator)
             }
+
             else -> {
                 // String comparison
                 compareStrings(leftOperand, rightOperand, operator)

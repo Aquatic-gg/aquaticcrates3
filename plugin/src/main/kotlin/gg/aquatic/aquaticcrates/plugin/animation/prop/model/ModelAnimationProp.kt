@@ -19,7 +19,8 @@ class ModelAnimationProp(
     val skin: Player?,
     val modelAnimation: String?,
     override val locationOffset: Vector,
-    override val boundPaths: ConcurrentHashMap<PathProp, Pair<PathBoundProperties, Int>>
+    override val boundPaths: ConcurrentHashMap<PathProp, Pair<PathBoundProperties, Int>>,
+    override val locationOffsetYawPitch: Pair<Float, Float>
 ) : AnimationProp(), MovableAnimationProp {
 
     override val processedPaths: MutableSet<PathProp> = ConcurrentHashMap.newKeySet()
@@ -27,12 +28,15 @@ class ModelAnimationProp(
         private set
 
     init {
-        val currentLocation = if (boundPaths.isEmpty()) animation.baseLocation.clone().add(locationOffset)
+        val currentLocation = if (boundPaths.isEmpty()) animation.baseLocation.clone().add(locationOffset).apply {
+            yaw += locationOffsetYawPitch.first
+            pitch += locationOffsetYawPitch.second
+        }
         else {
             val point = calculatePoint()
             val newLocation = animation.baseLocation.clone().add(point.vector).add(locationOffset)
-            newLocation.yaw = point.yaw
-            newLocation.pitch = point.pitch
+            newLocation.yaw = point.yaw + locationOffsetYawPitch.first
+            newLocation.pitch = point.pitch + locationOffsetYawPitch.second
 
             newLocation
         }

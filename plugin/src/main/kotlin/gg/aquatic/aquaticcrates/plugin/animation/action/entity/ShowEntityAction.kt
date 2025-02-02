@@ -10,6 +10,7 @@ import gg.aquatic.aquaticcrates.plugin.animation.prop.path.PathBoundProperties
 import gg.aquatic.aquaticcrates.plugin.animation.prop.path.PathProp
 import gg.aquatic.waves.util.action.AbstractAction
 import gg.aquatic.waves.util.argument.AquaticObjectArgument
+import gg.aquatic.waves.util.argument.ObjectArguments
 import gg.aquatic.waves.util.argument.impl.PrimitiveObjectArgument
 import org.bukkit.Bukkit
 import org.bukkit.util.Vector
@@ -21,7 +22,7 @@ class ShowEntityAction : AbstractAction<Animation>() {
         PrimitiveObjectArgument("id", "example-entity", true),
         PrimitiveObjectArgument("entity-type", "zombie", true),
         EntityPropertiesObjectArgument("properties", listOf(), false),
-        VectorArgument("location-offset", Vector(), false),
+        PrimitiveObjectArgument("location-offset", "0;0;0", false),
         BoundPathObjectArgument(
             "bound-paths",
             { _ -> ConcurrentHashMap() },
@@ -29,26 +30,37 @@ class ShowEntityAction : AbstractAction<Animation>() {
         )
     )
 
-    override fun execute(binder: Animation, args: Map<String, Any?>, textUpdater: (Animation, String) -> String) {
-        val id = args["id"] as String
-        val type = args["entity-type"] as String
-        val properties = args["properties"] as List<EntityProperty>
-        val locationOffset = args["location-offset"] as? Vector? ?: Vector()
+    override fun execute(binder: Animation, args: ObjectArguments, textUpdater: (Animation, String) -> String) {
+        val id = args.string("id") { textUpdater(binder, it)} ?: return
+        val type = args.string("entity-type") { textUpdater(binder, it) } ?: return
+        val properties = args.typed<List<EntityProperty>>("properties") { textUpdater(binder, it) } ?: return
+        val locationOffsetStrings = (args.string("location-offset") { textUpdater(binder, it)} ?: "").split(";")
+
+        val locationOffsetVector = Vector(
+            locationOffsetStrings.getOrNull(0)?.toDoubleOrNull() ?: 0.0,
+            locationOffsetStrings.getOrNull(1)?.toDoubleOrNull() ?: 0.0,
+            locationOffsetStrings.getOrNull(2)?.toDoubleOrNull() ?: 0.0,
+        )
+        val locationOffsetYawPitch =
+            (locationOffsetStrings.getOrNull(3)?.toFloatOrNull() ?: 0.0f) to (locationOffsetStrings.getOrNull(4)
+                ?.toFloatOrNull() ?: 0.0f)
+
         val boundPropertiesFactory =
-            args["bound-paths"] as ((Animation) -> ConcurrentHashMap<PathProp, PathBoundProperties>)?
+            args.any("bound-paths") as ((Animation) -> ConcurrentHashMap<PathProp, PathBoundProperties>)?
                 ?: { _ -> ConcurrentHashMap() }
 
         val boundPaths = boundPropertiesFactory(binder)
         var i = 0
         val entity = EntityAnimationProp(
             binder,
-            locationOffset,
+            locationOffsetVector,
             ConcurrentHashMap(boundPaths.mapValues {
                 i++
                 it.value to i
             }),
             type,
-            properties
+            properties,
+            locationOffsetYawPitch
         )
 
         for ((path, pathProperties) in boundPaths) {

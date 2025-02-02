@@ -7,6 +7,7 @@ import gg.aquatic.aquaticcrates.api.util.ActionsArgument
 import gg.aquatic.aquaticcrates.plugin.animation.prop.RumblingRewardProp
 import gg.aquatic.waves.util.action.AbstractAction
 import gg.aquatic.waves.util.argument.AquaticObjectArgument
+import gg.aquatic.waves.util.argument.ObjectArguments
 import gg.aquatic.waves.util.argument.impl.PrimitiveObjectArgument
 
 class RumblingRewardAction : AbstractAction<Animation>() {
@@ -20,14 +21,14 @@ class RumblingRewardAction : AbstractAction<Animation>() {
         ActionsArgument("rumble-finish-actions", null, false),
     )
 
-    override fun execute(binder: Animation, args: Map<String, Any?>, textUpdater: (Animation, String) -> String) {
-        val id = args["id"] as? String ?: return
-        val rumblingLength = args["rumbling-length"]?.toString()?.toIntOrNull() ?: return
-        val rumblingPeriod = args["rumbling-period"]?.toString()?.toIntOrNull() ?: return
-        val easeOut = args["ease-out"] as? Boolean ?: false
-        val rewardIndex = args["reward-index"]?.toString()?.toIntOrNull() ?: 0
-        val rumbleActions = args["rumble-actions"] as? CrateAnimationActions ?: CrateAnimationActions()
-        val rumbleFinishActions = args["rumble-finish-actions"] as? CrateAnimationActions ?: CrateAnimationActions()
+    override fun execute(binder: Animation, args: ObjectArguments, textUpdater: (Animation, String) -> String) {
+        val id = args.string("id") { textUpdater(binder, it) } ?: "example"
+        val rumblingLength = args.int("rumbling-length") { textUpdater(binder, it) } ?: return
+        val rumblingPeriod = args.int("rumbling-period") { textUpdater(binder, it) } ?: return
+        val easeOut = args.boolean("ease-out") { textUpdater(binder, it) } ?: false
+        val rewardIndex = args.int("reward-index") {textUpdater(binder,it)} ?: 0
+        val rumbleActions = args.typed<CrateAnimationActions>("rumble-actions") ?: CrateAnimationActions()
+        val rumbleFinishActions = args.typed<CrateAnimationActions>("rumble-finish-actions") ?: CrateAnimationActions()
 
         if (binder !is CrateAnimation) return
         val prop = RumblingRewardProp(

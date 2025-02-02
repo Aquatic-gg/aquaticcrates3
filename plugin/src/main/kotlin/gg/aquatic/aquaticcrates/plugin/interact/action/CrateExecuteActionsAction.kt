@@ -5,9 +5,9 @@ import gg.aquatic.waves.registry.serializer.ActionSerializer
 import gg.aquatic.waves.util.action.AbstractAction
 import gg.aquatic.waves.util.argument.AbstractObjectArgumentSerializer
 import gg.aquatic.waves.util.argument.AquaticObjectArgument
-import gg.aquatic.waves.util.executeActions
+import gg.aquatic.waves.util.argument.ObjectArguments
+import gg.aquatic.waves.util.collection.executeActions
 import gg.aquatic.waves.util.generic.ConfiguredExecutableObject
-import gg.aquatic.waves.util.generic.ExecutableObject
 import gg.aquatic.waves.util.getSectionList
 import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.entity.Player
@@ -18,10 +18,10 @@ class CrateExecuteActionsAction : AbstractAction<CrateInteractAction>() {
 
     override fun execute(
         binder: CrateInteractAction,
-        args: Map<String, Any?>,
+        args: ObjectArguments,
         textUpdater: (CrateInteractAction, String) -> String
     ) {
-        val actions = args["actions"] as List<ConfiguredExecutableObject<Player,Unit>>
+        val actions = args.typed<List<ConfiguredExecutableObject<Player,Unit>>>("actions") ?: return
         actions.executeActions(binder.player) { _, str -> textUpdater(binder, str)
         }
     }

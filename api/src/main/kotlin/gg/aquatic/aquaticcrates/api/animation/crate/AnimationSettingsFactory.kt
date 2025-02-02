@@ -6,6 +6,7 @@ import gg.aquatic.waves.registry.serializer.ActionSerializer
 import gg.aquatic.waves.util.generic.ConfiguredExecutableObject
 import gg.aquatic.waves.util.getSectionList
 import org.bukkit.configuration.ConfigurationSection
+import org.bukkit.entity.Player
 import java.util.*
 
 abstract class AnimationSettingsFactory {
@@ -13,12 +14,14 @@ abstract class AnimationSettingsFactory {
     abstract fun serialize(section: ConfigurationSection?): CrateAnimationSettings?
 
     protected fun loadFinalActions(section: ConfigurationSection): CrateAnimationActions {
-        val animationActions = ActionSerializer.fromSections<Animation>(section.getSectionList("final-tasks")).toMutableList()
-        val playerBoundActions = ActionSerializer.fromSections<PlayerBoundAnimation>(section.getSectionList("final-tasks")).toMutableList()
+        val animationActions =
+            ActionSerializer.fromSections<Animation>(section.getSectionList("final-tasks")).toMutableList()
+        val playerBoundActions =
+            ActionSerializer.fromSections<PlayerBoundAnimation>(section.getSectionList("final-tasks")).toMutableList()
 
         return CrateAnimationActions(
             animationActions,
-            playerBoundActions
+            playerBoundActions,
         )
     }
 
@@ -30,11 +33,13 @@ abstract class AnimationSettingsFactory {
             val delay = key.toIntOrNull() ?: continue
 
             val animationTasks = ActionSerializer.fromSections<Animation>(section.getSectionList(key)).toMutableList()
-            val playerBoundTasks = ActionSerializer.fromSections<PlayerBoundAnimation>(section.getSectionList(key)).toMutableList()
+            val playerBoundTasks =
+                ActionSerializer.fromSections<PlayerBoundAnimation>(section.getSectionList(key)).toMutableList()
 
             tasks[delay] = CrateAnimationActions(
                 animationTasks,
-                playerBoundTasks)
+                playerBoundTasks,
+            )
         }
 
         return tasks

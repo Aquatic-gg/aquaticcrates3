@@ -6,7 +6,7 @@ import gg.aquatic.aquaticcrates.api.player.CrateProfileEntry
 import gg.aquatic.aquaticcrates.api.player.HistoryHandler
 import gg.aquatic.aquaticcrates.api.reward.*
 import gg.aquatic.waves.util.chance.randomItem
-import gg.aquatic.waves.util.checkRequirements
+import gg.aquatic.waves.util.collection.checkRequirements
 import org.bukkit.entity.Player
 
 class RewardManagerImpl(

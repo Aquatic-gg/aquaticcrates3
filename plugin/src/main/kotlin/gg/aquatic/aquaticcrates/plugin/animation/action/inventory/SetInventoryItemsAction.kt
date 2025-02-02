@@ -7,6 +7,7 @@ import gg.aquatic.aquaticcrates.plugin.animation.prop.inventory.InventoryAnimati
 import gg.aquatic.waves.menu.component.Button
 import gg.aquatic.waves.util.action.AbstractAction
 import gg.aquatic.waves.util.argument.AquaticObjectArgument
+import gg.aquatic.waves.util.argument.ObjectArguments
 
 class SetInventoryItemsAction: AbstractAction<PlayerBoundAnimation>() {
 
@@ -16,11 +17,11 @@ class SetInventoryItemsAction: AbstractAction<PlayerBoundAnimation>() {
 
     override fun execute(
         binder: PlayerBoundAnimation,
-        args: Map<String, Any?>,
+        args: ObjectArguments,
         textUpdater: (PlayerBoundAnimation, String) -> String
     ) {
         val menu = (binder.props["inventory"] ?: return) as InventoryAnimationProp
-        val items = args["items"] as? Map<Int, ArgumentItem> ?: return
+        val items = args.typed<Map<Int, ArgumentItem>>("items") ?: return
         for ((slot, item) in items) {
 
             val component = Button(

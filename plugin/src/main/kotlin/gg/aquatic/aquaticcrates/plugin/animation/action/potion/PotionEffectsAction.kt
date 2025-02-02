@@ -4,6 +4,7 @@ import gg.aquatic.aquaticcrates.api.animation.PlayerBoundAnimation
 import gg.aquatic.waves.util.action.AbstractAction
 import gg.aquatic.waves.util.argument.AbstractObjectArgumentSerializer
 import gg.aquatic.waves.util.argument.AquaticObjectArgument
+import gg.aquatic.waves.util.argument.ObjectArguments
 import gg.aquatic.waves.util.getSectionList
 import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.potion.PotionEffect
@@ -16,10 +17,10 @@ class PotionEffectsAction : AbstractAction<PlayerBoundAnimation>() {
 
     override fun execute(
         binder: PlayerBoundAnimation,
-        args: Map<String, Any?>,
+        args: ObjectArguments,
         textUpdater: (PlayerBoundAnimation, String) -> String
     ) {
-        val potions = args["potions"] as? Map<PotionEffectType, Pair<Int, Int>> ?: mapOf()
+        val potions = args.typed<Map<PotionEffectType, Pair<Int, Int>>>("potions") ?: mapOf()
         for ((type, pair) in potions) {
             val (duration, amplifier) = pair
             binder.player.addPotionEffect(PotionEffect(type, duration, amplifier, false, false, false))

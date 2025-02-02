@@ -8,8 +8,10 @@ import gg.aquatic.waves.registry.serializer.ActionSerializer
 import gg.aquatic.waves.util.action.AbstractAction
 import gg.aquatic.waves.util.argument.AbstractObjectArgumentSerializer
 import gg.aquatic.waves.util.argument.AquaticObjectArgument
+import gg.aquatic.waves.util.argument.ObjectArguments
 import gg.aquatic.waves.util.getSectionList
 import org.bukkit.configuration.ConfigurationSection
+import org.bukkit.entity.Player
 import java.util.UUID
 
 class TimedActionsAction: AbstractAction<Animation>() {
@@ -17,8 +19,8 @@ class TimedActionsAction: AbstractAction<Animation>() {
         TimedActionsArgument("actions", hashMapOf(), true)
     )
 
-    override fun execute(binder: Animation, args: Map<String, Any?>, textUpdater: (Animation, String) -> String) {
-        val actions = args["actions"] as? HashMap<Int,CrateAnimationActions>? ?: return
+    override fun execute(binder: Animation, args: ObjectArguments, textUpdater: (Animation, String) -> String) {
+        val actions = args.typed<HashMap<Int,CrateAnimationActions>>("actions") ?: return
         val prop = TimedActionsAnimationProp(binder, actions)
         binder.props["timed-actions:${UUID.randomUUID()}"] = prop
         prop.tick()
@@ -44,10 +46,10 @@ class TimedActionsAction: AbstractAction<Animation>() {
                 for (key in actionsSection.getKeys(false)) {
                     val aSection = actionsSection.getConfigurationSection(key) ?: continue
                     val actions = ActionSerializer.fromSections<Animation>(aSection.getSectionList("actions"))
-                    val playerBoundActions = ActionSerializer.fromSections<PlayerBoundAnimation>(aSection.getSectionList("player-bound-actions"))
+                    val playerBoundActions = ActionSerializer.fromSections<PlayerBoundAnimation>(aSection.getSectionList("actions"))
                     map[key.toInt()] = CrateAnimationActions(
                         actions.toMutableList(),
-                        playerBoundActions.toMutableList()
+                        playerBoundActions.toMutableList(),
                     )
                 }
                 return map

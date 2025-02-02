@@ -8,7 +8,7 @@ import gg.aquatic.waves.fake.entity.FakeEntity
 import gg.aquatic.waves.packetevents.EntityDataBuilder
 import gg.aquatic.waves.shadow.com.retrooper.packetevents.protocol.entity.type.EntityTypes
 import gg.aquatic.waves.shadow.com.retrooper.packetevents.protocol.player.EquipmentSlot
-import gg.aquatic.waves.util.mapPair
+import gg.aquatic.waves.util.collection.mapPair
 import org.bukkit.configuration.ConfigurationSection
 
 class EntityArmorProperty(

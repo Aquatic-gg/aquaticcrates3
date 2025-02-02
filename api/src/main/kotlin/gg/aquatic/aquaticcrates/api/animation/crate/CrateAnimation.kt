@@ -2,7 +2,6 @@ package gg.aquatic.aquaticcrates.api.animation.crate
 
 import gg.aquatic.aquaticcrates.api.animation.PlayerBoundAnimation
 import gg.aquatic.aquaticcrates.api.reward.RolledReward
-import gg.aquatic.waves.util.executeActions
 import gg.aquatic.waves.util.updatePAPIPlaceholders
 
 abstract class CrateAnimation: PlayerBoundAnimation() {

@@ -4,6 +4,7 @@ import gg.aquatic.aquaticcrates.api.animation.Animation
 import gg.aquatic.aquaticcrates.plugin.animation.prop.BossbarAnimationProp
 import gg.aquatic.waves.util.action.AbstractAction
 import gg.aquatic.waves.util.argument.AquaticObjectArgument
+import gg.aquatic.waves.util.argument.ObjectArguments
 import gg.aquatic.waves.util.argument.impl.PrimitiveObjectArgument
 import net.kyori.adventure.bossbar.BossBar
 
@@ -14,9 +15,9 @@ class SetBossbarColorAction : AbstractAction<Animation>() {
         PrimitiveObjectArgument("color", "blue", true),
     )
 
-    override fun execute(binder: Animation, args: Map<String, Any?>, textUpdater: (Animation, String) -> String) {
-        val id = args["id"] as String
-        val color = args["color"] as String
+    override fun execute(binder: Animation, args: ObjectArguments, textUpdater: (Animation, String) -> String) {
+        val id = args.string("id") { textUpdater(binder, it) } ?: return
+        val color = args.string("color") { textUpdater(binder, it) } ?: return
         val prop = binder.props["bossbar:$id"] as? BossbarAnimationProp? ?: return
         prop.bossBar.color = BossBar.Color.valueOf(color.uppercase())
     }

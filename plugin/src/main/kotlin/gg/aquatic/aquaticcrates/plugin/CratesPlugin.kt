@@ -1,5 +1,6 @@
 package gg.aquatic.aquaticcrates.plugin
 
+import com.ticxo.modelengine.api.animation.handler.AnimationHandler
 import gg.aquatic.aquaticcrates.api.AbstractCratesPlugin
 import gg.aquatic.aquaticcrates.api.animation.crate.CrateAnimationManager
 import gg.aquatic.aquaticcrates.api.crate.CrateHandler
@@ -11,7 +12,6 @@ import gg.aquatic.aquaticcrates.plugin.animation.action.block.SetBlockAction
 import gg.aquatic.aquaticcrates.plugin.animation.action.block.SetMultiblockAction
 import gg.aquatic.aquaticcrates.plugin.animation.action.bossbar.*
 import gg.aquatic.aquaticcrates.plugin.animation.action.entity.ShowEntityAction
-import gg.aquatic.aquaticcrates.plugin.animation.action.SpawnRewardAction
 import gg.aquatic.aquaticcrates.plugin.animation.action.entity.UpdateEntityPropertiesAction
 import gg.aquatic.aquaticcrates.plugin.animation.action.inventory.CloseInventoryAction
 import gg.aquatic.aquaticcrates.plugin.animation.action.inventory.OpenInventoryAction
@@ -29,6 +29,7 @@ import gg.aquatic.aquaticcrates.plugin.animation.action.timer.LaterActionsAction
 import gg.aquatic.aquaticcrates.plugin.animation.action.timer.StartTickerAction
 import gg.aquatic.aquaticcrates.plugin.animation.action.timer.TimedActionsAction
 import gg.aquatic.aquaticcrates.plugin.animation.condition.CustomCondition
+import gg.aquatic.aquaticcrates.plugin.animation.prop.EquipmentAnimationProp
 import gg.aquatic.aquaticcrates.plugin.animation.prop.inventory.AnimationMenu
 import gg.aquatic.aquaticcrates.plugin.awaiters.AbstractAwaiter
 import gg.aquatic.aquaticcrates.plugin.awaiters.IAAwaiter
@@ -53,8 +54,13 @@ import gg.aquatic.waves.registry.WavesRegistry
 import gg.aquatic.waves.registry.registerAction
 import gg.aquatic.waves.registry.registerRequirement
 import gg.aquatic.waves.shadow.com.retrooper.packetevents.event.PacketReceiveEvent
+import gg.aquatic.waves.shadow.com.retrooper.packetevents.event.PacketSendEvent
 import gg.aquatic.waves.shadow.com.retrooper.packetevents.protocol.packettype.PacketType
 import gg.aquatic.waves.shadow.com.retrooper.packetevents.wrapper.play.client.WrapperPlayClientInteractEntity
+import gg.aquatic.waves.shadow.com.retrooper.packetevents.wrapper.play.server.WrapperPlayServerSetSlot
+import gg.aquatic.waves.shadow.com.retrooper.packetevents.wrapper.play.server.WrapperPlayServerWindowItems
+import gg.aquatic.waves.shadow.io.retrooper.packetevents.util.SpigotConversionUtil
+import gg.aquatic.waves.sync.SyncHandler.sendPacket
 import gg.aquatic.waves.util.*
 import gg.aquatic.waves.util.event.event
 import org.bukkit.Bukkit
@@ -228,6 +234,43 @@ class CratesPlugin : AbstractCratesPlugin() {
                 }
             }
         }
+        packetEvent<PacketSendEvent> {
+            val player = player() ?: return@packetEvent
+            if (packetType != PacketType.Play.Server.WINDOW_ITEMS && packetType != PacketType.Play.Server.SET_SLOT) {
+                return@packetEvent
+            }
+
+            var prop: EquipmentAnimationProp? = null
+            for (value in CrateHandler.crates.values) {
+                if (value !is OpenableCrate) {
+                    continue
+                }
+                val animations = value.animationManager.playingAnimations[player.uniqueId] ?: continue
+                for (animation in animations) {
+                    prop = animation.props["player-equipment"] as? EquipmentAnimationProp ?: continue
+                    break
+                }
+                if (prop != null) {
+                    break
+                }
+            }
+
+            prop ?: return@packetEvent
+            if (packetType == PacketType.Play.Server.SET_SLOT) {
+                val packet = WrapperPlayServerSetSlot(this)
+                if (packet.windowId != 0) return@packetEvent
+                if (packet.slot !in listOf(5,6,7,8)) return@packetEvent
+                isCancelled = true
+
+            } else if (packetType == PacketType.Play.Server.WINDOW_ITEMS) {
+                val packet = WrapperPlayServerWindowItems(this)
+                if (packet.windowId != 0) return@packetEvent
+                packet.items[5] = SpigotConversionUtil.fromBukkitItemStack(prop.helmet)
+                packet.items[6] = SpigotConversionUtil.fromBukkitItemStack(prop.chestplate)
+                packet.items[7] = SpigotConversionUtil.fromBukkitItemStack(prop.leggings)
+                packet.items[8] = SpigotConversionUtil.fromBukkitItemStack(prop.boots)
+            }
+        }
     }
 
     fun reloadPlugin(): CompletableFuture<Boolean> {
@@ -307,10 +350,10 @@ class CratesPlugin : AbstractCratesPlugin() {
         WavesRegistry.registerAction("close-inventory", CloseInventoryAction())
         WavesRegistry.registerAction("add-potion-effects", PotionEffectsAction())
         WavesRegistry.registerAction("remove-potion-effects", ClearPotionEffectsAction())
-        WavesRegistry.registerAction("spawn-reward", SpawnRewardAction())
         WavesRegistry.registerAction("timed-actions", TimedActionsAction())
         WavesRegistry.registerAction("later-actions", LaterActionsAction())
         WavesRegistry.registerAction("rumbling-reward", RumblingRewardAction())
+        WavesRegistry.registerAction("player-equipment", EquipmentAnimationAction())
 
         // Interaction Actions
         WavesRegistry.registerAction("open-crate", CrateOpenAction())

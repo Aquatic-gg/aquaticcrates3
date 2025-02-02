@@ -1,17 +1,13 @@
 package gg.aquatic.aquaticcrates.plugin.animation.open
 
-import gg.aquatic.aquaticcrates.api.animation.Animation
 import gg.aquatic.aquaticcrates.api.animation.crate.CrateAnimation
-import gg.aquatic.aquaticcrates.api.animation.crate.CrateAnimationActions
 import gg.aquatic.aquaticcrates.api.animation.crate.CrateAnimationManager
 import gg.aquatic.aquaticcrates.api.animation.prop.AnimationProp
 import gg.aquatic.aquaticcrates.api.crate.OpenableCrate
 import gg.aquatic.aquaticcrates.api.reward.RolledReward
-import gg.aquatic.aquaticcrates.plugin.animation.prop.CameraAnimationProp
 import gg.aquatic.aquaticcrates.plugin.animation.open.settings.CinematicAnimationSettings
+import gg.aquatic.aquaticcrates.plugin.animation.prop.CameraAnimationProp
 import gg.aquatic.waves.util.audience.AquaticAudience
-import gg.aquatic.waves.util.executeActions
-import gg.aquatic.waves.util.generic.ConfiguredExecutableObject
 import gg.aquatic.waves.util.runSync
 import org.bukkit.Location
 import org.bukkit.entity.Player
@@ -24,8 +20,9 @@ class CinematicAnimationImpl(
     override val baseLocation: Location,
     override val rewards: MutableList<RolledReward>,
     override val audience: AquaticAudience,
-    val completionFuture: CompletableFuture<Void>
-): CrateAnimation() {
+    val completionFuture: CompletableFuture<Void>,
+    //val camera: CameraAnimationProp
+) : CrateAnimation() {
 
     override var state: State = State.PRE_OPEN
         private set
@@ -105,10 +102,15 @@ class CinematicAnimationImpl(
             if (result.reroll) {
                 updateState(State.OPENING)
                 rewards.clear()
+
                 for ((_, prop) in props) {
+                    if (prop is CameraAnimationProp) {
+                        prop.boundPaths.clear()
+                        continue
+                    }
                     prop.onAnimationEnd()
                 }
-                props.clear()
+                props.toList().forEach { if (it.first.lowercase() != "camera") props.remove(it.first) }
                 rewards += crate.rewardManager.getRewards(player)
                 tick()
             } else {

@@ -6,8 +6,8 @@ import gg.aquatic.aquaticcrates.api.player.crateEntry
 import gg.aquatic.aquaticcrates.api.reward.Reward
 import gg.aquatic.aquaticcrates.plugin.animation.open.settings.InstantAnimationSettings
 import gg.aquatic.waves.profile.toAquaticPlayer
-import gg.aquatic.waves.util.executeActions
-import gg.aquatic.waves.util.mapPair
+import gg.aquatic.waves.util.collection.executeActions
+import gg.aquatic.waves.util.collection.mapPair
 import gg.aquatic.waves.util.runAsync
 import org.bukkit.entity.Player
 import java.util.concurrent.CompletableFuture

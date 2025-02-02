@@ -12,6 +12,7 @@ import java.util.concurrent.ConcurrentHashMap
 
 interface MovableAnimationProp {
     val locationOffset: Vector
+    val locationOffsetYawPitch: Pair<Float, Float>
     val animation: Animation
 
     val boundPaths: ConcurrentHashMap<PathProp, Pair<PathBoundProperties, Int>>
@@ -32,8 +33,8 @@ interface MovableAnimationProp {
         val currentPoint = calculatePoint()
 
         val newLocation = animation.baseLocation.clone().add(currentPoint.vector).add(locationOffset)
-        newLocation.yaw = currentPoint.yaw
-        newLocation.pitch = currentPoint.pitch
+        newLocation.yaw = currentPoint.yaw + locationOffsetYawPitch.first
+        newLocation.pitch = currentPoint.pitch + locationOffsetYawPitch.second
 
         move(newLocation)
         processedPaths.clear()

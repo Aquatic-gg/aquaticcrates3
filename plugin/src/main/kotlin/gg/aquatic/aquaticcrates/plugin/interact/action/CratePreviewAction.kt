@@ -5,8 +5,7 @@ import gg.aquatic.aquaticcrates.plugin.crate.BasicCrate
 import gg.aquatic.aquaticcrates.plugin.preview.CratePreviewMenu
 import gg.aquatic.waves.util.action.AbstractAction
 import gg.aquatic.waves.util.argument.AquaticObjectArgument
-import gg.aquatic.waves.util.generic.ExecutableObject
-import org.bukkit.Bukkit
+import gg.aquatic.waves.util.argument.ObjectArguments
 
 class CratePreviewAction : AbstractAction<CrateInteractAction>() {
 
@@ -14,7 +13,7 @@ class CratePreviewAction : AbstractAction<CrateInteractAction>() {
 
     override fun execute(
         binder: CrateInteractAction,
-        args: Map<String, Any?>,
+        args: ObjectArguments,
         textUpdater: (CrateInteractAction, String) -> String
     ) {
         val crate = binder.crate

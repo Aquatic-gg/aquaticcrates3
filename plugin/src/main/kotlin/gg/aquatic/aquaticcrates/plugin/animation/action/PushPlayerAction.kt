@@ -4,6 +4,7 @@ import gg.aquatic.aquaticcrates.api.animation.PlayerBoundAnimation
 import gg.aquatic.aquaticcrates.api.util.VectorArgument
 import gg.aquatic.waves.util.action.AbstractAction
 import gg.aquatic.waves.util.argument.AquaticObjectArgument
+import gg.aquatic.waves.util.argument.ObjectArguments
 import gg.aquatic.waves.util.argument.impl.PrimitiveObjectArgument
 import org.bukkit.util.Vector
 
@@ -15,12 +16,12 @@ class PushPlayerAction : AbstractAction<PlayerBoundAnimation>() {
 
     override fun execute(
         binder: PlayerBoundAnimation,
-        args: Map<String, Any?>,
+        args: ObjectArguments,
         textUpdater: (PlayerBoundAnimation, String) -> String
     ) {
-        val power = args["power"] as? Double ?: 1.0
-        val velocity = args["velocity"] as? Vector?
-        val vector = velocity?.normalize()?.multiply(power) ?: binder.player.location.clone()
+        val power = args.double("power") { textUpdater(binder, it) } ?: 1.0
+        val velocity = args.vector("velocity") { textUpdater(binder, it) }
+        val vector = velocity?.multiply(power) ?: binder.player.location.clone()
             .subtract(binder.baseLocation).toVector().normalize()
             .multiply(power)
 

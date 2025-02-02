@@ -4,6 +4,7 @@ import gg.aquatic.aquaticcrates.api.animation.PlayerBoundAnimation
 import gg.aquatic.aquaticcrates.plugin.animation.prop.BossbarAnimationProp
 import gg.aquatic.waves.util.action.AbstractAction
 import gg.aquatic.waves.util.argument.AquaticObjectArgument
+import gg.aquatic.waves.util.argument.ObjectArguments
 import gg.aquatic.waves.util.argument.impl.PrimitiveObjectArgument
 import net.kyori.adventure.bossbar.BossBar
 
@@ -17,12 +18,16 @@ class ShowBossbarAction : AbstractAction<PlayerBoundAnimation>() {
         PrimitiveObjectArgument("progress", 1.0, false),
     )
 
-    override fun execute(binder: PlayerBoundAnimation, args: Map<String, Any?>, textUpdater: (PlayerBoundAnimation, String) -> String) {
-        val id = args["id"] as String
-        val message = args["message"] as String
-        val color = args["color"] as String
-        val style = args["style"] as String
-        val progress = args["progress"].toString().toFloat()
+    override fun execute(
+        binder: PlayerBoundAnimation,
+        args: ObjectArguments,
+        textUpdater: (PlayerBoundAnimation, String) -> String
+    ) {
+        val id = args.string("id") { textUpdater(binder, it) } ?: return
+        val message = args.string("message") { textUpdater(binder, it)} ?: return
+        val color = args.string("color") { textUpdater(binder, it) } ?: return
+        val style = args.string("style") { textUpdater(binder, it) } ?: return
+        val progress = args.float("progress") { textUpdater(binder, it) } ?: 1.0f
 
         val prop = BossbarAnimationProp(
             binder,

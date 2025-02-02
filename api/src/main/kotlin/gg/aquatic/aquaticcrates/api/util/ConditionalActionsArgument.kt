@@ -2,20 +2,15 @@ package gg.aquatic.aquaticcrates.api.util
 
 import gg.aquatic.aquaticcrates.api.animation.Animation
 import gg.aquatic.aquaticcrates.api.animation.PlayerBoundAnimation
+import gg.aquatic.aquaticcrates.api.animation.crate.CrateAnimationActions
 import gg.aquatic.waves.registry.serializer.ActionSerializer
 import gg.aquatic.waves.registry.serializer.RequirementSerializer
 import gg.aquatic.waves.util.argument.AbstractObjectArgumentSerializer
 import gg.aquatic.waves.util.argument.AquaticObjectArgument
-import gg.aquatic.waves.util.checkRequirements
-import gg.aquatic.waves.util.executeActions
-import gg.aquatic.waves.util.generic.ConfiguredExecutableObject
-import gg.aquatic.waves.util.generic.ConfiguredExecutableObjectWithConditions
-import gg.aquatic.waves.util.generic.ConfiguredExecutableObjectsWithConditions
+import gg.aquatic.waves.util.collection.checkRequirements
 import gg.aquatic.waves.util.getSectionList
 import gg.aquatic.waves.util.requirement.ConfiguredRequirement
-import gg.aquatic.waves.util.requirement.ConfiguredRequirementWithFailActions
 import org.bukkit.configuration.ConfigurationSection
-import java.util.ArrayList
 
 class ConditionalActionsArgument(
     id: String, defaultValue: ConditionalAnimationActions?,
@@ -49,23 +44,19 @@ class ConditionalActionsArgument(
                 ActionSerializer.fromSections<PlayerBoundAnimation>(section.getSectionList("fail"))
 
             return ConditionalAnimationActions(
-                actions,
-                playerBoundActions,
+                CrateAnimationActions(actions.toMutableList(), playerBoundActions.toMutableList()),
                 conditions,
                 playerBoundConditions,
-                failActions,
-                failPlayerBoundActions
+                CrateAnimationActions(failActions.toMutableList(), failPlayerBoundActions.toMutableList())
             )
         }
     }
 
     class ConditionalAnimationActions(
-        val actions: List<ConfiguredExecutableObject<Animation, Unit>>,
-        val playerBoundActions: List<ConfiguredExecutableObject<PlayerBoundAnimation, Unit>>,
+        val actions: CrateAnimationActions,
         val conditions: List<ConfiguredRequirement<Animation>>,
         val playerBoundConditions: List<ConfiguredRequirement<PlayerBoundAnimation>>,
-        val failActions: List<ConfiguredExecutableObject<Animation, Unit>>,
-        val failPlayerBoundActions: List<ConfiguredExecutableObject<PlayerBoundAnimation, Unit>>
+        val failActions: CrateAnimationActions,
     ) {
 
         fun tryExecute(animation: Animation) {
@@ -76,15 +67,9 @@ class ConditionalActionsArgument(
             if (isMet && !conditions.checkRequirements(animation)) isMet = false
 
             if (isMet) {
-                actions.forEach { it.execute(animation) { _, str -> animation.updatePlaceholders(str) } }
-                if (animation is PlayerBoundAnimation) {
-                    playerBoundActions.forEach { it.execute(animation) { _, str -> animation.updatePlaceholders(str) } }
-                }
+                actions.execute(animation)
             } else {
-                failActions.executeActions(animation) { _, str -> animation.updatePlaceholders(str) }
-                if (animation is PlayerBoundAnimation) {
-                    failPlayerBoundActions.executeActions(animation) { _, str -> animation.updatePlaceholders(str) }
-                }
+                failActions.execute(animation)
             }
         }
 

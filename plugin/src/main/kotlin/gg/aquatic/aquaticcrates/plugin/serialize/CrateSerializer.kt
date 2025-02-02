@@ -39,6 +39,7 @@ import gg.aquatic.waves.registry.serializer.ActionSerializer
 import gg.aquatic.waves.registry.serializer.InteractableSerializer
 import gg.aquatic.waves.registry.serializer.RequirementSerializer
 import gg.aquatic.waves.util.Config
+import gg.aquatic.waves.util.argument.ObjectArguments
 import gg.aquatic.waves.util.block.impl.VanillaBlock
 import gg.aquatic.waves.util.generic.ConfiguredExecutableObject
 import gg.aquatic.waves.util.getSectionList
@@ -208,19 +209,19 @@ object CrateSerializer : BaseSerializer() {
             if (clickActions.isEmpty()) {
                 clickActions += AquaticItemInteractEvent.InteractType.LEFT to ConfiguredExecutableObject(
                     CratePreviewAction(),
-                    mapOf()
+                    ObjectArguments(mapOf())
                 )
                 clickActions += AquaticItemInteractEvent.InteractType.RIGHT to ConfiguredExecutableObject(
                     CrateOpenAction(),
-                    mapOf()
+                    ObjectArguments(mapOf())
                 )
                 clickActions += AquaticItemInteractEvent.InteractType.SHIFT_RIGHT to ConfiguredExecutableObject(
                     CrateInstantOpenAction(),
-                    mapOf()
+                    ObjectArguments(mapOf())
                 )
                 clickActions += AquaticItemInteractEvent.InteractType.SHIFT_LEFT to ConfiguredExecutableObject(
                     CrateBreakAction(),
-                    mapOf()
+                    ObjectArguments(mapOf())
                 )
             }
             BasicCrateInteractHandler(crate, clickActions)

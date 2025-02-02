@@ -55,7 +55,7 @@ class CinematicAnimationSettings(
             yaw = cameraLocation.second.first
             pitch = cameraLocation.second.second
         }
-        val cameraProp = CameraAnimationProp(animation, cameraLocation, Vector(), ConcurrentHashMap())
+        val cameraProp = CameraAnimationProp(animation, cameraLocation, Vector(), ConcurrentHashMap(), 0.0f to 0.0f)
         animation.props["camera"] = cameraProp
 
         animationManager.playAnimation(animation)

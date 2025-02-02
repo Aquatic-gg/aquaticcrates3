@@ -7,6 +7,7 @@ import gg.aquatic.aquaticcrates.plugin.animation.prop.path.PathBoundProperties
 import gg.aquatic.aquaticcrates.plugin.animation.prop.path.PathProp
 import gg.aquatic.waves.util.action.AbstractAction
 import gg.aquatic.waves.util.argument.AquaticObjectArgument
+import gg.aquatic.waves.util.argument.ObjectArguments
 import gg.aquatic.waves.util.argument.impl.PrimitiveObjectArgument
 import org.bukkit.Bukkit
 import java.util.concurrent.ConcurrentHashMap
@@ -21,10 +22,10 @@ class BindPathAction : AbstractAction<Animation>(){
         )
     )
 
-    override fun execute(binder: Animation, args: Map<String, Any?>, textUpdater: (Animation, String) -> String) {
-        val objectId = args["object-id"] as String
+    override fun execute(binder: Animation, args: ObjectArguments, textUpdater: (Animation, String) -> String) {
+        val objectId = args.string("object-id") { textUpdater(binder, it) } ?: return
 
-        val boundPropertiesFactory = args["bound-paths"] as ((Animation) -> ConcurrentHashMap<PathProp, PathBoundProperties>)? ?: { _ -> ConcurrentHashMap() }
+        val boundPropertiesFactory = args.any("bound-paths") as ((Animation) -> ConcurrentHashMap<PathProp, PathBoundProperties>)? ?: { _ -> ConcurrentHashMap() }
 
         val prop = binder.props[objectId] as? MovableAnimationProp ?: return
         var i = 0

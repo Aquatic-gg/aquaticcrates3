@@ -28,6 +28,7 @@ class CameraAnimationProp(
     val location: Location,
     override val locationOffset: Vector,
     override val boundPaths: ConcurrentHashMap<PathProp, Pair<PathBoundProperties, Int>>,
+    override val locationOffsetYawPitch: Pair<Float, Float>,
 ) : PlayerBoundAnimationProp(), MovableAnimationProp {
 
     override val processedPaths: MutableSet<PathProp> = ConcurrentHashMap.newKeySet()
@@ -106,21 +107,24 @@ class CameraAnimationProp(
     override fun onAnimationEnd() {
         runSync {
             try {
-                val gameModePacket = WrapperPlayServerChangeGameState(
-                    WrapperPlayServerChangeGameState.Reason.CHANGE_GAME_MODE,
-                    SpigotConversionUtil.fromBukkitGameMode(previousGamemode).id.toFloat()
-                )
-
-                animation.player.toUser().let {
-                    it.sendPacket(WrapperPlayServerCamera(animation.player.toUser().entityId))
-                    it.sendPacket(gameModePacket)
-                }
+                detach()
                 animation.player.gameMode = previousGamemode
                 animation.player.teleport(previousLocation)
             } catch (ex: Exception) {
                 ex.printStackTrace()
             }
+        }
+    }
 
+    fun detach() {
+        val gameModePacket = WrapperPlayServerChangeGameState(
+            WrapperPlayServerChangeGameState.Reason.CHANGE_GAME_MODE,
+            SpigotConversionUtil.fromBukkitGameMode(previousGamemode).id.toFloat()
+        )
+
+        animation.player.toUser().let {
+            it.sendPacket(WrapperPlayServerCamera(animation.player.toUser().entityId))
+            it.sendPacket(gameModePacket)
         }
     }
 }

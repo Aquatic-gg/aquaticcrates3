@@ -5,6 +5,7 @@ import gg.aquatic.aquaticcrates.api.interaction.CrateInteractAction
 import gg.aquatic.aquaticcrates.plugin.CratesPlugin
 import gg.aquatic.waves.util.action.AbstractAction
 import gg.aquatic.waves.util.argument.AquaticObjectArgument
+import gg.aquatic.waves.util.argument.ObjectArguments
 
 class CrateBreakAction: AbstractAction<CrateInteractAction>() {
 
@@ -12,7 +13,7 @@ class CrateBreakAction: AbstractAction<CrateInteractAction>() {
 
     override fun execute(
         binder: CrateInteractAction,
-        args: Map<String, Any?>,
+        args: ObjectArguments,
         textUpdater: (CrateInteractAction, String) -> String
     ) {
         val spawnedCrate = binder.spawnedCrate ?: return

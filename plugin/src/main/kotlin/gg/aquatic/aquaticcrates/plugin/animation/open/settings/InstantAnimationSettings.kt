@@ -1,13 +1,10 @@
 package gg.aquatic.aquaticcrates.plugin.animation.open.settings
 
-import gg.aquatic.aquaticcrates.api.animation.Animation
 import gg.aquatic.aquaticcrates.api.animation.crate.*
 import gg.aquatic.aquaticcrates.api.animation.prop.AnimationProp
 import gg.aquatic.aquaticcrates.api.reward.RolledReward
 import gg.aquatic.waves.util.audience.AquaticAudience
 import gg.aquatic.waves.util.audience.GlobalAudience
-import gg.aquatic.waves.util.executeActions
-import gg.aquatic.waves.util.generic.ConfiguredExecutableObject
 import org.bukkit.Location
 import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.entity.Player
@@ -52,10 +49,7 @@ class InstantAnimationSettings(
     companion object : AnimationSettingsFactory() {
         override fun serialize(section: ConfigurationSection?): CrateAnimationSettings {
             if (section == null) return InstantAnimationSettings(
-                CrateAnimationActions(
-                    mutableListOf(),
-                    mutableListOf()
-                )
+                CrateAnimationActions()
             )
             val finalAnimationTasks = loadFinalActions(section)
             return InstantAnimationSettings(

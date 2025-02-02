@@ -5,19 +5,20 @@ import gg.aquatic.aquaticcrates.api.util.VectorArgument
 import gg.aquatic.aquaticcrates.plugin.animation.prop.ThrowableAnimationProp
 import gg.aquatic.waves.util.action.AbstractAction
 import gg.aquatic.waves.util.argument.AquaticObjectArgument
+import gg.aquatic.waves.util.argument.ObjectArguments
 import gg.aquatic.waves.util.argument.impl.PrimitiveObjectArgument
 
-class ThrowEntityAction: AbstractAction<Animation>() {
+class ThrowEntityAction : AbstractAction<Animation>() {
     override val arguments: List<AquaticObjectArgument<*>> = listOf(
         VectorArgument("velocity", null, false),
         PrimitiveObjectArgument("power", 1.0, false),
         PrimitiveObjectArgument("prop", "entity:example", true)
     )
 
-    override fun execute(binder: Animation, args: Map<String, Any?>, textUpdater: (Animation, String) -> String) {
-        val velocity = args["velocity"] as? org.bukkit.util.Vector? ?: return
-        val power = args["power"]?.toString()?.toDouble() ?: 0.0
-        val property = args["prop"]?.toString() ?: "entity:example"
+    override fun execute(binder: Animation, args: ObjectArguments, textUpdater: (Animation, String) -> String) {
+        val velocity = args.vector("velocity") { textUpdater(binder, it) } ?: return
+        val power = args.double("power") { textUpdater(binder, it) } ?: 0.0
+        val property = args.string("prop") { textUpdater(binder, it) } ?: "entity:example"
 
         val prop = binder.props[property] ?: return
         if (prop !is ThrowableAnimationProp) return

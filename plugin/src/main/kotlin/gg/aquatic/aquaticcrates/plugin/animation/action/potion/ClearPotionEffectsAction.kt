@@ -4,6 +4,7 @@ import gg.aquatic.aquaticcrates.api.animation.PlayerBoundAnimation
 import gg.aquatic.waves.util.action.AbstractAction
 import gg.aquatic.waves.util.argument.AbstractObjectArgumentSerializer
 import gg.aquatic.waves.util.argument.AquaticObjectArgument
+import gg.aquatic.waves.util.argument.ObjectArguments
 import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.potion.PotionEffectType
 
@@ -14,10 +15,10 @@ class ClearPotionEffectsAction: AbstractAction<PlayerBoundAnimation>() {
 
     override fun execute(
         binder: PlayerBoundAnimation,
-        args: Map<String, Any?>,
+        args: ObjectArguments,
         textUpdater: (PlayerBoundAnimation, String) -> String
     ) {
-        val potions = args["potions"] as? List<PotionEffectType> ?: listOf()
+        val potions = args.typed<List<PotionEffectType>>("potions") ?: listOf()
         for (type in potions) {
             binder.player.removePotionEffect(type)
         }

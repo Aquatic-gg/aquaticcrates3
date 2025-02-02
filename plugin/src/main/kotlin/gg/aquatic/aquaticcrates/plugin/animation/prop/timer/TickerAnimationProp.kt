@@ -1,10 +1,8 @@
 package gg.aquatic.aquaticcrates.plugin.animation.prop.timer
 
 import gg.aquatic.aquaticcrates.api.animation.Animation
-import gg.aquatic.aquaticcrates.api.animation.PlayerBoundAnimation
 import gg.aquatic.aquaticcrates.api.animation.crate.CrateAnimationActions
 import gg.aquatic.aquaticcrates.api.animation.prop.AnimationProp
-import gg.aquatic.waves.util.executeActions
 
 class TickerAnimationProp(
     override val animation: Animation,

@@ -3,11 +3,11 @@ package gg.aquatic.aquaticcrates.plugin.crate
 import gg.aquatic.aquaticcrates.api.animation.crate.CrateAnimationManager
 import gg.aquatic.aquaticcrates.api.animation.crate.CrateAnimationSettings
 import gg.aquatic.aquaticcrates.api.crate.CrateHandler
-import gg.aquatic.aquaticcrates.api.interaction.crate.CrateInteractHandler
 import gg.aquatic.aquaticcrates.api.crate.Key
 import gg.aquatic.aquaticcrates.api.crate.OpenableCrate
 import gg.aquatic.aquaticcrates.api.crate.SpawnedCrate
 import gg.aquatic.aquaticcrates.api.hologram.HologramSettings
+import gg.aquatic.aquaticcrates.api.interaction.crate.CrateInteractHandler
 import gg.aquatic.aquaticcrates.api.openprice.OpenPriceGroup
 import gg.aquatic.aquaticcrates.api.reward.RewardManager
 import gg.aquatic.aquaticcrates.plugin.CratesPlugin
@@ -19,7 +19,7 @@ import gg.aquatic.waves.item.AquaticItem
 import gg.aquatic.waves.item.AquaticItemInteractEvent
 import gg.aquatic.waves.registry.register
 import gg.aquatic.waves.registry.setInteractionHandler
-import gg.aquatic.waves.util.checkRequirements
+import gg.aquatic.waves.util.collection.checkRequirements
 import gg.aquatic.waves.util.generic.ConfiguredExecutableObject
 import gg.aquatic.waves.util.item.modifyFastMeta
 import gg.aquatic.waves.util.requirement.ConfiguredRequirement
