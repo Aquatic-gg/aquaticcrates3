@@ -259,7 +259,7 @@ class CratesPlugin : AbstractCratesPlugin() {
             if (packetType == PacketType.Play.Server.SET_SLOT) {
                 val packet = WrapperPlayServerSetSlot(this)
                 if (packet.windowId != 0) return@packetEvent
-                if (packet.slot !in listOf(5,6,7,8)) return@packetEvent
+                if (packet.slot !in listOf(5, 6, 7, 8)) return@packetEvent
                 isCancelled = true
 
             } else if (packetType == PacketType.Play.Server.WINDOW_ITEMS) {
@@ -351,7 +351,7 @@ class CratesPlugin : AbstractCratesPlugin() {
         WavesRegistry.registerAction("add-potion-effects", PotionEffectsAction())
         WavesRegistry.registerAction("remove-potion-effects", ClearPotionEffectsAction())
         WavesRegistry.registerAction("timed-actions", TimedActionsAction())
-        WavesRegistry.registerAction("later-actions", LaterActionsAction())
+        WavesRegistry.registerAction("delayed-actions", LaterActionsAction())
         WavesRegistry.registerAction("rumbling-reward", RumblingRewardAction())
         WavesRegistry.registerAction("player-equipment", EquipmentAnimationAction())
         WavesRegistry.registerAction("player-actions", PlayerActionsAction())
@@ -420,9 +420,7 @@ class CratesPlugin : AbstractCratesPlugin() {
                         val timeframe =
                             CrateProfileEntry.HistoryType.valueOf((args.getOrNull(3) ?: "alltime").uppercase())
                         if (args.size >= 5) {
-                            val playerName = buildString {
-                                args.subList(4, args.size).forEach { append(it) }
-                            }
+                            val playerName = args.subList(4, args.size).joinToString("_")
                             val player = if (playerName.lowercase() == "self") {
                                 offlinePlayer.player ?: return@registerExtension ""
                             } else {
