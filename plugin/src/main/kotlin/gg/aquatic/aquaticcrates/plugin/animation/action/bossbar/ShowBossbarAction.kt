@@ -24,7 +24,7 @@ class ShowBossbarAction : AbstractAction<PlayerBoundAnimation>() {
         textUpdater: (PlayerBoundAnimation, String) -> String
     ) {
         val id = args.string("id") { textUpdater(binder, it) } ?: return
-        val message = args.string("message") { textUpdater(binder, it)} ?: return
+        val message = args.string("message") ?: return
         val color = args.string("color") { textUpdater(binder, it) } ?: return
         val style = args.string("style") { textUpdater(binder, it) } ?: return
         val progress = args.float("progress") { textUpdater(binder, it) } ?: 1.0f
