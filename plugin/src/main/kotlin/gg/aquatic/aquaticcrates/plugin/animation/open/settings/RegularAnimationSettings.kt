@@ -71,11 +71,10 @@ class RegularAnimationSettings(
                     if (spawnedCrate != null) {
                         for (spawnedInteractable in spawnedCrate.spawnedInteractables) {
                             val audience = spawnedInteractable.audience
+                            val players = audience.uuids.mapNotNull { Bukkit.getPlayer(it) }
+                            spawnedInteractable.viewers += players
                             if (audience is ACGlobalAudience) {
                                 audience.hidden = false
-
-                                spawnedInteractable.updateViewers()
-                                continue
                             }
                             spawnedInteractable.updateViewers()
                         }

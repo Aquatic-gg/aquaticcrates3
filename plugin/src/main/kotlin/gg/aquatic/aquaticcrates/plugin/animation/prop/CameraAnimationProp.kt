@@ -46,7 +46,7 @@ class CameraAnimationProp(
         val delay = if (previousLocation.world == location.world) {
             0
         } else 5
-        animation.player.teleport(location.clone().add(Vector(0.0, 2.5, 0.0)))
+        animation.player.teleport(location)
         animation.player.isInvisible = true
         runLaterSync(delay.toLong()) {
             val spawnPacket = WrapperPlayServerSpawnEntity(

@@ -10,6 +10,7 @@ import gg.aquatic.waves.util.argument.AquaticObjectArgument
 import gg.aquatic.waves.util.argument.ObjectArguments
 import gg.aquatic.waves.util.generic.Action
 import gg.aquatic.waves.util.getSectionList
+import org.bukkit.Bukkit
 import org.bukkit.configuration.ConfigurationSection
 import java.util.UUID
 
@@ -19,7 +20,8 @@ class TimedActionsAction: Action<Animation> {
     )
 
     override fun execute(binder: Animation, args: ObjectArguments, textUpdater: (Animation, String) -> String) {
-        val actions = args.typed<HashMap<Int,CrateAnimationActions>>("actions") ?: return
+        val actions = args.any("actions") as? HashMap<Int,CrateAnimationActions> ?: return
+
         val prop = TimedActionsAnimationProp(binder, actions)
         binder.props["timed-actions:${UUID.randomUUID()}"] = prop
         prop.tick()
@@ -43,9 +45,9 @@ class TimedActionsAction: Action<Animation> {
                 val map = hashMapOf<Int, CrateAnimationActions>()
                 val actionsSection = section.getConfigurationSection(id) ?: return map
                 for (key in actionsSection.getKeys(false)) {
-                    val aSection = actionsSection.getConfigurationSection(key) ?: continue
-                    val actions = ActionSerializer.fromSections<Animation>(aSection.getSectionList("actions"))
-                    val playerBoundActions = ActionSerializer.fromSections<PlayerBoundAnimation>(aSection.getSectionList("actions"))
+                    val sections = actionsSection.getSectionList(key)
+                    val actions = ActionSerializer.fromSections<Animation>(sections)
+                    val playerBoundActions = ActionSerializer.fromSections<PlayerBoundAnimation>(sections)
                     map[key.toInt()] = CrateAnimationActions(
                         actions.toMutableList(),
                         playerBoundActions.toMutableList(),

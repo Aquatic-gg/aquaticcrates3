@@ -7,6 +7,7 @@ import java.util.*
 
 class ACGlobalAudience: AquaticAudience {
 
+    @Volatile
     var hidden = false
 
     override val uuids: Collection<UUID>

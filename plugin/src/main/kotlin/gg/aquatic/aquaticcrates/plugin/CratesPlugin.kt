@@ -65,6 +65,7 @@ import gg.aquatic.waves.util.*
 import gg.aquatic.waves.util.event.event
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
+import org.bukkit.event.entity.EntityDamageEvent
 import org.bukkit.event.inventory.InventoryInteractEvent
 import org.bukkit.event.player.PlayerQuitEvent
 import org.bukkit.event.player.PlayerToggleSneakEvent
@@ -201,6 +202,25 @@ class CratesPlugin : AbstractCratesPlugin() {
                 else -> {
                     inv.future.complete(RerollManager.RerollResult(false))
                 }
+            }
+        }
+
+        event<EntityDamageEvent>(ignoredCancelled = true) {
+            val player = it.entity as? Player ?: return@event
+
+            var isInAnimation = false
+            for (crate in CrateHandler.crates.values) {
+                if (crate is OpenableCrate) {
+                    if (crate.animationManager.playingAnimations.containsKey(player.uniqueId)) {
+                        isInAnimation = true
+                        break
+                    }
+                }
+            }
+
+            if (isInAnimation) {
+                it.isCancelled = true
+                return@event
             }
         }
 
