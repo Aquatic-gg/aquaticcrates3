@@ -1,28 +1,23 @@
 package gg.aquatic.aquaticcrates.plugin.serialize
 
-import gg.aquatic.aquaticcrates.api.animation.Animation
 import gg.aquatic.aquaticcrates.api.player.CrateProfileEntry
 import gg.aquatic.aquaticcrates.api.reward.Reward
 import gg.aquatic.aquaticcrates.api.reward.RewardAction
 import gg.aquatic.aquaticcrates.api.reward.RewardAmountRange
 import gg.aquatic.aquaticcrates.api.reward.RewardRarity
-import gg.aquatic.aquaticcrates.plugin.hologram.HologramSerializer
 import gg.aquatic.aquaticcrates.plugin.reward.RewardImpl
 import gg.aquatic.waves.item.AquaticItem
 import gg.aquatic.waves.registry.serializer.ActionSerializer
 import gg.aquatic.waves.registry.serializer.RequirementSerializer
-import gg.aquatic.waves.util.generic.ConfiguredExecutableObject
 import gg.aquatic.waves.util.getSectionList
 import gg.aquatic.waves.util.item.fastMeta
 import gg.aquatic.waves.util.item.loadFromYml
+import gg.aquatic.waves.util.runSync
 import gg.aquatic.waves.util.toMMString
 import org.bukkit.Bukkit
 import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.entity.Player
-import java.util.*
-import kotlin.collections.ArrayList
-import kotlin.collections.HashMap
-import kotlin.collections.LinkedHashMap
+import java.util.concurrent.CompletableFuture
 
 abstract class BaseSerializer {
 
@@ -71,7 +66,11 @@ abstract class BaseSerializer {
 
     fun loadReward(section: ConfigurationSection, rarities: HashMap<String, RewardRarity>): Reward? {
         val id = section.name
-        val item = AquaticItem.loadFromYml(section.getConfigurationSection("item"))
+        val itemFuture = CompletableFuture<AquaticItem?>()
+        runSync {
+            itemFuture.complete(AquaticItem.loadFromYml(section.getConfigurationSection("item")))
+        }
+        val item = itemFuture.join()
         if (item == null) {
             sendConsoleMessage("Could not load Reward Item! (${section.currentPath}.item)")
             return null
@@ -152,6 +151,7 @@ abstract class BaseSerializer {
         return list
     }
 
+    /*
     fun loadAnimationTasks(section: ConfigurationSection?): TreeMap<Int, MutableList<ConfiguredExecutableObject<Animation, Unit>>> {
         val tasks = TreeMap<Int, MutableList<ConfiguredExecutableObject<Animation, Unit>>>()
         if (section == null) return tasks
@@ -164,5 +164,6 @@ abstract class BaseSerializer {
 
         return tasks
     }
+     */
 
 }
