@@ -20,17 +20,18 @@ class CinematicAnimationImpl(
     override val baseLocation: Location,
     override val rewards: MutableList<RolledReward>,
     override val audience: AquaticAudience,
-    val completionFuture: CompletableFuture<Void>,
+    override val completionFuture: CompletableFuture<Void>,
     //val camera: CameraAnimationProp
 ) : CrateAnimation() {
 
     override var state: State = State.PRE_OPEN
-        private set
 
-    private val settings = animationManager.animationSettings as CinematicAnimationSettings
+    override val settings = animationManager.animationSettings as CinematicAnimationSettings
 
+    private var attached = false
     override val props: ConcurrentHashMap<String, AnimationProp> = ConcurrentHashMap()
 
+    /*
     override fun tick() {
         when (state) {
             State.PRE_OPEN -> {
@@ -67,29 +68,11 @@ class CinematicAnimationImpl(
         }
         tick++
     }
+     */
 
-    private fun tryReroll() {
-        val crate = animationManager.crate
-
-        if (crate !is OpenableCrate) {
-            updateState(State.POST_OPEN)
-            tick()
-            return
-        }
-
-        val rerollManager = animationManager.rerollManager
-        if (rerollManager == null) {
-            updateState(State.POST_OPEN)
-            tick()
-            return
-        }
-        val availableRerolls = rerollManager.availableRerolls(player)
-        if (availableRerolls <= usedRerolls) {
-            updateState(State.POST_OPEN)
-            tick()
-            return
-        }
-        updateState(State.ROLLING)
+    override fun onReroll() {
+        val crate = animationManager.crate as OpenableCrate
+        val rerollManager = animationManager.rerollManager!!
         rerollManager.openReroll(player, this, rewards).thenAccept { result ->
             if (result.reroll) {
                 updateState(State.OPENING)
@@ -113,41 +96,11 @@ class CinematicAnimationImpl(
         usedRerolls++
     }
 
-    private var attached = false
-
-    private fun updateState(state: State) {
-        this.state = state
+    override fun onStateUpdate(state: State) {
         if (state == State.OPENING && !attached) {
             attached = true
             val cameraProp = props["camera"] as CameraAnimationProp
             cameraProp.attachPlayer()
         }
-        tick = 0
-    }
-
-    private fun finalize() {
-        updateState(State.FINISHED)
-        executeActions(animationManager.animationSettings.finalAnimationTasks)
-        for ((_, prop) in props) {
-            prop.onAnimationEnd()
-        }
-        props.clear()
-        runSync {
-            for (reward in rewards) {
-                reward.give(player, false)
-            }
-        }
-        animationManager.playingAnimations[player.uniqueId]?.let {
-            it.remove(this)
-            if (it.isEmpty()) {
-                animationManager.playingAnimations.remove(player.uniqueId)
-            }
-        }
-        completionFuture.complete(null)
-    }
-
-    override fun skip() {
-        if (state == State.ROLLING || state == State.FINISHED) return
-        tryReroll()
     }
 }

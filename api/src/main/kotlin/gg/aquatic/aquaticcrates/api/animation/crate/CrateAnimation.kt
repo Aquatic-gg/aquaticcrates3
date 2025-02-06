@@ -1,14 +1,18 @@
 package gg.aquatic.aquaticcrates.api.animation.crate
 
 import gg.aquatic.aquaticcrates.api.animation.PlayerBoundAnimation
+import gg.aquatic.aquaticcrates.api.crate.OpenableCrate
 import gg.aquatic.aquaticcrates.api.reward.RolledReward
+import gg.aquatic.waves.util.runSync
 import gg.aquatic.waves.util.updatePAPIPlaceholders
+import java.util.concurrent.CompletableFuture
 
 abstract class CrateAnimation : PlayerBoundAnimation() {
 
     abstract val animationManager: CrateAnimationManager
 
-    abstract val state: State
+    abstract var state: State
+        protected set
 
     abstract val rewards: MutableList<RolledReward>
 
@@ -27,6 +31,108 @@ abstract class CrateAnimation : PlayerBoundAnimation() {
     open fun executeActions(actions: CrateAnimationActions) {
         actions.execute(this)
     }
+
+    abstract val completionFuture: CompletableFuture<Void>
+    abstract val settings: CrateAnimationSettings
+
+    override fun tick() {
+        onTick()
+        when (state) {
+            State.PRE_OPEN -> {
+                tickPreOpen()
+                if (tick >= settings.preAnimationDelay) {
+                    updateState(State.OPENING)
+                    tick()
+                    return
+                }
+            }
+
+            State.OPENING -> {
+                tickOpening()
+                if (tick >= settings.animationLength) {
+                    tryReroll()
+                    return
+                }
+            }
+
+            State.POST_OPEN -> {
+                tickPostOpen()
+                if (tick >= settings.postAnimationDelay) {
+                    finalizeAnimation()
+                    return
+                }
+            }
+
+            else -> {
+                return
+            }
+        }
+        for ((_, prop) in props) {
+            prop.tick()
+        }
+        tick++
+    }
+
+    open fun onTick() {}
+
+    fun tryReroll() {
+        val crate = animationManager.crate
+
+        if (crate !is OpenableCrate) {
+            updateState(State.POST_OPEN)
+            tick()
+            return
+        }
+
+        val rerollManager = animationManager.rerollManager
+        if (rerollManager == null) {
+            updateState(State.POST_OPEN)
+            tick()
+            return
+        }
+        val availableRerolls = rerollManager.availableRerolls(player)
+        if (availableRerolls <= usedRerolls) {
+            updateState(State.POST_OPEN)
+            tick()
+            return
+        }
+        updateState(State.ROLLING)
+        onReroll()
+    }
+
+    abstract fun onReroll()
+
+    fun finalizeAnimation() {
+        updateState(State.FINISHED)
+        onFinalize()
+        executeActions(animationManager.animationSettings.finalAnimationTasks)
+        for ((_, prop) in props) {
+            prop.onAnimationEnd()
+        }
+        props.clear()
+        runSync {
+            for (reward in rewards) {
+                reward.give(player, false)
+            }
+        }
+        animationManager.playingAnimations[player.uniqueId]?.let {
+            it.remove(this)
+            if (it.isEmpty()) {
+                animationManager.playingAnimations.remove(player.uniqueId)
+            }
+        }
+        completionFuture.complete(null)
+    }
+
+    open fun onFinalize() {}
+
+    fun updateState(state: State) {
+        onStateUpdate(state)
+        this.state = state
+        tick = 0
+    }
+
+    open fun onStateUpdate(state: State) {}
 
     override fun updatePlaceholders(str: String): String {
         var finalString = str.replace("%player%", player.name).updatePAPIPlaceholders(player)
@@ -53,7 +159,10 @@ abstract class CrateAnimation : PlayerBoundAnimation() {
 
     var usedRerolls = 0
 
-    abstract fun skip()
+    fun skip() {
+        if (state == State.ROLLING || state == State.FINISHED) return
+        tryReroll()
+    }
 
     enum class State {
         PRE_OPEN,

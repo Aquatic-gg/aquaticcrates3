@@ -65,18 +65,20 @@ class InstantAnimationSettings(
 
             val obj = object : CrateAnimation() {
                 override val animationManager: CrateAnimationManager = animationManager
-                override val state: State = State.FINISHED
-                override fun skip() {
-
-                }
+                override var state: State = State.FINISHED
 
                 override val baseLocation: Location = player.location
                 override val player: Player = player
                 override val audience: AquaticAudience = GlobalAudience()
                 override val rewards: MutableList<RolledReward> = mutableListOf()
+                override val completionFuture: CompletableFuture<Void> = CompletableFuture.completedFuture(null)
+                override val settings: CrateAnimationSettings = animationManager.animationSettings
                 override val props: MutableMap<String, AnimationProp> = mutableMapOf()
 
                 override fun tick() {
+                }
+
+                override fun onReroll() {
                 }
             }
 
