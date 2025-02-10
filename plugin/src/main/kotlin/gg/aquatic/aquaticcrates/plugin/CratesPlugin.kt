@@ -1,11 +1,12 @@
 package gg.aquatic.aquaticcrates.plugin
 
-import com.ticxo.modelengine.api.animation.handler.AnimationHandler
 import gg.aquatic.aquaticcrates.api.AbstractCratesPlugin
 import gg.aquatic.aquaticcrates.api.animation.crate.CrateAnimationManager
 import gg.aquatic.aquaticcrates.api.crate.CrateHandler
 import gg.aquatic.aquaticcrates.api.crate.OpenableCrate
-import gg.aquatic.aquaticcrates.api.player.*
+import gg.aquatic.aquaticcrates.api.player.CrateProfileDriver
+import gg.aquatic.aquaticcrates.api.player.CrateProfileModule
+import gg.aquatic.aquaticcrates.api.player.HistoryHandler
 import gg.aquatic.aquaticcrates.api.reroll.RerollManager
 import gg.aquatic.aquaticcrates.plugin.animation.action.*
 import gg.aquatic.aquaticcrates.plugin.animation.action.block.SetBlockAction
@@ -62,9 +63,11 @@ import gg.aquatic.waves.shadow.com.retrooper.packetevents.wrapper.play.client.Wr
 import gg.aquatic.waves.shadow.com.retrooper.packetevents.wrapper.play.server.WrapperPlayServerSetSlot
 import gg.aquatic.waves.shadow.com.retrooper.packetevents.wrapper.play.server.WrapperPlayServerWindowItems
 import gg.aquatic.waves.shadow.io.retrooper.packetevents.util.SpigotConversionUtil
-import gg.aquatic.waves.sync.SyncHandler.sendPacket
-import gg.aquatic.waves.util.*
+import gg.aquatic.waves.util.Config
 import gg.aquatic.waves.util.event.event
+import gg.aquatic.waves.util.packetEvent
+import gg.aquatic.waves.util.player
+import gg.aquatic.waves.util.runAsyncTimer
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.event.entity.EntityDamageEvent

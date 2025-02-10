@@ -78,13 +78,11 @@ class LogMenu(val settings: LogMenuSettings, player: Player) : PrivateAquaticMen
             val offset = page * settings.logSlots.size
             val limit = settings.logSlots.size + 1
 
-            val entriesMap = CrateProfileDriver.loadLogEntries(offset, limit, playerFilter, crateFilter, sorting)
-            hasNextPage = entriesMap.size >= limit
+            val entries = LogHandler.loadLogEntries(offset, limit, playerFilter, crateFilter, sorting)
+            hasNextPage = entries.size >= limit
 
-            val entries = entriesMap.entries
             for ((index, logSlot) in settings.logSlots.withIndex()) {
-                val (entryId, pair) = entries.elementAtOrNull(index) ?: break
-                val (playerName, entry) = pair
+                val (playerName, entry) = entries.elementAtOrNull(index) ?: break
 
                 val item = ItemStack(Material.PAPER).apply {
                     val newLore = mutableListOf(
@@ -102,12 +100,12 @@ class LogMenu(val settings: LogMenuSettings, player: Player) : PrivateAquaticMen
                     newLore += "<gray>${toFriendlyTime(entry.timestamp)}".toMMComponent()
 
                     modifyFastMeta {
-                        this.displayName = "<yellow>Crate: ${entry.crateId} <gray>(#$entryId)".toMMComponent()
+                        this.displayName = "<yellow>Crate: ${entry.crateId}".toMMComponent()
                         this.lore = newLore
                     }
                 }
 
-                val component = Button("entry_$entryId", item, listOf(logSlot), 1, 20, null)
+                val component = Button("entry_$index", item, listOf(logSlot), 1, 20, null)
                 entryComponents += component
                 addComponent(component)
             }
