@@ -89,11 +89,17 @@ object CrateProfileDriver {
                 "INSERT OR REPLACE INTO player_items (player_id, item_id, quantity) VALUES (?, ?, ?)"
             } else {
                 """
-            INSERT INTO player_items (player_id, item_id, quantity)
-            VALUES (?, ?, ?)
-            ON DUPLICATE KEY UPDATE quantity = VALUES(quantity)
-            """
+        INSERT INTO player_items (player_id, item_id, quantity)
+        VALUES (?, ?, ?)
+        ON DUPLICATE KEY UPDATE quantity = VALUES(quantity)
+        """
             }
+
+            // SQL to retrieve all items currently stored in the DB for the player
+            val getAllPlayerItemsSql = "SELECT item_id FROM player_items WHERE player_id = ?"
+
+            // SQL to delete items for this player that are no longer in the cache
+            val deletePlayerItemSql = "DELETE FROM player_items WHERE player_id = ? AND item_id = ?"
 
             // Serialize all items in the RewardContainer
             val rewardContainer = entry.rewardContainer
@@ -105,26 +111,50 @@ object CrateProfileDriver {
             connection.prepareStatement(insertItemSql).use { insertItemStmt ->
                 connection.prepareStatement(getItemIdSql).use { getItemIdStmt ->
                     connection.prepareStatement(insertOrUpdatePlayerItemSql).use { playerItemStmt ->
-                        serializedItems.forEach { (serializedItem, quantity) ->
-                            // Step 1: Insert item into the items table, if it doesn’t already exist
-                            insertItemStmt.setString(1, serializedItem)
-                            insertItemStmt.executeUpdate()
-
-                            // Step 2: Retrieve the `item_id` from the items table
-                            var itemId: Int? = null
-                            getItemIdStmt.setString(1, serializedItem)
-                            getItemIdStmt.executeQuery().use { resultSet ->
-                                if (resultSet.next()) {
-                                    itemId = resultSet.getInt("item_id")
+                        connection.prepareStatement(getAllPlayerItemsSql).use { getAllPlayerItemsStmt ->
+                            connection.prepareStatement(deletePlayerItemSql).use { deletePlayerItemStmt ->
+                                // Step 1: Get all current item IDs for the player from the DB
+                                val databaseItems = mutableSetOf<Int>()
+                                getAllPlayerItemsStmt.setInt(1, entry.aquaticPlayer.index)
+                                getAllPlayerItemsStmt.executeQuery().use { resultSet ->
+                                    while (resultSet.next()) {
+                                        databaseItems.add(resultSet.getInt("item_id"))
+                                    }
                                 }
-                            }
 
-                            // Step 3: Insert or update the `player_items` table
-                            itemId?.let {
-                                playerItemStmt.setInt(1, entry.aquaticPlayer.index) // Using the player's ID
-                                playerItemStmt.setInt(2, it)
-                                playerItemStmt.setInt(3, quantity)
-                                playerItemStmt.executeUpdate()
+                                // Step 2: Track item IDs present in the cache
+                                val cacheItemIds = mutableSetOf<Int>()
+                                serializedItems.forEach { (serializedItem, quantity) ->
+                                    // Insert item into the `items` table, if it doesn’t already exist
+                                    insertItemStmt.setString(1, serializedItem)
+                                    insertItemStmt.executeUpdate()
+
+                                    // Retrieve the `item_id` from the `items` table
+                                    var itemId: Int? = null
+                                    getItemIdStmt.setString(1, serializedItem)
+                                    getItemIdStmt.executeQuery().use { resultSet ->
+                                        if (resultSet.next()) {
+                                            itemId = resultSet.getInt("item_id")
+                                        }
+                                    }
+
+                                    // Insert or update the player's item quantities
+                                    itemId?.let {
+                                        playerItemStmt.setInt(1, entry.aquaticPlayer.index) // Player ID
+                                        playerItemStmt.setInt(2, it)
+                                        playerItemStmt.setInt(3, quantity) // Quantity
+                                        playerItemStmt.executeUpdate()
+                                        cacheItemIds.add(it) // Keep track of valid item IDs
+                                    }
+                                }
+
+                                // Step 3: Delete items that are in the database but not in the cache
+                                val itemsToRemove = databaseItems - cacheItemIds
+                                itemsToRemove.forEach { itemId ->
+                                    deletePlayerItemStmt.setInt(1, entry.aquaticPlayer.index)
+                                    deletePlayerItemStmt.setInt(2, itemId)
+                                    deletePlayerItemStmt.executeUpdate()
+                                }
                             }
                         }
                     }
@@ -133,7 +163,6 @@ object CrateProfileDriver {
         } catch (e: Exception) {
             e.printStackTrace()
         }
-
     }
 
     internal fun saveHistory(connection: Connection, profileEntry: CrateProfileEntry) {

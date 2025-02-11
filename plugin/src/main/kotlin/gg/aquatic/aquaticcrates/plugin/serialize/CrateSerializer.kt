@@ -102,13 +102,16 @@ object CrateSerializer : BaseSerializer() {
                     "Example Title".toMMComponent(),
                     hashMapOf()
                 ),
+                listOf(),
                 listOf()
             )
         val menu = MenuSerializer.loadPrivateInventory(rewardMenuSection)
         val rewardSlots = MenuSerializer.loadSlotSelection(rewardMenuSection.getStringList("reward-slots"))
+        val additionalLore = rewardMenuSection.getStringList("append-lore")
         return RewardsMenuSettings(
             menu,
-            rewardSlots.slots
+            rewardSlots.slots,
+            additionalLore
         )
     }
 

@@ -5,6 +5,8 @@ import gg.aquatic.waves.menu.MenuComponent
 import gg.aquatic.waves.menu.PrivateAquaticMenu
 import gg.aquatic.waves.menu.component.Button
 import gg.aquatic.waves.profile.toAquaticPlayer
+import gg.aquatic.waves.util.item.modifyFastMeta
+import gg.aquatic.waves.util.runSync
 import gg.aquatic.waves.util.toMMComponent
 import gg.aquatic.waves.util.toMMString
 import gg.aquatic.waves.util.updatePAPIPlaceholders
@@ -50,7 +52,11 @@ class RewardsMenu(val settings: RewardsMenuSettings, player: Player) : PrivateAq
 
             val button = Button(
                 "reward-${rewardSlot}",
-                item,
+                item.clone().apply {
+                    modifyFastMeta {
+                        this.lore += settings.additionalRewardLore.map { it.toMMComponent() }
+                    }
+                },
                 listOf(rewardSlot),
                 10,
                 1,
@@ -58,11 +64,15 @@ class RewardsMenu(val settings: RewardsMenuSettings, player: Player) : PrivateAq
                 { true },
                 textUpdater = { str, _ -> str.updatePAPIPlaceholders(player).replace("%amount%", amount.toString()) },
                 onClick = { e ->
-                    for ((_, i) in player.inventory.addItem(item.clone().apply { this.amount = amount })) {
-                        player.location.world!!.dropItem(player.location, i)
+                    runSync {
+                        for ((_, i) in player.inventory.addItem(item.clone().apply { this.amount = amount })) {
+                            player.location.world!!.dropItem(player.location, i)
+                        }
                     }
-                    removeComponent(components["reward-${rewardSlot}"] ?: return@Button)
                     crateEntry.rewardContainer.items.remove(item)
+                    rewardComponents.forEach { removeComponent(it) }
+                    rewardComponents.clear()
+                    loadRewards()
                 }
             )
             rewardComponents += button

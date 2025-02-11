@@ -31,45 +31,6 @@ class CinematicAnimationImpl(
     private var attached = false
     override val props: ConcurrentHashMap<String, AnimationProp> = ConcurrentHashMap()
 
-    /*
-    override fun tick() {
-        when (state) {
-            State.PRE_OPEN -> {
-                tickPreOpen()
-                if (tick >= settings.preAnimationDelay) {
-                    updateState(State.OPENING)
-                    tick()
-                    return
-                }
-            }
-
-            State.OPENING -> {
-                tickOpening()
-                if (tick >= settings.animationLength) {
-                    tryReroll()
-                    return
-                }
-            }
-
-            State.POST_OPEN -> {
-                tickPostOpen()
-                if (tick >= settings.postAnimationDelay) {
-                    finalize()
-                    return
-                }
-            }
-
-            else -> {
-                return
-            }
-        }
-        for ((_, prop) in props) {
-            prop.tick()
-        }
-        tick++
-    }
-     */
-
     override fun onReroll() {
         val crate = animationManager.crate as OpenableCrate
         val rerollManager = animationManager.rerollManager!!
@@ -92,8 +53,9 @@ class CinematicAnimationImpl(
                 updateState(State.POST_OPEN)
                 tick()
             }
+
+            usedRerolls++
         }
-        usedRerolls++
     }
 
     override fun onStateUpdate(state: State) {

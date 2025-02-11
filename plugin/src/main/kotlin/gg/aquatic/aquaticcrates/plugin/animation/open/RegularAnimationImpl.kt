@@ -42,10 +42,10 @@ class RegularAnimationImpl(
                 updateState(State.POST_OPEN)
                 tick()
             }
+            usedRerolls++
         }.exceptionally {
             it.printStackTrace()
             null
         }
-        usedRerolls++
     }
 }
