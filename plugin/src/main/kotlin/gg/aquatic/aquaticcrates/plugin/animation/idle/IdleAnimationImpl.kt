@@ -7,7 +7,6 @@ import gg.aquatic.aquaticcrates.api.crate.SpawnedCrate
 import gg.aquatic.aquaticcrates.plugin.animation.idle.settings.IdleAnimationSettings
 import gg.aquatic.waves.util.audience.AquaticAudience
 import gg.aquatic.waves.util.collection.executeActions
-import org.bukkit.Location
 import java.util.concurrent.ConcurrentHashMap
 
 class IdleAnimationImpl(

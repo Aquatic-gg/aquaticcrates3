@@ -149,8 +149,8 @@ object CrateProfileDriver {
                                 }
 
                                 // Step 3: Delete items that are in the database but not in the cache
-                                val itemsToRemove = databaseItems - cacheItemIds
-                                itemsToRemove.forEach { itemId ->
+                                for (itemId in databaseItems) {
+                                    if (itemId in cacheItemIds) continue
                                     deletePlayerItemStmt.setInt(1, entry.aquaticPlayer.index)
                                     deletePlayerItemStmt.setInt(2, itemId)
                                     deletePlayerItemStmt.executeUpdate()

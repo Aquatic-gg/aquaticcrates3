@@ -46,20 +46,9 @@ class RegularAnimationSettings(
         animation.tick()
         runLaterSync(1) {
             if (!personal) {
-                spawnedCrate?.let { sc ->
-                    val viewers = sc.audience.uuids.mapNotNull { Bukkit.getPlayer(it) }
-                    sc.audience.hidden = true
-                    for (spawnedInteractable in sc.spawnedInteractables) {
-                        for (op in viewers) {
-                            spawnedInteractable.removeViewer(op)
-                        }
-                        spawnedInteractable.viewers.clear()
-                        spawnedInteractable.updateViewers()
-                    }
-                }
+                spawnedCrate?.forceHide(true)
             } else {
-                spawnedCrate?.audience?.hiddenFrom?.add(player)
-                spawnedCrate?.spawnedInteractables?.forEach { it.removeViewer(player) }
+                spawnedCrate?.forceHide(player, true)
             }
         }
 
@@ -67,17 +56,9 @@ class RegularAnimationSettings(
         return animation.completionFuture.thenApply { animation ->
             runSync {
                 if (!personal) {
-                    if (spawnedCrate != null) {
-                        spawnedCrate.audience.hidden = false
-                        val viewers = spawnedCrate.audience.uuids.mapNotNull { Bukkit.getPlayer(it) }
-                        for (spawnedInteractable in spawnedCrate.spawnedInteractables) {
-                            spawnedInteractable.viewers += viewers
-                            spawnedInteractable.updateViewers()
-                        }
-                    }
+                    spawnedCrate?.forceHide(false)
                 } else {
-                    spawnedCrate?.audience?.hiddenFrom?.remove(player)
-                    spawnedCrate?.spawnedInteractables?.forEach { it.addViewer(player) }
+                    spawnedCrate?.forceHide(player, false)
                 }
             }
             animation

@@ -22,14 +22,12 @@ class FailAnimationSettings (
 
         animation.tick()
         runLaterSync(1) {
-            spawnedCrate.audience.hiddenFrom?.add(player)
-            spawnedCrate.spawnedInteractables.forEach { it.removeViewer(player) }
+            spawnedCrate.forceHide(player, true)
         }
 
         animation.future.thenRun {
             runSync {
-                spawnedCrate.audience.hiddenFrom?.remove(player)
-                spawnedCrate.spawnedInteractables.forEach { it.addViewer(player) }
+                spawnedCrate.forceHide(player, false)
             }
         }
 

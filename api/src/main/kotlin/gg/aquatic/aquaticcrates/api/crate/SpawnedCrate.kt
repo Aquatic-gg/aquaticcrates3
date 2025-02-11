@@ -3,7 +3,9 @@ package gg.aquatic.aquaticcrates.api.crate
 import gg.aquatic.aquaticcrates.api.util.ACGlobalAudience
 import gg.aquatic.waves.item.AquaticItemInteractEvent
 import gg.aquatic.waves.util.updatePAPIPlaceholders
+import org.bukkit.Bukkit
 import org.bukkit.Location
+import org.bukkit.entity.Player
 
 class SpawnedCrate(
     val crate: Crate,
@@ -48,5 +50,37 @@ class SpawnedCrate(
             spawnedInteractable.destroy()
         }
         hologram.despawn()
+    }
+
+    fun forceHide(player: Player, hide: Boolean) {
+        if (hide) {
+            audience.hiddenFrom.add(player)
+            spawnedInteractables.forEach { it.removeViewer(player) }
+            return
+        }
+        audience.hiddenFrom.remove(player)
+        spawnedInteractables.forEach { it.addViewer(player) }
+    }
+
+    fun forceHide(hide: Boolean) {
+        if (hide) {
+            val viewers = audience.uuids.mapNotNull { Bukkit.getPlayer(it) }
+            audience.hidden = true
+            for (spawnedInteractable in spawnedInteractables) {
+                for (op in viewers) {
+                    spawnedInteractable.removeViewer(op)
+                }
+                spawnedInteractable.viewers.clear()
+                spawnedInteractable.updateViewers()
+            }
+            return
+        }
+
+        audience.hidden = false
+        val viewers = audience.uuids.mapNotNull { Bukkit.getPlayer(it) }
+        for (spawnedInteractable in spawnedInteractables) {
+            spawnedInteractable.viewers += viewers
+            spawnedInteractable.updateViewers()
+        }
     }
 }
