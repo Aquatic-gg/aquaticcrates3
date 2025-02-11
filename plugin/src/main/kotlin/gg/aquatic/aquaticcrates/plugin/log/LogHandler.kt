@@ -94,7 +94,7 @@ object LogHandler {
         }).toMutableList()
 
         if (cachedSize > 0 && sorting != Sorting.OLDEST) {
-            for ((index, pair) in sortedCombinedLogs.toMutableList().withIndex()) {
+            for ((index, pair) in sortedCombinedLogs.withIndex()) {
                 if (index >= offset) {
                     break
                 }

@@ -6,6 +6,7 @@ import gg.aquatic.aquaticcrates.api.animation.crate.CrateAnimationSettings
 import gg.aquatic.aquaticcrates.api.crate.OpenableCrate
 import gg.aquatic.aquaticcrates.api.reroll.RerollManager
 import gg.aquatic.waves.util.runAsync
+import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
@@ -22,6 +23,7 @@ class AnimationManagerImpl(
 
 
     override fun playAnimation(animation: CrateAnimation) {
+        //Bukkit.broadcastMessage("\n Playing animation \n")
         val animations = playingAnimations.getOrPut(animation.player.uniqueId) { ConcurrentHashMap.newKeySet() }
         animations += animation
     }
