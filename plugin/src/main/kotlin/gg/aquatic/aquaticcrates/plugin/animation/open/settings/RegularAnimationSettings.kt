@@ -33,7 +33,7 @@ class RegularAnimationSettings(
         animationManager: CrateAnimationManager,
         location: Location,
         rolledRewards: MutableList<RolledReward>
-    ): CompletableFuture<Void> {
+    ): CompletableFuture<CrateAnimation> {
         val animation = RegularAnimationImpl(
             player,
             animationManager,
@@ -65,7 +65,7 @@ class RegularAnimationSettings(
         }
 
         animationManager.playAnimation(animation)
-        return animation.completionFuture.thenRun {
+        return animation.completionFuture.thenApply { animation ->
             runSync {
                 if (!personal) {
                     if (spawnedCrate != null) {
@@ -83,6 +83,7 @@ class RegularAnimationSettings(
                     spawnedCrate?.spawnedInteractables?.forEach { it.addViewer(player) }
                 }
             }
+            animation
         }
     }
 

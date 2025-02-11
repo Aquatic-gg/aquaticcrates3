@@ -42,7 +42,7 @@ object LogHandler {
             }
 
             // Apply offset and limit directly to this player's logs
-            return sortedEntries.drop(offset).take(limit)
+            return sortedEntries.take(limit+offset)
                 .map { playerName to it } // Add player name in each entry
         }
 
@@ -94,7 +94,7 @@ object LogHandler {
         }).toMutableList()
 
         if (cachedSize > 0 && sorting != Sorting.OLDEST) {
-            for ((index, pair) in sortedCombinedLogs.withIndex()) {
+            for ((index, pair) in sortedCombinedLogs.toMutableList().withIndex()) {
                 if (index >= offset) {
                     break
                 }

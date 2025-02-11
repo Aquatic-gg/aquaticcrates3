@@ -29,7 +29,7 @@ class InstantAnimationSettings(
         animationManager: CrateAnimationManager,
         location: Location,
         rolledRewards: MutableList<RolledReward>
-    ): CompletableFuture<Void> {
+    ): CompletableFuture<CrateAnimation> {
         for (rolledReward in rolledRewards) {
             rolledReward.give(player, false)
         }
@@ -71,7 +71,7 @@ class InstantAnimationSettings(
                 override val player: Player = player
                 override val audience: AquaticAudience = GlobalAudience()
                 override val rewards: MutableList<RolledReward> = mutableListOf()
-                override val completionFuture: CompletableFuture<Void> = CompletableFuture.completedFuture(null)
+                override val completionFuture: CompletableFuture<CrateAnimation> = CompletableFuture.completedFuture(this)
                 override val settings: CrateAnimationSettings = animationManager.animationSettings
                 override val props: MutableMap<String, AnimationProp> = mutableMapOf()
 

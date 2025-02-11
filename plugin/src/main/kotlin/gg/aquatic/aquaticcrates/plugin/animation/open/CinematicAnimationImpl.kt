@@ -20,7 +20,7 @@ class CinematicAnimationImpl(
     override val baseLocation: Location,
     override val rewards: MutableList<RolledReward>,
     override val audience: AquaticAudience,
-    override val completionFuture: CompletableFuture<Void>,
+    override val completionFuture: CompletableFuture<CrateAnimation>,
     //val camera: CameraAnimationProp
 ) : CrateAnimation() {
 

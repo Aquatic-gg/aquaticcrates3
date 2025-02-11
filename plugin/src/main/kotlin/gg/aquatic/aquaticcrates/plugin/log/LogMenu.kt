@@ -62,6 +62,7 @@ class LogMenu(val settings: LogMenuSettings, player: Player) : PrivateAquaticMen
                         loadEntries()
                     }
                     else if (id == "prev-page") {
+                        if (isLoading) return@create
                         if (page <= 0) return@create
                         page--
                         loadEntries()

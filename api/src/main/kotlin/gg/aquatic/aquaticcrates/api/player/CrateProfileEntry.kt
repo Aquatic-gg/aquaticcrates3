@@ -12,7 +12,7 @@ class CrateProfileEntry(aquaticPlayer: AquaticPlayer, val rewardContainer: Rewar
     val balance = hashMapOf<String, Int>()
 
     // CrateId, Entry
-    val newEntries = ConcurrentHashMap<String, MutableSet<OpenHistoryEntry>>()
+    val newEntries = ConcurrentHashMap<String, MutableCollection<OpenHistoryEntry>>()
 
     // CrateId, Daily/Weekly/Monthly/Alltime, Amount
     val openHistory = ConcurrentHashMap<String, ConcurrentHashMap<HistoryType, Int>>()

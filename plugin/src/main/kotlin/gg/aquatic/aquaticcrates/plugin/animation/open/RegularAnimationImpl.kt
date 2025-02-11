@@ -17,7 +17,7 @@ class RegularAnimationImpl(
     override val baseLocation: Location,
     override val rewards: MutableList<RolledReward>,
     override val audience: AquaticAudience,
-    override val completionFuture: CompletableFuture<Void>
+    override val completionFuture: CompletableFuture<CrateAnimation>
 ) : CrateAnimation() {
     override var state: State = State.PRE_OPEN
 

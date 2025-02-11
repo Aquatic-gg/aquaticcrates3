@@ -4,8 +4,12 @@ import gg.aquatic.aquaticcrates.api.player.CrateProfileEntry.HistoryType
 import gg.aquatic.aquaticcrates.api.player.CrateProfileEntry.OpenHistoryEntry
 import gg.aquatic.waves.profile.toAquaticPlayer
 import gg.aquatic.waves.util.runAsync
+import org.bukkit.Bukkit
 import org.bukkit.entity.Player
+import java.util.*
 import java.util.concurrent.ConcurrentHashMap
+import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
 
 object HistoryHandler {
 
@@ -33,7 +37,7 @@ object HistoryHandler {
             }
         }
 
-        val entries = newEntries.getOrPut(crateId) { ConcurrentHashMap.newKeySet() }
+        val entries = newEntries.getOrPut(crateId) { Collections.synchronizedList(ArrayList()) }
         entries += OpenHistoryEntry(
             System.currentTimeMillis() / 60000,
             crateId,

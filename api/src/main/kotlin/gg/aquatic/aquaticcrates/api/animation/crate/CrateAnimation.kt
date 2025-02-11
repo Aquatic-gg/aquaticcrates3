@@ -32,7 +32,7 @@ abstract class CrateAnimation : PlayerBoundAnimation() {
         actions.execute(this)
     }
 
-    abstract val completionFuture: CompletableFuture<Void>
+    abstract val completionFuture: CompletableFuture<CrateAnimation>
     abstract val settings: CrateAnimationSettings
 
     override fun tick() {
@@ -128,7 +128,7 @@ abstract class CrateAnimation : PlayerBoundAnimation() {
                 animationManager.playingAnimations.remove(player.uniqueId)
             }
         }
-        completionFuture.complete(null)
+        completionFuture.complete(this)
     }
 
     open fun onFinalize() {}

@@ -34,17 +34,17 @@ class BasicOpenManager(val crate: BasicCrate) {
         player.toAquaticPlayer()?.crateEntry() ?: return CompletableFuture.completedFuture(null)
 
         val rewards = crate.rewardManager.getRewards(player)
-        HistoryHandler.registerCrateOpen(player, crate.identifier, rewards.mapPair { it.reward.id to it.randomAmount })
 
         return crate.animationManager.animationSettings.create(
             player, crate.animationManager, location, rewards
-        ).thenRun {
+        ).thenAccept { animation ->
             val milestones = crate.rewardManager.milestoneManager.milestonesReached(player)
             for (milestone in milestones) {
                 for (reward in milestone.rewards) {
                     reward.give(player, 1, false)
                 }
             }
+            HistoryHandler.registerCrateOpen(player, crate.identifier, animation.rewards.mapPair { it.reward.id to it.randomAmount })
         }
     }
 

@@ -1,10 +1,7 @@
 package gg.aquatic.aquaticcrates.plugin.animation.open.settings
 
 import gg.aquatic.aquaticcrates.api.animation.Animation
-import gg.aquatic.aquaticcrates.api.animation.crate.AnimationSettingsFactory
-import gg.aquatic.aquaticcrates.api.animation.crate.CrateAnimationActions
-import gg.aquatic.aquaticcrates.api.animation.crate.CrateAnimationManager
-import gg.aquatic.aquaticcrates.api.animation.crate.CrateAnimationSettings
+import gg.aquatic.aquaticcrates.api.animation.crate.*
 import gg.aquatic.aquaticcrates.api.reward.RolledReward
 import gg.aquatic.aquaticcrates.plugin.animation.open.CinematicAnimationImpl
 import gg.aquatic.aquaticcrates.plugin.animation.prop.CameraAnimationProp
@@ -37,7 +34,7 @@ class CinematicAnimationSettings(
         animationManager: CrateAnimationManager,
         location: Location,
         rolledRewards: MutableList<RolledReward>
-    ): CompletableFuture<Void> {
+    ): CompletableFuture<CrateAnimation> {
         val cinematicLocation = this.cinematicLocation.toLocation()!!
         val animation = CinematicAnimationImpl(
             player,
