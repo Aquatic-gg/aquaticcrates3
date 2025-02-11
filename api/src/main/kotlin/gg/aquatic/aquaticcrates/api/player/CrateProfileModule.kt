@@ -12,6 +12,41 @@ object CrateProfileModule: ProfileModule {
     override val id: String = "aquaticcrates_profile_module"
 
     override fun initialize(connection: Connection) {
+        if (CrateProfileDriver.isSQLite()) {
+            val enableForeignKeys = "PRAGMA foreign_keys = ON;"
+            connection.createStatement().execute(enableForeignKeys)
+        }
+
+        connection.prepareStatement(if (CrateProfileDriver.isSQLite()) {
+            """
+            CREATE TABLE IF NOT EXISTS items (
+                item_id INTEGER PRIMARY KEY AUTOINCREMENT, -- Auto-increment for SQLite
+                item_data BLOB NOT NULL, -- Serialized data of the ItemStack (JSON or binary)
+                UNIQUE(item_data) -- Ensure no duplicate items
+            );
+            """
+        } else {
+            """
+            CREATE TABLE IF NOT EXISTS items (
+                item_id INT AUTO_INCREMENT PRIMARY KEY, -- Auto-increment for MySQL
+                item_data BLOB NOT NULL, -- Serialized data of the ItemStack (JSON or binary)
+                UNIQUE(item_data) -- Ensure no duplicate items
+            );
+            """
+        })
+
+        connection.prepareStatement("""
+            CREATE TABLE IF NOT EXISTS player_items (
+                player_id INTEGER NOT NULL,
+                item_id INTEGER NOT NULL,
+                quantity INTEGER NOT NULL,
+                PRIMARY KEY (player_id, item_id), -- Composite primary key
+                FOREIGN KEY (player_id) REFERENCES aquaticprofiles(id) ON DELETE CASCADE, -- Cascading delete
+                FOREIGN KEY (item_id) REFERENCES items(item_id) ON DELETE CASCADE
+            );
+            """
+        )
+
         connection.prepareStatement(
             "CREATE TABLE IF NOT EXISTS " +
                     "aquaticcrates_keys (" +

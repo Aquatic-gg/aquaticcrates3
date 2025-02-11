@@ -9,6 +9,8 @@ import gg.aquatic.waves.data.MySqlDriver
 import gg.aquatic.waves.module.WaveModules
 import gg.aquatic.waves.profile.AquaticPlayer
 import gg.aquatic.waves.profile.ProfilesModule
+import gg.aquatic.waves.util.item.decodeToItemStack
+import gg.aquatic.waves.util.item.encode
 import org.intellij.lang.annotations.Language
 import java.sql.Connection
 import java.sql.PreparedStatement
@@ -17,10 +19,19 @@ import java.util.concurrent.ConcurrentHashMap
 object CrateProfileDriver {
     val driver: DataDriver = (Waves.INSTANCE.modules[WaveModules.PROFILES] as ProfilesModule).driver
 
+    fun isSQLite(): Boolean {
+        return driver is MySqlDriver
+    }
+
+    fun isMySQL(): Boolean {
+        return !isSQLite()
+    }
+
     fun get(aquaticPlayer: AquaticPlayer): CrateProfileEntry {
         val entry = CrateProfileEntry(aquaticPlayer, RewardContainer())
         loadKeys(entry)
         loadHistory(entry)
+        loadRewardContainer(entry)
         return entry
     }
 
@@ -43,6 +54,7 @@ object CrateProfileDriver {
     fun save(connection: Connection, entry: CrateProfileEntry) {
         saveKeys(connection, entry)
         saveHistory(connection, entry)
+        saveRewardContainer(connection, entry)
     }
 
     private fun saveKeys(connection: Connection, entry: CrateProfileEntry) {
@@ -57,40 +69,75 @@ object CrateProfileDriver {
         }
     }
 
-    internal fun saveHistory(connection: Connection, profileEntry: CrateProfileEntry) {
-        val insertOpensQuery = "INSERT INTO aquaticcrates_opens (user_id, open_timestamp, crate_id) VALUES (?, ?, ?);"
-        val insertRewardsQuery = "INSERT INTO aquaticcrates_rewards (open_id, reward_id, amount) VALUES (?, ?, ?);"
+    private fun saveRewardContainer(connection: Connection, entry: CrateProfileEntry) {
+        try {
+            val isSQLite = isSQLite()
 
-        /*
-        connection.prepareStatement(insertOpensQuery, PreparedStatement.RETURN_GENERATED_KEYS).use { opensStmt ->
-            connection.prepareStatement(insertRewardsQuery).use { rewardsStmt ->
-                for ((userId, entries) in profileEntry.newEntries) {
-                    for (entry in entries) {
-                        // Insert the 'open' entry
-                        opensStmt.setInt(1, userId.toInt()) // Assuming userId is numeric as a string
-                        opensStmt.setLong(2, entry.timestamp) // Set timestamp
-                        opensStmt.setString(3, entry.crateId) // Set crateId
-                        opensStmt.executeUpdate()
+            // SQL to insert a new item into the `items` table
+            val insertItemSql = if (isSQLite) {
+                "INSERT OR IGNORE INTO items (item_data) VALUES (?)"
+            } else {
+                "INSERT IGNORE INTO items (item_data) VALUES (?)"
+            }
 
-                        // Get the generated open_id
-                        val generatedKeys = opensStmt.generatedKeys
-                        if (generatedKeys.next()) {
-                            val openId = generatedKeys.getInt(1) // Retrieve auto-generated open_id
+            // SQL to retrieve the `item_id` of an item
+            val getItemIdSql = "SELECT item_id FROM items WHERE item_data = ?"
 
-                            // Insert all rewards related to this open entry
-                            for ((rewardId, amount) in entry.rewardIds) {
-                                rewardsStmt.setInt(1, openId) // Set open_id as FK
-                                rewardsStmt.setString(2, rewardId) // Set reward_id
-                                rewardsStmt.setInt(3, amount) // Set amount
-                                rewardsStmt.addBatch() // Add to batch for performance
+            // SQL to insert or update the player's item quantities
+            val insertOrUpdatePlayerItemSql = if (isSQLite) {
+                "INSERT OR REPLACE INTO player_items (player_id, item_id, quantity) VALUES (?, ?, ?)"
+            } else {
+                """
+            INSERT INTO player_items (player_id, item_id, quantity)
+            VALUES (?, ?, ?)
+            ON DUPLICATE KEY UPDATE quantity = VALUES(quantity)
+            """
+            }
+
+            // Serialize all items in the RewardContainer
+            val rewardContainer = entry.rewardContainer
+            val serializedItems = rewardContainer.items.mapKeys { (itemStack, _) ->
+                itemStack.encode()
+            }
+
+            // Process statements
+            connection.prepareStatement(insertItemSql).use { insertItemStmt ->
+                connection.prepareStatement(getItemIdSql).use { getItemIdStmt ->
+                    connection.prepareStatement(insertOrUpdatePlayerItemSql).use { playerItemStmt ->
+                        serializedItems.forEach { (serializedItem, quantity) ->
+                            // Step 1: Insert item into the items table, if it doesn’t already exist
+                            insertItemStmt.setString(1, serializedItem)
+                            insertItemStmt.executeUpdate()
+
+                            // Step 2: Retrieve the `item_id` from the items table
+                            var itemId: Int? = null
+                            getItemIdStmt.setString(1, serializedItem)
+                            getItemIdStmt.executeQuery().use { resultSet ->
+                                if (resultSet.next()) {
+                                    itemId = resultSet.getInt("item_id")
+                                }
+                            }
+
+                            // Step 3: Insert or update the `player_items` table
+                            itemId?.let {
+                                playerItemStmt.setInt(1, entry.aquaticPlayer.index) // Using the player's ID
+                                playerItemStmt.setInt(2, it)
+                                playerItemStmt.setInt(3, quantity)
+                                playerItemStmt.executeUpdate()
                             }
                         }
                     }
                 }
-                rewardsStmt.executeBatch()
             }
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
-         */
+
+    }
+
+    internal fun saveHistory(connection: Connection, profileEntry: CrateProfileEntry) {
+        val insertOpensQuery = "INSERT INTO aquaticcrates_opens (user_id, open_timestamp, crate_id) VALUES (?, ?, ?);"
+        val insertRewardsQuery = "INSERT INTO aquaticcrates_rewards (open_id, reward_id, amount) VALUES (?, ?, ?);"
 
         // Collect auto-generated open IDs and their related rewards
         val openIdToRewards = mutableListOf<Pair<Int, List<Pair<String, Int>>>>()
@@ -140,6 +187,42 @@ object CrateProfileDriver {
             // Execute batch for "rewards" table
             rewardsStmt.executeBatch()
         }
+    }
+
+    fun loadRewardContainer(entry: CrateProfileEntry) {
+        try {
+            val query = """
+            SELECT i.item_data, pi.quantity
+            FROM player_items pi
+            JOIN items i ON pi.item_id = i.item_id
+            WHERE pi.player_id = ?
+        """
+
+            driver.useConnection {
+                prepareStatement(query).use { statement ->
+                    // Set the player ID in the query
+                    statement.setInt(1, entry.aquaticPlayer.index) // `aquaticPlayer.id` identifies the player
+
+                    // Execute the query
+                    statement.executeQuery().use { resultSet ->
+                        while (resultSet.next()) {
+                            // Retrieve `item_data` (serialized ItemStack) and `quantity`
+                            val serializedItem = resultSet.getString("item_data")
+                            val quantity = resultSet.getInt("quantity")
+
+                            // Deserialize the `item_data` back into an ItemStack
+                            val itemStack = serializedItem.decodeToItemStack()
+
+                            // Add the item to the RewardContainer's `rewards` map
+                            entry.rewardContainer.items[itemStack] = quantity
+                        }
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            e.printStackTrace() // Log or handle the exception as needed
+        }
+
     }
 
     fun loadHistory(entry: CrateProfileEntry) {
