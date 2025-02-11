@@ -118,7 +118,9 @@ class BasicCrate(
 
     override fun tryOpen(player: Player, location: Location, spawnedCrate: SpawnedCrate?): CompletableFuture<Void> {
         if (!canBeOpened(player,1,OpenData(player,location,this))) {
-
+            spawnedCrate?.let {
+                animationManager.playFailAnimation(it, player)
+            }
             return CompletableFuture.completedFuture(null)
         }
         return open(player, location, spawnedCrate)
@@ -154,6 +156,13 @@ class BasicCrate(
                 player.sendMessage("You cannot open the crate here!")
                 return false
             }
+            val spawned = CrateHandler.spawned[openData.location]
+            if (spawned != null) {
+                if (animationManager.failAnimations[spawned]?.containsKey(player.uniqueId) == true) {
+                    return false
+                }
+            }
+
             val animationResult = animationManager.animationSettings.canBeOpened(player,animationManager,openData.location)
             when (animationResult) {
                 CrateAnimationSettings.AnimationResult.ALREADY_BEING_OPENED -> {

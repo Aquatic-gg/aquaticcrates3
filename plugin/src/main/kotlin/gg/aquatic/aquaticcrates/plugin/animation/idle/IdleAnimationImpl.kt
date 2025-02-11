@@ -2,6 +2,7 @@ package gg.aquatic.aquaticcrates.plugin.animation.idle
 
 import gg.aquatic.aquaticcrates.api.animation.Animation
 import gg.aquatic.aquaticcrates.api.animation.prop.AnimationProp
+import gg.aquatic.aquaticcrates.api.crate.OpenableCrate
 import gg.aquatic.aquaticcrates.api.crate.SpawnedCrate
 import gg.aquatic.aquaticcrates.plugin.animation.idle.settings.IdleAnimationSettings
 import gg.aquatic.waves.util.audience.AquaticAudience
@@ -11,9 +12,9 @@ import java.util.concurrent.ConcurrentHashMap
 
 class IdleAnimationImpl(
     val crate: SpawnedCrate,
-    override val baseLocation: Location,
     val settings: IdleAnimationSettings
 ) : Animation() {
+    override val baseLocation = crate.location
     override val audience: AquaticAudience = crate.audience
     override val props: MutableMap<String, AnimationProp> = ConcurrentHashMap()
 
@@ -32,7 +33,8 @@ class IdleAnimationImpl(
                 tick = 0
                 return
             }
-            // START NEW
+            props.values.forEach { it.onAnimationEnd() }
+            (crate.crate as OpenableCrate).animationManager.playNewIdleAnimation(crate)
         }
     }
 

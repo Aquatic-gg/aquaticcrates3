@@ -17,7 +17,6 @@ class IdleAnimationSettings(
     fun create(spawnedCrate: SpawnedCrate): IdleAnimationImpl {
         return IdleAnimationImpl(
             spawnedCrate,
-            spawnedCrate.location,
             this
         )
     }

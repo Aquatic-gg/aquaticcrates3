@@ -16,10 +16,11 @@ abstract class CrateAnimationManager {
     abstract val rerollManager: RerollManager?
 
     abstract fun playNewIdleAnimation(spawnedCrate: SpawnedCrate)
+    abstract fun playFailAnimation(spawnedCrate: SpawnedCrate, player: Player)
 
     abstract val playingAnimations: ConcurrentHashMap<UUID, MutableSet<CrateAnimation>>
-    abstract val idleAnimation: ConcurrentHashMap<SpawnedCrate, out Animation>
-    abstract val failAnimations: ConcurrentHashMap<SpawnedCrate,ConcurrentHashMap<UUID, out PlayerBoundAnimation>>
+    abstract val idleAnimation: ConcurrentHashMap<SpawnedCrate, Animation>
+    abstract val failAnimations: ConcurrentHashMap<SpawnedCrate,ConcurrentHashMap<UUID, PlayerBoundAnimation>>
     abstract fun playAnimation(animation: CrateAnimation)
 
     abstract fun skipAnimation(player: Player)

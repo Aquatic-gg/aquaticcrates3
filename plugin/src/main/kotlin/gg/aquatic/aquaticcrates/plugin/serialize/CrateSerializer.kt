@@ -1,6 +1,8 @@
 package gg.aquatic.aquaticcrates.plugin.serialize
 
 import gg.aquatic.aquaticcrates.api.animation.Animation
+import gg.aquatic.aquaticcrates.api.animation.PlayerBoundAnimation
+import gg.aquatic.aquaticcrates.api.animation.crate.CrateAnimationActions
 import gg.aquatic.aquaticcrates.api.crate.Crate
 import gg.aquatic.aquaticcrates.api.crate.OpenableCrate
 import gg.aquatic.aquaticcrates.api.interaction.CrateInteractAction
@@ -8,6 +10,7 @@ import gg.aquatic.aquaticcrates.api.openprice.OpenPriceGroup
 import gg.aquatic.aquaticcrates.api.reward.Reward
 import gg.aquatic.aquaticcrates.api.reward.RewardRarity
 import gg.aquatic.aquaticcrates.plugin.CratesPlugin
+import gg.aquatic.aquaticcrates.plugin.animation.fail.settings.FailAnimationSettings
 import gg.aquatic.aquaticcrates.plugin.animation.idle.settings.IdleAnimationSettings
 import gg.aquatic.aquaticcrates.plugin.animation.open.AnimationManagerImpl
 import gg.aquatic.aquaticcrates.plugin.animation.open.settings.CinematicAnimationSettings
@@ -298,6 +301,7 @@ object CrateSerializer : BaseSerializer() {
                     loadIdleAnimationSettings(cfg).apply {
                         Bukkit.getConsoleSender().sendMessage("Loaded $size idle animations")
                     },
+                    loadFailAnimationSettings(cfg),
                     rerollManager,
                 )
             },
@@ -314,6 +318,24 @@ object CrateSerializer : BaseSerializer() {
             massOpenPerRewardActions,
             openRestrictions
         )
+    }
+
+    private fun loadFailAnimationSettings(cfg: FileConfiguration): FailAnimationSettings? {
+        val section = cfg.getConfigurationSection("fail-animation") ?: return null
+        val actionsSection = section.getConfigurationSection("actions") ?: return null
+        val actions = TreeMap<Int, CrateAnimationActions>()
+        for (key in actionsSection.getKeys(false)) {
+            val time = key.toIntOrNull() ?: continue
+            val animationActions = ActionSerializer.fromSections<Animation>(actionsSection.getSectionList(key))
+            val playerAnimationActions =
+                ActionSerializer.fromSections<PlayerBoundAnimation>(actionsSection.getSectionList(key))
+            val crateAnimationActions =
+                CrateAnimationActions(animationActions.toMutableList(), playerAnimationActions.toMutableList())
+            actions[time] = crateAnimationActions
+        }
+        val length = section.getInt("length", -1)
+        if (length < 0) return null
+        return FailAnimationSettings(actions, length)
     }
 
     private fun loadIdleAnimationSettings(cfg: FileConfiguration): List<IdleAnimationSettings> {

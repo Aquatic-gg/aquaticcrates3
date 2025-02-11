@@ -5,9 +5,11 @@ import gg.aquatic.aquaticcrates.api.animation.PlayerBoundAnimation
 import gg.aquatic.aquaticcrates.api.animation.crate.CrateAnimation
 import gg.aquatic.aquaticcrates.api.animation.crate.CrateAnimationManager
 import gg.aquatic.aquaticcrates.api.animation.crate.CrateAnimationSettings
+import gg.aquatic.aquaticcrates.api.crate.CrateHandler
 import gg.aquatic.aquaticcrates.api.crate.OpenableCrate
 import gg.aquatic.aquaticcrates.api.crate.SpawnedCrate
 import gg.aquatic.aquaticcrates.api.reroll.RerollManager
+import gg.aquatic.aquaticcrates.plugin.animation.fail.settings.FailAnimationSettings
 import gg.aquatic.aquaticcrates.plugin.animation.idle.settings.IdleAnimationSettings
 import gg.aquatic.waves.util.chance.randomItem
 import gg.aquatic.waves.util.runAsync
@@ -18,7 +20,8 @@ import java.util.concurrent.ConcurrentHashMap
 class AnimationManagerImpl(
     override val crate: OpenableCrate,
     override val animationSettings: CrateAnimationSettings,
-    val idleAnimationSettings: Collection<IdleAnimationSettings>,
+    private val idleAnimationSettings: Collection<IdleAnimationSettings>,
+    private val failAnimationSettings: FailAnimationSettings?,
     rerollManager: (OpenableCrate) -> RerollManager?,
 ) : CrateAnimationManager() {
     override val rerollManager = rerollManager(crate)
@@ -26,7 +29,7 @@ class AnimationManagerImpl(
     override val playingAnimations: ConcurrentHashMap<UUID, MutableSet<CrateAnimation>> = ConcurrentHashMap()
     override var idleAnimation: ConcurrentHashMap<SpawnedCrate, Animation> = ConcurrentHashMap()
 
-    override val failAnimations: ConcurrentHashMap<SpawnedCrate, ConcurrentHashMap<UUID, out PlayerBoundAnimation>> =
+    override val failAnimations: ConcurrentHashMap<SpawnedCrate, ConcurrentHashMap<UUID, PlayerBoundAnimation>> =
         ConcurrentHashMap()
 
     override fun playNewIdleAnimation(spawnedCrate: SpawnedCrate) {
@@ -34,8 +37,22 @@ class AnimationManagerImpl(
         idleAnimation[spawnedCrate] = animation.create(spawnedCrate)
     }
 
+    override fun playFailAnimation(spawnedCrate: SpawnedCrate, player: Player) {
+        val fail = failAnimations.getOrPut(spawnedCrate) { ConcurrentHashMap() }
+        val previousAnimation = fail.remove(player.uniqueId)
+        previousAnimation?.props?.values?.forEach { it.onAnimationEnd() }
+
+        val new = failAnimationSettings?.create(spawnedCrate, player) ?: return
+        fail[player.uniqueId] = new
+    }
+
     override fun playAnimation(animation: CrateAnimation) {
         //Bukkit.broadcastMessage("\n Playing animation \n")
+        val spawnedCrate = CrateHandler.spawned[animation.baseLocation]
+        if (spawnedCrate != null) {
+            val fail = failAnimations[spawnedCrate]?.remove(animation.player.uniqueId)
+            fail?.props?.values?.forEach { it.onAnimationEnd() }
+        }
         val animations = playingAnimations.getOrPut(animation.player.uniqueId) { ConcurrentHashMap.newKeySet() }
         animations += animation
     }
