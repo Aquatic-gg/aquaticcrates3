@@ -12,7 +12,7 @@ import gg.aquatic.waves.util.generic.Action
 class PlayModelAnimationAction : Action<Animation> {
 
     override val arguments: List<AquaticObjectArgument<*>> = listOf(
-        PrimitiveObjectArgument("id", null, true),
+        PrimitiveObjectArgument("id", null, false),
         PrimitiveObjectArgument("animation", "animation", true),
         PrimitiveObjectArgument("fade-in", 0.0, false),
         PrimitiveObjectArgument("fade-out", 0.0, false),

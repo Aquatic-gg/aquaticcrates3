@@ -36,41 +36,45 @@ abstract class CrateAnimation : PlayerBoundAnimation() {
     abstract val settings: CrateAnimationSettings
 
     override fun tick() {
-        onTick()
-        when (state) {
-            State.PRE_OPEN -> {
-                tickPreOpen()
-                if (tick >= settings.preAnimationDelay) {
-                    updateState(State.OPENING)
-                    tick()
+        try {
+            onTick()
+            when (state) {
+                State.PRE_OPEN -> {
+                    tickPreOpen()
+                    if (tick >= settings.preAnimationDelay) {
+                        updateState(State.OPENING)
+                        tick()
+                        return
+                    }
+                }
+
+                State.OPENING -> {
+                    tickOpening()
+                    if (tick >= settings.animationLength) {
+                        tryReroll()
+                        return
+                    }
+                }
+
+                State.POST_OPEN -> {
+                    tickPostOpen()
+                    if (tick >= settings.postAnimationDelay) {
+                        finalizeAnimation()
+                        return
+                    }
+                }
+
+                else -> {
                     return
                 }
             }
-
-            State.OPENING -> {
-                tickOpening()
-                if (tick >= settings.animationLength) {
-                    tryReroll()
-                    return
-                }
+            for ((_, prop) in props) {
+                prop.tick()
             }
-
-            State.POST_OPEN -> {
-                tickPostOpen()
-                if (tick >= settings.postAnimationDelay) {
-                    finalizeAnimation()
-                    return
-                }
-            }
-
-            else -> {
-                return
-            }
+            tick++
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
-        for ((_, prop) in props) {
-            prop.tick()
-        }
-        tick++
     }
 
     open fun onTick() {}

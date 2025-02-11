@@ -46,10 +46,8 @@ class AnimationManagerImpl(
                 animation.tick()
             }
         }
-        for ((_, animations) in failAnimations) {
-            for (animation in animations.values.toMutableList()) {
-                animation.tick()
-            }
+        for ((_, animation) in idleAnimation) {
+            animation.tick()
         }
         for (entry in failAnimations) {
             for ((_, animation) in entry.value.toMutableMap()) {

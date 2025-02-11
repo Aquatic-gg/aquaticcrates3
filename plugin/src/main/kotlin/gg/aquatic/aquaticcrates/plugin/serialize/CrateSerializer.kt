@@ -292,7 +292,9 @@ object CrateSerializer : BaseSerializer() {
                 AnimationManagerImpl(
                     bc,
                     animationSettings,
-                    loadIdleAnimationSettings(cfg),
+                    loadIdleAnimationSettings(cfg).apply {
+                        Bukkit.getConsoleSender().sendMessage("Loaded $size idle animations")
+                    },
                     rerollManager,
                 )
             },
@@ -330,6 +332,7 @@ object CrateSerializer : BaseSerializer() {
             list += IdleAnimationSettings(
                 actions, length, isLoop, chance
             )
+            Bukkit.getConsoleSender().sendMessage("Loaded idle animation with ${actions.size} tasks")
         }
         return list
     }

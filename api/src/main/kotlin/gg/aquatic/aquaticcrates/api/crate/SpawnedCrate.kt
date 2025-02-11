@@ -14,16 +14,6 @@ class SpawnedCrate(
 
     val hologram = crate.hologramSettings.create(location)
 
-    init {
-        hologram.spawn(audience) { p, str ->
-            str.updatePAPIPlaceholders(p)
-        }
-
-        if (crate is OpenableCrate) {
-            crate.animationManager.playNewIdleAnimation(this)
-        }
-    }
-
     val spawnedInteractables = crate.interactables.map {
         it.build(location, audience) { e ->
             val clickType = if (e.isLeft) {
@@ -40,6 +30,16 @@ class SpawnedCrate(
                 }
             }
             crate.interactHandler.handleInteract(e.player, clickType, location, this)
+        }
+    }
+
+    init {
+        hologram.spawn(audience) { p, str ->
+            str.updatePAPIPlaceholders(p)
+        }
+
+        if (crate is OpenableCrate) {
+            crate.animationManager.playNewIdleAnimation(this)
         }
     }
 
