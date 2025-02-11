@@ -1,10 +1,8 @@
 package gg.aquatic.aquaticcrates.api.crate
 
-import gg.aquatic.aquaticcrates.api.hologram.AquaticHologramSettings
 import gg.aquatic.aquaticcrates.api.util.ACGlobalAudience
 import gg.aquatic.waves.item.AquaticItemInteractEvent
 import gg.aquatic.waves.util.updatePAPIPlaceholders
-import org.bukkit.Bukkit
 import org.bukkit.Location
 
 class SpawnedCrate(
@@ -17,11 +15,6 @@ class SpawnedCrate(
     val hologram = crate.hologramSettings.create(location)
 
     init {
-        Bukkit.getConsoleSender()
-            .sendMessage("A Crate has been spawned at ${location.x}, ${location.y}, ${location.z} in world ${location.world?.name}")
-        Bukkit.getConsoleSender()
-            .sendMessage("  Hologram lines: ${(crate.hologramSettings as AquaticHologramSettings).lines.size}")
-
         hologram.spawn(audience) { p, str ->
             str.updatePAPIPlaceholders(p)
         }
