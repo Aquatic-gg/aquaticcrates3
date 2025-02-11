@@ -6,3 +6,9 @@ author: LARKYY
 folia-supported: true
 depend:
   - Waves
+softdepend:
+  - Nexo
+  - ItemsAdder
+  - MythicMobs
+  - ModelEngine
+  - MMOItems

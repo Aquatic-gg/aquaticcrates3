@@ -58,6 +58,7 @@ interface Reward : IChance {
                     .replace("%random-amount%", randomAmount.toString())
                     .replace("%reward-name%", displayName)
                     .replace("%chance%", chance.decimals(2))
+                    .replace("%item_type_image_url%", "https://raw.githubusercontent.com/KygekDev/default-textures/refs/heads/master/textures/items/${item.getItem().type.name.lowercase()}.png")
             }
         }
     }
