@@ -15,7 +15,7 @@ object HologramSerializer {
             Vector(),
         )
 
-        val offset = section.getString("offset", "0;0;0")!!.split(";")
+        val offset = section.getString("offset", "0;1.5;0")!!.split(";")
         val vector = Vector(
             offset[0].toDouble(),
             offset[1].toDouble(),
