@@ -58,7 +58,7 @@ class CameraAnimationProp(
                 0,
                 null
             )
-            val user = animation.player.toUser()
+            val user = animation.player.toUser() ?: return@runLaterSync
             user.sendPacket(spawnPacket)
 
             val playerInfoPacket = WrapperPlayServerPlayerInfo(
@@ -88,21 +88,21 @@ class CameraAnimationProp(
     fun setTeleportInterpolation(interpolation: Int) {
         val dataBuilder = EntityDataBuilder.BLOCK_DISPLAY().setPosRotInterpolationDuration(interpolation)
         val metadataPacket = WrapperPlayServerEntityMetadata(entityId, dataBuilder.build())
-        animation.player.toUser().sendPacket(metadataPacket)
+        animation.player.toUser()?.sendPacket(metadataPacket)
     }
 
     fun smoothTeleport(location: Location) {
         setTeleportInterpolation(2)
         val teleportPacket =
             WrapperPlayServerEntityTeleport(entityId, SpigotConversionUtil.fromBukkitLocation(location), false)
-        animation.player.toUser().sendPacket(teleportPacket)
+        animation.player.toUser()?.sendPacket(teleportPacket)
     }
 
     fun teleport(location: Location) {
         setTeleportInterpolation(0)
         val teleportPacket =
             WrapperPlayServerEntityTeleport(entityId, SpigotConversionUtil.fromBukkitLocation(location), false)
-        animation.player.toUser().sendPacket(teleportPacket)
+        animation.player.toUser()?.sendPacket(teleportPacket)
     }
 
     override fun onAnimationEnd() {
@@ -124,8 +124,8 @@ class CameraAnimationProp(
             SpigotConversionUtil.fromBukkitGameMode(previousGamemode).id.toFloat()
         )
 
-        animation.player.toUser().let {
-            it.sendPacket(WrapperPlayServerCamera(animation.player.toUser().entityId))
+        animation.player.toUser()?.let {
+            it.sendPacket(WrapperPlayServerCamera(it.entityId))
             it.sendPacket(gameModePacket)
         }
     }

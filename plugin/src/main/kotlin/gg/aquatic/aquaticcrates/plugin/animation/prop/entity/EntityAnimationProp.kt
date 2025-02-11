@@ -72,7 +72,7 @@ class EntityAnimationProp(
     override fun throwObject(vector: Vector) {
         val packet = WrapperPlayServerEntityVelocity(entity.entityId, Vector3d(vector.x, vector.y, vector.z))
         for (viewer in entity.viewers) {
-            viewer.toUser().sendPacket(packet)
+            viewer.toUser()?.sendPacket(packet)
         }
     }
 }

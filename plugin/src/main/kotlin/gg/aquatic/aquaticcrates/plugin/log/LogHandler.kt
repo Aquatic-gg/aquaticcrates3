@@ -87,13 +87,24 @@ object LogHandler {
         val combinedLogs = cachedLogs + dbLogs.values
 
         // Sort the combined list.
-        val sortedCombinedLogs = when (sorting) {
+        val sortedCombinedLogs = (when (sorting) {
             Sorting.NEWEST -> combinedLogs.sortedByDescending { it.second.timestamp }
             Sorting.OLDEST -> combinedLogs.sortedBy { it.second.timestamp }
             null -> combinedLogs // No sorting specified.
+        }).toMutableList()
+
+        if (cachedSize > 0 && sorting != Sorting.OLDEST) {
+            for ((index, pair) in sortedCombinedLogs.toMutableList().withIndex()) {
+                if (index >= offset) {
+                    break
+                }
+                if (pair in cachedLogs) {
+                    sortedCombinedLogs.remove(pair)
+                }
+            }
         }
 
         // Apply pagination: only return the entries within the requested range (`offset` to `offset + limit`).
-        return sortedCombinedLogs.drop(offset).take(limit)
+        return sortedCombinedLogs.take(limit)
     }
 }

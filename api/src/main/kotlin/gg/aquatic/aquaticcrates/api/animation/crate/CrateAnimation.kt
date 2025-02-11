@@ -102,7 +102,7 @@ abstract class CrateAnimation : PlayerBoundAnimation() {
 
     abstract fun onReroll()
 
-    fun finalizeAnimation() {
+    fun finalizeAnimation(isSync: Boolean = false) {
         updateState(State.FINISHED)
         onFinalize()
         executeActions(animationManager.animationSettings.finalAnimationTasks)
@@ -110,11 +110,18 @@ abstract class CrateAnimation : PlayerBoundAnimation() {
             prop.onAnimationEnd()
         }
         props.clear()
-        runSync {
+        if (isSync) {
             for (reward in rewards) {
                 reward.give(player, false)
             }
+        } else {
+            runSync {
+                for (reward in rewards) {
+                    reward.give(player, false)
+                }
+            }
         }
+
         animationManager.playingAnimations[player.uniqueId]?.let {
             it.remove(this)
             if (it.isEmpty()) {

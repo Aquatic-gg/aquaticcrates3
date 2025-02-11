@@ -41,17 +41,10 @@ class AnimationManagerImpl(
     }
 
     override fun forceStopAnimation(player: Player) {
-        playingAnimations.remove(player.uniqueId)?.forEach {
-            for (reward in it.rewards) {
-                reward.give(player, false)
-            }
-            runAsync {
-                for (value in it.props.values) {
-                    value.onAnimationEnd()
-                }
-            }
+        val animations = playingAnimations[player.uniqueId] ?: return
+        for (animation in animations) {
+            animation.finalizeAnimation(true)
         }
-
     }
 
     override fun forceStopAnimations() {

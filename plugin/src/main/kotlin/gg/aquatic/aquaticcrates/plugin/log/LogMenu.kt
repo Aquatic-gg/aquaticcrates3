@@ -1,13 +1,13 @@
 package gg.aquatic.aquaticcrates.plugin.log
 
 import gg.aquatic.aquaticcrates.api.player.CrateProfileDriver
+import gg.aquatic.waves.input.impl.ChatInput
+import gg.aquatic.waves.inventory.ButtonType
 import gg.aquatic.waves.menu.MenuComponent
 import gg.aquatic.waves.menu.PrivateAquaticMenu
 import gg.aquatic.waves.menu.component.Button
+import gg.aquatic.waves.util.*
 import gg.aquatic.waves.util.item.modifyFastMeta
-import gg.aquatic.waves.util.runAsync
-import gg.aquatic.waves.util.toMMComponent
-import gg.aquatic.waves.util.updatePAPIPlaceholders
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
@@ -46,9 +46,13 @@ class LogMenu(val settings: LogMenuSettings, player: Player) : PrivateAquaticMen
 
     private fun loadButtons() {
         for ((id, component) in settings.menuSettings.components) {
-            component.create(
+            addComponent(component.create(
                 { str, menu ->
                     str.updatePAPIPlaceholders(player)
+                        .replace("%page%", "${page + 1}")
+                        .replace("%sorting%", sorting.name.lowercase().replaceFirstChar { it.uppercase() })
+                        .replace("%player-filter%", playerFilter ?: "")
+                        .replace("%crate-filter%", crateFilter ?: "")
                 },
                 { e ->
                     if (id == "next-page") {
@@ -57,7 +61,89 @@ class LogMenu(val settings: LogMenuSettings, player: Player) : PrivateAquaticMen
                         page++
                         loadEntries()
                     }
-                })
+                    else if (id == "prev-page") {
+                        if (page <= 0) return@create
+                        page--
+                        loadEntries()
+                    } else if (id == "player-filter") {
+                        if (e.buttonType == ButtonType.RIGHT) {
+                            if (playerFilter == null) {
+                                return@create
+                            }
+                            playerFilter = null
+                            applyFilters()
+                            return@create
+                        } else if (e.buttonType == ButtonType.LEFT) {
+                            runSync {
+                                player.closeInventory()
+                            }
+                            player.send(
+                                """
+                                    &7Player Filter
+                                    
+                                    &fIn order to apply the player filter, please enter the player name you would like to filter by.
+                                    &fIf you want to cancel the edit, please type &ccancel&f.
+                                """.trimIndent().toMMComponent()
+                            )
+                            ChatInput.createHandle().await(player).thenAccept {
+                                val input = it ?: ""
+                                if (input.isEmpty()) {
+                                    playerFilter = null
+                                    applyFilters()
+                                    open()
+                                    return@thenAccept
+                                }
+                                playerFilter = input
+                                applyFilters()
+                                open()
+                                return@thenAccept
+                            }
+                        }
+                    } else if (id == "crate-filter") {
+                        if (e.buttonType == ButtonType.RIGHT) {
+                            if (crateFilter == null) {
+                                return@create
+                            }
+                            crateFilter = null
+                            applyFilters()
+                            return@create
+                        }
+                        else if (e.buttonType == ButtonType.LEFT) {
+                            runSync {
+                                player.closeInventory()
+                            }
+                            player.send(
+                                """
+                                    &7Crate Filter
+                                    
+                                    &fIn order to apply the crate filter, please enter the crate ID you would like to filter by.
+                                    &fIf you want to cancel the edit, please type &ccancel&f.
+                                """.trimIndent().toMMComponent()
+                            )
+                            ChatInput.createHandle().await(player).thenAccept {
+                                val input = it ?: ""
+                                if (input.isEmpty()) {
+                                    crateFilter = null
+                                    applyFilters()
+                                    open()
+                                    return@thenAccept
+                                }
+                                crateFilter = input
+                                applyFilters()
+                                open()
+                                return@thenAccept
+                            }
+                            return@create
+                        }
+                    } else if (id == "sort") {
+                        val newSorting = if (sorting.ordinal + 1 >= CrateProfileDriver.Sorting.entries.size) {
+                            CrateProfileDriver.Sorting.entries[0]
+                        } else CrateProfileDriver.Sorting.entries[sorting.ordinal + 1]
+                        sorting = newSorting
+                        applyFilters()
+                        return@create
+                    }
+                }))
         }
     }
 
@@ -69,7 +155,7 @@ class LogMenu(val settings: LogMenuSettings, player: Player) : PrivateAquaticMen
     private fun loadEntries() {
         isLoading = true
 
-        for (entryComponent in entryComponents) {
+        for (entryComponent in entryComponents.toMutableList()) {
             removeComponent(entryComponent)
         }
         entryComponents.clear()

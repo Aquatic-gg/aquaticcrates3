@@ -33,7 +33,7 @@ class TitleAction : Action<PlayerBoundAnimation> {
             WrapperPlayServerSetTitleSubtitle(binder.updatePlaceholders(subtitle).toMMComponent())
         )
 
-        binder.player.toUser().let {
+        binder.player.toUser()?.let {
             packets.forEach { packet -> it.sendPacket(packet) }
         }
     }

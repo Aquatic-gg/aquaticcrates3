@@ -1,7 +1,6 @@
 package gg.aquatic.aquaticcrates.plugin.animation.action.block
 
 import gg.aquatic.aquaticcrates.api.animation.Animation
-import gg.aquatic.aquaticcrates.api.util.VectorArgument
 import gg.aquatic.aquaticcrates.api.util.animationitem.BlockArgument
 import gg.aquatic.aquaticcrates.plugin.animation.prop.block.BlockAnimationProp
 import gg.aquatic.waves.util.argument.AquaticObjectArgument
@@ -11,13 +10,12 @@ import gg.aquatic.waves.util.block.AquaticBlock
 import gg.aquatic.waves.util.block.impl.VanillaBlock
 import gg.aquatic.waves.util.generic.Action
 import org.bukkit.Material
-import org.bukkit.util.Vector
 
 class SetBlockAction : Action<Animation> {
 
     override val arguments: List<AquaticObjectArgument<*>> = listOf(
         PrimitiveObjectArgument("id", "example", true),
-        VectorArgument("offset", Vector(), false),
+        PrimitiveObjectArgument("offset", "0;0;0", false),
         BlockArgument("block", VanillaBlock(Material.STONE.createBlockData()), true)
     )
 
