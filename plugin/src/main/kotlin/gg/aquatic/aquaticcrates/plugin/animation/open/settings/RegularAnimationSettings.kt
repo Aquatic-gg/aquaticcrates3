@@ -4,7 +4,6 @@ import gg.aquatic.aquaticcrates.api.animation.crate.*
 import gg.aquatic.aquaticcrates.api.crate.CrateHandler
 import gg.aquatic.aquaticcrates.api.reward.RolledReward
 import gg.aquatic.aquaticcrates.plugin.animation.open.RegularAnimationImpl
-import gg.aquatic.aquaticcrates.api.util.ACGlobalAudience
 import gg.aquatic.waves.util.audience.FilterAudience
 import gg.aquatic.waves.util.audience.GlobalAudience
 import gg.aquatic.waves.util.runLaterSync
@@ -58,22 +57,8 @@ class RegularAnimationSettings(
                         spawnedInteractable.updateViewers()
                     }
                 }
-
-                /*
-                spawnedCrate?.spawnedInteractables?.forEach {
-                    val audience = it.audience
-                    if (audience is ACGlobalAudience) {
-                        audience.hidden = true
-                    }
-                    for (uuid in audience.uuids) {
-                        val op = Bukkit.getPlayer(uuid)
-                        if (op != null) {
-                            it.removeViewer(op)
-                        }
-                    }
-                }
-                 */
             } else {
+                spawnedCrate?.audience?.hiddenFrom?.add(player)
                 spawnedCrate?.spawnedInteractables?.forEach { it.removeViewer(player) }
             }
         }
@@ -91,6 +76,7 @@ class RegularAnimationSettings(
                         }
                     }
                 } else {
+                    spawnedCrate?.audience?.hiddenFrom?.remove(player)
                     spawnedCrate?.spawnedInteractables?.forEach { it.addViewer(player) }
                 }
             }
