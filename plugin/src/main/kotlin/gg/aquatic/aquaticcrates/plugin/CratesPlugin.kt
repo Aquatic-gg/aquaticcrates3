@@ -152,7 +152,7 @@ class CratesPlugin : AbstractCratesPlugin() {
         event<PlayerQuitEvent> {
             for (crate in CrateHandler.crates.values) {
                 if (crate is OpenableCrate) {
-                    crate.animationManager.forceStopAnimation(it.player)
+                    crate.animationManager.forceStopAllAnimationTypes(it.player)
                 }
             }
         }
@@ -309,7 +309,7 @@ class CratesPlugin : AbstractCratesPlugin() {
         }
         for (value in CrateHandler.crates.values) {
             if (value is OpenableCrate) {
-                value.animationManager.forceStopAnimations()
+                value.animationManager.forceStopAllAnimations()
             }
         }
         CrateHandler.crates.clear()

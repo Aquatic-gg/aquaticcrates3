@@ -5,7 +5,7 @@ import gg.aquatic.aquaticcrates.api.animation.prop.AnimationProp
 import gg.aquatic.aquaticcrates.api.crate.SpawnedCrate
 import gg.aquatic.aquaticcrates.plugin.animation.idle.settings.IdleAnimationSettings
 import gg.aquatic.waves.util.audience.AquaticAudience
-import gg.aquatic.waves.util.audience.GlobalAudience
+import gg.aquatic.waves.util.collection.executeActions
 import org.bukkit.Location
 import java.util.concurrent.ConcurrentHashMap
 
@@ -14,13 +14,17 @@ class IdleAnimationImpl(
     override val baseLocation: Location,
     val settings: IdleAnimationSettings
 ) : Animation() {
-    override val audience: AquaticAudience = GlobalAudience()
+    override val audience: AquaticAudience = crate.audience
     override val props: MutableMap<String, AnimationProp> = ConcurrentHashMap()
 
     override fun tick() {
         for ((_, prop) in props) {
             prop.tick()
         }
+        settings.animationTasks[tick]?.executeActions(this) { a, str ->
+            a.updatePlaceholders(str)
+        }
+
         tick++
 
         if (tick > settings.length) {

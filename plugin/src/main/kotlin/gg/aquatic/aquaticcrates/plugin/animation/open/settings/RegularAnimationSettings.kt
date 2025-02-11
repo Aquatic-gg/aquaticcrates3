@@ -47,6 +47,19 @@ class RegularAnimationSettings(
         animation.tick()
         runLaterSync(1) {
             if (!personal) {
+                spawnedCrate?.let { sc ->
+                    val viewers = sc.audience.uuids.mapNotNull { Bukkit.getPlayer(it) }
+                    sc.audience.hidden = true
+                    for (spawnedInteractable in sc.spawnedInteractables) {
+                        for (op in viewers) {
+                            spawnedInteractable.removeViewer(op)
+                        }
+                        spawnedInteractable.viewers.clear()
+                        spawnedInteractable.updateViewers()
+                    }
+                }
+
+                /*
                 spawnedCrate?.spawnedInteractables?.forEach {
                     val audience = it.audience
                     if (audience is ACGlobalAudience) {
@@ -59,6 +72,7 @@ class RegularAnimationSettings(
                         }
                     }
                 }
+                 */
             } else {
                 spawnedCrate?.spawnedInteractables?.forEach { it.removeViewer(player) }
             }
@@ -69,13 +83,10 @@ class RegularAnimationSettings(
             runSync {
                 if (!personal) {
                     if (spawnedCrate != null) {
+                        spawnedCrate.audience.hidden = false
+                        val viewers = spawnedCrate.audience.uuids.mapNotNull { Bukkit.getPlayer(it) }
                         for (spawnedInteractable in spawnedCrate.spawnedInteractables) {
-                            val audience = spawnedInteractable.audience
-                            val players = audience.uuids.mapNotNull { Bukkit.getPlayer(it) }
-                            spawnedInteractable.viewers += players
-                            if (audience is ACGlobalAudience) {
-                                audience.hidden = false
-                            }
+                            spawnedInteractable.viewers += viewers
                             spawnedInteractable.updateViewers()
                         }
                     }

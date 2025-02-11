@@ -6,6 +6,7 @@ import gg.aquatic.aquaticcrates.api.reward.RewardContainer
 import gg.aquatic.waves.Waves
 import gg.aquatic.waves.data.DataDriver
 import gg.aquatic.waves.data.MySqlDriver
+import gg.aquatic.waves.data.SQLiteDriver
 import gg.aquatic.waves.module.WaveModules
 import gg.aquatic.waves.profile.AquaticPlayer
 import gg.aquatic.waves.profile.ProfilesModule
@@ -20,7 +21,7 @@ object CrateProfileDriver {
     val driver: DataDriver = (Waves.INSTANCE.modules[WaveModules.PROFILES] as ProfilesModule).driver
 
     fun isSQLite(): Boolean {
-        return driver is MySqlDriver
+        return driver is SQLiteDriver
     }
 
     fun isMySQL(): Boolean {

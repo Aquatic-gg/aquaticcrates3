@@ -8,7 +8,7 @@ import gg.aquatic.waves.util.generic.ConfiguredExecutableObject
 import java.util.*
 
 class IdleAnimationSettings(
-    val animationTasks: TreeMap<Int, ConfiguredExecutableObject<Animation, Unit>>,
+    val animationTasks: TreeMap<Int, MutableList<ConfiguredExecutableObject<Animation, Unit>>>,
     val length: Int,
     val isLoop: Boolean,
     override val chance: Double

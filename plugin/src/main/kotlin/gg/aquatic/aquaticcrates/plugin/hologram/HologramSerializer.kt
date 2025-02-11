@@ -24,17 +24,7 @@ object HologramSerializer {
 
         val lines = HologramSerializer.loadLines(section.getSectionList("lines"))
         Bukkit.getConsoleSender().sendMessage("Loaded hologram with ${lines.size} lines")
-        /*
-        val lines = HologramSerializer.load(section.getSectionList("lines"))
-        for (line in lines) {
-            if (line is TextDisplayLine) {
-                line.textUpdater = BiFunction<Player, String, String> { t, u -> u.updatePAPIPlaceholders(t) }
-            } else if (line is ArmorstandLine) {
-                line.textUpdater = BiFunction<Player, String, String> { t, u -> u.updatePAPIPlaceholders(t) }
-            }
-        }
-        return AquaticHologramSettings(lines, vector)
-         */
+
         return AquaticHologramSettings(
             lines,
             vector,

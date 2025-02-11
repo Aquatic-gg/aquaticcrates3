@@ -1,5 +1,6 @@
 package gg.aquatic.aquaticcrates.plugin.serialize
 
+import gg.aquatic.aquaticcrates.api.animation.Animation
 import gg.aquatic.aquaticcrates.api.crate.Crate
 import gg.aquatic.aquaticcrates.api.crate.OpenableCrate
 import gg.aquatic.aquaticcrates.api.interaction.CrateInteractAction
@@ -7,6 +8,7 @@ import gg.aquatic.aquaticcrates.api.openprice.OpenPriceGroup
 import gg.aquatic.aquaticcrates.api.reward.Reward
 import gg.aquatic.aquaticcrates.api.reward.RewardRarity
 import gg.aquatic.aquaticcrates.plugin.CratesPlugin
+import gg.aquatic.aquaticcrates.plugin.animation.idle.settings.IdleAnimationSettings
 import gg.aquatic.aquaticcrates.plugin.animation.open.AnimationManagerImpl
 import gg.aquatic.aquaticcrates.plugin.animation.open.settings.CinematicAnimationSettings
 import gg.aquatic.aquaticcrates.plugin.animation.open.settings.InstantAnimationSettings
@@ -48,6 +50,7 @@ import gg.aquatic.waves.util.toMMComponent
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.configuration.ConfigurationSection
+import org.bukkit.configuration.file.FileConfiguration
 import org.bukkit.entity.Player
 import org.bukkit.util.Vector
 import java.io.File
@@ -289,7 +292,8 @@ object CrateSerializer : BaseSerializer() {
                 AnimationManagerImpl(
                     bc,
                     animationSettings,
-                    rerollManager
+                    loadIdleAnimationSettings(cfg),
+                    rerollManager,
                 )
             },
             key,
@@ -305,6 +309,29 @@ object CrateSerializer : BaseSerializer() {
             massOpenPerRewardActions,
             openRestrictions
         )
+    }
+
+    private fun loadIdleAnimationSettings(cfg: FileConfiguration): List<IdleAnimationSettings> {
+        val list = ArrayList<IdleAnimationSettings>()
+        for (configurationSection in cfg.getSectionList("idle-animations")) {
+            val actionsSection = configurationSection.getConfigurationSection("actions") ?: continue
+            val actions = TreeMap<Int, MutableList<ConfiguredExecutableObject<Animation, Unit>>>()
+            for (key in actionsSection.getKeys(false)) {
+                val time = key.toIntOrNull() ?: continue
+                actions.getOrPut(time) { Collections.synchronizedList(ArrayList()) } += ActionSerializer.fromSections<Animation>(
+                    actionsSection.getSectionList(key)
+                )
+            }
+            val isLoop = configurationSection.getBoolean("loop", false)
+            val length = configurationSection.getInt("length", -1)
+            val chance = configurationSection.getDouble("chance", 1.0)
+            if (length < 0) continue
+
+            list += IdleAnimationSettings(
+                actions, length, isLoop, chance
+            )
+        }
+        return list
     }
 
     private fun loadCratePreviewMenuSettings(section: ConfigurationSection): CratePreviewMenuSettings {

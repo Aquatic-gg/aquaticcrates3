@@ -3,7 +3,6 @@ package gg.aquatic.aquaticcrates.api.crate
 import gg.aquatic.aquaticcrates.api.hologram.AquaticHologramSettings
 import gg.aquatic.aquaticcrates.api.util.ACGlobalAudience
 import gg.aquatic.waves.item.AquaticItemInteractEvent
-import gg.aquatic.waves.util.audience.GlobalAudience
 import gg.aquatic.waves.util.updatePAPIPlaceholders
 import org.bukkit.Bukkit
 import org.bukkit.Location
@@ -13,6 +12,8 @@ class SpawnedCrate(
     val location: Location
 ) {
 
+    val audience = ACGlobalAudience()
+
     val hologram = crate.hologramSettings.create(location)
 
     init {
@@ -21,13 +22,17 @@ class SpawnedCrate(
         Bukkit.getConsoleSender()
             .sendMessage("  Hologram lines: ${(crate.hologramSettings as AquaticHologramSettings).lines.size}")
 
-        hologram.spawn(ACGlobalAudience()) { p, str ->
+        hologram.spawn(audience) { p, str ->
             str.updatePAPIPlaceholders(p)
+        }
+
+        if (crate is OpenableCrate) {
+            crate.animationManager.playNewIdleAnimation(this)
         }
     }
 
     val spawnedInteractables = crate.interactables.map {
-        it.build(location, GlobalAudience()) { e ->
+        it.build(location, audience) { e ->
             val clickType = if (e.isLeft) {
                 if (e.player.isSneaking) {
                     AquaticItemInteractEvent.InteractType.SHIFT_LEFT

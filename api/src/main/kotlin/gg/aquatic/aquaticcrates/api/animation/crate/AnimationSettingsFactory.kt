@@ -3,10 +3,8 @@ package gg.aquatic.aquaticcrates.api.animation.crate
 import gg.aquatic.aquaticcrates.api.animation.Animation
 import gg.aquatic.aquaticcrates.api.animation.PlayerBoundAnimation
 import gg.aquatic.waves.registry.serializer.ActionSerializer
-import gg.aquatic.waves.util.generic.ConfiguredExecutableObject
 import gg.aquatic.waves.util.getSectionList
 import org.bukkit.configuration.ConfigurationSection
-import org.bukkit.entity.Player
 import java.util.*
 
 abstract class AnimationSettingsFactory {

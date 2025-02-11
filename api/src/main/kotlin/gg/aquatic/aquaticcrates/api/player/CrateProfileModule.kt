@@ -33,7 +33,9 @@ object CrateProfileModule: ProfileModule {
                 UNIQUE(item_data) -- Ensure no duplicate items
             );
             """
-        })
+        }).use {
+            it.execute()
+        }
 
         connection.prepareStatement("""
             CREATE TABLE IF NOT EXISTS player_items (
@@ -45,7 +47,9 @@ object CrateProfileModule: ProfileModule {
                 FOREIGN KEY (item_id) REFERENCES items(item_id) ON DELETE CASCADE
             );
             """
-        )
+        ).use {
+            it.execute()
+        }
 
         connection.prepareStatement(
             "CREATE TABLE IF NOT EXISTS " +
