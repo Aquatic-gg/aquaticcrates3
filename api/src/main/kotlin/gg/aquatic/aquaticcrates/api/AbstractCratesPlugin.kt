@@ -8,4 +8,12 @@ abstract class AbstractCratesPlugin: JavaPlugin() {
         lateinit var INSTANCE: AbstractCratesPlugin
     }
 
+    abstract val settings: PluginSettings
+
 }
+
+class PluginSettings(
+    var useRewardsMenu: Boolean,
+    var logOpenings: Boolean,
+    var openingsThreshold: Int
+)

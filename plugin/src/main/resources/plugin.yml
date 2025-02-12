@@ -6,7 +6,8 @@ author: LARKYY
 folia-supported: true
 depend:
   - Waves
-softdepend:
+soft-depend:
+  - AquaticCratesNexoAddon
   - Nexo
   - ItemsAdder
   - MythicMobs

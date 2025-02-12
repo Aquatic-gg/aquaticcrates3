@@ -40,6 +40,7 @@ class CameraAnimationProp(
 
     val previousGamemode = animation.player.gameMode
     val previousLocation = animation.player.location.clone()
+    val wasFlying = animation.player.allowFlight
 
     fun attachPlayer() {
 
@@ -82,7 +83,9 @@ class CameraAnimationProp(
     }
 
     override fun tick() {
-
+        if (wasFlying) return
+        animation.player.allowFlight = true
+        animation.player.isFlying = true
     }
 
     fun setTeleportInterpolation(interpolation: Int) {
@@ -106,6 +109,7 @@ class CameraAnimationProp(
     }
 
     override fun onAnimationEnd() {
+        /*
         runSync {
             try {
                 animation.player.isInvisible = false
@@ -116,6 +120,7 @@ class CameraAnimationProp(
                 ex.printStackTrace()
             }
         }
+         */
     }
 
     fun detach() {
@@ -128,5 +133,8 @@ class CameraAnimationProp(
             it.sendPacket(WrapperPlayServerCamera(it.entityId))
             it.sendPacket(gameModePacket)
         }
+        if (wasFlying) return
+        animation.player.isFlying = false
+        animation.player.allowFlight = false
     }
 }

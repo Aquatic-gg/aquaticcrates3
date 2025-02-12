@@ -5,7 +5,10 @@ import gg.aquatic.aquaticcrates.api.crate.OpenableCrate
 import gg.aquatic.aquaticcrates.api.reward.RolledReward
 import gg.aquatic.waves.util.runSync
 import gg.aquatic.waves.util.updatePAPIPlaceholders
+import org.bukkit.entity.Player
+import org.bukkit.inventory.ItemStack
 import java.util.concurrent.CompletableFuture
+import java.util.concurrent.ConcurrentHashMap
 
 abstract class CrateAnimation : PlayerBoundAnimation() {
 
@@ -34,6 +37,8 @@ abstract class CrateAnimation : PlayerBoundAnimation() {
 
     abstract val completionFuture: CompletableFuture<CrateAnimation>
     abstract val settings: CrateAnimationSettings
+
+    val playerEquipment = ConcurrentHashMap<EquipmentSlot, ItemStack>()
 
     override fun tick() {
         try {
@@ -108,7 +113,7 @@ abstract class CrateAnimation : PlayerBoundAnimation() {
 
     fun finalizeAnimation(isSync: Boolean = false) {
         updateState(State.FINISHED)
-        onFinalize()
+        onFinalize(isSync)
         executeActions(animationManager.animationSettings.finalAnimationTasks)
         for ((_, prop) in props) {
             prop.onAnimationEnd()
@@ -135,7 +140,7 @@ abstract class CrateAnimation : PlayerBoundAnimation() {
         completionFuture.complete(this)
     }
 
-    open fun onFinalize() {}
+    open fun onFinalize(isSync: Boolean) {}
 
     fun updateState(state: State) {
         onStateUpdate(state)
@@ -181,6 +186,32 @@ abstract class CrateAnimation : PlayerBoundAnimation() {
         ROLLING,
         POST_OPEN,
         FINISHED,
+    }
+
+    enum class EquipmentSlot {
+        HELMET, CHESTPLATE, LEGGINGS, BOOTS, HAND, OFFHAND, NUM_0, NUM_1, NUM_2, NUM_3, NUM_4, NUM_5, NUM_6, NUM_7, NUM_8;
+
+        fun toSlot(player: Player): Int {
+            return when (this) {
+                HELMET -> 5
+                CHESTPLATE -> 6
+                LEGGINGS -> 7
+                BOOTS -> 8
+                HAND -> {
+                    player.inventory.heldItemSlot
+                }
+                OFFHAND -> 45
+                NUM_0 -> 36
+                NUM_1 -> 37
+                NUM_2 -> 38
+                NUM_3 -> 39
+                NUM_4 -> 40
+                NUM_5 -> 41
+                NUM_6 -> 42
+                NUM_7 -> 43
+                NUM_8 -> 44
+            }
+        }
     }
 
 }

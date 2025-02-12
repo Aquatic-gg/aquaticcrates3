@@ -1,6 +1,6 @@
 package gg.aquatic.aquaticcrates.api.reward
 
-import gg.aquatic.aquaticcrates.api.hologram.AquaticHologramSettings
+import gg.aquatic.aquaticcrates.api.AbstractCratesPlugin
 import gg.aquatic.aquaticcrates.api.player.CrateProfileEntry
 import gg.aquatic.aquaticcrates.api.player.crateEntry
 import gg.aquatic.waves.item.AquaticItem
@@ -21,7 +21,6 @@ interface Reward : IChance {
     val perPlayerLimits: HashMap<CrateProfileEntry.HistoryType, Int>
     val actions: List<RewardAction>
     val requirements: List<ConfiguredRequirement<Player>>
-    val winCrateAnimation: String?
     //val hologramSettings: AquaticHologramSettings
     val amountRanges: MutableList<RewardAmountRange>
     val rarity: RewardRarity
@@ -33,23 +32,26 @@ interface Reward : IChance {
             val toDrop = player.inventory.addItem(item)
 
             for (value in toDrop.values) {
-                var foundItem: Pair<ItemStack, Int>? = null
-                for ((containerItem, amount) in crateEntry.rewardContainer.items) {
-                    if (containerItem.isSimilar(value)) {
-                        foundItem = containerItem to amount
-                        break
+                if (AbstractCratesPlugin.INSTANCE.settings.useRewardsMenu) {
+                    var foundItem: Pair<ItemStack, Int>? = null
+                    for ((containerItem, amount) in crateEntry.rewardContainer.items) {
+                        if (containerItem.isSimilar(value)) {
+                            foundItem = containerItem to amount
+                            break
+                        }
                     }
-                }
-                if (foundItem != null) {
-                    val newAmount = foundItem.second + value.amount
-                    crateEntry.rewardContainer.items[foundItem.first] = newAmount
-                    //player.sendMessage("Currently got ${newAmount}x ${foundItem.first.type} in Reward Container")
+                    if (foundItem != null) {
+                        val newAmount = foundItem.second + value.amount
+                        crateEntry.rewardContainer.items[foundItem.first] = newAmount
+                        //player.sendMessage("Currently got ${newAmount}x ${foundItem.first.type} in Reward Container")
+                    } else {
+                        crateEntry.rewardContainer.items[value] = value.amount
+                        //player.sendMessage("Currently got ${randomAmount}x ${value.type} in Reward Container")
+                    }
                 } else {
-                    crateEntry.rewardContainer.items[value] = value.amount
-                    //player.sendMessage("Currently got ${randomAmount}x ${value.type} in Reward Container")
+                    player.world.dropItem(player.location, value)
                 }
             }
-
         }
         for (action in actions) {
             if (!action.massOpenExecute && massOpen) continue

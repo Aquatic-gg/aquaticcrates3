@@ -1,5 +1,6 @@
 package gg.aquatic.aquaticcrates.plugin.serialize
 
+import gg.aquatic.aquaticcrates.api.PluginSettings
 import gg.aquatic.aquaticcrates.api.animation.Animation
 import gg.aquatic.aquaticcrates.api.animation.PlayerBoundAnimation
 import gg.aquatic.aquaticcrates.api.animation.crate.CrateAnimationActions
@@ -72,6 +73,18 @@ object CrateSerializer : BaseSerializer() {
         "inventory" to InventoryRerollInput.Companion,
         "interaction" to InteractionRerollInput.Companion
     )
+
+    fun loadPluginSettings(): PluginSettings {
+        val config = Config("config.yml", CratesPlugin.INSTANCE)
+        config.load()
+        val cfg = config.getConfiguration()!!
+
+        val useRewardsMenu = cfg.getBoolean("use-rewards-menu", true)
+        val logOpenings = cfg.getBoolean("log-openings", true)
+        val rewardThreshold = cfg.getInt("reward-threshold", 50)
+
+        return PluginSettings(useRewardsMenu, logOpenings, rewardThreshold)
+    }
 
     fun loadLogMenuSettings(): LogMenuSettings {
         val config = Config("config.yml", CratesPlugin.INSTANCE)

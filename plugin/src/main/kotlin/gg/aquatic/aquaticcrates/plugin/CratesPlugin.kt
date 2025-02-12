@@ -1,6 +1,8 @@
 package gg.aquatic.aquaticcrates.plugin
 
 import gg.aquatic.aquaticcrates.api.AbstractCratesPlugin
+import gg.aquatic.aquaticcrates.api.PluginSettings
+import gg.aquatic.aquaticcrates.api.animation.crate.CrateAnimation
 import gg.aquatic.aquaticcrates.api.animation.crate.CrateAnimationManager
 import gg.aquatic.aquaticcrates.api.crate.CrateHandler
 import gg.aquatic.aquaticcrates.api.crate.OpenableCrate
@@ -87,6 +89,8 @@ class CratesPlugin : AbstractCratesPlugin() {
             }
         lateinit var spawnedCratesConfig: Config
     }
+
+    override lateinit var settings: PluginSettings
 
     override fun onLoad() {
         AbstractCratesPlugin.INSTANCE = this
@@ -270,35 +274,36 @@ class CratesPlugin : AbstractCratesPlugin() {
                 return@packetEvent
             }
 
-            var prop: EquipmentAnimationProp? = null
+            var animation: CrateAnimation? = null
+
             for (value in CrateHandler.crates.values) {
                 if (value !is OpenableCrate) {
                     continue
                 }
                 val animations = value.animationManager.playingAnimations[player.uniqueId] ?: continue
-                for (animation in animations) {
-                    prop = animation.props["player-equipment"] as? EquipmentAnimationProp ?: continue
-                    break
-                }
-                if (prop != null) {
-                    break
+                for (animation1 in animations) {
+                    if (animation1.playerEquipment.isNotEmpty()) {
+                        animation = animation1
+                        break
+                    }
                 }
             }
 
-            prop ?: return@packetEvent
+            animation ?: return@packetEvent
             if (packetType == PacketType.Play.Server.SET_SLOT) {
                 val packet = WrapperPlayServerSetSlot(this)
                 if (packet.windowId != 0) return@packetEvent
-                if (packet.slot !in listOf(5, 6, 7, 8)) return@packetEvent
+                if (packet.slot !in animation.playerEquipment.map { it.key.toSlot(player) }) return@packetEvent
                 isCancelled = true
 
             } else if (packetType == PacketType.Play.Server.WINDOW_ITEMS) {
                 val packet = WrapperPlayServerWindowItems(this)
                 if (packet.windowId != 0) return@packetEvent
-                packet.items[5] = SpigotConversionUtil.fromBukkitItemStack(prop.helmet)
-                packet.items[6] = SpigotConversionUtil.fromBukkitItemStack(prop.chestplate)
-                packet.items[7] = SpigotConversionUtil.fromBukkitItemStack(prop.leggings)
-                packet.items[8] = SpigotConversionUtil.fromBukkitItemStack(prop.boots)
+
+                animation.playerEquipment.forEach { (slot, equipment) ->
+                    val intSlot = slot.toSlot(player)
+                    packet.items[intSlot] = SpigotConversionUtil.fromBukkitItemStack(equipment)
+                }
             }
         }
     }
@@ -332,6 +337,7 @@ class CratesPlugin : AbstractCratesPlugin() {
 
     private fun load(): CompletableFuture<Void> {
         loading = true
+        settings = CrateSerializer.loadPluginSettings()
         rewardsMenuSettings = CrateSerializer.loadRewardMenuSettings()
         logMenuSettings = CrateSerializer.loadLogMenuSettings()
         return runAsync {

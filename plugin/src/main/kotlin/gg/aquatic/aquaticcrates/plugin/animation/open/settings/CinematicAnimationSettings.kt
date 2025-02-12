@@ -1,16 +1,16 @@
 package gg.aquatic.aquaticcrates.plugin.animation.open.settings
 
-import gg.aquatic.aquaticcrates.api.animation.Animation
 import gg.aquatic.aquaticcrates.api.animation.crate.*
 import gg.aquatic.aquaticcrates.api.reward.RolledReward
 import gg.aquatic.aquaticcrates.plugin.animation.open.CinematicAnimationImpl
 import gg.aquatic.aquaticcrates.plugin.animation.prop.CameraAnimationProp
 import gg.aquatic.waves.util.audience.FilterAudience
-import gg.aquatic.waves.util.generic.ConfiguredExecutableObject
 import gg.aquatic.waves.util.location.AquaticLocation
 import org.bukkit.Location
+import org.bukkit.Material
 import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.entity.Player
+import org.bukkit.inventory.ItemStack
 import org.bukkit.util.Vector
 import java.util.*
 import java.util.concurrent.CompletableFuture
@@ -44,6 +44,9 @@ class CinematicAnimationSettings(
             FilterAudience { it == player },
             CompletableFuture()
         )
+        for (entry in CrateAnimation.EquipmentSlot.entries) {
+            animation.playerEquipment[entry] = ItemStack(Material.AIR)
+        }
 
         val cameraLocation = cinematicLocation.clone().apply {
             x = cameraLocation.first.x

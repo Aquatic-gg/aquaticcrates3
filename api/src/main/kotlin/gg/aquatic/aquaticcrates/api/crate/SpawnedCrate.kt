@@ -49,6 +49,17 @@ class SpawnedCrate(
         for (spawnedInteractable in spawnedInteractables) {
             spawnedInteractable.destroy()
         }
+        if (crate is OpenableCrate) {
+            crate.animationManager.failAnimations.remove(this)?.let { animations ->
+                for (value in animations.values) {
+                    value.props.forEach { it.value.onAnimationEnd() }
+                }
+                animations.clear()
+            }
+            crate.animationManager.idleAnimation.remove(this)?.let { animation ->
+                animation.props.forEach { it.value.onAnimationEnd() }
+            }
+        }
         hologram.despawn()
     }
 

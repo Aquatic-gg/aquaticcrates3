@@ -3,9 +3,11 @@ package gg.aquatic.aquaticcrates.plugin.command
 import gg.aquatic.aquaticcrates.api.crate.CrateHandler
 import gg.aquatic.aquaticcrates.api.crate.Key
 import gg.aquatic.aquaticcrates.api.crate.OpenableCrate
+import gg.aquatic.aquaticcrates.api.player.CrateProfileDriver
 import gg.aquatic.aquaticcrates.api.player.crateEntry
 import gg.aquatic.aquaticcrates.plugin.misc.Messages
 import gg.aquatic.waves.command.ICommand
+import gg.aquatic.waves.profile.ProfilesModule
 import gg.aquatic.waves.profile.toAquaticPlayer
 import org.bukkit.Bukkit
 import org.bukkit.command.CommandSender

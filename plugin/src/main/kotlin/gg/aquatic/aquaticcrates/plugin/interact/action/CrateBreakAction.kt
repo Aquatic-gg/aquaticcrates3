@@ -17,9 +17,12 @@ class CrateBreakAction: Action<CrateInteractAction> {
         textUpdater: (CrateInteractAction, String) -> String
     ) {
         val spawnedCrate = binder.spawnedCrate ?: return
+        spawnedCrate.destroy()
+        /*
         for (spawnedInteractable in spawnedCrate.spawnedInteractables) {
             spawnedInteractable.destroy()
         }
+         */
         CrateHandler.spawned -= spawnedCrate.location
         CrateHandler.saveSpawnedCrates(CratesPlugin.spawnedCratesConfig)
     }

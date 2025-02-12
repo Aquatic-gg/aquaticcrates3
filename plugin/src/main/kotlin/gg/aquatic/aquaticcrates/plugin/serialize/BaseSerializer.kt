@@ -89,7 +89,6 @@ abstract class BaseSerializer {
         }
 
         val requirements = RequirementSerializer.fromSections<Player>(section.getSectionList("requirements"))
-        val winCrateAnimation = section.getString("win-crate-animation")
         //val hologramSettings = HologramSerializer.loadAquaticHologram(section.getConfigurationSection("hologram"))
         val chances = loadRewardRanges(section.getSectionList("amount-ranges"))
 
@@ -106,7 +105,6 @@ abstract class BaseSerializer {
             perPlayerLimits,
             actions,
             requirements,
-            winCrateAnimation,
             chances,
             rarity
         )

@@ -8,6 +8,7 @@ import gg.aquatic.aquaticcrates.api.reward.RolledReward
 import gg.aquatic.aquaticcrates.plugin.animation.open.settings.CinematicAnimationSettings
 import gg.aquatic.aquaticcrates.plugin.animation.prop.CameraAnimationProp
 import gg.aquatic.waves.util.audience.AquaticAudience
+import gg.aquatic.waves.util.runSync
 import org.bukkit.Location
 import org.bukkit.entity.Player
 import java.util.concurrent.CompletableFuture
@@ -57,6 +58,29 @@ class CinematicAnimationImpl(
         }
     }
 
+    override fun onFinalize(isSync: Boolean) {
+
+        val prop = props["camera"] as CameraAnimationProp
+        val runnable = {
+            try {
+                player.isInvisible = false
+                prop.detach()
+                player.gameMode = prop.previousGamemode
+                player.teleport(prop.previousLocation)
+            } catch (ex: Exception) {
+                ex.printStackTrace()
+            }
+        }
+
+        if (isSync) {
+            runnable()
+        } else {
+            runSync {
+                runnable()
+            }
+        }
+    }
+
     override fun onStateUpdate(state: State) {
         if (state == State.OPENING && !attached) {
             attached = true
@@ -64,4 +88,6 @@ class CinematicAnimationImpl(
             cameraProp.attachPlayer()
         }
     }
+
+
 }
