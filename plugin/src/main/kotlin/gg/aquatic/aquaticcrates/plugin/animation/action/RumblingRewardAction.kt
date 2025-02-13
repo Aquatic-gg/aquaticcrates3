@@ -8,6 +8,7 @@ import gg.aquatic.aquaticcrates.plugin.animation.prop.RumblingRewardProp
 import gg.aquatic.waves.util.argument.AquaticObjectArgument
 import gg.aquatic.waves.util.argument.ObjectArguments
 import gg.aquatic.waves.util.argument.impl.PrimitiveObjectArgument
+import gg.aquatic.waves.util.decimals
 import gg.aquatic.waves.util.generic.Action
 
 class RumblingRewardAction : Action<Animation> {
@@ -56,7 +57,7 @@ class RumblingRewardAction : Action<Animation> {
         binder.extraPlaceholders["rumbling-reward-chance:$id"] = { str: String ->
             str.replace(
                 "%rumbling-reward-chance:$id%",
-                prop.currentReward?.chance?.toString() ?: ""
+                ((prop.currentReward?.chance ?: 0.0) * 100.0).decimals(2)
             )
         }
 

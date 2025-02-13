@@ -59,7 +59,9 @@ interface Reward : IChance {
                 str.updatePAPIPlaceholders(player).replace("%player%", p.name)
                     .replace("%random-amount%", randomAmount.toString())
                     .replace("%reward-name%", displayName)
-                    .replace("%chance%", chance.decimals(2))
+                    .replace("%chance%", (chance * 100.0).decimals(2))
+                    .replace("%rarity-name%", rarity.displayName)
+                    .replace("%rarity-id%", rarity.rarityId)
                     .replace("%item_type_image_url%", "https://raw.githubusercontent.com/KygekDev/default-textures/refs/heads/master/textures/items/${item.getItem().type.name.lowercase()}.png")
             }
         }

@@ -3,6 +3,7 @@ package gg.aquatic.aquaticcrates.api.animation.crate
 import gg.aquatic.aquaticcrates.api.animation.PlayerBoundAnimation
 import gg.aquatic.aquaticcrates.api.crate.OpenableCrate
 import gg.aquatic.aquaticcrates.api.reward.RolledReward
+import gg.aquatic.waves.util.decimals
 import gg.aquatic.waves.util.runSync
 import gg.aquatic.waves.util.updatePAPIPlaceholders
 import org.bukkit.entity.Player
@@ -157,8 +158,10 @@ abstract class CrateAnimation : PlayerBoundAnimation() {
             finalString = finalString
                 .replace("%random-amount:$i%", reward.randomAmount.toString())
                 .replace("%reward-name:$i%", reward.reward.displayName)
+                .replace("%reward-rarity-name:$i%", reward.reward.rarity.displayName)
+                .replace("%reward-rarity-id:$i%", reward.reward.rarity.rarityId)
                 .replace("%reward-id:$i%", reward.reward.id)
-                .replace("%reward-chance:$i%", reward.reward.chance.toString())
+                .replace("%reward-chance:$i%", (reward.reward.chance * 100.0).decimals(2))
         }
         val available = animationManager.rerollManager?.availableRerolls(player) ?: 0
         finalString = finalString
