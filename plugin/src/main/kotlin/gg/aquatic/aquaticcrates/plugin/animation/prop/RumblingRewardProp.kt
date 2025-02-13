@@ -1,13 +1,12 @@
 package gg.aquatic.aquaticcrates.plugin.animation.prop
 
-import gg.aquatic.aquaticcrates.api.animation.prop.ItemBasedProp
 import gg.aquatic.aquaticcrates.api.animation.crate.CrateAnimation
 import gg.aquatic.aquaticcrates.api.animation.crate.CrateAnimationActions
 import gg.aquatic.aquaticcrates.api.animation.prop.AnimationProp
+import gg.aquatic.aquaticcrates.api.animation.prop.ItemBasedProp
 import gg.aquatic.aquaticcrates.api.crate.OpenableCrate
 import gg.aquatic.aquaticcrates.api.reward.Reward
 import gg.aquatic.waves.item.AquaticItem
-import org.bukkit.inventory.ItemStack
 
 class RumblingRewardProp(
     override val animation: CrateAnimation,
@@ -16,13 +15,15 @@ class RumblingRewardProp(
     val easeOut: Boolean,
     val rewardIndex: Int,
     val onRumbleActions: CrateAnimationActions,
-    val onFinishActions: CrateAnimationActions,
-    val onUpdate: (Reward, Boolean) -> Unit = { _, _ -> }
+    val onFinishActions: CrateAnimationActions
 ) : AnimationProp(), ItemBasedProp {
 
     @Volatile
     var tick = -1
         private set
+
+    @Volatile
+    private var nextUpdateTick = -1 // Tracks when the next update should occur
 
     @Volatile
     var finished = false
@@ -33,37 +34,89 @@ class RumblingRewardProp(
         private set
 
     override fun tick() {
-        tick++
-        if (finished) {
-            return
-        }
+        if (finished) return
+
+        tick++ // Increment the current tick
+
+        // If animation completes, trigger the final update
         if (tick >= rumblingLength) {
-            onUpdate(animation.rewards.getOrNull(rewardIndex)?.reward ?: animation.rewards.first().reward, true)
+            performUpdate(true)
             return
         }
 
-        var update = false
+        // Perform an update if we’ve reached the scheduled tick
+        if (tick == nextUpdateTick || nextUpdateTick == -1) {
+            scheduleNextUpdate() // Calculate the next update tick
+            performUpdate(false) // Perform the update
+        }
+    }
+
+    private fun scheduleNextUpdate() {
         if (!easeOut) {
-            if (tick % rumblingPeriod == 0) {
-                update = true
-            }
-        } else if (shouldPerformRumbling(tick, rumblingPeriod, rumblingLength)) {
-            update = true
+            // Ease-Out Disabled: Steady updates
+            nextUpdateTick = tick + rumblingPeriod
+            return
+        }
+        /*
+        // Ease-Out Enabled
+        val thresholdTick = (rumblingLength * 0.5).toInt() // Ease-out starts at the halfway point
+
+        nextUpdateTick = if (tick <= thresholdTick) {
+            // Steady phase: Regular updates before halfway point
+            tick + rumblingPeriod
+        } else {
+            // Ease-out phase: Gradually increase intervals based on remaining time
+            val ticksRemaining = rumblingLength - tick
+            val easeOutTicksRemaining = rumblingLength - thresholdTick
+            val easeRatio = (ticksRemaining.toDouble() / easeOutTicksRemaining.toDouble())
+                .coerceIn(0.0, 1.0)
+
+            // Gradually increase delay based on the easing ratio
+            val interval = (rumblingPeriod + (10 * (1.0 - easeRatio))).toInt()
+                .coerceAtLeast(1) // Ensure at least 1-tick interval
+            tick + interval
+        }
+         */
+
+        // Ease-Out Enabled
+        val thresholdTick = (rumblingLength * 0.5).toInt() // Halfway point
+        val ticksRemaining = rumblingLength - tick
+
+        if (tick <= thresholdTick) {
+            // Steady phase: Fixed interval updates before halfway
+            nextUpdateTick = tick + rumblingPeriod
+        } else {
+            // Ease-out phase: Non-linear easing slows updates as we near the end
+            val totalEaseTicks = rumblingLength - thresholdTick
+            val easeProgress = (ticksRemaining.toDouble() / totalEaseTicks) // 1.0 -> 0.0
+
+            // Use a non-linear scaling function for easing (quadratic)
+            // interval grows larger as easeProgress decreases
+            val interval = (rumblingPeriod + 10 * (1 - easeProgress * easeProgress)).toInt()
+                .coerceAtLeast(1) // At least 1-tick interval
+
+            // Schedule the next update
+            nextUpdateTick = (tick + interval).coerceAtMost(rumblingLength)
+        }
+    }
+
+    private fun performUpdate(final: Boolean) {
+        if (final) {
+            onUpdate(animation.rewards.getOrNull(rewardIndex)?.reward ?: animation.rewards.first().reward, true)
+            finished = true
+            return
         }
 
-        if (update) {
-            val rewards =
-                (animation.animationManager.crate as OpenableCrate).rewardManager.getPossibleRewards(animation.player).values.toMutableList()
-            if (currentReward != null) {
-                rewards.remove(currentReward)
-            }
-            onUpdate(rewards.random(), false)
-        }
+        val rewards = (animation.animationManager.crate as OpenableCrate).rewardManager
+            .getPossibleRewards(animation.player).values.toMutableList()
+
+        if (currentReward != null) rewards.remove(currentReward)
+
+        onUpdate(rewards.random(), false)
     }
 
     private fun onUpdate(reward: Reward, final: Boolean) {
         currentReward = reward
-        onUpdate.invoke(reward, final)
         if (final) {
             onFinishActions.execute(animation)
             finished = true
@@ -72,21 +125,48 @@ class RumblingRewardProp(
         }
     }
 
-    private fun shouldPerformRumbling(tick: Int, period: Int, duration: Int): Boolean {
+    /*
+    private fun shouldPerformRumbling(period: Int, duration: Int): Boolean {
+        /*
         val thresholdTick = (duration * 0.5).toInt()
 
-        if (tick < thresholdTick) {
+        if (tick <= thresholdTick) {
             return tick % period == 0
         } else {
             val ticksSinceThreshold = tick - thresholdTick
             val ticksRemaining = duration - tick
 
-            val easingRatio = (ticksRemaining.toDouble() / (duration - thresholdTick).toDouble())
-            val easingInterval = (period.toDouble() * (1 + (1 - easingRatio) * 4)).toInt()
+            val easingRatio = (ticksRemaining.toDouble() / (duration.toDouble() - thresholdTick))
+            val easingInterval = (period.toDouble() * (1.0 + (1.0 - easingRatio) * 4.0)).toInt()
 
             return ticksSinceThreshold % easingInterval == 0 || tick == duration
         }
+         */
+
+        val thresholdTick = (duration * 0.5).toInt() // Ease-out starts at half the duration
+
+        if (tick <= thresholdTick) {
+            // Normal rumbling phase (steady period)
+            return tick % period == 0
+        } else {
+            // Ease-out phase
+            val ticksSinceThreshold = tick - thresholdTick
+            val ticksRemaining = duration - tick
+
+            // Clamp easingRatio to avoid instability and smooth updates
+            val easingRatio = ticksRemaining.toDouble().coerceAtLeast(0.0) / (duration - thresholdTick).toDouble()
+
+            // Calculate easing interval and clamp to avoid extreme or redundant intervals
+            val easingInterval = (period * (1.0 + (1.0 - easingRatio) * 4.0)).toInt().coerceAtLeast(period)
+
+            println("Tick: $tick, Threshold: $thresholdTick, Remaining: $ticksRemaining, EasingRatio: $easingRatio, EasingInterval: $easingInterval")
+            // Ensure updates happen only at evenly distributed points
+            return (ticksSinceThreshold % easingInterval == 0 && tick != duration) || tick == duration
+        }
+
+
     }
+     */
 
     override fun onAnimationEnd() {
 
