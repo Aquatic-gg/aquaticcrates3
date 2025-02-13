@@ -9,6 +9,7 @@ import gg.aquatic.waves.util.item.loadFromYml
 import gg.aquatic.waves.util.item.toCustomItem
 import org.bukkit.Material
 import org.bukkit.configuration.ConfigurationSection
+import org.bukkit.entity.ItemDisplay.ItemDisplayTransform
 
 class ArgumentItem(
     val type: String,

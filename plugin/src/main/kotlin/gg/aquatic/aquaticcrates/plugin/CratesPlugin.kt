@@ -14,6 +14,7 @@ import gg.aquatic.aquaticcrates.plugin.animation.action.*
 import gg.aquatic.aquaticcrates.plugin.animation.action.block.SetBlockAction
 import gg.aquatic.aquaticcrates.plugin.animation.action.block.SetMultiblockAction
 import gg.aquatic.aquaticcrates.plugin.animation.action.bossbar.*
+import gg.aquatic.aquaticcrates.plugin.animation.action.entity.HideEntityAction
 import gg.aquatic.aquaticcrates.plugin.animation.action.entity.ShowEntityAction
 import gg.aquatic.aquaticcrates.plugin.animation.action.entity.UpdateEntityPropertiesAction
 import gg.aquatic.aquaticcrates.plugin.animation.action.inventory.CloseInventoryAction
@@ -282,6 +283,7 @@ class CratesPlugin : AbstractCratesPlugin() {
                 }
                 val animations = value.animationManager.playingAnimations[player.uniqueId] ?: continue
                 for (animation1 in animations) {
+                    if (animation1.state == CrateAnimation.State.FINISHED) continue
                     if (animation1.playerEquipment.isNotEmpty()) {
                         animation = animation1
                         break
@@ -366,6 +368,7 @@ class CratesPlugin : AbstractCratesPlugin() {
         WavesRegistry.registerAction("linear-path", LinearPathAction())
         WavesRegistry.registerAction("smooth-path", SmoothPathAction())
         WavesRegistry.registerAction("show-entity", ShowEntityAction())
+        WavesRegistry.registerAction("hide-entity", HideEntityAction())
         WavesRegistry.registerAction("throw-entity", ThrowEntityAction())
         WavesRegistry.registerAction("update-entity-properties", UpdateEntityPropertiesAction())
         WavesRegistry.registerAction("set-block", SetBlockAction())

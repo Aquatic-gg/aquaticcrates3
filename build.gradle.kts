@@ -4,7 +4,7 @@ plugins {
     id("co.uzzu.dotenv.gradle") version "2.0.0"
 }
 
-val projectVersion = "3.0.9-Alpha"
+val projectVersion = "3.0.9-Beta"
 group = "gg.aquatic.aquaticcrates"
 version = projectVersion
 

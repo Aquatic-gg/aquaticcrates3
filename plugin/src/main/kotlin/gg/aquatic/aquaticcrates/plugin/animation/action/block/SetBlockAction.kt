@@ -14,18 +14,20 @@ import org.bukkit.Material
 class SetBlockAction : Action<Animation> {
 
     override val arguments: List<AquaticObjectArgument<*>> = listOf(
-        PrimitiveObjectArgument("id", "example", true),
+        //PrimitiveObjectArgument("id", "example", true),
         PrimitiveObjectArgument("offset", "0;0;0", false),
         BlockArgument("block", VanillaBlock(Material.STONE.createBlockData()), true)
     )
 
     override fun execute(binder: Animation, args: ObjectArguments, textUpdater: (Animation, String) -> String) {
-        val id = args.string("id") { textUpdater(binder, it) } ?: return
+        //val id = args.string("id") { textUpdater(binder, it) } ?: return
         val offset = args.vector("offset") { textUpdater(binder, it) } ?: return
         val block = args.typed<AquaticBlock>("block") ?: return
 
-        binder.props["block:$id"]?.onAnimationEnd()
+        val offsetStr = "${offset.x.toInt()};${offset.y.toInt()};${offset.z.toInt()}"
+
+        binder.props["block:$offsetStr"]?.onAnimationEnd()
         val prop = BlockAnimationProp(binder, block, offset)
-        binder.props["block:$id"] = prop
+        binder.props["block:$offsetStr"] = prop
     }
 }

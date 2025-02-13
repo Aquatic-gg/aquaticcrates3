@@ -67,6 +67,8 @@ class CinematicAnimationImpl(
                 prop.detach()
                 player.gameMode = prop.previousGamemode
                 player.teleport(prop.previousLocation)
+
+                player.updateInventory()
             } catch (ex: Exception) {
                 ex.printStackTrace()
             }

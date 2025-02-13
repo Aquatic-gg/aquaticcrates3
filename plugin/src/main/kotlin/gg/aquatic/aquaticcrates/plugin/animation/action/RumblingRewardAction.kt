@@ -49,7 +49,7 @@ class RumblingRewardAction : Action<Animation> {
         }
         binder.extraPlaceholders["rumbling-reward-id:$id"] = { str: String ->
             str.replace(
-                "%rumbling-reward-name:$id%",
+                "%rumbling-reward-id:$id%",
                 prop.currentReward?.id ?: ""
             )
         }

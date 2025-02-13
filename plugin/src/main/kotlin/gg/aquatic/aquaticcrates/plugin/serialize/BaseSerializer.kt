@@ -94,13 +94,14 @@ abstract class BaseSerializer {
 
         val rarityId = section.getString("rarity") ?: "default"
         val rarity = rarities[rarityId] ?: return null
+        val displayName = section.getString("display-name")
 
         return RewardImpl(
             chance,
             id,
             item,
             giveItem,
-            item.getItem().fastMeta().displayName?.toMMString() ?: id,
+            displayName ?: item.getItem().fastMeta().displayName?.toMMString() ?: id,
             globalLimits,
             perPlayerLimits,
             actions,

@@ -65,6 +65,12 @@ class ShowEntityAction : Action<Animation> {
             path.boundProps += entity to pathProperties
         }
 
+        entity.entity.updateEntity {
+            for (property in properties) {
+                property.apply(this, entity)
+            }
+        }
+
         binder.props["entity:$id"] = entity
     }
 }
