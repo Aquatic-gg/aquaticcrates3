@@ -6,6 +6,7 @@ import gg.aquatic.aquaticcrates.plugin.animation.open.CinematicAnimationImpl
 import gg.aquatic.aquaticcrates.plugin.animation.prop.CameraAnimationProp
 import gg.aquatic.waves.util.audience.FilterAudience
 import gg.aquatic.waves.util.location.AquaticLocation
+import gg.aquatic.waves.util.runSync
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.configuration.ConfigurationSection
@@ -46,6 +47,10 @@ class CinematicAnimationSettings(
         )
         for (entry in CrateAnimation.EquipmentSlot.entries) {
             animation.playerEquipment[entry] = ItemStack(Material.AIR)
+        }
+
+        runSync {
+            player.updateInventory()
         }
 
         val cameraLocation = cinematicLocation.clone().apply {

@@ -22,7 +22,8 @@ class CometHook {
     class ShowCometParticleAction : Action<Animation> {
         override val arguments: List<AquaticObjectArgument<*>> = listOf(
             PrimitiveObjectArgument("id", "example", true),
-            PrimitiveObjectArgument("emitter", "example", true)
+            PrimitiveObjectArgument("emitter", "example", true),
+            PrimitiveObjectArgument("offset", "0;0;0", false)
         )
 
         override fun execute(binder: Animation, args: ObjectArguments, textUpdater: (Animation, String) -> String) {
