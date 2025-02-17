@@ -49,6 +49,7 @@ class CameraAnimationProp(
         } else 5
         animation.player.teleport(location)
         animation.player.isInvisible = true
+        animation.player.gameMode = org.bukkit.GameMode.SPECTATOR
         runLaterSync(delay.toLong()) {
             val spawnPacket = WrapperPlayServerSpawnEntity(
                 entityId,

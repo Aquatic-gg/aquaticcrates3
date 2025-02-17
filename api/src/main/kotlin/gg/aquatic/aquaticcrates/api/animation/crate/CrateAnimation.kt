@@ -3,6 +3,7 @@ package gg.aquatic.aquaticcrates.api.animation.crate
 import gg.aquatic.aquaticcrates.api.animation.PlayerBoundAnimation
 import gg.aquatic.aquaticcrates.api.crate.OpenableCrate
 import gg.aquatic.aquaticcrates.api.reward.RolledReward
+import gg.aquatic.aquaticcrates.api.runOrCatch
 import gg.aquatic.waves.util.decimals
 import gg.aquatic.waves.util.runSync
 import gg.aquatic.waves.util.updatePAPIPlaceholders
@@ -33,7 +34,9 @@ abstract class CrateAnimation : PlayerBoundAnimation() {
     }
 
     open fun executeActions(actions: CrateAnimationActions) {
-        actions.execute(this)
+        runOrCatch {
+            actions.execute(this)
+        }
     }
 
     abstract val completionFuture: CompletableFuture<CrateAnimation>
@@ -114,21 +117,29 @@ abstract class CrateAnimation : PlayerBoundAnimation() {
 
     fun finalizeAnimation(isSync: Boolean = false) {
         updateState(State.FINISHED)
-        onFinalize(isSync)
+        runOrCatch {
+            onFinalize(isSync)
+        }
         executeActions(animationManager.animationSettings.finalAnimationTasks)
         for ((_, prop) in props) {
-            prop.onAnimationEnd()
+            runOrCatch {
+                prop.onAnimationEnd()
+            }
         }
         props.clear()
-        if (isSync) {
+        val block = {
             for (reward in rewards) {
-                reward.give(player, false)
-            }
-        } else {
-            runSync {
-                for (reward in rewards) {
+                runOrCatch {
                     reward.give(player, false)
                 }
+            }
+        }
+
+        if (isSync) {
+            block()
+        } else {
+            runSync {
+                block()
             }
         }
 

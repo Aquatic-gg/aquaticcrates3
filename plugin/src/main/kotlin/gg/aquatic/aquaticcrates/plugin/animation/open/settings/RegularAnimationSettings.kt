@@ -8,7 +8,6 @@ import gg.aquatic.waves.util.audience.FilterAudience
 import gg.aquatic.waves.util.audience.GlobalAudience
 import gg.aquatic.waves.util.runLaterSync
 import gg.aquatic.waves.util.runSync
-import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.entity.Player

@@ -17,3 +17,11 @@ class PluginSettings(
     var logOpenings: Boolean,
     var openingsThreshold: Int
 )
+
+inline fun runOrCatch(crossinline block: () -> Unit) {
+    try {
+        block()
+    } catch (e: Exception) {
+        e.printStackTrace()
+    }
+}
