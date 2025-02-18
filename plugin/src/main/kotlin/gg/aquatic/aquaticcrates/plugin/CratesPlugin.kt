@@ -46,6 +46,7 @@ import gg.aquatic.aquaticcrates.plugin.log.LogMenuSettings
 import gg.aquatic.aquaticcrates.plugin.misc.Messages
 import gg.aquatic.aquaticcrates.plugin.misc.hook.CometHook
 import gg.aquatic.aquaticcrates.plugin.misc.hook.PAPIHook
+import gg.aquatic.aquaticcrates.plugin.openprice.CrateKeyPrice
 import gg.aquatic.aquaticcrates.plugin.preview.CratePreviewMenu
 import gg.aquatic.aquaticcrates.plugin.reroll.input.interaction.InteractionInputHandler
 import gg.aquatic.aquaticcrates.plugin.reroll.input.inventory.InventoryRerollInput
@@ -60,6 +61,7 @@ import gg.aquatic.waves.inventory.event.AsyncPacketInventoryCloseEvent
 import gg.aquatic.waves.profile.ProfilesModule
 import gg.aquatic.waves.registry.WavesRegistry
 import gg.aquatic.waves.registry.registerAction
+import gg.aquatic.waves.registry.registerPrice
 import gg.aquatic.waves.registry.registerRequirement
 import gg.aquatic.waves.shadow.com.retrooper.packetevents.event.PacketReceiveEvent
 import gg.aquatic.waves.shadow.com.retrooper.packetevents.event.PacketSendEvent
@@ -433,5 +435,8 @@ class CratesPlugin : AbstractCratesPlugin() {
 
         // Animation Action Conditions
         WavesRegistry.registerRequirement("custom", CustomCondition())
+
+        // Prices
+        WavesRegistry.registerPrice("crate-key", CrateKeyPrice())
     }
 }

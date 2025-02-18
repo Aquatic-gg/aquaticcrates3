@@ -8,6 +8,7 @@ import gg.aquatic.aquaticcrates.api.crate.Crate
 import gg.aquatic.aquaticcrates.api.crate.OpenableCrate
 import gg.aquatic.aquaticcrates.api.interaction.CrateInteractAction
 import gg.aquatic.aquaticcrates.api.milestone.Milestone
+import gg.aquatic.aquaticcrates.api.openprice.OpenPrice
 import gg.aquatic.aquaticcrates.api.openprice.OpenPriceGroup
 import gg.aquatic.aquaticcrates.api.reward.Reward
 import gg.aquatic.aquaticcrates.api.reward.RewardRarity
@@ -44,6 +45,7 @@ import gg.aquatic.waves.menu.MenuSerializer
 import gg.aquatic.waves.menu.settings.PrivateMenuSettings
 import gg.aquatic.waves.registry.serializer.ActionSerializer
 import gg.aquatic.waves.registry.serializer.InteractableSerializer
+import gg.aquatic.waves.registry.serializer.PriceSerializer
 import gg.aquatic.waves.registry.serializer.RequirementSerializer
 import gg.aquatic.waves.util.Config
 import gg.aquatic.waves.util.argument.ObjectArguments
@@ -305,8 +307,6 @@ object CrateSerializer : BaseSerializer() {
             ?: InstantAnimationSettings.serialize(null)
         Bukkit.getConsoleSender().sendMessage("Loaded ${animationSettings.animationTasks.size} animation tasks")
 
-
-
         val guaranteedRewardsSection = cfg.getConfigurationSection("guaranteed-rewards")
         val guaranteedRewards = HashMap<Int, Reward>()
         if (guaranteedRewardsSection != null) {
@@ -326,6 +326,23 @@ object CrateSerializer : BaseSerializer() {
             RequirementSerializer.fromSections<OpenData>(cfg.getSectionList("open-restrictions")).toMutableList()
 
         val openPriceGroups = ArrayList<OpenPriceGroup>()
+        for (groupSection in cfg.getSectionList("open-price-groups")) {
+            val prices = ArrayList<OpenPrice>()
+            for (priceSection in groupSection.getSectionList("prices")) {
+                val price = PriceSerializer.fromSection<Player>(priceSection) ?: continue
+                val failActions = ActionSerializer.fromSections<Player>(priceSection.getSectionList("fail-actions"))
+
+                prices += OpenPrice(price, failActions.toMutableList())
+            }
+            val failActions = ActionSerializer.fromSections<Player>(groupSection.getSectionList("fail-actions"))
+            val priceGroup = OpenPriceGroup(
+                prices.toMutableList(),
+                failActions.toMutableList()
+            )
+            openPriceGroups += priceGroup
+        }
+        Bukkit.getConsoleSender().sendMessage("Loaded ${openPriceGroups.sumOf { it.prices.size }} open price groups")
+
         return BasicCrate(
             identifier,
             cfg.getString("display-name") ?: identifier,
