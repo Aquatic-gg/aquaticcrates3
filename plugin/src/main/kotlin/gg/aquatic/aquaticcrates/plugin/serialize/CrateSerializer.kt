@@ -30,6 +30,7 @@ import gg.aquatic.aquaticcrates.plugin.interact.action.CrateOpenAction
 import gg.aquatic.aquaticcrates.plugin.interact.action.CratePreviewAction
 import gg.aquatic.aquaticcrates.plugin.log.LogMenuSettings
 import gg.aquatic.aquaticcrates.plugin.milestone.MilestoneManagerImpl
+import gg.aquatic.aquaticcrates.plugin.openprice.CrateKeyPrice
 import gg.aquatic.aquaticcrates.plugin.preview.CratePreviewMenuSettings
 import gg.aquatic.aquaticcrates.plugin.reroll.RerollManagerImpl
 import gg.aquatic.aquaticcrates.plugin.reroll.input.interaction.InteractionRerollInput
@@ -54,6 +55,7 @@ import gg.aquatic.waves.util.generic.ConfiguredExecutableObject
 import gg.aquatic.waves.util.getSectionList
 import gg.aquatic.waves.util.item.loadFromYml
 import gg.aquatic.waves.util.keysForEach
+import gg.aquatic.waves.util.price.ConfiguredPrice
 import gg.aquatic.waves.util.toMMComponent
 import org.bukkit.Bukkit
 import org.bukkit.Material
@@ -341,6 +343,20 @@ object CrateSerializer : BaseSerializer() {
             )
             openPriceGroups += priceGroup
         }
+        if (openPriceGroups.isEmpty()) openPriceGroups += OpenPriceGroup(
+            mutableListOf(
+                OpenPrice(
+                    ConfiguredPrice(
+                        CrateKeyPrice(),
+                        hashMapOf(
+                            "crate" to identifier
+                        )
+                    ),
+                    mutableListOf()
+                )
+            ),
+            mutableListOf()
+        )
         Bukkit.getConsoleSender().sendMessage("Loaded ${openPriceGroups.sumOf { it.prices.size }} open price groups")
 
         return BasicCrate(
