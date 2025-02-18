@@ -172,7 +172,6 @@ object CrateSerializer : BaseSerializer() {
 
         val openRequirements =
             RequirementSerializer.fromSections<Player>(cfg.getSectionList("open-requirements")).toMutableList()
-        val openPriceGroups = ArrayList<OpenPriceGroup>()
 
         val rerollInputSection = cfg.getConfigurationSection("reroll")
         val type = rerollInputSection?.getString("type") ?: "inventory"
@@ -326,6 +325,7 @@ object CrateSerializer : BaseSerializer() {
         val openRestrictions =
             RequirementSerializer.fromSections<OpenData>(cfg.getSectionList("open-restrictions")).toMutableList()
 
+        val openPriceGroups = ArrayList<OpenPriceGroup>()
         return BasicCrate(
             identifier,
             cfg.getString("display-name") ?: identifier,

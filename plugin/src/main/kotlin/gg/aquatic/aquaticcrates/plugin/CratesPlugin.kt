@@ -39,6 +39,8 @@ import gg.aquatic.aquaticcrates.plugin.awaiters.AbstractAwaiter
 import gg.aquatic.aquaticcrates.plugin.awaiters.IAAwaiter
 import gg.aquatic.aquaticcrates.plugin.awaiters.MEGAwaiter
 import gg.aquatic.aquaticcrates.plugin.command.*
+import gg.aquatic.aquaticcrates.plugin.condition.impl.CustomPlayerCondition
+import gg.aquatic.aquaticcrates.plugin.condition.impl.PermissionCondition
 import gg.aquatic.aquaticcrates.plugin.interact.action.*
 import gg.aquatic.aquaticcrates.plugin.log.LogMenuSettings
 import gg.aquatic.aquaticcrates.plugin.misc.Messages
@@ -424,6 +426,10 @@ class CratesPlugin : AbstractCratesPlugin() {
         WavesRegistry.registerRequirement("all-player", AllPlayerOpenRestriction())
         WavesRegistry.registerRequirement("all-global", AllGlobalOpenRestriction())
         WavesRegistry.registerRequirement("world-blacklist", WorldBlacklistOpenRestriction())
+
+        // Player Conditions
+        WavesRegistry.registerRequirement("custom", CustomPlayerCondition())
+        WavesRegistry.registerRequirement("permission", PermissionCondition())
 
         // Animation Action Conditions
         WavesRegistry.registerRequirement("custom", CustomCondition())

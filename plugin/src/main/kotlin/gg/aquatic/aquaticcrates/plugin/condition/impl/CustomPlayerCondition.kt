@@ -1,26 +1,26 @@
-package gg.aquatic.aquaticcrates.plugin.animation.condition
+package gg.aquatic.aquaticcrates.plugin.condition.impl
 
-import gg.aquatic.aquaticcrates.api.animation.Animation
 import gg.aquatic.aquaticcrates.plugin.condition.Evaluation
 import gg.aquatic.waves.util.argument.AquaticObjectArgument
 import gg.aquatic.waves.util.argument.ObjectArguments
 import gg.aquatic.waves.util.argument.impl.PrimitiveObjectArgument
 import gg.aquatic.waves.util.generic.Condition
+import org.bukkit.entity.Player
 
-class CustomCondition : Condition<Animation> {
+class CustomPlayerCondition : Condition<Player> {
     override val arguments: List<AquaticObjectArgument<*>> = listOf(
         PrimitiveObjectArgument("condition", "", true)
     )
 
     override fun execute(
-        binder: Animation,
+        binder: Player,
         args: ObjectArguments,
-        textUpdater: (Animation, String) -> String
+        textUpdater: (Player, String) -> String
     ): Boolean {
-        val condition = binder.updatePlaceholders(
+        val condition =
             textUpdater(
                 binder,
-                args.string("condition") { textUpdater(binder, it) } ?: return false))
+                args.string("condition") { textUpdater(binder, it) } ?: return false)
         return Evaluation.evaluateLogicalCondition(condition)
     }
 }
