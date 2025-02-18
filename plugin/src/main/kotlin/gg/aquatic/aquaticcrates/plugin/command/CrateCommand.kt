@@ -16,9 +16,6 @@ object CrateCommand : ICommand {
             Messages.NO_PERMISSION.message.send(sender)
             return
         }
-        if (sender !is Player) {
-            return
-        }
         // acrates crate give <crate>
         // acrates crate open <crate> <player> -nokey -instant
         // acrates crate massopen <crate> <player> <amount> [threads] -nokey
@@ -51,6 +48,9 @@ object CrateCommand : ICommand {
             }
 
             "give" -> {
+                if (sender !is Player) {
+                    return
+                }
                 if (args.size < 3) {
                     sender.sendMessage("Usage: /acrates crate give <crate>")
                     return

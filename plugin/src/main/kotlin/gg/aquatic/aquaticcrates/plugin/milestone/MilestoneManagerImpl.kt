@@ -7,6 +7,7 @@ import gg.aquatic.aquaticcrates.api.player.CrateProfileEntry
 import gg.aquatic.aquaticcrates.api.player.HistoryHandler
 import org.bukkit.entity.Player
 import java.util.*
+import kotlin.math.max
 
 class MilestoneManagerImpl(
     val crate: OpenableCrate,
@@ -26,5 +27,17 @@ class MilestoneManagerImpl(
             }
         }
         return milestonesReached
+    }
+
+    override fun remaining(player: Player, milestone: Int): Int {
+        if (milestone < 1) return 0
+        val totalOpened = HistoryHandler.history(crate.identifier, CrateProfileEntry.HistoryType.ALLTIME, player)
+        return max(milestone - totalOpened, 0)
+    }
+
+    override fun remainingRepeatable(player: Player, milestone: Int): Int {
+        if (milestone < 1) return 0
+        val totalOpened = HistoryHandler.history(crate.identifier, CrateProfileEntry.HistoryType.ALLTIME, player)
+        return max(milestone - (totalOpened % milestone), milestone)
     }
 }
