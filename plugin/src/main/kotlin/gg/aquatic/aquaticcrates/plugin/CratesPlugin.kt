@@ -6,6 +6,8 @@ import gg.aquatic.aquaticcrates.api.animation.crate.CrateAnimation
 import gg.aquatic.aquaticcrates.api.animation.crate.CrateAnimationManager
 import gg.aquatic.aquaticcrates.api.crate.CrateHandler
 import gg.aquatic.aquaticcrates.api.crate.OpenableCrate
+import gg.aquatic.aquaticcrates.api.openprice.PRICES
+import gg.aquatic.aquaticcrates.api.openprice.impl.CrateKeyPrice
 import gg.aquatic.aquaticcrates.api.player.CrateProfileDriver
 import gg.aquatic.aquaticcrates.api.player.CrateProfileModule
 import gg.aquatic.aquaticcrates.api.player.HistoryHandler
@@ -46,7 +48,6 @@ import gg.aquatic.aquaticcrates.plugin.log.LogMenuSettings
 import gg.aquatic.aquaticcrates.plugin.misc.Messages
 import gg.aquatic.aquaticcrates.plugin.misc.hook.CometHook
 import gg.aquatic.aquaticcrates.plugin.misc.hook.PAPIHook
-import gg.aquatic.aquaticcrates.plugin.openprice.CrateKeyPrice
 import gg.aquatic.aquaticcrates.plugin.preview.CratePreviewMenu
 import gg.aquatic.aquaticcrates.plugin.reroll.input.interaction.InteractionInputHandler
 import gg.aquatic.aquaticcrates.plugin.reroll.input.inventory.InventoryRerollInput
@@ -437,6 +438,6 @@ class CratesPlugin : AbstractCratesPlugin() {
         WavesRegistry.registerRequirement("custom", CustomCondition())
 
         // Prices
-        WavesRegistry.registerPrice("crate-key", CrateKeyPrice())
+        PRICES += "crate-key" to CrateKeyPrice()
     }
 }

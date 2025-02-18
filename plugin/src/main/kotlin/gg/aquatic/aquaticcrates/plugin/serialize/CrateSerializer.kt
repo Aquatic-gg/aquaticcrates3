@@ -10,6 +10,7 @@ import gg.aquatic.aquaticcrates.api.interaction.CrateInteractAction
 import gg.aquatic.aquaticcrates.api.milestone.Milestone
 import gg.aquatic.aquaticcrates.api.openprice.OpenPrice
 import gg.aquatic.aquaticcrates.api.openprice.OpenPriceGroup
+import gg.aquatic.aquaticcrates.api.openprice.impl.CrateKeyPrice
 import gg.aquatic.aquaticcrates.api.reward.Reward
 import gg.aquatic.aquaticcrates.api.reward.RewardRarity
 import gg.aquatic.aquaticcrates.plugin.CratesPlugin
@@ -30,7 +31,6 @@ import gg.aquatic.aquaticcrates.plugin.interact.action.CrateOpenAction
 import gg.aquatic.aquaticcrates.plugin.interact.action.CratePreviewAction
 import gg.aquatic.aquaticcrates.plugin.log.LogMenuSettings
 import gg.aquatic.aquaticcrates.plugin.milestone.MilestoneManagerImpl
-import gg.aquatic.aquaticcrates.plugin.openprice.CrateKeyPrice
 import gg.aquatic.aquaticcrates.plugin.preview.CratePreviewMenuSettings
 import gg.aquatic.aquaticcrates.plugin.reroll.RerollManagerImpl
 import gg.aquatic.aquaticcrates.plugin.reroll.input.interaction.InteractionRerollInput
@@ -331,7 +331,7 @@ object CrateSerializer : BaseSerializer() {
         for (groupSection in cfg.getSectionList("open-price-groups")) {
             val prices = ArrayList<OpenPrice>()
             for (priceSection in groupSection.getSectionList("prices")) {
-                val price = PriceSerializer.fromSection<Player>(priceSection) ?: continue
+                val price = gg.aquatic.aquaticcrates.api.openprice.PriceSerializer.fromSection(priceSection) ?: continue
                 val failActions = ActionSerializer.fromSections<Player>(priceSection.getSectionList("fail-actions"))
 
                 prices += OpenPrice(price, failActions.toMutableList())
@@ -346,11 +346,11 @@ object CrateSerializer : BaseSerializer() {
         if (openPriceGroups.isEmpty()) openPriceGroups += OpenPriceGroup(
             mutableListOf(
                 OpenPrice(
-                    ConfiguredPrice(
-                        CrateKeyPrice(),
-                        hashMapOf(
+                    gg.aquatic.aquaticcrates.api.openprice.ConfiguredPrice(
+                        ObjectArguments(hashMapOf(
                             "crate" to identifier
-                        )
+                        )),
+                        CrateKeyPrice()
                     ),
                     mutableListOf()
                 )

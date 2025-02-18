@@ -102,7 +102,6 @@ class BasicCrate(
         spawnedCrate: SpawnedCrate?
     ) {
         if (!canBeOpened(player,1,null)) {
-            player.sendMessage("You do not have enough keys to open this crate!")
             return
         }
         instantOpen(player, location, spawnedCrate)
@@ -176,11 +175,13 @@ class BasicCrate(
                 else -> {}
             }
         }
-        if (!player.takeKeys(identifier, amount)) {
-            player.sendMessage("You do not have enough keys to open this crate!")
-            return false
+        //var priceGroup: OpenPriceGroup? = null
+        for (openPriceGroup in openPriceGroups) {
+            if (openPriceGroup.tryTake(player, amount)) {
+                return true
+            }
         }
-        return true
+        return false
     }
 
 }

@@ -9,9 +9,9 @@ class OpenPriceGroup(
     val failActions: MutableList<ConfiguredExecutableObject<Player,Unit>>
 ) {
 
-    fun tryTake(player: Player): Boolean {
+    fun tryTake(player: Player, amount: Int): Boolean {
         for (price in prices) {
-            if (price.tryTake(player)) return true
+            if (price.tryTake(player, amount)) return true
         }
         failActions.executeActions(player) { p, str -> str.replace("%player%", p.name) }
         return false
