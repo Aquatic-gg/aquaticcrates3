@@ -244,7 +244,7 @@ object CrateSerializer : BaseSerializer() {
                 val rewards = loadRewards(section.getConfigurationSection("rewards") ?: return@keysForEach, rarities)
                 milestones += milestone to Milestone(milestone, name.toMMComponent(), rewards.values.toList())
             }
-            cfg.keysForEach("repetable-milestones",false) { key ->
+            cfg.keysForEach("repeatable-milestones",false) { key ->
                 val section = cfg.getConfigurationSection(key) ?: return@keysForEach
                 val name = section.getString("display-name") ?: return@keysForEach
                 val milestone = key.toIntOrNull() ?: return@keysForEach
