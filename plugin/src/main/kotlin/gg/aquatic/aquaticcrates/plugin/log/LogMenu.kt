@@ -1,6 +1,7 @@
 package gg.aquatic.aquaticcrates.plugin.log
 
 import gg.aquatic.aquaticcrates.api.player.CrateProfileDriver
+import gg.aquatic.aquaticcrates.api.player.HistoryHandler
 import gg.aquatic.waves.input.impl.ChatInput
 import gg.aquatic.waves.inventory.ButtonType
 import gg.aquatic.waves.menu.MenuComponent
@@ -165,7 +166,7 @@ class LogMenu(val settings: LogMenuSettings, player: Player) : PrivateAquaticMen
             val offset = page * settings.logSlots.size
             val limit = settings.logSlots.size + 1
 
-            val entries = LogHandler.loadLogEntries(offset, limit, playerFilter, crateFilter, sorting)
+            val entries = HistoryHandler.loadLogEntries(offset, limit, playerFilter, crateFilter, sorting)
             hasNextPage = entries.size >= limit
 
             for ((index, logSlot) in settings.logSlots.withIndex()) {
@@ -184,7 +185,7 @@ class LogMenu(val settings: LogMenuSettings, player: Player) : PrivateAquaticMen
                     }
 
                     newLore += " ".toMMComponent()
-                    newLore += "<gray>${toFriendlyTime(entry.timestamp)}".toMMComponent()
+                    newLore += "<gray>${entry.timestamp.toFriendlyTimeFromSeconds()}".toMMComponent()
 
                     modifyFastMeta {
                         this.displayName = "<yellow>Crate: ${entry.crateId}".toMMComponent()
@@ -200,38 +201,37 @@ class LogMenu(val settings: LogMenuSettings, player: Player) : PrivateAquaticMen
             isLoading = false
         }
     }
+}
 
-    private fun toFriendlyTime(timestamp: Long): String {
-        val currentTime = System.currentTimeMillis()
-        val duration = currentTime - timestamp * 60000
+fun Long.toFriendlyTimeFromSeconds(): String {
+    val currentTime = System.currentTimeMillis()
+    val duration = currentTime - this * 60000
 
-        // If the duration is negative (future timestamp), return "Just now"
-        if (duration < 0) {
-            return "Just now"
-        }
-
-        val seconds = TimeUnit.MILLISECONDS.toSeconds(duration)
-        if (seconds < 60) {
-            return "$seconds seconds ago"
-        }
-        val minutes = TimeUnit.MILLISECONDS.toMinutes(duration)
-        if (minutes < 60) {
-            return "$minutes minutes ago"
-        }
-        val hours = TimeUnit.MILLISECONDS.toHours(duration)
-        if (hours < 24) {
-            return "$hours hours ago"
-        }
-        val days = TimeUnit.MILLISECONDS.toDays(duration)
-        if (days < 30) {
-            return "$days days ago"
-        }
-        val months = days / 30
-        if (months < 12) {
-            return "$months months ago"
-        }
-        val years = days / 365
-        return "$years years ago"
+    // If the duration is negative (future timestamp), return "Just now"
+    if (duration < 0) {
+        return "Just now"
     }
 
+    val seconds = TimeUnit.MILLISECONDS.toSeconds(duration)
+    if (seconds < 60) {
+        return "$seconds seconds ago"
+    }
+    val minutes = TimeUnit.MILLISECONDS.toMinutes(duration)
+    if (minutes < 60) {
+        return "$minutes minutes ago"
+    }
+    val hours = TimeUnit.MILLISECONDS.toHours(duration)
+    if (hours < 24) {
+        return "$hours hours ago"
+    }
+    val days = TimeUnit.MILLISECONDS.toDays(duration)
+    if (days < 30) {
+        return "$days days ago"
+    }
+    val months = days / 30
+    if (months < 12) {
+        return "$months months ago"
+    }
+    val years = days / 365
+    return "$years years ago"
 }

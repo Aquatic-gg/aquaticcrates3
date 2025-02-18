@@ -78,6 +78,7 @@ import org.bukkit.event.inventory.InventoryInteractEvent
 import org.bukkit.event.player.PlayerQuitEvent
 import org.bukkit.event.player.PlayerToggleSneakEvent
 import org.bukkit.event.world.WorldLoadEvent
+import java.util.Collections
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.CompletableFuture.runAsync
 
@@ -347,6 +348,21 @@ class CratesPlugin : AbstractCratesPlugin() {
                 Messages.load()
                 CrateHandler.crates += CrateSerializer.loadCrates()
                 CrateHandler.loadSpawnedCrates(spawnedCratesConfig)
+
+                for (crate in CrateHandler.crates.values) {
+                    if (crate !is OpenableCrate) continue
+                    val list = HistoryHandler.latestRewards.getOrPut(crate.identifier) { Collections.synchronizedList(ArrayList()) }
+                    val logs = HistoryHandler.loadLogEntries(0,10, null, crate.identifier, CrateProfileDriver.Sorting.NEWEST)
+                    for ((playerName, history) in logs) {
+                        for ((id, amt) in history.rewardIds) {
+                            val crateReward = crate.rewardManager.rewards[id] ?: continue
+                            val latestReward = HistoryHandler.LatestReward(crateReward, history.timestamp, amt, playerName)
+                            list.add(latestReward)
+                            if (list.size >= 10) break
+                        }
+                        if (list.size >= 10) break
+                    }
+                }
             } catch (e: Exception) {
                 e.printStackTrace()
             }

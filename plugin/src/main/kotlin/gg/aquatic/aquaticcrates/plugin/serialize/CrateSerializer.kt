@@ -237,19 +237,25 @@ object CrateSerializer : BaseSerializer() {
         val milestoneManager = { crate: OpenableCrate ->
             val milestones = TreeMap<Int,Milestone>()
             val repeatableMilestone = TreeMap<Int,Milestone>()
-            cfg.keysForEach("milestones",false) { key ->
-                val section = cfg.getConfigurationSection(key) ?: return@keysForEach
-                val name = section.getString("display-name") ?: return@keysForEach
-                val milestone = key.toIntOrNull() ?: return@keysForEach
-                val rewards = loadRewards(section.getConfigurationSection("rewards") ?: return@keysForEach, rarities)
-                milestones += milestone to Milestone(milestone, name.toMMComponent(), rewards.values.toList())
+            cfg.getConfigurationSection("milestones")?.let { milestonesSection ->
+                milestonesSection.getKeys(false).forEach { milestoneKey ->
+                    val milestoneSection = milestonesSection.getConfigurationSection(milestoneKey) ?: return@forEach
+                    val name = milestoneSection.getString("display-name") ?: return@forEach
+                    val milestone = milestoneKey.toIntOrNull() ?: return@forEach
+                    val rewards = loadRewards(milestoneSection.getConfigurationSection("rewards") ?: return@forEach, rarities)
+                    Bukkit.getConsoleSender().sendMessage("Loaded milestone $milestone with ${rewards.size} rewards")
+                    milestones += milestone to Milestone(milestone, name.toMMComponent(), rewards.values.toList())
+                }
             }
-            cfg.keysForEach("repeatable-milestones",false) { key ->
-                val section = cfg.getConfigurationSection(key) ?: return@keysForEach
-                val name = section.getString("display-name") ?: return@keysForEach
-                val milestone = key.toIntOrNull() ?: return@keysForEach
-                val rewards = loadRewards(section.getConfigurationSection("rewards") ?: return@keysForEach, rarities)
-                repeatableMilestone += milestone to Milestone(milestone, name.toMMComponent(), rewards.values.toList())
+            cfg.getConfigurationSection("repeatable-milestones")?.let { repeatableMilestonesSection ->
+                repeatableMilestonesSection.getKeys(false).forEach { repeatableMilestoneKey ->
+                    val repeatableMilestoneSection = repeatableMilestonesSection.getConfigurationSection(repeatableMilestoneKey) ?: return@forEach
+                    val name = repeatableMilestoneSection.getString("display-name") ?: return@forEach
+                    val milestone = repeatableMilestoneKey.toIntOrNull() ?: return@forEach
+                    val rewards = loadRewards(repeatableMilestoneSection.getConfigurationSection("rewards") ?: return@forEach, rarities)
+                    Bukkit.getConsoleSender().sendMessage("Loaded repeatable milestone $milestone with ${rewards.size} rewards")
+                    repeatableMilestone += milestone to Milestone(milestone, name.toMMComponent(), rewards.values.toList())
+                }
             }
             MilestoneManagerImpl(
                 crate, milestones, repeatableMilestone

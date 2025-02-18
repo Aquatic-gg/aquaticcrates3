@@ -5,6 +5,7 @@ import gg.aquatic.aquaticcrates.api.crate.OpenableCrate
 import gg.aquatic.aquaticcrates.api.player.CrateProfileEntry
 import gg.aquatic.aquaticcrates.api.player.HistoryHandler
 import gg.aquatic.aquaticcrates.api.player.PlayerHandler
+import gg.aquatic.aquaticcrates.plugin.log.toFriendlyTimeFromSeconds
 import gg.aquatic.waves.util.PAPIUtil
 import gg.aquatic.waves.util.toMMString
 import org.bukkit.Bukkit
@@ -17,7 +18,35 @@ object PAPIHook {
             if (args.isEmpty()) return@registerExtension ""
 
             when (args[0].lowercase()) {
-                // %aquaticcrates_milestone_<crate>_<milestone>_remaining%
+                // %aquaticcrates_latest-reward_<crate>_<place>_name%
+                // %aquaticcrates_latest-reward_<crate>_<place>_id%
+                // %aquaticcrates_latest-reward_<crate>_<place>_timestamp%
+                // %aquaticcrates_latest-reward_<crate>_<place>_winner%
+                "latest-reward" -> {
+                    if (args.size < 4) return@registerExtension ""
+                    val crateId = args[1]
+                    val crate = CrateHandler.crates[crateId] ?: return@registerExtension ""
+                    if (crate !is OpenableCrate) {
+                        return@registerExtension ""
+                    }
+                    val place = args[2].toIntOrNull() ?: return@registerExtension ""
+                    val found = HistoryHandler.latestRewards[crateId]?.get(place)
+
+                    when (args[3].lowercase()) {
+                        "name" -> {
+                            return@registerExtension found?.reward?.displayName ?: ""
+                        }
+                        "id" -> {
+                            return@registerExtension found?.reward?.id ?: ""
+                        }
+                        "timestamp" -> {
+                            return@registerExtension found?.timestamp?.toFriendlyTimeFromSeconds() ?: ""
+                        }
+                        "winner" -> {
+                            return@registerExtension found?.winner ?: ""
+                        }
+                    }
+                }
                 // %aquaticcrates_milestone_<crate>_<milestone>_reached%
                 // %aquaticcrates_milestone_<crate>_<milestone>_name%
                 "milestone" -> {
@@ -30,19 +59,20 @@ object PAPIHook {
                     val milestoneId = args[2].toIntOrNull() ?: return@registerExtension ""
                     val milestones = crate.rewardManager.milestoneManager.milestones
                     val milestone = milestones[milestoneId] ?: return@registerExtension ""
-                    when (args[3].lowercase()) {
+                    return@registerExtension when (args[3].lowercase()) {
                         "remaining" -> {
-                            return@registerExtension crate.rewardManager.milestoneManager.remaining(
+                             crate.rewardManager.milestoneManager.remaining(
                                 offlinePlayer.player ?: return@registerExtension "", milestoneId
                             ).toString()
                         }
                         "reached" -> {
                             val totalOpened = HistoryHandler.history(crate.identifier, CrateProfileEntry.HistoryType.ALLTIME, offlinePlayer.player ?: return@registerExtension "")
-                            return@registerExtension if (totalOpened >= milestoneId) "yes" else "no"
+                            if (totalOpened >= milestoneId) "yes" else "no"
                         }
                         "name" -> {
                             milestone.displayName.toMMString()
                         }
+                        else -> ""
                     }
                 }
                 "repeatable-milestone" -> {
@@ -55,15 +85,16 @@ object PAPIHook {
                     val milestoneId = args[2].toIntOrNull() ?: return@registerExtension ""
                     val milestones = crate.rewardManager.milestoneManager.repeatableMilestones
                     val milestone = milestones[milestoneId] ?: return@registerExtension ""
-                    when (args[3].lowercase()) {
+                    return@registerExtension when (args[3].lowercase()) {
                         "remaining" -> {
-                            return@registerExtension crate.rewardManager.milestoneManager.remainingRepeatable(
+                             crate.rewardManager.milestoneManager.remainingRepeatable(
                                 offlinePlayer.player ?: return@registerExtension "", milestoneId
                             ).toString()
                         }
                         "name" -> {
                             milestone.displayName.toMMString()
                         }
+                        else -> ""
                     }
                 }
 
