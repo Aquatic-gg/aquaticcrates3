@@ -7,6 +7,7 @@ import gg.aquatic.aquaticcrates.api.animation.crate.CrateAnimationActions
 import gg.aquatic.aquaticcrates.api.crate.Crate
 import gg.aquatic.aquaticcrates.api.crate.OpenableCrate
 import gg.aquatic.aquaticcrates.api.interaction.CrateInteractAction
+import gg.aquatic.aquaticcrates.api.milestone.Milestone
 import gg.aquatic.aquaticcrates.api.openprice.OpenPriceGroup
 import gg.aquatic.aquaticcrates.api.reward.Reward
 import gg.aquatic.aquaticcrates.api.reward.RewardRarity
@@ -50,6 +51,7 @@ import gg.aquatic.waves.util.block.impl.VanillaBlock
 import gg.aquatic.waves.util.generic.ConfiguredExecutableObject
 import gg.aquatic.waves.util.getSectionList
 import gg.aquatic.waves.util.item.loadFromYml
+import gg.aquatic.waves.util.keysForEach
 import gg.aquatic.waves.util.toMMComponent
 import org.bukkit.Bukkit
 import org.bukkit.Material
@@ -220,9 +222,37 @@ object CrateSerializer : BaseSerializer() {
             return null
         }
 
+        val rarities = HashMap<String, RewardRarity>().apply {
+            this += "default" to RewardRarity("default", "Default", 100.0)
+        }
+        cfg.getConfigurationSection("rarities")?.let { section ->
+            for (key in section.getKeys(false)) {
+                val raritySection = section.getConfigurationSection(key) ?: continue
+                val displayName = raritySection.getString("display-name") ?: key
+                val chance = raritySection.getDouble("chance", 1.0)
+                rarities[key] = RewardRarity(key, displayName, chance)
+            }
+        }
+
         val milestoneManager = { crate: OpenableCrate ->
+            val milestones = TreeMap<Int,Milestone>()
+            val repeatableMilestone = TreeMap<Int,Milestone>()
+            cfg.keysForEach("milestones",false) { key ->
+                val section = cfg.getConfigurationSection(key) ?: return@keysForEach
+                val name = section.getString("display-name") ?: return@keysForEach
+                val milestone = key.toIntOrNull() ?: return@keysForEach
+                val rewards = loadRewards(section.getConfigurationSection("rewards") ?: return@keysForEach, rarities)
+                milestones += milestone to Milestone(milestone, name.toMMComponent(), rewards.values.toList())
+            }
+            cfg.keysForEach("repetable-milestones",false) { key ->
+                val section = cfg.getConfigurationSection(key) ?: return@keysForEach
+                val name = section.getString("display-name") ?: return@keysForEach
+                val milestone = key.toIntOrNull() ?: return@keysForEach
+                val rewards = loadRewards(section.getConfigurationSection("rewards") ?: return@keysForEach, rarities)
+                repeatableMilestone += milestone to Milestone(milestone, name.toMMComponent(), rewards.values.toList())
+            }
             MilestoneManagerImpl(
-                crate, TreeMap(), TreeMap()
+                crate, milestones, repeatableMilestone
             )
         }
 
@@ -270,17 +300,7 @@ object CrateSerializer : BaseSerializer() {
             ?: InstantAnimationSettings.serialize(null)
         Bukkit.getConsoleSender().sendMessage("Loaded ${animationSettings.animationTasks.size} animation tasks")
 
-        val rarities = HashMap<String, RewardRarity>().apply {
-            this += "default" to RewardRarity("default", "Default", 100.0)
-        }
-        cfg.getConfigurationSection("rarities")?.let { section ->
-            for (key in section.getKeys(false)) {
-                val raritySection = section.getConfigurationSection(key) ?: continue
-                val displayName = raritySection.getString("display-name") ?: key
-                val chance = raritySection.getDouble("chance", 1.0)
-                rarities[key] = RewardRarity(key, displayName, chance)
-            }
-        }
+
 
         val guaranteedRewardsSection = cfg.getConfigurationSection("guaranteed-rewards")
         val guaranteedRewards = HashMap<Int, Reward>()
