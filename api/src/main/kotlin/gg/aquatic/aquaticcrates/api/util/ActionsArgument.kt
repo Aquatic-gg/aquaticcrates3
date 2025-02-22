@@ -8,7 +8,6 @@ import gg.aquatic.waves.util.argument.AbstractObjectArgumentSerializer
 import gg.aquatic.waves.util.argument.AquaticObjectArgument
 import gg.aquatic.waves.util.getSectionList
 import org.bukkit.configuration.ConfigurationSection
-import org.bukkit.entity.Player
 
 class ActionsArgument(id: String,
                       defaultValue: CrateAnimationActions?, required: Boolean

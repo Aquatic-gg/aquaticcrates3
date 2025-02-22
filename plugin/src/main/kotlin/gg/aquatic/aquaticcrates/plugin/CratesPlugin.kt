@@ -42,7 +42,9 @@ import gg.aquatic.aquaticcrates.plugin.awaiters.IAAwaiter
 import gg.aquatic.aquaticcrates.plugin.awaiters.MEGAwaiter
 import gg.aquatic.aquaticcrates.plugin.command.*
 import gg.aquatic.aquaticcrates.plugin.condition.impl.CustomPlayerCondition
+import gg.aquatic.aquaticcrates.plugin.condition.impl.DayRepeatCondition
 import gg.aquatic.aquaticcrates.plugin.condition.impl.PermissionCondition
+import gg.aquatic.aquaticcrates.plugin.condition.impl.WeekRepeatCondition
 import gg.aquatic.aquaticcrates.plugin.interact.action.*
 import gg.aquatic.aquaticcrates.plugin.log.LogMenuSettings
 import gg.aquatic.aquaticcrates.plugin.misc.Messages
@@ -433,6 +435,8 @@ class CratesPlugin : AbstractCratesPlugin() {
         // Player Conditions
         WavesRegistry.registerRequirement("custom", CustomPlayerCondition())
         WavesRegistry.registerRequirement("permission", PermissionCondition())
+        WavesRegistry.registerRequirement("week-repeat", WeekRepeatCondition())
+        WavesRegistry.registerRequirement("day-repeat", DayRepeatCondition())
 
         // Animation Action Conditions
         WavesRegistry.registerRequirement("custom", CustomCondition())

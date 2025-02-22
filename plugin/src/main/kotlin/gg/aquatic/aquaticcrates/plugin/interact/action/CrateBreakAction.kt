@@ -16,6 +16,7 @@ class CrateBreakAction: Action<CrateInteractAction> {
         args: ObjectArguments,
         textUpdater: (CrateInteractAction, String) -> String
     ) {
+        if (!binder.player.hasPermission("aquaticcrates.admin")) return
         val spawnedCrate = binder.spawnedCrate ?: return
         spawnedCrate.destroy()
         /*

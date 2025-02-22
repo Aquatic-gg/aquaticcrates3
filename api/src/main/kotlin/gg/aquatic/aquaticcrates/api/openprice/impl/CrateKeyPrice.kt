@@ -9,12 +9,14 @@ import org.bukkit.entity.Player
 
 class CrateKeyPrice: Price {
     override val arguments: List<AquaticObjectArgument<*>> = listOf(
-        PrimitiveObjectArgument("crate", "", true)
+        PrimitiveObjectArgument("crate", "", true),
+        PrimitiveObjectArgument("amount", 1, false)
     )
 
     override fun take(player: Player, arguments: ObjectArguments, amount: Int) {
         val crateId = arguments.string("crate") ?: return
-        PlayerHandler.takeKeys(player, crateId, amount)
+        val originalAmount = arguments.int("amount") ?: 1
+        PlayerHandler.takeKeys(player, crateId, amount*originalAmount)
     }
 
     override fun has(player: Player, arguments: ObjectArguments, amount: Int): Boolean {
