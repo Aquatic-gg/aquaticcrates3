@@ -1,14 +1,12 @@
 package gg.aquatic.aquaticcrates.plugin.preview
 
+import gg.aquatic.aquaticcrates.api.crate.SpawnedCrate
 import gg.aquatic.aquaticcrates.plugin.crate.BasicCrate
 import gg.aquatic.waves.menu.PrivateAquaticMenu
 import gg.aquatic.waves.menu.SlotSelection
 import gg.aquatic.waves.menu.component.Button
-import gg.aquatic.waves.util.decimals
+import gg.aquatic.waves.util.*
 import gg.aquatic.waves.util.item.modifyFastMeta
-import gg.aquatic.waves.util.toMMComponent
-import gg.aquatic.waves.util.toMMString
-import gg.aquatic.waves.util.updatePAPIPlaceholders
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.TextDecoration
 import org.bukkit.Material
@@ -18,6 +16,7 @@ import org.bukkit.inventory.ItemStack
 class CratePreviewMenu(
     player: Player,
     val crate: BasicCrate,
+    val placedCrate: SpawnedCrate?,
     val settings: CratePreviewMenuSettings,
     val page: Int
 ) : PrivateAquaticMenu(
@@ -36,7 +35,7 @@ class CratePreviewMenu(
 
     private fun openPage(page: Int) {
         val settings = crate.previewMenuSettings[page]
-        val menu = CratePreviewMenu(player, crate, settings, page)
+        val menu = CratePreviewMenu(player, crate, placedCrate, settings, page)
         menu.open()
     }
 
@@ -59,6 +58,13 @@ class CratePreviewMenu(
                     } else if (id == "prev-page") {
                         if (page <= 0) return@create
                         openPage(page - 1)
+                    } else if (id == "open") {
+                        runSync {
+                            player.closeInventory()
+                            runAsync {
+                                crate.open(player, placedCrate?.location ?: player.location.clone(), placedCrate)
+                            }
+                        }
                     }
                 }
             )
@@ -134,26 +140,6 @@ class CratePreviewMenu(
             components += button.id to button
         }
     }
-
-    /*
-    private fun refreshRandomRewards() {
-        for (randomRewardComponent in randomRewardComponents) {
-            removeComponent(randomRewardComponent)
-        }
-        randomRewardComponents.clear()
-        loadRandomRewards()
-        updateComponents(player)
-    }
-
-    private var ticks = 0
-    override fun tick() {
-        if (settings.randomRewards.changeDuration <= 0) return
-        ticks++
-        if (ticks < settings.randomRewards.changeDuration) return
-        ticks = 0
-        refreshRandomRewards()
-    }
-     */
 
     private fun hasNextPage(): Boolean {
         return (crate.previewMenuSettings.size >= page)

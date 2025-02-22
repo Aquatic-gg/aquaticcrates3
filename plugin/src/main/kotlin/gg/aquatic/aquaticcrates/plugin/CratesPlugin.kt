@@ -431,6 +431,7 @@ class CratesPlugin : AbstractCratesPlugin() {
         WavesRegistry.registerRequirement("all-player", AllPlayerOpenRestriction())
         WavesRegistry.registerRequirement("all-global", AllGlobalOpenRestriction())
         WavesRegistry.registerRequirement("world-blacklist", WorldBlacklistOpenRestriction())
+        WavesRegistry.registerRequirement("full-inventory", EmptyInventoryOpenRestriction())
 
         // Player Conditions
         WavesRegistry.registerRequirement("custom", CustomPlayerCondition())
