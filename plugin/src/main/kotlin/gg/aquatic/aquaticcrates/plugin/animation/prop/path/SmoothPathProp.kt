@@ -2,7 +2,7 @@ package gg.aquatic.aquaticcrates.plugin.animation.prop.path
 
 import gg.aquatic.aquaticcrates.api.animation.Animation
 import gg.aquatic.aquaticcrates.api.animation.prop.AnimationProp
-import gg.aquatic.aquaticcrates.plugin.animation.prop.MovableAnimationProp
+import gg.aquatic.aquaticcrates.plugin.animation.prop.Moveable
 import gg.aquatic.waves.util.runAsync
 import org.bukkit.util.Vector
 import java.util.TreeMap
@@ -14,7 +14,7 @@ class SmoothPathProp(
     override val points: TreeMap<Int, PathPoint> = generateSmoothPath(points)
     override var currentPoint: PathPoint = points.firstEntry().value
 
-    override val boundProps: MutableMap<MovableAnimationProp, PathBoundProperties> = HashMap()
+    override val boundProps: MutableMap<Moveable, PathBoundProperties> = HashMap()
     var tick = 0
     override fun tick() {
         runAsync {

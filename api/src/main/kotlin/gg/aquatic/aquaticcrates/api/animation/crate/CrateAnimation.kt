@@ -173,6 +173,9 @@ abstract class CrateAnimation : PlayerBoundAnimation() {
                 .replace("%reward-rarity-id:$i%", reward.reward.rarity.rarityId)
                 .replace("%reward-id:$i%", reward.reward.id)
                 .replace("%reward-chance:$i%", (reward.reward.chance * 100.0).decimals(2))
+            reward.reward.variables.forEach { (key, value) ->
+                finalString = finalString.replace("%reward-var:$i:$key:$i%", value)
+            }
         }
         val available = animationManager.rerollManager?.availableRerolls(player) ?: 0
         finalString = finalString

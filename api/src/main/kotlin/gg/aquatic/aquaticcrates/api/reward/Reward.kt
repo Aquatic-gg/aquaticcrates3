@@ -21,9 +21,11 @@ interface Reward : IChance {
     val perPlayerLimits: HashMap<CrateProfileEntry.HistoryType, Int>
     val actions: List<RewardAction>
     val requirements: List<ConfiguredRequirement<Player>>
+
     //val hologramSettings: AquaticHologramSettings
     val amountRanges: MutableList<RewardAmountRange>
     val rarity: RewardRarity
+    val variables: MutableMap<String, String>
 
     fun give(player: Player, randomAmount: Int, massOpen: Boolean) {
         val crateEntry = player.toAquaticPlayer()?.crateEntry() ?: return
@@ -56,14 +58,25 @@ interface Reward : IChance {
         for (action in actions) {
             if (!action.massOpenExecute && massOpen) continue
             action.action.execute(player) { p, str ->
-                str.updatePAPIPlaceholders(player).replace("%player%", p.name)
+                updatePlaceholders(str).updatePAPIPlaceholders(player).replace("%player%", p.name)
                     .replace("%random-amount%", randomAmount.toString())
-                    .replace("%reward-name%", displayName)
-                    .replace("%chance%", (chance * 100.0).decimals(2))
-                    .replace("%rarity-name%", rarity.displayName)
-                    .replace("%rarity-id%", rarity.rarityId)
-                    .replace("%item_type_image_url%", "https://raw.githubusercontent.com/KygekDev/default-textures/refs/heads/master/textures/items/${item.getItem().type.name.lowercase()}.png")
             }
         }
+    }
+
+    fun updatePlaceholders(str: String): String {
+        var finalStr = str
+        variables.forEach { (key, value) ->
+            finalStr = finalStr.replace("%reward-var:$key%", value)
+        }
+        return finalStr
+            .replace("%reward-name%", displayName)
+            .replace("%chance%", (chance * 100.0).decimals(2))
+            .replace("%rarity-name%", rarity.displayName)
+            .replace("%rarity-id%", rarity.rarityId)
+            .replace(
+                "%item_type_image_url%",
+                "https://raw.githubusercontent.com/KygekDev/default-textures/refs/heads/master/textures/items/${item.getItem().type.name.lowercase()}.png"
+            )
     }
 }

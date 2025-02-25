@@ -21,5 +21,6 @@ class RewardImpl(
     override val requirements: List<ConfiguredRequirement<Player>>,
     //override val hologramSettings: AquaticHologramSettings,
     override val amountRanges: MutableList<RewardAmountRange>,
-    override val rarity: RewardRarity
+    override val rarity: RewardRarity,
+    override val variables: MutableMap<String, String>
 ) : Reward

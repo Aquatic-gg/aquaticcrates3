@@ -16,9 +16,7 @@ import gg.aquatic.aquaticcrates.plugin.animation.action.*
 import gg.aquatic.aquaticcrates.plugin.animation.action.block.SetBlockAction
 import gg.aquatic.aquaticcrates.plugin.animation.action.block.SetMultiblockAction
 import gg.aquatic.aquaticcrates.plugin.animation.action.bossbar.*
-import gg.aquatic.aquaticcrates.plugin.animation.action.entity.HideEntityAction
-import gg.aquatic.aquaticcrates.plugin.animation.action.entity.ShowEntityAction
-import gg.aquatic.aquaticcrates.plugin.animation.action.entity.UpdateEntityPropertiesAction
+import gg.aquatic.aquaticcrates.plugin.animation.action.entity.*
 import gg.aquatic.aquaticcrates.plugin.animation.action.inventory.CloseInventoryAction
 import gg.aquatic.aquaticcrates.plugin.animation.action.inventory.OpenInventoryAction
 import gg.aquatic.aquaticcrates.plugin.animation.action.inventory.SetInventoryItemsAction
@@ -60,13 +58,16 @@ import gg.aquatic.waves.command.AquaticBaseCommand
 import gg.aquatic.waves.command.register
 import gg.aquatic.waves.inventory.InventoryManager
 import gg.aquatic.waves.inventory.event.AsyncPacketInventoryCloseEvent
+import gg.aquatic.waves.item.ItemHandler
 import gg.aquatic.waves.profile.ProfilesModule
 import gg.aquatic.waves.registry.WavesRegistry
 import gg.aquatic.waves.registry.registerAction
 import gg.aquatic.waves.registry.registerRequirement
 import gg.aquatic.waves.shadow.com.retrooper.packetevents.event.PacketReceiveEvent
 import gg.aquatic.waves.shadow.com.retrooper.packetevents.event.PacketSendEvent
+import gg.aquatic.waves.shadow.com.retrooper.packetevents.protocol.item.ItemStack
 import gg.aquatic.waves.shadow.com.retrooper.packetevents.protocol.packettype.PacketType
+import gg.aquatic.waves.shadow.com.retrooper.packetevents.protocol.packettype.PacketType.Play
 import gg.aquatic.waves.shadow.com.retrooper.packetevents.wrapper.play.client.WrapperPlayClientInteractEntity
 import gg.aquatic.waves.shadow.com.retrooper.packetevents.wrapper.play.server.WrapperPlayServerSetSlot
 import gg.aquatic.waves.shadow.com.retrooper.packetevents.wrapper.play.server.WrapperPlayServerWindowItems
@@ -77,12 +78,16 @@ import gg.aquatic.waves.util.packetEvent
 import gg.aquatic.waves.util.player
 import gg.aquatic.waves.util.runAsyncTimer
 import org.bukkit.Bukkit
+import org.bukkit.NamespacedKey
 import org.bukkit.entity.Player
 import org.bukkit.event.entity.EntityDamageEvent
 import org.bukkit.event.inventory.InventoryInteractEvent
+import org.bukkit.event.inventory.InventoryOpenEvent
+import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerQuitEvent
 import org.bukkit.event.player.PlayerToggleSneakEvent
 import org.bukkit.event.world.WorldLoadEvent
+import org.bukkit.persistence.PersistentDataType
 import java.util.Collections
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.CompletableFuture.runAsync
@@ -119,6 +124,8 @@ class CratesPlugin : AbstractCratesPlugin() {
         if (server.pluginManager.getPlugin("Comet") != null) {
             CometHook()
         }
+
+        injectLegacyConverterListeners()
 
         ProfilesModule.registerModule(CrateProfileModule)
         PAPIHook.registerPAPIHook()
@@ -416,6 +423,8 @@ class CratesPlugin : AbstractCratesPlugin() {
         WavesRegistry.registerAction("rumbling-reward", RumblingRewardAction())
         WavesRegistry.registerAction("player-equipment", EquipmentAnimationAction())
         WavesRegistry.registerAction("player-actions", PlayerActionsAction())
+        WavesRegistry.registerAction("add-passenger", AddPassengerAction())
+        WavesRegistry.registerAction("remove-passenger", RemovePassengerAction())
 
         // Interaction Actions
         WavesRegistry.registerAction("open-crate", CrateOpenAction())
@@ -443,5 +452,43 @@ class CratesPlugin : AbstractCratesPlugin() {
 
         // Prices
         PRICES += "crate-key" to CrateKeyPrice()
+    }
+
+    private fun injectLegacyConverterListeners() {
+
+        event<PlayerJoinEvent> {
+            val player = it.player
+            val inventory = player.inventory
+            val contents = inventory.contents
+            for (item in contents) {
+                if (item == null) continue
+                val meta = item.itemMeta ?: continue
+                val pdc = meta.persistentDataContainer
+                val oldNamespace = NamespacedKey("aquaticcrates","keyidentifier")
+                if (pdc.has(oldNamespace, PersistentDataType.STRING)) {
+                    val keyId = pdc.get(oldNamespace, PersistentDataType.STRING)!!
+                    pdc.remove(oldNamespace)
+                    pdc.set(ItemHandler.NAMESPACE_KEY, PersistentDataType.STRING, "aquaticcrates-key:$keyId")
+                    item.itemMeta = meta
+                }
+            }
+        }
+
+        event<InventoryOpenEvent>(ignoredCancelled = true) {
+            val inventory = it.inventory
+            val contents = inventory.contents
+            for (item in contents) {
+                if (item == null) continue
+                val meta = item.itemMeta ?: continue
+                val pdc = meta.persistentDataContainer
+                val oldNamespace = NamespacedKey("aquaticcrates","keyidentifier")
+                if (pdc.has(oldNamespace, PersistentDataType.STRING)) {
+                    val keyId = pdc.get(oldNamespace, PersistentDataType.STRING)!!
+                    pdc.remove(oldNamespace)
+                    pdc.set(ItemHandler.NAMESPACE_KEY, PersistentDataType.STRING, "aquaticcrates-key:$keyId")
+                    item.itemMeta = meta
+                }
+            }
+        }
     }
 }

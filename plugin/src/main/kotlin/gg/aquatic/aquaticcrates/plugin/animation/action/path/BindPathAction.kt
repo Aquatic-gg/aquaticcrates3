@@ -1,7 +1,7 @@
 package gg.aquatic.aquaticcrates.plugin.animation.action.path
 
 import gg.aquatic.aquaticcrates.api.animation.Animation
-import gg.aquatic.aquaticcrates.plugin.animation.prop.MovableAnimationProp
+import gg.aquatic.aquaticcrates.plugin.animation.prop.Moveable
 import gg.aquatic.aquaticcrates.plugin.animation.prop.entity.BoundPathObjectArgument
 import gg.aquatic.aquaticcrates.plugin.animation.prop.path.PathBoundProperties
 import gg.aquatic.aquaticcrates.plugin.animation.prop.path.PathProp
@@ -26,7 +26,7 @@ class BindPathAction : Action<Animation>{
 
         val boundPropertiesFactory = args.any("bound-paths") as ((Animation) -> ConcurrentHashMap<PathProp, PathBoundProperties>)? ?: { _ -> ConcurrentHashMap() }
 
-        val prop = binder.props[objectId] as? MovableAnimationProp ?: return
+        val prop = binder.props[objectId] as? Moveable ?: return
         var i = 0
         val boundPaths = boundPropertiesFactory(binder)
 

@@ -2,10 +2,8 @@ package gg.aquatic.aquaticcrates.plugin.animation.prop.path
 
 import gg.aquatic.aquaticcrates.api.animation.Animation
 import gg.aquatic.aquaticcrates.api.animation.prop.AnimationProp
-import gg.aquatic.aquaticcrates.plugin.animation.prop.MovableAnimationProp
-import gg.aquatic.waves.util.runSync
+import gg.aquatic.aquaticcrates.plugin.animation.prop.Moveable
 import java.util.TreeMap
-import java.util.concurrent.CompletableFuture.runAsync
 
 class LinearPathProp(
     override val points: TreeMap<Int, PathPoint>,
@@ -14,7 +12,7 @@ class LinearPathProp(
     override var currentPoint: PathPoint = PathPoint(0.0, 0.0, 0.0, 0f, 0f)
         private set
 
-    override val boundProps: MutableMap<MovableAnimationProp, PathBoundProperties> = HashMap()
+    override val boundProps: MutableMap<Moveable, PathBoundProperties> = HashMap()
 
     var tick = 0
 

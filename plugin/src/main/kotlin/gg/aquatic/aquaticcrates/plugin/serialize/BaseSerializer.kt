@@ -96,6 +96,11 @@ abstract class BaseSerializer {
         val rarity = rarities[rarityId] ?: return null
         val displayName = section.getString("display-name")
 
+        val variables = HashMap<String, String>()
+        section.getConfigurationSection("variables")?.getKeys(false)?.forEach { key ->
+            variables[key] = section.getString("variables.$key") ?: return@forEach
+        }
+
         return RewardImpl(
             chance,
             id,
@@ -107,7 +112,8 @@ abstract class BaseSerializer {
             actions,
             requirements,
             chances,
-            rarity
+            rarity,
+            variables
         )
     }
 

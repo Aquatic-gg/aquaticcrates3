@@ -16,7 +16,6 @@ import gg.aquatic.waves.shadow.com.retrooper.packetevents.wrapper.play.server.Wr
 import gg.aquatic.waves.shadow.io.retrooper.packetevents.util.SpigotConversionUtil
 import gg.aquatic.waves.shadow.io.retrooper.packetevents.util.SpigotReflectionUtil
 import gg.aquatic.waves.util.runLaterSync
-import gg.aquatic.waves.util.runSync
 import gg.aquatic.waves.util.toUser
 import org.bukkit.Location
 import org.bukkit.util.Vector
@@ -29,7 +28,7 @@ class CameraAnimationProp(
     override val locationOffset: Vector,
     override val boundPaths: ConcurrentHashMap<PathProp, Pair<PathBoundProperties, Int>>,
     override val locationOffsetYawPitch: Pair<Float, Float>,
-) : PlayerBoundAnimationProp(), MovableAnimationProp {
+) : PlayerBoundAnimationProp(), Moveable {
 
     override val processedPaths: MutableSet<PathProp> = ConcurrentHashMap.newKeySet()
     override fun move(location: Location) {

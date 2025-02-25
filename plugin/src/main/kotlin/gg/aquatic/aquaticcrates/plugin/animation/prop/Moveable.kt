@@ -4,13 +4,12 @@ import gg.aquatic.aquaticcrates.api.animation.Animation
 import gg.aquatic.aquaticcrates.plugin.animation.prop.path.PathBoundProperties
 import gg.aquatic.aquaticcrates.plugin.animation.prop.path.PathPoint
 import gg.aquatic.aquaticcrates.plugin.animation.prop.path.PathProp
-import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.util.Vector
 import org.joml.Math.toRadians
 import java.util.concurrent.ConcurrentHashMap
 
-interface MovableAnimationProp {
+interface Moveable {
     val locationOffset: Vector
     val locationOffsetYawPitch: Pair<Float, Float>
     val animation: Animation

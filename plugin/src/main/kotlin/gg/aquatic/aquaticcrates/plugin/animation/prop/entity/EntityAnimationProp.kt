@@ -2,8 +2,9 @@ package gg.aquatic.aquaticcrates.plugin.animation.prop.entity
 
 import gg.aquatic.aquaticcrates.api.animation.Animation
 import gg.aquatic.aquaticcrates.api.animation.prop.AnimationProp
-import gg.aquatic.aquaticcrates.plugin.animation.prop.MovableAnimationProp
-import gg.aquatic.aquaticcrates.plugin.animation.prop.ThrowableAnimationProp
+import gg.aquatic.aquaticcrates.plugin.animation.prop.Moveable
+import gg.aquatic.aquaticcrates.plugin.animation.prop.Seatable
+import gg.aquatic.aquaticcrates.plugin.animation.prop.Throwable
 import gg.aquatic.aquaticcrates.plugin.animation.prop.entity.property.EntityProperty
 import gg.aquatic.aquaticcrates.plugin.animation.prop.path.PathBoundProperties
 import gg.aquatic.aquaticcrates.plugin.animation.prop.path.PathProp
@@ -24,7 +25,7 @@ class EntityAnimationProp(
     entityType: String,
     properties: Collection<EntityProperty>,
     override val locationOffsetYawPitch: Pair<Float, Float>
-) : AnimationProp(), MovableAnimationProp, ThrowableAnimationProp {
+) : AnimationProp(), Moveable, Throwable, Seatable {
 
     var entity: FakeEntity
 
@@ -73,6 +74,18 @@ class EntityAnimationProp(
         val packet = WrapperPlayServerEntityVelocity(entity.entityId, Vector3d(vector.x, vector.y, vector.z))
         for (viewer in entity.viewers) {
             viewer.toUser()?.sendPacket(packet)
+        }
+    }
+
+    override fun addPassenger(entityAnimationProp: EntityAnimationProp) {
+        entity.updateEntity {
+            passengers += entityAnimationProp.entity.entityId
+        }
+    }
+
+    override fun removePassenger(entityAnimationProp: EntityAnimationProp) {
+        entity.updateEntity {
+            passengers -= entityAnimationProp.entity.entityId
         }
     }
 }

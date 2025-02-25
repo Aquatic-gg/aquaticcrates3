@@ -1,7 +1,7 @@
 package gg.aquatic.aquaticcrates.plugin.animation.action
 
 import gg.aquatic.aquaticcrates.api.animation.Animation
-import gg.aquatic.aquaticcrates.plugin.animation.prop.ThrowableAnimationProp
+import gg.aquatic.aquaticcrates.plugin.animation.prop.Throwable
 import gg.aquatic.waves.util.argument.AquaticObjectArgument
 import gg.aquatic.waves.util.argument.ObjectArguments
 import gg.aquatic.waves.util.argument.impl.PrimitiveObjectArgument
@@ -20,7 +20,7 @@ class ThrowEntityAction : Action<Animation> {
         val property = args.string("prop") { textUpdater(binder, it) } ?: "entity:example"
 
         val prop = binder.props[property] ?: return
-        if (prop !is ThrowableAnimationProp) return
+        if (prop !is Throwable) return
 
         prop.throwObject(velocity.clone().multiply(power))
     }

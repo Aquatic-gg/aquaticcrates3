@@ -3,7 +3,7 @@ package gg.aquatic.aquaticcrates.plugin.animation.prop.model
 import com.ticxo.modelengine.api.entity.Dummy
 import gg.aquatic.aquaticcrates.api.animation.Animation
 import gg.aquatic.aquaticcrates.api.animation.prop.AnimationProp
-import gg.aquatic.aquaticcrates.plugin.animation.prop.MovableAnimationProp
+import gg.aquatic.aquaticcrates.plugin.animation.prop.Moveable
 import gg.aquatic.aquaticcrates.plugin.animation.prop.path.PathBoundProperties
 import gg.aquatic.aquaticcrates.plugin.animation.prop.path.PathProp
 import gg.aquatic.waves.interactable.type.MEGInteractable
@@ -21,7 +21,7 @@ class ModelAnimationProp(
     override val locationOffset: Vector,
     override val boundPaths: ConcurrentHashMap<PathProp, Pair<PathBoundProperties, Int>>,
     override val locationOffsetYawPitch: Pair<Float, Float>
-) : AnimationProp(), MovableAnimationProp {
+) : AnimationProp(), Moveable {
 
     override val processedPaths: MutableSet<PathProp> = ConcurrentHashMap.newKeySet()
     var interactable: MEGInteractable? = null

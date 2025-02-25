@@ -1,6 +1,6 @@
 package gg.aquatic.aquaticcrates.plugin.animation.prop.path
 
-import gg.aquatic.aquaticcrates.plugin.animation.prop.MovableAnimationProp
+import gg.aquatic.aquaticcrates.plugin.animation.prop.Moveable
 import java.util.TreeMap
 
 interface PathProp {
@@ -9,6 +9,6 @@ interface PathProp {
     val currentPoint: PathPoint
 
 
-    val boundProps: MutableMap<MovableAnimationProp,PathBoundProperties>
+    val boundProps: MutableMap<Moveable,PathBoundProperties>
 
 }
