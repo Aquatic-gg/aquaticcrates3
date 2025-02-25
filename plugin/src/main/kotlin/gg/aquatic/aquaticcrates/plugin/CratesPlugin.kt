@@ -35,7 +35,6 @@ import gg.aquatic.aquaticcrates.plugin.animation.action.timer.LaterActionsAction
 import gg.aquatic.aquaticcrates.plugin.animation.action.timer.StartTickerAction
 import gg.aquatic.aquaticcrates.plugin.animation.action.timer.TimedActionsAction
 import gg.aquatic.aquaticcrates.plugin.animation.condition.CustomCondition
-import gg.aquatic.aquaticcrates.plugin.animation.prop.EquipmentAnimationProp
 import gg.aquatic.aquaticcrates.plugin.animation.prop.inventory.AnimationMenu
 import gg.aquatic.aquaticcrates.plugin.awaiters.AbstractAwaiter
 import gg.aquatic.aquaticcrates.plugin.awaiters.IAAwaiter
@@ -64,7 +63,6 @@ import gg.aquatic.waves.inventory.event.AsyncPacketInventoryCloseEvent
 import gg.aquatic.waves.profile.ProfilesModule
 import gg.aquatic.waves.registry.WavesRegistry
 import gg.aquatic.waves.registry.registerAction
-import gg.aquatic.waves.registry.registerPrice
 import gg.aquatic.waves.registry.registerRequirement
 import gg.aquatic.waves.shadow.com.retrooper.packetevents.event.PacketReceiveEvent
 import gg.aquatic.waves.shadow.com.retrooper.packetevents.event.PacketSendEvent
@@ -200,7 +198,8 @@ class CratesPlugin : AbstractCratesPlugin() {
                 "crate" to CrateCommand,
                 "reload" to ReloadCommand,
                 "rewardmenu" to RewardMenuCommand,
-                "log" to LogCommand
+                "log" to LogCommand,
+                "convert" to ConvertCommand
             ),
             listOf()
         ).register("aquaticcrates")

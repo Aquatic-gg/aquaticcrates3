@@ -10,6 +10,7 @@ import gg.aquatic.waves.util.item.modifyFastMeta
 import gg.aquatic.waves.util.toMMComponent
 import net.kyori.adventure.text.format.TextDecoration
 import net.kyori.adventure.text.minimessage.MiniMessage
+import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
 import java.util.UUID
 
@@ -25,33 +26,36 @@ class RandomRewardComponent(
 ) : MenuComponent() {
 
     override val id: String = "random-reward:${UUID.randomUUID()}"
-    var currentReward = rewards.random()
+    var currentReward = rewards.randomOrNull()
     override fun itemstack(menu: AquaticMenu): ItemStack {
-        val iS = currentReward.item.getItem().clone()
-        iS.modifyFastMeta {
-            this.displayName = this.displayName?.let { comp ->
-                MiniMessage.miniMessage().deserialize(textUpdater(MiniMessage.miniMessage().serialize(comp), menu))
-                    .decoration(TextDecoration.ITALIC, false)
-            }
-            this.lore = this.lore.toMutableList().apply {
-                addAll(
-                    settings.additionalRewardLore.map {
-                        it.toMMComponent()
-                    }
-                )
-            }.map {
-                MiniMessage.miniMessage().deserialize(
-                    textUpdater(
-                        MiniMessage.miniMessage().serialize(it)
-                            .replace("%chance%", (currentReward.chance * 100.0).decimals(2))
-                            .replace("%rarity%", currentReward.rarity.displayName),
-                        menu
+        val iS = currentReward?.item?.getItem()?.clone()
+        currentReward?.let { cr ->
+            iS?.modifyFastMeta {
+                this.displayName = this.displayName?.let { comp ->
+                    MiniMessage.miniMessage().deserialize(textUpdater(MiniMessage.miniMessage().serialize(comp), menu))
+                        .decoration(TextDecoration.ITALIC, false)
+                }
+                this.lore = this.lore.toMutableList().apply {
+                    addAll(
+                        settings.additionalRewardLore.map {
+                            it.toMMComponent()
+                        }
                     )
-                )
-                    .decoration(TextDecoration.ITALIC, false)
-            }
+                }.map {
+                    MiniMessage.miniMessage().deserialize(
+                        textUpdater(
+                            MiniMessage.miniMessage().serialize(it)
+                                .replace("%chance%", (cr.chance * 100.0).decimals(2))
+                                .replace("%rarity%", cr.rarity.displayName),
+                            menu
+                        )
+                    )
+                        .decoration(TextDecoration.ITALIC, false)
+                }
         }
-        return iS
+
+        }
+        return iS ?: ItemStack(Material.AIR)
     }
 
     var changeTick = 0

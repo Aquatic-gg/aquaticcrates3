@@ -21,7 +21,7 @@ class CratePreviewAction : Action<CrateInteractAction> {
         val player = binder.player
 
         val settings = crate.previewMenuSettings.firstOrNull() ?: return
-        val menu = CratePreviewMenu(player, crate, settings, 0)
+        val menu = CratePreviewMenu(player, crate, binder.spawnedCrate, settings, 0)
         menu.open()
     }
 }

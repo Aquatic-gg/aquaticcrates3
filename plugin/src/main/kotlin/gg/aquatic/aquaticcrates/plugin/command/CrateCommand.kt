@@ -43,7 +43,7 @@ object CrateCommand : ICommand {
                     return
                 }
 
-                val menu = CratePreviewMenu(player, crate, crate.previewMenuSettings.firstOrNull() ?: return, 0)
+                val menu = CratePreviewMenu(player, crate, null, crate.previewMenuSettings.firstOrNull() ?: return, 0)
                 menu.open()
             }
 
