@@ -35,7 +35,7 @@ class ParticleAnimationAction : Action<Animation> {
         PrimitiveObjectArgument("duration", 1, false),
         PrimitiveObjectArgument("location-offset", null, false),
         PrimitiveObjectArgument("offset", "0;0;0", false),
-        PrimitiveObjectArgument("speed", 1f, false),
+        PrimitiveObjectArgument("speed", 0f, false),
         PrimitiveObjectArgument("count", 1, false),
         ItemObjectArgument("item", Material.STONE.toCustomItem(), false)
     )
