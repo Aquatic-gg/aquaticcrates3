@@ -426,6 +426,7 @@ class CratesPlugin : AbstractCratesPlugin() {
         WavesRegistry.registerAction("player-actions", PlayerActionsAction())
         WavesRegistry.registerAction("add-passenger", AddPassengerAction())
         WavesRegistry.registerAction("remove-passenger", RemovePassengerAction())
+        WavesRegistry.registerAction("particle", ParticleAnimationAction())
 
         // Interaction Actions
         WavesRegistry.registerAction("open-crate", CrateOpenAction())
