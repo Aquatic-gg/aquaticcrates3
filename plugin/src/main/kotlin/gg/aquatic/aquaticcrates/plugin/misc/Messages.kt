@@ -23,7 +23,7 @@ enum class Messages(
     UNKNOWN_CRATE("unknown-crate", "Unknown crate!"),
     UNKNOWN_NUMBER("unknown-number", "Unknown number format!"),
     UNKNOWN_PLAYER("unknown-player", "Unknown player!"),
-    NO_KEY("no-key", "You do not have key to open this crate!"),
+    KEY_RECEIVED("key-received", "&fYou have received &7x%amount% %id% &fkey!"),
     PLUGIN_IS_NOT_LOADED("plugin-is-not-loaded", "Plugin is not loaded!"),
     KEY_BANK_HEADER("key-bank.header", "Your virtual keys: "),
     KEY_BANK_ENTRY("key-bank.entry", "&7- &f%key%: %amount%"),

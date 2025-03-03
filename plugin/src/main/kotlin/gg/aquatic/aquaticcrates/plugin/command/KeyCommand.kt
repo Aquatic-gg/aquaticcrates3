@@ -128,7 +128,11 @@ object KeyCommand : ICommand {
                     }
                 }
                 if (!isSilent) {
-                    player.sendMessage("You have received key!")
+                    Messages.KEY_RECEIVED.message.replace { str ->
+                        str.replace("%amount%", amount.toString())
+                            .replace("%id%", crateId)
+                            .replace("%name%", crate.displayName)
+                    }.send(player)
                     sender.sendMessage("Key given!")
                 }
             }
@@ -156,10 +160,7 @@ object KeyCommand : ICommand {
 
                 val given = hashSetOf<String>()
                 for (player in Bukkit.getOnlinePlayers()) {
-                    val aPlayer = player.toAquaticPlayer()?.crateEntry()
-                    if (aPlayer == null) {
-                        continue
-                    }
+                    val aPlayer = player.toAquaticPlayer()?.crateEntry() ?: continue
                     given += player.name
                     if (isVirtual) {
                         aPlayer.give(amount, crateId)
@@ -169,7 +170,11 @@ object KeyCommand : ICommand {
                         }
                     }
                     if (!isSilent) {
-                        player.sendMessage("You have received key!")
+                        Messages.KEY_RECEIVED.message.replace { str ->
+                            str.replace("%amount%", amount.toString())
+                                .replace("%id%", crateId)
+                                .replace("%name%", crate.displayName)
+                        }.send(player)
                     }
                 }
 

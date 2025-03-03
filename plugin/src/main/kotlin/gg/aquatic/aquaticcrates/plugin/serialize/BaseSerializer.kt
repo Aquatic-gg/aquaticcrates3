@@ -79,6 +79,14 @@ abstract class BaseSerializer {
         val giveItem = section.getBoolean("give-item", false)
         val globalLimits: HashMap<CrateProfileEntry.HistoryType, Int> = HashMap()
         val perPlayerLimits: HashMap<CrateProfileEntry.HistoryType, Int> = HashMap()
+        section.getConfigurationSection("global-limits")?.getKeys(false)?.forEach { key ->
+            val limit = section.getInt("global-limits.$key")
+            globalLimits[CrateProfileEntry.HistoryType.valueOf(key.uppercase())] = limit
+        }
+        section.getConfigurationSection("per-player-limits")?.getKeys(false)?.forEach { key ->
+            val limit = section.getInt("per-player-limits.$key")
+            perPlayerLimits[CrateProfileEntry.HistoryType.valueOf(key.uppercase())] = limit
+        }
 
         val actions = ArrayList<RewardAction>()
         val actionSections = section.getSectionList("actions")

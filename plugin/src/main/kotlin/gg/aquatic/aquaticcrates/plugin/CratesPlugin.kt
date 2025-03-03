@@ -406,6 +406,7 @@ class CratesPlugin : AbstractCratesPlugin() {
         WavesRegistry.registerAction("play-model-animation", PlayModelAnimationAction())
         WavesRegistry.registerAction("hide-model", HideModelAction())
         WavesRegistry.registerAction("play-sound", SoundAction())
+        WavesRegistry.registerAction("stop-sound", StopSoundAction())
         WavesRegistry.registerAction("conditional-actions", ConditionalActionsAction())
         WavesRegistry.registerAction("start-ticker", StartTickerAction())
         WavesRegistry.registerAction("bind-path", BindPathAction())

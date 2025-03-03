@@ -6,6 +6,7 @@ unknown-crate: "Unknown crate!"
 unknown-number: "Unknown number format!"
 unknown-player: "Unknown player!"
 no-key: "You do not have key to open this crate!"
+key-received: "&fYou have received &7x%amount% %id% &fkey!"
 plugin-is-not-loaded: "Plugin is not fully loaded!"
 keys-bank:
   header: "Your virtual keys: "
