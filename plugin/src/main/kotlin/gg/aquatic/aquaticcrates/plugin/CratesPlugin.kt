@@ -353,6 +353,7 @@ class CratesPlugin : AbstractCratesPlugin() {
 
     private fun load(): CompletableFuture<Void> {
         loading = true
+        dataFolder.mkdirs()
         settings = CrateSerializer.loadPluginSettings()
         rewardsMenuSettings = CrateSerializer.loadRewardMenuSettings()
         logMenuSettings = CrateSerializer.loadLogMenuSettings()
