@@ -5,6 +5,8 @@ dependencies {
     //implementation("gg.aquatic.aquaticseries","aquatic-lib","1.0")
 }
 
+version = parent!!.version
+
 tasks {
 
     build {
