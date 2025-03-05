@@ -44,7 +44,9 @@ tasks.withType<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar> {
     archiveFileName.set("AquaticCrates-${project.version}.jar")
     archiveClassifier.set("all")
 
+    relocate("org.bstats", "gg.aquatic.aquaticcrates.shadow.bstats")
     exclude("kotlin/**")
-    exclude("org/**")
+    exclude("org/intellij/**")
+    exclude("org/jetbrains/**")
     relocate("kotlin", "gg.aquatic.waves.shadow.kotlin")
 }

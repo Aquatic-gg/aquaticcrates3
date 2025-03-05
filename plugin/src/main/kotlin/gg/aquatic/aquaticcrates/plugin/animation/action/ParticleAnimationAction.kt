@@ -43,7 +43,7 @@ class ParticleAnimationAction : Action<Animation> {
     override fun execute(binder: Animation, args: ObjectArguments, textUpdater: (Animation, String) -> String) {
         val particleId = args.string("particle") { textUpdater(binder, it) } ?: return
 
-        val particleType = ParticleTypes.getByName(particleId.lowercase())
+        val particleType = ParticleTypes.getByName(particleId.lowercase()) ?: return
         val particle = when (particleType) {
             ParticleTypes.BLOCK, ParticleTypes.BLOCK_MARKER, ParticleTypes.FALLING_DUST, ParticleTypes.DUST_PLUME, ParticleTypes.BLOCK_CRUMBLE -> {
                 val blockMaterial =
@@ -160,7 +160,6 @@ class ParticleAnimationAction : Action<Animation> {
                 count
             )
             packets += packet
-
         }
 
         for (onlinePlayer in Bukkit.getOnlinePlayers()) {

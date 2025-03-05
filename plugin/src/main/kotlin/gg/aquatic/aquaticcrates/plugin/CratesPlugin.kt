@@ -45,6 +45,7 @@ import gg.aquatic.aquaticcrates.plugin.condition.impl.WeekRepeatCondition
 import gg.aquatic.aquaticcrates.plugin.interact.action.*
 import gg.aquatic.aquaticcrates.plugin.log.LogMenuSettings
 import gg.aquatic.aquaticcrates.plugin.misc.Messages
+import gg.aquatic.aquaticcrates.plugin.misc.hook.BStatsHook
 import gg.aquatic.aquaticcrates.plugin.misc.hook.CometHook
 import gg.aquatic.aquaticcrates.plugin.misc.hook.PAPIHook
 import gg.aquatic.aquaticcrates.plugin.preview.CratePreviewMenu
@@ -124,6 +125,7 @@ class CratesPlugin : AbstractCratesPlugin() {
         if (server.pluginManager.getPlugin("Comet") != null) {
             CometHook()
         }
+        BStatsHook.register()
 
         injectLegacyConverterListeners()
 

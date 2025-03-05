@@ -43,6 +43,7 @@ subprojects {
         compileOnly("gg.aquatic.comet:Comet-API:1.4.0")
         compileOnly ("com.ticxo.modelengine:ModelEngine:R4.0.8")
         compileOnly("gg.aquatic.waves:Waves:1.1.35:publish")
+        implementation("org.bstats:bstats-bukkit:3.0.2")
         //implementation("net.kyori:adventure-api:4.17.0")
     }
 
