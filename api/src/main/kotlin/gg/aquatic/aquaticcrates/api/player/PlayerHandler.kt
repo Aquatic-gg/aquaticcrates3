@@ -93,19 +93,20 @@ object PlayerHandler {
             }
         }
         if (currentAmount < amount) return false
+        var remaining = amount
         for (item in items) {
-            if (item.amount > currentAmount) {
-                item.amount -= currentAmount
+            if (item.amount >= remaining) {
+                item.amount -= remaining
                 return true
             }
             val toRemove = item.amount
             item.amount = 0
-            currentAmount -= toRemove
-            if (currentAmount == 0) return true
+            remaining -= toRemove
+            if (remaining == 0) return true
         }
-        if (currentAmount > 0) {
+        if (remaining > 0) {
             val entry = player.toAquaticPlayer()?.crateEntry() ?: return false
-            entry.take(currentAmount, id)
+            entry.take(remaining, id)
         }
         return true
     }

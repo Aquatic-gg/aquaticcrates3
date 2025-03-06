@@ -121,7 +121,6 @@ object KeyCommand : ICommand {
 
                 if (isVirtual) {
                     aPlayer.give(amount, crateId)
-                    return
                 } else {
                     if (crate is OpenableCrate) {
                         crate.key.giveItem(amount, player)

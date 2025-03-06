@@ -142,7 +142,7 @@ class CratePreviewMenu(
     }
 
     private fun hasNextPage(): Boolean {
-        return (crate.previewMenuSettings.size >= page)
+        return (crate.previewMenuSettings.size > page + 1)
     }
 
 }
