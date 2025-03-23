@@ -11,9 +11,9 @@ import gg.aquatic.aquaticcrates.api.interaction.crate.CrateInteractHandler
 import gg.aquatic.aquaticcrates.api.openprice.OpenPriceGroup
 import gg.aquatic.aquaticcrates.api.reward.RewardManager
 import gg.aquatic.aquaticcrates.plugin.CratesPlugin
+import gg.aquatic.aquaticcrates.plugin.preview.CratePreviewMenu
 import gg.aquatic.aquaticcrates.plugin.preview.CratePreviewMenuSettings
 import gg.aquatic.aquaticcrates.plugin.restriction.OpenData
-import gg.aquatic.aquaticcrates.plugin.takeKeys
 import gg.aquatic.waves.interactable.settings.InteractableSettings
 import gg.aquatic.waves.item.AquaticItem
 import gg.aquatic.waves.item.AquaticItemInteractEvent
@@ -146,6 +146,11 @@ class BasicCrate(
 
     override fun massOpen(player: Player, amount: Int, threads: Int?): CompletableFuture<Void> {
         return openManager.massOpen(player, amount, threads)
+    }
+
+    override fun openPreview(player: Player, placedCrate: SpawnedCrate?) {
+        val menu = CratePreviewMenu(player, this, placedCrate, previewMenuSettings.firstOrNull() ?: return, 0)
+        menu.open()
     }
 
 

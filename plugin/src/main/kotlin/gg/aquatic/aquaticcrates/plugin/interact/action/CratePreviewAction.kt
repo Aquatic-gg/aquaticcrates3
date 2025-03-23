@@ -2,7 +2,6 @@ package gg.aquatic.aquaticcrates.plugin.interact.action
 
 import gg.aquatic.aquaticcrates.api.interaction.CrateInteractAction
 import gg.aquatic.aquaticcrates.plugin.crate.BasicCrate
-import gg.aquatic.aquaticcrates.plugin.preview.CratePreviewMenu
 import gg.aquatic.waves.util.argument.AquaticObjectArgument
 import gg.aquatic.waves.util.argument.ObjectArguments
 import gg.aquatic.waves.util.generic.Action
@@ -20,8 +19,6 @@ class CratePreviewAction : Action<CrateInteractAction> {
         if (crate !is BasicCrate) return
         val player = binder.player
 
-        val settings = crate.previewMenuSettings.firstOrNull() ?: return
-        val menu = CratePreviewMenu(player, crate, binder.spawnedCrate, settings, 0)
-        menu.open()
+        crate.openPreview(player, binder.spawnedCrate)
     }
 }

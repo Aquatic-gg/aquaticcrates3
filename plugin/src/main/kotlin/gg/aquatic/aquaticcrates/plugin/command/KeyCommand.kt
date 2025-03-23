@@ -113,13 +113,13 @@ object KeyCommand : ICommand {
                     return
                 }
 
-                val aPlayer = player.toAquaticPlayer()?.crateEntry()
-                if (aPlayer == null) {
-                    sender.sendMessage("Player is not initialized!")
-                    return
-                }
-
                 if (isVirtual) {
+                    val aPlayer = player.toAquaticPlayer()?.crateEntry()
+                    if (aPlayer == null) {
+                        sender.sendMessage("Player is not initialized!")
+                        return
+                    }
+
                     aPlayer.give(amount, crateId)
                 } else {
                     if (crate is OpenableCrate) {

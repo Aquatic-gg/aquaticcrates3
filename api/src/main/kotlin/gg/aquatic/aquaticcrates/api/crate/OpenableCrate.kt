@@ -20,4 +20,6 @@ abstract class OpenableCrate : Crate(), Rewardable {
     abstract fun open(player: Player, location: org.bukkit.Location, spawnedCrate: SpawnedCrate?): CompletableFuture<Void>
     abstract fun tryMassOpen(player: Player, amount: Int, threads: Int?): CompletableFuture<Void>
     abstract fun massOpen(player: Player, amount: Int, threads: Int?): CompletableFuture<Void>
+
+    abstract fun openPreview(player: Player, placedCrate: SpawnedCrate?)
 }

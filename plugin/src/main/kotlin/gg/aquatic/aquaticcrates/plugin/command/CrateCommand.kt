@@ -4,7 +4,6 @@ import gg.aquatic.aquaticcrates.api.crate.CrateHandler
 import gg.aquatic.aquaticcrates.api.crate.OpenableCrate
 import gg.aquatic.aquaticcrates.plugin.crate.BasicCrate
 import gg.aquatic.aquaticcrates.plugin.misc.Messages
-import gg.aquatic.aquaticcrates.plugin.preview.CratePreviewMenu
 import gg.aquatic.waves.command.ICommand
 import org.bukkit.Bukkit
 import org.bukkit.command.CommandSender
@@ -43,8 +42,7 @@ object CrateCommand : ICommand {
                     return
                 }
 
-                val menu = CratePreviewMenu(player, crate, null, crate.previewMenuSettings.firstOrNull() ?: return, 0)
-                menu.open()
+                crate.openPreview(player, null)
             }
 
             "give" -> {
