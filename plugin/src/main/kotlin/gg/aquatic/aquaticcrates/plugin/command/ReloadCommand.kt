@@ -11,7 +11,7 @@ object ReloadCommand : ICommand{
             Messages.NO_PERMISSION.message.send(sender)
             return
         }
-        sender.sendMessage("Reloading...")
+        Messages.PLUGIN_RELOADING.send(sender)
         (CratesPlugin.INSTANCE as CratesPlugin).reloadPlugin().thenAccept {
             if (!it) {
                 Messages.PLUGIN_IS_NOT_LOADED.send(sender)

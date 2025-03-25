@@ -13,7 +13,7 @@ object ConvertCommand: ICommand {
         if (!sender.hasPermission("aquaticcrates.admin")) return
 
         if (args.size < 3) {
-            return sender.sendMessage("Usage: /convert <converter> <input file> <output file>")
+            return sender.sendMessage("Usage: /aquaticcrates convert <converter> <input file> <output file>")
         }
 
         val converter = CONVERTERS[args[1]] ?: return sender.sendMessage("Invalid converter: ${args[1]}")

@@ -157,7 +157,7 @@ class BasicCrate(
     fun canBeOpened(player: Player, amount: Int, openData: OpenData?): Boolean {
         if (openData != null) {
             if (!openRestrictions.checkRequirements(openData)) {
-                player.sendMessage("You cannot open the crate here!")
+                //player.sendMessage("You cannot open the crate here!")
                 return false
             }
             val spawned = CrateHandler.spawned[openData.location]
@@ -170,11 +170,11 @@ class BasicCrate(
             val animationResult = animationManager.animationSettings.canBeOpened(player,animationManager,openData.location)
             when (animationResult) {
                 CrateAnimationSettings.AnimationResult.ALREADY_BEING_OPENED -> {
-                    player.sendMessage("You are already opening a crate!")
+                    //player.sendMessage("You are already opening a crate!")
                     return false
                 }
                 CrateAnimationSettings.AnimationResult.ALREADY_BEING_OPENED_OTHER -> {
-                    player.sendMessage("Someone else is already opening a crate!")
+                    //player.sendMessage("Someone else is already opening a crate!")
                     return false
                 }
                 else -> {}

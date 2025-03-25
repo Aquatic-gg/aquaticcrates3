@@ -17,6 +17,7 @@ enum class Messages(
         )
     ),
     PLUGIN_RELOADED("plugin-reloaded", "Plugin has been reloaded!"),
+    PLUGIN_RELOADING("plugin-reloading", "Plugin is being reloaded!"),
 
     // ERRORS
     NO_PERMISSION("no-permission", "You do not have permission to do this!"),

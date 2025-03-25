@@ -1,5 +1,6 @@
 help:
   - "To be done"
+plugin-reloading: "Plugin is being reloaded!"
 plugin-reloaded: "Plugin has been reloaded!"
 no-permission: "You do not have permissions to do that!"
 unknown-crate: "Unknown crate!"

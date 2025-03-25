@@ -46,6 +46,7 @@ import gg.aquatic.aquaticcrates.plugin.interact.action.*
 import gg.aquatic.aquaticcrates.plugin.log.LogMenuSettings
 import gg.aquatic.aquaticcrates.plugin.misc.Messages
 import gg.aquatic.aquaticcrates.plugin.misc.hook.BStatsHook
+import gg.aquatic.aquaticcrates.plugin.misc.hook.BStatsHook.register
 import gg.aquatic.aquaticcrates.plugin.misc.hook.CometHook
 import gg.aquatic.aquaticcrates.plugin.misc.hook.PAPIHook
 import gg.aquatic.aquaticcrates.plugin.preview.CratePreviewMenu
@@ -73,11 +74,8 @@ import gg.aquatic.waves.shadow.com.retrooper.packetevents.wrapper.play.client.Wr
 import gg.aquatic.waves.shadow.com.retrooper.packetevents.wrapper.play.server.WrapperPlayServerSetSlot
 import gg.aquatic.waves.shadow.com.retrooper.packetevents.wrapper.play.server.WrapperPlayServerWindowItems
 import gg.aquatic.waves.shadow.io.retrooper.packetevents.util.SpigotConversionUtil
-import gg.aquatic.waves.util.Config
+import gg.aquatic.waves.util.*
 import gg.aquatic.waves.util.event.event
-import gg.aquatic.waves.util.packetEvent
-import gg.aquatic.waves.util.player
-import gg.aquatic.waves.util.runAsyncTimer
 import org.bukkit.Bukkit
 import org.bukkit.NamespacedKey
 import org.bukkit.entity.Player
@@ -94,6 +92,7 @@ import org.bukkit.persistence.PersistentDataType
 import java.util.Collections
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.CompletableFuture.runAsync
+import kotlin.collections.map
 
 class CratesPlugin : AbstractCratesPlugin() {
 
@@ -212,7 +211,7 @@ class CratesPlugin : AbstractCratesPlugin() {
                 "log" to LogCommand,
                 "convert" to ConvertCommand
             ),
-            listOf()
+            Messages.HELP.message.messages.map { it.toMMComponent() }.toMutableList()
         ).register("aquaticcrates")
 
         event<AsyncPacketInventoryCloseEvent> {
