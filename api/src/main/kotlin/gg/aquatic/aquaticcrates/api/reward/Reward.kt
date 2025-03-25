@@ -21,6 +21,7 @@ interface Reward : IChance {
     val perPlayerLimits: HashMap<CrateProfileEntry.HistoryType, Int>
     val actions: List<RewardAction>
     val requirements: List<ConfiguredRequirement<Player>>
+    val asyncExecution: Boolean
 
     //val hologramSettings: AquaticHologramSettings
     val amountRanges: MutableList<RewardAmountRange>

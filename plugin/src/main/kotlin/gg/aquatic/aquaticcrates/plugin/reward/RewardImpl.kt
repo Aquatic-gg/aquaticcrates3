@@ -22,5 +22,6 @@ class RewardImpl(
     //override val hologramSettings: AquaticHologramSettings,
     override val amountRanges: MutableList<RewardAmountRange>,
     override val rarity: RewardRarity,
-    override val variables: MutableMap<String, String>
+    override val variables: MutableMap<String, String>,
+    override val asyncExecution: Boolean
 ) : Reward

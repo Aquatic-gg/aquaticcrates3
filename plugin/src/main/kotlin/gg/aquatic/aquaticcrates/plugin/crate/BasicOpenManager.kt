@@ -9,6 +9,7 @@ import gg.aquatic.waves.profile.toAquaticPlayer
 import gg.aquatic.waves.util.collection.executeActions
 import gg.aquatic.waves.util.collection.mapPair
 import gg.aquatic.waves.util.runAsync
+import gg.aquatic.waves.util.runSync
 import org.bukkit.entity.Player
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ConcurrentHashMap
@@ -44,18 +45,21 @@ class BasicOpenManager(val crate: BasicCrate) {
                     reward.give(player, 1, false)
                 }
             }
-            HistoryHandler.registerCrateOpen(player, crate.identifier, animation.rewards.mapPair { it.reward.id to it.randomAmount })
+            HistoryHandler.registerCrateOpen(
+                player,
+                crate.identifier,
+                animation.rewards.mapPair { it.reward.id to it.randomAmount })
         }
     }
 
     fun massOpen(player: Player, amount: Int, threadsAmount: Int?): CompletableFuture<Void> {
         val threads = threadsAmount ?: THREADS_LIMIT
-        val crateEntry = player.toAquaticPlayer()?.crateEntry() ?: return CompletableFuture.completedFuture(null)
-        player.sendMessage("Mass opening!")
+        //val crateEntry = player.toAquaticPlayer()?.crateEntry() ?: return CompletableFuture.completedFuture(null)
+        //player.sendMessage("Mass opening!")
         val finalFuture = CompletableFuture<Void>()
 
         if (amount > 10000) {
-            val previousTime = System.currentTimeMillis()
+            //val previousTime = System.currentTimeMillis()
             val wonRewards = ConcurrentHashMap<Reward, Pair<AtomicInteger, AtomicInteger>>()
             runAsync {
 
@@ -87,22 +91,28 @@ class BasicOpenManager(val crate: BasicCrate) {
                 }
                 val totalWon = wonRewards.values.sumOf { it.second.get() }
                 val totalWonExcluded = wonRewards.values.sumOf { it.first.get() }
-                crate.massOpenFinalActions.executeActions(player) { p, str ->
-                    str.replace("%total-won%", totalWon.toString().replace("%player%", p.name))
-                        .replace("%total-won-excluded%", totalWonExcluded.toString())
+                runSync {
+                    crate.massOpenFinalActions.executeActions(player) { p, str ->
+                        str.replace("%total-won%", totalWon.toString().replace("%player%", p.name))
+                            .replace("%total-won-excluded%", totalWonExcluded.toString())
+                    }
                 }
+
                 for ((reward, amtPair) in wonRewards) {
                     val amt = amtPair.first.get()
                     val amtTotal = amtPair.second.get()
-                    crate.massOpenPerRewardActions.executeActions(player) { p, str ->
-                        str.replace("%reward%", reward.displayName)
-                            .replace("%amount%", amt.toString())
-                            .replace("%amount-total%", amtTotal.toString())
-                            .replace("%player%", p.name)
+                    runSync {
+                        crate.massOpenPerRewardActions.executeActions(player) { p, str ->
+                            str.replace("%reward%", reward.displayName)
+                                .replace("%amount%", amt.toString())
+                                .replace("%amount-total%", amtTotal.toString())
+                                .replace("%player%", p.name)
+                        }
                     }
+
                 }
                 System.gc()
-                player.sendMessage("Completed in ${System.currentTimeMillis() - previousTime}ms")
+                //player.sendMessage("Completed in ${System.currentTimeMillis() - previousTime}ms")
                 finalFuture.complete(null)
             }
 
@@ -125,18 +135,24 @@ class BasicOpenManager(val crate: BasicCrate) {
             }
             val totalWon = wonRewards.values.sumOf { it.second }
             val totalWonExcluded = wonRewards.values.sumOf { it.first }
-            crate.massOpenFinalActions.executeActions(player) { p, str ->
-                str.replace("%total-won%", totalWon.toString().replace("%player%", p.name))
-                    .replace("%total-won-excluded%", totalWonExcluded.toString())
+
+            runSync {
+                crate.massOpenFinalActions.executeActions(player) { p, str ->
+                    str.replace("%total-won%", totalWon.toString().replace("%player%", p.name))
+                        .replace("%total-won-excluded%", totalWonExcluded.toString())
+                }
             }
+
             for ((reward, amtPair) in wonRewards) {
                 val amt = amtPair.first
                 val amtTotal = amtPair.second
-                crate.massOpenPerRewardActions.executeActions(player) { p, str ->
-                    str.replace("%reward%", reward.displayName)
-                        .replace("%amount%", amt.toString())
-                        .replace("%amount-total%", amtTotal.toString())
-                        .replace("%player%", p.name)
+                runSync {
+                    crate.massOpenPerRewardActions.executeActions(player) { p, str ->
+                        str.replace("%reward%", reward.displayName)
+                            .replace("%amount%", amt.toString())
+                            .replace("%amount-total%", amtTotal.toString())
+                            .replace("%player%", p.name)
+                    }
                 }
             }
 

@@ -121,7 +121,8 @@ abstract class BaseSerializer {
             requirements,
             chances,
             rarity,
-            variables
+            variables,
+            section.getBoolean("async-execution", false)
         )
     }
 
