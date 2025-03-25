@@ -84,7 +84,9 @@ import org.bukkit.entity.Player
 import org.bukkit.event.entity.EntityDamageEvent
 import org.bukkit.event.inventory.InventoryInteractEvent
 import org.bukkit.event.inventory.InventoryOpenEvent
+import org.bukkit.event.player.AsyncPlayerPreLoginEvent
 import org.bukkit.event.player.PlayerJoinEvent
+import org.bukkit.event.player.PlayerPreLoginEvent
 import org.bukkit.event.player.PlayerQuitEvent
 import org.bukkit.event.player.PlayerToggleSneakEvent
 import org.bukkit.event.world.WorldLoadEvent
@@ -367,12 +369,15 @@ class CratesPlugin : AbstractCratesPlugin() {
 
                 for (crate in CrateHandler.crates.values) {
                     if (crate !is OpenableCrate) continue
-                    val list = HistoryHandler.latestRewards.getOrPut(crate.identifier) { Collections.synchronizedList(ArrayList()) }
-                    val logs = HistoryHandler.loadLogEntries(0,10, null, crate.identifier, CrateProfileDriver.Sorting.NEWEST)
+                    val list =
+                        HistoryHandler.latestRewards.getOrPut(crate.identifier) { Collections.synchronizedList(ArrayList()) }
+                    val logs =
+                        HistoryHandler.loadLogEntries(0, 10, null, crate.identifier, CrateProfileDriver.Sorting.NEWEST)
                     for ((playerName, history) in logs) {
                         for ((id, amt) in history.rewardIds) {
                             val crateReward = crate.rewardManager.rewards[id] ?: continue
-                            val latestReward = HistoryHandler.LatestReward(crateReward, history.timestamp, amt, playerName)
+                            val latestReward =
+                                HistoryHandler.LatestReward(crateReward, history.timestamp, amt, playerName)
                             list.add(latestReward)
                             if (list.size >= 10) break
                         }
@@ -385,6 +390,7 @@ class CratesPlugin : AbstractCratesPlugin() {
             loading = false
         }.exceptionally {
             it.printStackTrace()
+            loading = false
             null
         }
     }
@@ -461,6 +467,13 @@ class CratesPlugin : AbstractCratesPlugin() {
 
     private fun injectLegacyConverterListeners() {
 
+        event<AsyncPlayerPreLoginEvent>(ignoredCancelled = true) {
+            if (loading) {
+                it.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, "Server is currently loading...")
+                return@event
+            }
+        }
+
         event<PlayerJoinEvent> {
             val player = it.player
             val inventory = player.inventory
@@ -469,7 +482,7 @@ class CratesPlugin : AbstractCratesPlugin() {
                 if (item == null) continue
                 val meta = item.itemMeta ?: continue
                 val pdc = meta.persistentDataContainer
-                val oldNamespace = NamespacedKey("aquaticcrates","keyidentifier")
+                val oldNamespace = NamespacedKey("aquaticcrates", "keyidentifier")
                 if (pdc.has(oldNamespace, PersistentDataType.STRING)) {
                     val keyId = pdc.get(oldNamespace, PersistentDataType.STRING)!!
                     pdc.remove(oldNamespace)
@@ -486,7 +499,7 @@ class CratesPlugin : AbstractCratesPlugin() {
                 if (item == null) continue
                 val meta = item.itemMeta ?: continue
                 val pdc = meta.persistentDataContainer
-                val oldNamespace = NamespacedKey("aquaticcrates","keyidentifier")
+                val oldNamespace = NamespacedKey("aquaticcrates", "keyidentifier")
                 if (pdc.has(oldNamespace, PersistentDataType.STRING)) {
                     val keyId = pdc.get(oldNamespace, PersistentDataType.STRING)!!
                     pdc.remove(oldNamespace)
