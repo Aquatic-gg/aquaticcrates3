@@ -2,10 +2,12 @@ package gg.aquatic.aquaticcrates.plugin.preview
 
 import gg.aquatic.aquaticcrates.api.crate.SpawnedCrate
 import gg.aquatic.aquaticcrates.plugin.crate.BasicCrate
+import gg.aquatic.aquaticcrates.plugin.reward.RolledRewardImpl
 import gg.aquatic.waves.menu.PrivateAquaticMenu
 import gg.aquatic.waves.menu.SlotSelection
 import gg.aquatic.waves.menu.component.Button
 import gg.aquatic.waves.util.*
+import gg.aquatic.waves.util.chance.randomItem
 import gg.aquatic.waves.util.item.modifyFastMeta
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.TextDecoration
@@ -117,6 +119,10 @@ class CratePreviewMenu(
                     str.updatePAPIPlaceholders(player)
                         .replace("%chance%", (reward.chance * 100.0).decimals(2))
                         .replace("%rarity%", reward.rarity.displayName)
+                }, onClick = { _ ->
+                    if (player.hasPermission("aquaticcrates.admin")) {
+                        RolledRewardImpl(reward, reward.amountRanges.randomItem()?.randomNum ?: 1).give(player, false)
+                    }
                 }
             )
             components += button.id to button
