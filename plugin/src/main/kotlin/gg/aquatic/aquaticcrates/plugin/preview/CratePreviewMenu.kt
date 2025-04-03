@@ -64,7 +64,7 @@ class CratePreviewMenu(
                         runSync {
                             player.closeInventory()
                             runAsync {
-                                crate.open(player, placedCrate?.location ?: player.location.clone(), placedCrate)
+                                crate.tryOpen(player, placedCrate?.location ?: player.location.clone(), placedCrate)
                             }
                         }
                     }
