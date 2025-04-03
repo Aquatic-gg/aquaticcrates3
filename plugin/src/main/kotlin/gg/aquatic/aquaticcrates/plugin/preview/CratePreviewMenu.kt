@@ -52,6 +52,9 @@ class CratePreviewMenu(
             val comp = component.create(
                 { str, menu ->
                     str
+                        .replace("%page%", "${page + 1}")
+                        .replace("%player%", player.name)
+                        .updatePAPIPlaceholders(player)
                 },
                 { e ->
                     if (id == "next-page") {
