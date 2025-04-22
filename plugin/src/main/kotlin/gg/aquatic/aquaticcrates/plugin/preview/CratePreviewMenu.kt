@@ -8,7 +8,6 @@ import gg.aquatic.waves.menu.SlotSelection
 import gg.aquatic.waves.menu.component.Button
 import gg.aquatic.waves.util.*
 import gg.aquatic.waves.util.chance.randomItem
-import gg.aquatic.waves.util.item.modifyFastMeta
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.TextDecoration
 import org.bukkit.Material
@@ -101,14 +100,14 @@ class CratePreviewMenu(
             val reward = rewards.elementAtOrNull(rewardIndex) ?: break
             val rewardItem = reward.item.getItem().clone()
 
-            rewardItem.modifyFastMeta {
-                lore = mutableListOf<Component>().apply {
-                    addAll(lore)
-                    addAll(settings.additionalRewardLore.map {
-                        it.toMMComponent().decoration(TextDecoration.ITALIC, TextDecoration.State.NOT_SET)
-                    })
-                }
-            }
+            val meta = rewardItem.itemMeta
+            meta.lore(mutableListOf<Component>().apply {
+                addAll(meta.lore() ?: listOf())
+                addAll(settings.additionalRewardLore.map {
+                    it.toMMComponent().decoration(TextDecoration.ITALIC, TextDecoration.State.NOT_SET)
+                })
+            })
+            rewardItem.itemMeta = meta
 
             val button = Button(
                 "reward-${reward.id}",

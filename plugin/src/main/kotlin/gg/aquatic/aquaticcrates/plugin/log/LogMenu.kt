@@ -8,7 +8,6 @@ import gg.aquatic.waves.menu.MenuComponent
 import gg.aquatic.waves.menu.PrivateAquaticMenu
 import gg.aquatic.waves.menu.component.Button
 import gg.aquatic.waves.util.*
-import gg.aquatic.waves.util.item.modifyFastMeta
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
@@ -187,10 +186,10 @@ class LogMenu(val settings: LogMenuSettings, player: Player) : PrivateAquaticMen
                     newLore += " ".toMMComponent()
                     newLore += "<gray>${entry.timestamp.toFriendlyTimeFromSeconds()}".toMMComponent()
 
-                    modifyFastMeta {
-                        this.displayName = "<yellow>Crate: ${entry.crateId}".toMMComponent()
-                        this.lore = newLore
-                    }
+                    val meta = this.itemMeta
+                    meta.lore(newLore)
+                    meta.displayName("<yellow>Crate: ${entry.crateId}".toMMComponent())
+                    this.itemMeta = meta
                 }
 
                 val component = Button("entry_$index", item, listOf(logSlot), 1, 20, null)

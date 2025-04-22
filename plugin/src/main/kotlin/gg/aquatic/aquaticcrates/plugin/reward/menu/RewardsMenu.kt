@@ -5,7 +5,6 @@ import gg.aquatic.waves.menu.MenuComponent
 import gg.aquatic.waves.menu.PrivateAquaticMenu
 import gg.aquatic.waves.menu.component.Button
 import gg.aquatic.waves.profile.toAquaticPlayer
-import gg.aquatic.waves.util.item.modifyFastMeta
 import gg.aquatic.waves.util.runSync
 import gg.aquatic.waves.util.toMMComponent
 import gg.aquatic.waves.util.toMMString
@@ -53,9 +52,11 @@ class RewardsMenu(val settings: RewardsMenuSettings, player: Player) : PrivateAq
             val button = Button(
                 "reward-${rewardSlot}",
                 item.clone().apply {
-                    modifyFastMeta {
-                        this.lore += settings.additionalRewardLore.map { it.toMMComponent() }
-                    }
+                    val meta = this.itemMeta
+                    meta.lore(
+                        (meta.lore() ?: emptyList()) +settings.additionalRewardLore.map { it.toMMComponent() }
+                    )
+                    this.itemMeta = meta
                 },
                 listOf(rewardSlot),
                 10,

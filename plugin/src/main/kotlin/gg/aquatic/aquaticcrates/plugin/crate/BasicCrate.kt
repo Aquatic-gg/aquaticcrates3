@@ -21,7 +21,6 @@ import gg.aquatic.waves.registry.register
 import gg.aquatic.waves.registry.setInteractionHandler
 import gg.aquatic.waves.util.collection.checkRequirements
 import gg.aquatic.waves.util.generic.ConfiguredExecutableObject
-import gg.aquatic.waves.util.item.modifyFastMeta
 import gg.aquatic.waves.util.requirement.ConfiguredRequirement
 import gg.aquatic.waves.util.runLaterSync
 import net.kyori.adventure.text.Component
@@ -61,9 +60,9 @@ class BasicCrate(
 
     val crateItem = AquaticItem(
         ItemStack(Material.CHEST).apply {
-            modifyFastMeta {
-                displayName = Component.text("Crate: $identifier").decoration(TextDecoration.ITALIC, false)
-            }
+            val meta = this.itemMeta
+            meta.displayName(Component.text("Crate: $identifier").decoration(TextDecoration.ITALIC, false))
+            this.itemMeta = meta
         },
         null,
         null,

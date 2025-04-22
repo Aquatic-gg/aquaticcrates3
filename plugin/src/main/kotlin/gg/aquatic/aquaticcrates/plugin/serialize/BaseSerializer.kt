@@ -10,7 +10,6 @@ import gg.aquatic.waves.item.AquaticItem
 import gg.aquatic.waves.registry.serializer.ActionSerializer
 import gg.aquatic.waves.registry.serializer.RequirementSerializer
 import gg.aquatic.waves.util.getSectionList
-import gg.aquatic.waves.util.item.fastMeta
 import gg.aquatic.waves.util.item.loadFromYml
 import gg.aquatic.waves.util.runSync
 import gg.aquatic.waves.util.toMMString
@@ -114,7 +113,7 @@ abstract class BaseSerializer {
             id,
             item,
             giveItem,
-            displayName ?: item.getItem().fastMeta().displayName?.toMMString() ?: id,
+            displayName ?: item.getItem().itemMeta?.displayName()?.toMMString() ?: id,
             globalLimits,
             perPlayerLimits,
             actions,

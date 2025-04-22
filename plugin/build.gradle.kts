@@ -26,7 +26,7 @@ tasks {
 
     processResources {
         filteringCharset = Charsets.UTF_8.name()
-        filesMatching("plugin.yml") {
+        filesMatching("paper-plugin.yml") {
             expand(getProperties())
             expand(mutableMapOf("version" to parent!!.version))
         }
@@ -50,5 +50,5 @@ tasks.withType<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar> {
     exclude("kotlin/**")
     exclude("org/intellij/**")
     exclude("org/jetbrains/**")
-    relocate("kotlin", "gg.aquatic.waves.shadow.kotlin")
+    //relocate("kotlin", "gg.aquatic.waves.shadow.kotlin")
 }

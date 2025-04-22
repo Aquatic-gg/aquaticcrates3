@@ -6,7 +6,6 @@ import gg.aquatic.waves.inventory.event.AsyncPacketInventoryInteractEvent
 import gg.aquatic.waves.menu.AquaticMenu
 import gg.aquatic.waves.menu.MenuComponent
 import gg.aquatic.waves.util.decimals
-import gg.aquatic.waves.util.item.modifyFastMeta
 import gg.aquatic.waves.util.toMMComponent
 import net.kyori.adventure.text.format.TextDecoration
 import net.kyori.adventure.text.minimessage.MiniMessage
@@ -30,29 +29,31 @@ class RandomRewardComponent(
     override fun itemstack(menu: AquaticMenu): ItemStack {
         val iS = currentReward?.item?.getItem()?.clone()
         currentReward?.let { cr ->
-            iS?.modifyFastMeta {
-                this.displayName = this.displayName?.let { comp ->
-                    MiniMessage.miniMessage().deserialize(textUpdater(MiniMessage.miniMessage().serialize(comp), menu))
-                        .decoration(TextDecoration.ITALIC, false)
-                }
-                this.lore = this.lore.toMutableList().apply {
-                    addAll(
-                        settings.additionalRewardLore.map {
-                            it.toMMComponent()
-                        }
-                    )
-                }.map {
-                    MiniMessage.miniMessage().deserialize(
-                        textUpdater(
-                            MiniMessage.miniMessage().serialize(it)
-                                .replace("%chance%", (cr.chance * 100.0).decimals(2))
-                                .replace("%rarity%", cr.rarity.displayName),
-                            menu
+
+            val meta = iS?.itemMeta ?: return@let
+            meta.displayName()?.let { comp ->
+                meta.displayName(MiniMessage.miniMessage().deserialize(textUpdater(MiniMessage.miniMessage().serialize(comp), menu))
+                    .decoration(TextDecoration.ITALIC, false))
+            }
+
+            meta.lore()?.let { lore ->
+                meta.lore(
+                    lore + settings.additionalRewardLore.map {
+                        it.toMMComponent()
+                    }.map {
+                        MiniMessage.miniMessage().deserialize(
+                            textUpdater(
+                                MiniMessage.miniMessage().serialize(it)
+                                    .replace("%chance%", (cr.chance * 100.0).decimals(2))
+                                    .replace("%rarity%", cr.rarity.displayName),
+                                menu
+                            )
                         )
-                    )
-                        .decoration(TextDecoration.ITALIC, false)
-                }
-        }
+                            .decoration(TextDecoration.ITALIC, false)
+                    }
+                )
+            }
+            iS.itemMeta = meta
 
         }
         return iS ?: ItemStack(Material.AIR)
