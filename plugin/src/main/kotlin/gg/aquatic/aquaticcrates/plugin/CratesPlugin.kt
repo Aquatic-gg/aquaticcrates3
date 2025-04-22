@@ -46,7 +46,6 @@ import gg.aquatic.aquaticcrates.plugin.interact.action.*
 import gg.aquatic.aquaticcrates.plugin.log.LogMenuSettings
 import gg.aquatic.aquaticcrates.plugin.misc.Messages
 import gg.aquatic.aquaticcrates.plugin.misc.hook.BStatsHook
-import gg.aquatic.aquaticcrates.plugin.misc.hook.BStatsHook.register
 import gg.aquatic.aquaticcrates.plugin.misc.hook.CometHook
 import gg.aquatic.aquaticcrates.plugin.misc.hook.PAPIHook
 import gg.aquatic.aquaticcrates.plugin.preview.CratePreviewMenu
@@ -67,15 +66,14 @@ import gg.aquatic.waves.registry.registerAction
 import gg.aquatic.waves.registry.registerRequirement
 import gg.aquatic.waves.shadow.com.retrooper.packetevents.event.PacketReceiveEvent
 import gg.aquatic.waves.shadow.com.retrooper.packetevents.event.PacketSendEvent
-import gg.aquatic.waves.shadow.com.retrooper.packetevents.protocol.item.ItemStack
 import gg.aquatic.waves.shadow.com.retrooper.packetevents.protocol.packettype.PacketType
-import gg.aquatic.waves.shadow.com.retrooper.packetevents.protocol.packettype.PacketType.Play
 import gg.aquatic.waves.shadow.com.retrooper.packetevents.wrapper.play.client.WrapperPlayClientInteractEntity
 import gg.aquatic.waves.shadow.com.retrooper.packetevents.wrapper.play.server.WrapperPlayServerSetSlot
 import gg.aquatic.waves.shadow.com.retrooper.packetevents.wrapper.play.server.WrapperPlayServerWindowItems
 import gg.aquatic.waves.shadow.io.retrooper.packetevents.util.SpigotConversionUtil
 import gg.aquatic.waves.util.*
 import gg.aquatic.waves.util.event.event
+import net.kyori.adventure.text.Component
 import org.bukkit.Bukkit
 import org.bukkit.NamespacedKey
 import org.bukkit.entity.Player
@@ -84,12 +82,11 @@ import org.bukkit.event.inventory.InventoryInteractEvent
 import org.bukkit.event.inventory.InventoryOpenEvent
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent
 import org.bukkit.event.player.PlayerJoinEvent
-import org.bukkit.event.player.PlayerPreLoginEvent
 import org.bukkit.event.player.PlayerQuitEvent
 import org.bukkit.event.player.PlayerToggleSneakEvent
 import org.bukkit.event.world.WorldLoadEvent
 import org.bukkit.persistence.PersistentDataType
-import java.util.Collections
+import java.util.*
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.CompletableFuture.runAsync
 import kotlin.collections.map
@@ -468,7 +465,7 @@ class CratesPlugin : AbstractCratesPlugin() {
 
         event<AsyncPlayerPreLoginEvent>(ignoredCancelled = true) {
             if (loading) {
-                it.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, "Server is currently loading...")
+                it.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, Component.text("Server is currently loading..."))
                 return@event
             }
         }

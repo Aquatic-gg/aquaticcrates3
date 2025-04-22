@@ -358,7 +358,6 @@ object CrateSerializer : BaseSerializer() {
             mutableListOf()
         )
         Bukkit.getConsoleSender().sendMessage("Loaded ${openPriceGroups.sumOf { it.prices.size }} open price groups")
-
         return BasicCrate(
             identifier,
             cfg.getString("display-name") ?: identifier,

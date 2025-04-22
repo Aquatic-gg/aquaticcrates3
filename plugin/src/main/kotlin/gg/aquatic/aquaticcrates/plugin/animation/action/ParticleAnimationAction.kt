@@ -40,6 +40,7 @@ class ParticleAnimationAction : Action<Animation> {
         ItemObjectArgument("item", Material.STONE.toCustomItem(), false)
     )
 
+    @Suppress("UNCHECKED_CAST")
     override fun execute(binder: Animation, args: ObjectArguments, textUpdater: (Animation, String) -> String) {
         val particleId = args.string("particle") { textUpdater(binder, it) } ?: return
 

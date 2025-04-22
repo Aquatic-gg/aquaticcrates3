@@ -5,6 +5,10 @@ import gg.aquatic.waves.util.argument.AbstractObjectArgumentSerializer
 import gg.aquatic.waves.util.argument.AquaticObjectArgument
 import gg.aquatic.waves.util.argument.ObjectArguments
 import gg.aquatic.waves.util.generic.Action
+import io.papermc.paper.registry.RegistryAccess
+import io.papermc.paper.registry.RegistryKey
+import org.bukkit.NamespacedKey
+import org.bukkit.Registry
 import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.potion.PotionEffectType
 
@@ -38,7 +42,7 @@ class ClearPotionEffectsAction: Action<PlayerBoundAnimation> {
             override fun load(section: ConfigurationSection, id: String): List<PotionEffectType> {
                 val list = mutableListOf<PotionEffectType>()
                 for (s in section.getStringList(id)) {
-                    list += PotionEffectType.getByName(s) ?: continue
+                    list += Registry.EFFECT.get(NamespacedKey.minecraft(s.lowercase())) ?: continue
                 }
                 return list
             }

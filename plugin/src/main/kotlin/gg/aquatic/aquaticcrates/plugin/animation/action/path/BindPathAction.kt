@@ -21,6 +21,7 @@ class BindPathAction : Action<Animation>{
         )
     )
 
+    @Suppress("UNCHECKED_CAST")
     override fun execute(binder: Animation, args: ObjectArguments, textUpdater: (Animation, String) -> String) {
         val objectId = args.string("object-id") { textUpdater(binder, it) } ?: return
 

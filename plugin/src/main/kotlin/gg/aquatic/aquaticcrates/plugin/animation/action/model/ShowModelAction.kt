@@ -28,6 +28,7 @@ class ShowModelAction : Action<Animation> {
         )
     )
 
+    @Suppress("UNCHECKED_CAST")
     override fun execute(binder: Animation, args: ObjectArguments, textUpdater: (Animation, String) -> String) {
         val id = args.string("id") { textUpdater(binder, it) } ?: return
         val model = args.string("model") { textUpdater(binder, it) } ?: return

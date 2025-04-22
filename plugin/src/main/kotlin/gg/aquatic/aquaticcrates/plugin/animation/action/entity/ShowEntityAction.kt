@@ -28,6 +28,7 @@ class ShowEntityAction : Action<Animation> {
         )
     )
 
+    @Suppress("UNCHECKED_CAST")
     override fun execute(binder: Animation, args: ObjectArguments, textUpdater: (Animation, String) -> String) {
         val id = args.string("id") { textUpdater(binder, it)} ?: return
         val type = args.string("entity-type") { textUpdater(binder, it) } ?: return

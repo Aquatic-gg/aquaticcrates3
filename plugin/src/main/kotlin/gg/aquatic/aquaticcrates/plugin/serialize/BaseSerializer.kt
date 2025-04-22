@@ -96,7 +96,7 @@ abstract class BaseSerializer {
             actions += RewardAction(massOpenExecute, action)
         }
 
-        val requirements = RequirementSerializer.fromSections<Player>(section.getSectionList("requirements"))
+        val requirements = RequirementSerializer.fromSections<Player>(section.getSectionList("requirements") + section.getSectionList("conditions"))
         //val hologramSettings = HologramSerializer.loadAquaticHologram(section.getConfigurationSection("hologram"))
         val chances = loadRewardRanges(section.getSectionList("amount-ranges"))
 

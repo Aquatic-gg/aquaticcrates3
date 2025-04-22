@@ -65,10 +65,8 @@ class CratePreviewMenu(
                         openPage(page - 1)
                     } else if (id == "open") {
                         runSync {
+                            crate.tryOpen(player, placedCrate?.location ?: player.location.clone(), placedCrate)
                             player.closeInventory()
-                            runAsync {
-                                crate.tryOpen(player, placedCrate?.location ?: player.location.clone(), placedCrate)
-                            }
                         }
                     }
                 }

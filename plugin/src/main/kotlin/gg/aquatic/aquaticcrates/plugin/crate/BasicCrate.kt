@@ -47,8 +47,8 @@ class BasicCrate(
     rewardManager: (BasicCrate) -> RewardManager,
     interactHandler: (BasicCrate) -> CrateInteractHandler,
     val previewMenuSettings: MutableList<CratePreviewMenuSettings>,
-    val massOpenFinalActions: MutableList<ConfiguredExecutableObject<Player,Unit>>,
-    val massOpenPerRewardActions: MutableList<ConfiguredExecutableObject<Player,Unit>>,
+    val massOpenFinalActions: MutableList<ConfiguredExecutableObject<Player, Unit>>,
+    val massOpenPerRewardActions: MutableList<ConfiguredExecutableObject<Player, Unit>>,
     val openRestrictions: MutableList<ConfiguredRequirement<OpenData>>
 ) : OpenableCrate() {
 
@@ -62,7 +62,7 @@ class BasicCrate(
     val crateItem = AquaticItem(
         ItemStack(Material.CHEST).apply {
             modifyFastMeta {
-                displayName = Component.text("Crate: $identifier").decoration(TextDecoration.ITALIC,false)
+                displayName = Component.text("Crate: $identifier").decoration(TextDecoration.ITALIC, false)
             }
         },
         null,
@@ -73,7 +73,7 @@ class BasicCrate(
         null,
         null
     ).apply {
-        val consumer: (AquaticItemInteractEvent) -> Unit = { e->
+        val consumer: (AquaticItemInteractEvent) -> Unit = { e ->
             val originalEvent = e.originalEvent
             if (originalEvent !is InventoryClickEvent) {
                 e.isCancelled = true
@@ -92,16 +92,17 @@ class BasicCrate(
                 }
             }
         }
-        if (!register("aquaticcrates-crates", identifier,consumer)) {
+        if (!register("aquaticcrates-crates", identifier, consumer)) {
             setInteractionHandler(consumer)
         }
     }
+
     override fun tryInstantOpen(
         player: Player,
         location: Location,
         spawnedCrate: SpawnedCrate?
     ) {
-        if (!canBeOpened(player,1,null)) {
+        if (!canBeOpened(player, 1, null)) {
             return
         }
         instantOpen(player, location, spawnedCrate)
@@ -112,11 +113,11 @@ class BasicCrate(
         location: Location,
         spawnedCrate: SpawnedCrate?
     ) {
-        openManager.instantOpen(player,false)
+        openManager.instantOpen(player, false)
     }
 
     override fun tryOpen(player: Player, location: Location, spawnedCrate: SpawnedCrate?): CompletableFuture<Void> {
-        if (!canBeOpened(player,1,OpenData(player,location,this))) {
+        if (!canBeOpened(player, 1, OpenData(player, location, this))) {
             spawnedCrate?.let {
                 animationManager.playFailAnimation(it, player)
             }
@@ -167,20 +168,27 @@ class BasicCrate(
                 }
             }
 
-            val animationResult = animationManager.animationSettings.canBeOpened(player,animationManager,openData.location)
+            val animationResult =
+                animationManager.animationSettings.canBeOpened(player, animationManager, openData.location)
             when (animationResult) {
                 CrateAnimationSettings.AnimationResult.ALREADY_BEING_OPENED -> {
                     //player.sendMessage("You are already opening a crate!")
                     return false
                 }
+
                 CrateAnimationSettings.AnimationResult.ALREADY_BEING_OPENED_OTHER -> {
                     //player.sendMessage("Someone else is already opening a crate!")
                     return false
                 }
+
                 else -> {}
             }
         }
         //var priceGroup: OpenPriceGroup? = null
+        if (rewardManager.getPossibleRewards(player).isEmpty()) {
+            return false
+        }
+
         for (openPriceGroup in openPriceGroups) {
             if (openPriceGroup.tryTake(player, amount)) {
                 return true

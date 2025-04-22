@@ -1,15 +1,25 @@
 package gg.aquatic.aquaticcrates.plugin.crate
 
+import gg.aquatic.aquaticcrates.api.animation.crate.CrateAnimation
+import gg.aquatic.aquaticcrates.api.animation.crate.CrateAnimationManager
+import gg.aquatic.aquaticcrates.api.animation.crate.CrateAnimationSettings
+import gg.aquatic.aquaticcrates.api.animation.prop.AnimationProp
 import gg.aquatic.aquaticcrates.api.crate.SpawnedCrate
 import gg.aquatic.aquaticcrates.api.player.HistoryHandler
 import gg.aquatic.aquaticcrates.api.player.crateEntry
 import gg.aquatic.aquaticcrates.api.reward.Reward
+import gg.aquatic.aquaticcrates.api.reward.RolledReward
 import gg.aquatic.aquaticcrates.plugin.animation.open.settings.InstantAnimationSettings
 import gg.aquatic.waves.profile.toAquaticPlayer
+import gg.aquatic.waves.util.audience.AquaticAudience
+import gg.aquatic.waves.util.audience.FilterAudience
 import gg.aquatic.waves.util.collection.executeActions
 import gg.aquatic.waves.util.collection.mapPair
+import gg.aquatic.waves.util.decimals
 import gg.aquatic.waves.util.runAsync
 import gg.aquatic.waves.util.runSync
+import gg.aquatic.waves.util.updatePAPIPlaceholders
+import org.bukkit.Location
 import org.bukkit.entity.Player
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ConcurrentHashMap
@@ -23,15 +33,37 @@ class BasicOpenManager(val crate: BasicCrate) {
 
     fun instantOpen(player: Player, massOpen: Boolean = false) {
         player.toAquaticPlayer()?.crateEntry() ?: return
+
         val rewards = crate.rewardManager.getRewards(player)
         for (reward in rewards) {
             reward.give(player, massOpen)
         }
+
+        crate.animationManager.animationSettings.finalAnimationTasks.execute(
+            object : CrateAnimation() {
+                override val animationManager: CrateAnimationManager = crate.animationManager
+                override var state: State = State.FINISHED
+                override val rewards: MutableList<RolledReward> = rewards
+                override val completionFuture: CompletableFuture<CrateAnimation> = CompletableFuture.completedFuture(this)
+                override val settings: CrateAnimationSettings = crate.animationManager.animationSettings
+
+                override fun onReroll() {
+
+                }
+
+                override val player: Player = player
+                override val baseLocation: Location = player.location
+                override val audience: AquaticAudience = FilterAudience { it == player}
+                override val props: MutableMap<String, AnimationProp> = hashMapOf()
+
+            }
+        )
+
         HistoryHandler.registerCrateOpen(player, crate.identifier, rewards.mapPair { it.reward.id to it.randomAmount })
         InstantAnimationSettings.execute(player, crate.animationManager)
     }
 
-    fun open(player: Player, location: org.bukkit.Location, spawnedCrate: SpawnedCrate?): CompletableFuture<Void> {
+    fun open(player: Player, location: Location, spawnedCrate: SpawnedCrate?): CompletableFuture<Void> {
         player.toAquaticPlayer()?.crateEntry() ?: return CompletableFuture.completedFuture(null)
 
         val rewards = crate.rewardManager.getRewards(player)
@@ -45,6 +77,7 @@ class BasicOpenManager(val crate: BasicCrate) {
                     reward.give(player, 1, false)
                 }
             }
+
             HistoryHandler.registerCrateOpen(
                 player,
                 crate.identifier,
