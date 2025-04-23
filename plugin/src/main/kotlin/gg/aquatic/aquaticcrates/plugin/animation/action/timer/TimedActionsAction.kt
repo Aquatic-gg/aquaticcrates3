@@ -10,15 +10,15 @@ import gg.aquatic.waves.util.argument.AquaticObjectArgument
 import gg.aquatic.waves.util.argument.ObjectArguments
 import gg.aquatic.waves.util.generic.Action
 import gg.aquatic.waves.util.getSectionList
-import org.bukkit.Bukkit
 import org.bukkit.configuration.ConfigurationSection
-import java.util.UUID
+import java.util.*
 
 class TimedActionsAction: Action<Animation> {
     override val arguments: List<AquaticObjectArgument<*>> = listOf(
         TimedActionsArgument("actions", hashMapOf(), true)
     )
 
+    @Suppress("UNCHECKED_CAST")
     override fun execute(binder: Animation, args: ObjectArguments, textUpdater: (Animation, String) -> String) {
         val actions = args.any("actions") as? HashMap<Int,CrateAnimationActions> ?: return
 
