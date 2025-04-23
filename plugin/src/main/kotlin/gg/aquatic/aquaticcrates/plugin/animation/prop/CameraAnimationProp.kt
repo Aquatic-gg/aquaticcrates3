@@ -16,6 +16,7 @@ import gg.aquatic.waves.shadow.com.retrooper.packetevents.wrapper.play.server.Wr
 import gg.aquatic.waves.shadow.io.retrooper.packetevents.util.SpigotConversionUtil
 import gg.aquatic.waves.shadow.io.retrooper.packetevents.util.SpigotReflectionUtil
 import gg.aquatic.waves.util.runLaterSync
+import gg.aquatic.waves.util.runSync
 import gg.aquatic.waves.util.toUser
 import org.bukkit.Location
 import org.bukkit.util.Vector
@@ -46,39 +47,42 @@ class CameraAnimationProp(
         val delay = if (previousLocation.world == location.world) {
             0
         } else 5
-        animation.player.teleport(location)
-        animation.player.isInvisible = true
-        animation.player.gameMode = org.bukkit.GameMode.SPECTATOR
-        runLaterSync(delay.toLong()) {
-            val spawnPacket = WrapperPlayServerSpawnEntity(
-                entityId,
-                UUID.randomUUID(),
-                EntityTypes.BLOCK_DISPLAY,
-                SpigotConversionUtil.fromBukkitLocation(location),
-                location.yaw,
-                0,
-                null
-            )
-            val user = animation.player.toUser() ?: return@runLaterSync
-            user.sendPacket(spawnPacket)
-
-            val playerInfoPacket = WrapperPlayServerPlayerInfo(
-                WrapperPlayServerPlayerInfo.Action.UPDATE_GAME_MODE,
-                WrapperPlayServerPlayerInfo.PlayerData(
-                    null,
-                    user.profile,
-                    GameMode.CREATIVE,
-                    0
+        animation.player.teleportAsync(location).thenAccept {
+            runSync {
+                animation.player.isInvisible = true
+                animation.player.gameMode = org.bukkit.GameMode.SPECTATOR
+            }
+            runLaterSync(delay.toLong()) {
+                val spawnPacket = WrapperPlayServerSpawnEntity(
+                    entityId,
+                    UUID.randomUUID(),
+                    EntityTypes.BLOCK_DISPLAY,
+                    SpigotConversionUtil.fromBukkitLocation(location),
+                    location.yaw,
+                    0,
+                    null
                 )
-            )
-            val gameModePacket = WrapperPlayServerChangeGameState(
-                WrapperPlayServerChangeGameState.Reason.CHANGE_GAME_MODE,
-                GameMode.SPECTATOR.id.toFloat()
-            )
-            val spectatorPacket = WrapperPlayServerCamera(entityId)
-            user.sendPacket(playerInfoPacket)
-            user.sendPacket(gameModePacket)
-            user.sendPacket(spectatorPacket)
+                val user = animation.player.toUser() ?: return@runLaterSync
+                user.sendPacket(spawnPacket)
+
+                val playerInfoPacket = WrapperPlayServerPlayerInfo(
+                    WrapperPlayServerPlayerInfo.Action.UPDATE_GAME_MODE,
+                    WrapperPlayServerPlayerInfo.PlayerData(
+                        null,
+                        user.profile,
+                        GameMode.CREATIVE,
+                        0
+                    )
+                )
+                val gameModePacket = WrapperPlayServerChangeGameState(
+                    WrapperPlayServerChangeGameState.Reason.CHANGE_GAME_MODE,
+                    GameMode.SPECTATOR.id.toFloat()
+                )
+                val spectatorPacket = WrapperPlayServerCamera(entityId)
+                user.sendPacket(playerInfoPacket)
+                user.sendPacket(gameModePacket)
+                user.sendPacket(spectatorPacket)
+            }
         }
     }
 
