@@ -49,5 +49,7 @@ tasks.withType<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar> {
     exclude("kotlin/**")
     exclude("org/intellij/**")
     exclude("org/jetbrains/**")
-    //relocate("kotlin", "gg.aquatic.waves.shadow.kotlin")
+    relocate("kotlinx", "gg.aquatic.waves.libs.kotlinx")
+    relocate("org.jetbrains.kotlin", "gg.aquatic.waves.libs.kotlin")
+    relocate("kotlin", "gg.aquatic.waves.libs.kotlin")
 }
