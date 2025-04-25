@@ -1,13 +1,13 @@
 package gg.aquatic.aquaticcrates.plugin.animation.prop.entity.property.impl
 
+import com.github.retrooper.packetevents.protocol.entity.type.EntityTypes
+import com.github.retrooper.packetevents.protocol.player.EquipmentSlot
 import gg.aquatic.aquaticcrates.api.util.animationitem.ArgumentItem
 import gg.aquatic.aquaticcrates.plugin.animation.prop.entity.EntityAnimationProp
 import gg.aquatic.aquaticcrates.plugin.animation.prop.entity.property.EntityProperty
 import gg.aquatic.aquaticcrates.plugin.animation.prop.entity.property.EntityPropertySerializer
 import gg.aquatic.waves.fake.entity.FakeEntity
 import gg.aquatic.waves.packetevents.EntityDataBuilder
-import gg.aquatic.waves.shadow.com.retrooper.packetevents.protocol.entity.type.EntityTypes
-import gg.aquatic.waves.shadow.com.retrooper.packetevents.protocol.player.EquipmentSlot
 import gg.aquatic.waves.util.collection.mapPair
 import org.bukkit.configuration.ConfigurationSection
 

@@ -1,5 +1,11 @@
 package gg.aquatic.aquaticcrates.plugin
 
+import com.github.retrooper.packetevents.event.PacketReceiveEvent
+import com.github.retrooper.packetevents.event.PacketSendEvent
+import com.github.retrooper.packetevents.protocol.packettype.PacketType
+import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientInteractEntity
+import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerSetSlot
+import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerWindowItems
 import gg.aquatic.aquaticcrates.api.AbstractCratesPlugin
 import gg.aquatic.aquaticcrates.api.PluginSettings
 import gg.aquatic.aquaticcrates.api.animation.crate.CrateAnimation
@@ -64,15 +70,9 @@ import gg.aquatic.waves.profile.ProfilesModule
 import gg.aquatic.waves.registry.WavesRegistry
 import gg.aquatic.waves.registry.registerAction
 import gg.aquatic.waves.registry.registerRequirement
-import gg.aquatic.waves.shadow.com.retrooper.packetevents.event.PacketReceiveEvent
-import gg.aquatic.waves.shadow.com.retrooper.packetevents.event.PacketSendEvent
-import gg.aquatic.waves.shadow.com.retrooper.packetevents.protocol.packettype.PacketType
-import gg.aquatic.waves.shadow.com.retrooper.packetevents.wrapper.play.client.WrapperPlayClientInteractEntity
-import gg.aquatic.waves.shadow.com.retrooper.packetevents.wrapper.play.server.WrapperPlayServerSetSlot
-import gg.aquatic.waves.shadow.com.retrooper.packetevents.wrapper.play.server.WrapperPlayServerWindowItems
-import gg.aquatic.waves.shadow.io.retrooper.packetevents.util.SpigotConversionUtil
 import gg.aquatic.waves.util.*
 import gg.aquatic.waves.util.event.event
+import io.github.retrooper.packetevents.util.SpigotConversionUtil
 import net.kyori.adventure.text.Component
 import org.bukkit.Bukkit
 import org.bukkit.NamespacedKey

@@ -1,11 +1,11 @@
 package gg.aquatic.aquaticcrates.plugin.reroll.input.interaction
 
+import com.github.retrooper.packetevents.event.PacketReceiveEvent
+import com.github.retrooper.packetevents.protocol.player.InteractionHand
+import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientInteractEntity
 import gg.aquatic.aquaticcrates.api.reroll.RerollManager
 import gg.aquatic.aquaticcrates.plugin.reroll.input.interaction.InteractionRerollInput.Action
 import gg.aquatic.aquaticcrates.plugin.reroll.input.interaction.InteractionRerollInput.InteractionType
-import gg.aquatic.waves.shadow.com.retrooper.packetevents.event.PacketReceiveEvent
-import gg.aquatic.waves.shadow.com.retrooper.packetevents.protocol.player.InteractionHand
-import gg.aquatic.waves.shadow.com.retrooper.packetevents.wrapper.play.client.WrapperPlayClientInteractEntity
 import gg.aquatic.waves.util.player
 import org.bukkit.event.player.PlayerToggleSneakEvent
 import java.util.*

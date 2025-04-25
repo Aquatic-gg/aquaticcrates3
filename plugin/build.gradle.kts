@@ -49,7 +49,13 @@ tasks.withType<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar> {
     exclude("kotlin/**")
     exclude("org/intellij/**")
     exclude("org/jetbrains/**")
+
     relocate("kotlinx", "gg.aquatic.waves.libs.kotlinx")
     relocate("org.jetbrains.kotlin", "gg.aquatic.waves.libs.kotlin")
     relocate("kotlin", "gg.aquatic.waves.libs.kotlin")
+
+    relocate("com.github.retrooper", "gg.aquatic.waves.shadow.com.retrooper")
+    relocate("io.github.retrooper", "gg.aquatic.waves.shadow.io.retrooper")
+
+    relocate("com.zaxxer.hikari", "gg.aquatic.waves.libs.hikari")
 }

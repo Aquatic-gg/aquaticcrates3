@@ -1,16 +1,23 @@
 package gg.aquatic.aquaticcrates.plugin.animation.action
 
+import com.github.retrooper.packetevents.protocol.color.AlphaColor
+import com.github.retrooper.packetevents.protocol.color.Color
+import com.github.retrooper.packetevents.protocol.particle.Particle
+import com.github.retrooper.packetevents.protocol.particle.data.ParticleBlockStateData
+import com.github.retrooper.packetevents.protocol.particle.data.ParticleColorData
+import com.github.retrooper.packetevents.protocol.particle.data.ParticleDustColorTransitionData
+import com.github.retrooper.packetevents.protocol.particle.data.ParticleDustData
+import com.github.retrooper.packetevents.protocol.particle.data.ParticleItemStackData
+import com.github.retrooper.packetevents.protocol.particle.data.ParticleSculkChargeData
+import com.github.retrooper.packetevents.protocol.particle.data.ParticleShriekData
+import com.github.retrooper.packetevents.protocol.particle.data.ParticleTrailData
+import com.github.retrooper.packetevents.protocol.particle.type.ParticleType
+import com.github.retrooper.packetevents.protocol.particle.type.ParticleTypes
+import com.github.retrooper.packetevents.util.Vector3d
+import com.github.retrooper.packetevents.util.Vector3f
+import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerParticle
 import gg.aquatic.aquaticcrates.api.animation.Animation
 import gg.aquatic.waves.item.AquaticItem
-import gg.aquatic.waves.shadow.com.retrooper.packetevents.protocol.color.AlphaColor
-import gg.aquatic.waves.shadow.com.retrooper.packetevents.protocol.particle.Particle
-import gg.aquatic.waves.shadow.com.retrooper.packetevents.protocol.particle.data.*
-import gg.aquatic.waves.shadow.com.retrooper.packetevents.protocol.particle.type.ParticleType
-import gg.aquatic.waves.shadow.com.retrooper.packetevents.protocol.particle.type.ParticleTypes
-import gg.aquatic.waves.shadow.com.retrooper.packetevents.util.Vector3d
-import gg.aquatic.waves.shadow.com.retrooper.packetevents.util.Vector3f
-import gg.aquatic.waves.shadow.com.retrooper.packetevents.wrapper.play.server.WrapperPlayServerParticle
-import gg.aquatic.waves.shadow.io.retrooper.packetevents.util.SpigotConversionUtil
 import gg.aquatic.waves.util.argument.AquaticObjectArgument
 import gg.aquatic.waves.util.argument.ObjectArguments
 import gg.aquatic.waves.util.argument.impl.ItemObjectArgument
@@ -18,6 +25,7 @@ import gg.aquatic.waves.util.argument.impl.PrimitiveObjectArgument
 import gg.aquatic.waves.util.generic.Action
 import gg.aquatic.waves.util.item.toCustomItem
 import gg.aquatic.waves.util.toUser
+import io.github.retrooper.packetevents.util.SpigotConversionUtil
 import org.bukkit.Bukkit
 import org.bukkit.Material
 
@@ -117,8 +125,7 @@ class ParticleAnimationAction : Action<Animation> {
                 val vector = args.string("vector") { textUpdater(binder, it) } ?: "0;0;0"
                 val actualVector = vector.split(";").map { it.toDoubleOrNull() ?: 0.0 }
                 val rgb = vector.split(";").map { it.toFloatOrNull() ?: 0f }
-                val color =
-                    gg.aquatic.waves.shadow.com.retrooper.packetevents.protocol.color.Color(rgb[0], rgb[1], rgb[2])
+                val color = Color(rgb[0], rgb[1], rgb[2])
                 Particle(
                     (particleType as ParticleType<ParticleTrailData>),
                     ParticleTrailData(

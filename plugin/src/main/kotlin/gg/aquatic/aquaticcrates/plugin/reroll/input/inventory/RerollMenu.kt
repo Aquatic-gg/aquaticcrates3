@@ -2,12 +2,10 @@ package gg.aquatic.aquaticcrates.plugin.reroll.input.inventory
 
 import gg.aquatic.aquaticcrates.api.animation.crate.CrateAnimation
 import gg.aquatic.aquaticcrates.api.reroll.RerollManager
-import gg.aquatic.aquaticcrates.api.reward.Reward
 import gg.aquatic.aquaticcrates.api.reward.RolledReward
 import gg.aquatic.waves.menu.PrivateAquaticMenu
 import gg.aquatic.waves.menu.SlotSelection
 import gg.aquatic.waves.menu.component.Button
-import gg.aquatic.waves.shadow.com.retrooper.packetevents.wrapper.play.server.WrapperPlayServerCloseWindow
 import gg.aquatic.waves.util.runSync
 import gg.aquatic.waves.util.toMMComponent
 import gg.aquatic.waves.util.toMMString

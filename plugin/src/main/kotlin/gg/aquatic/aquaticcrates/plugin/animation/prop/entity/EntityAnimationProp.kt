@@ -1,5 +1,9 @@
 package gg.aquatic.aquaticcrates.plugin.animation.prop.entity
 
+import com.github.retrooper.packetevents.protocol.entity.type.EntityType
+import com.github.retrooper.packetevents.protocol.entity.type.EntityTypes
+import com.github.retrooper.packetevents.util.Vector3d
+import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerEntityVelocity
 import gg.aquatic.aquaticcrates.api.animation.Animation
 import gg.aquatic.aquaticcrates.api.animation.prop.AnimationProp
 import gg.aquatic.aquaticcrates.plugin.animation.prop.Moveable
@@ -9,10 +13,6 @@ import gg.aquatic.aquaticcrates.plugin.animation.prop.entity.property.EntityProp
 import gg.aquatic.aquaticcrates.plugin.animation.prop.path.PathBoundProperties
 import gg.aquatic.aquaticcrates.plugin.animation.prop.path.PathProp
 import gg.aquatic.waves.fake.entity.FakeEntity
-import gg.aquatic.waves.shadow.com.retrooper.packetevents.protocol.entity.type.EntityType
-import gg.aquatic.waves.shadow.com.retrooper.packetevents.protocol.entity.type.EntityTypes
-import gg.aquatic.waves.shadow.com.retrooper.packetevents.util.Vector3d
-import gg.aquatic.waves.shadow.com.retrooper.packetevents.wrapper.play.server.WrapperPlayServerEntityVelocity
 import gg.aquatic.waves.util.toUser
 import org.bukkit.Location
 import org.bukkit.util.Vector

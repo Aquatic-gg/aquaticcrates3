@@ -40,6 +40,12 @@ subprojects {
             url = uri("https://repo.nekroplex.com/releases")
         }
         maven("https://hub.spigotmc.org/nexus/content/groups/public/")
+        maven {
+            url = uri("https://repo.codemc.io/repository/maven-releases/")
+        }
+        maven {
+            url = uri("https://repo.codemc.io/repository/maven-snapshots/")
+        }
     }
 
     dependencies {
@@ -47,8 +53,8 @@ subprojects {
         compileOnly("com.github.LoneDev6:API-ItemsAdder:3.6.2-beta-r3-b")
         compileOnly("gg.aquatic.comet:Comet-API:1.4.0")
         compileOnly ("com.ticxo.modelengine:ModelEngine:R4.0.8")
-        compileOnly("gg.aquatic.waves:Waves:1.2.4:plugin")
-        implementation("org.bstats:bstats-bukkit:3.0.2")
+        compileOnly("gg.aquatic.waves:Waves:1.2.6:publish")
+        compileOnly("com.github.retrooper:packetevents-spigot:2.7.0")
         //implementation("net.kyori:adventure-api:4.17.0")
     }
 
