@@ -163,7 +163,7 @@ abstract class CrateAnimation : PlayerBoundAnimation() {
     open fun onStateUpdate(state: State) {}
 
     override fun updatePlaceholders(str: String): String {
-        var finalString = str.replace("%player%", player.name).updatePAPIPlaceholders(player)
+        var finalString = str.replace("%player%", player.name)
 
         for ((i, reward) in rewards.withIndex()) {
             finalString = finalString
@@ -187,7 +187,7 @@ abstract class CrateAnimation : PlayerBoundAnimation() {
             finalString = extraPlaceholder(finalString)
         }
 
-        return finalString
+        return finalString.updatePAPIPlaceholders(player)
     }
 
     var usedRerolls = 0

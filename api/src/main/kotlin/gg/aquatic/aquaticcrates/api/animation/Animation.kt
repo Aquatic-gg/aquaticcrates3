@@ -1,11 +1,8 @@
 package gg.aquatic.aquaticcrates.api.animation
 
 import gg.aquatic.aquaticcrates.api.animation.prop.AnimationProp
-import gg.aquatic.aquaticcrates.api.reward.RolledReward
 import gg.aquatic.waves.util.audience.AquaticAudience
-import gg.aquatic.waves.util.updatePAPIPlaceholders
 import org.bukkit.Location
-import org.bukkit.entity.Player
 import java.util.concurrent.ConcurrentHashMap
 
 abstract class Animation {
