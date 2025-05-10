@@ -13,7 +13,11 @@ class EntityDataProperty(
 ) : EntityProperty {
     override fun apply(entity: FakeEntity, prop: EntityAnimationProp) {
         entity.updateEntity {
-            this.entityData += data.map { it.id to it }
+            this.entityData += "data-bundle" to EntityData.create("data-bundle") { entity, updater ->
+                for (item in data) {
+                    item.apply(entity) { str -> prop.animation.updatePlaceholders(str)}
+                }
+            }
         }
     }
 

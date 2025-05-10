@@ -7,7 +7,6 @@ import gg.aquatic.aquaticcrates.plugin.animation.prop.entity.property.EntityProp
 import gg.aquatic.waves.fake.entity.FakeEntity
 import gg.aquatic.waves.fake.entity.data.EntityData
 import org.bukkit.configuration.ConfigurationSection
-import org.bukkit.entity.Entity
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.Item
 import org.bukkit.entity.ItemDisplay
@@ -24,15 +23,9 @@ class EntityArmorProperty(
         if (entity.type == EntityType.ITEM) {
             entity.updateEntity {
                 helmet?.getActualItem(prop.animation)?.getItem()?.let {
-                    entityData += "item" to object : EntityData {
-                        override val id: String
-                            get() = "item"
-
-                        override fun apply(entity: Entity) {
-                            if (entity !is Item) return
-                            entity.itemStack = it
-                        }
-
+                    entityData += "item" to EntityData.create("item") { entity, updater ->
+                        if (entity !is Item) return@create
+                        entity.itemStack = it
                     }
                 }
             }
@@ -55,14 +48,9 @@ class EntityArmorProperty(
         } else {
             entity.updateEntity {
                 helmet?.getActualItem(prop.animation)?.getItem()?.let {
-                    entityData += "item" to object : EntityData {
-                        override val id: String
-                            get() = "item"
-
-                        override fun apply(entity: Entity) {
-                            if (entity !is ItemDisplay) return
-                            entity.setItemStack(it)
-                        }
+                    entityData += "item" to EntityData.create("item") { entity, updater ->
+                        if (entity !is ItemDisplay) return@create
+                        entity.setItemStack(it)
                     }
                 }
             }
