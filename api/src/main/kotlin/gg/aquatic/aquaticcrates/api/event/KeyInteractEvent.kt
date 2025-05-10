@@ -1,6 +1,6 @@
 package gg.aquatic.aquaticcrates.api.event
 
-import gg.aquatic.waves.util.event.AquaticEvent
+import gg.aquatic.waves.api.event.AquaticEvent
 
 class KeyInteractEvent: AquaticEvent() {
 }
