@@ -4,29 +4,25 @@ import gg.aquatic.aquaticcrates.plugin.animation.prop.entity.EntityAnimationProp
 import gg.aquatic.aquaticcrates.plugin.animation.prop.entity.property.EntityProperty
 import gg.aquatic.aquaticcrates.plugin.animation.prop.entity.property.EntityPropertySerializer
 import gg.aquatic.waves.fake.entity.FakeEntity
-import gg.aquatic.waves.packetevents.toEntityDataBuilder
+import gg.aquatic.waves.fake.entity.data.EntityData
+import gg.aquatic.waves.registry.WavesRegistry
 import org.bukkit.configuration.ConfigurationSection
 
 class EntityDataProperty(
-    val data: Collection<gg.aquatic.waves.interactable.settings.entityproperty.EntityProperty>
-): EntityProperty {
+    val data: Collection<EntityData>
+) : EntityProperty {
     override fun apply(entity: FakeEntity, prop: EntityAnimationProp) {
-        val builder = entity.type.toEntityDataBuilder()
         entity.updateEntity {
-            for (datum in data) {
-                datum.apply(builder) { str ->
-                    prop.animation.updatePlaceholders(str)
-                }
-            }
-        }
-        for (entityData in builder.build()) {
-            entity.entityData += entityData.index to entityData
+            this.entityData += data.map { it.id to it }
         }
     }
 
     object Serializer : EntityPropertySerializer {
         override fun load(section: ConfigurationSection): EntityProperty {
-            return EntityDataProperty(gg.aquatic.waves.registry.serializer.EntityPropertySerializer.fromSection(section))
+            return EntityDataProperty(section.getKeys(false).mapNotNull { id ->
+                val factory = WavesRegistry.ENTITY_PROPERTY_FACTORIES[id] ?: return@mapNotNull null
+                factory.invoke(section) { str -> str }
+            })
         }
     }
 }
