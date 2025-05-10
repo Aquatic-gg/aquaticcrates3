@@ -1,11 +1,5 @@
 package gg.aquatic.aquaticcrates.plugin
 
-import com.github.retrooper.packetevents.event.PacketReceiveEvent
-import com.github.retrooper.packetevents.event.PacketSendEvent
-import com.github.retrooper.packetevents.protocol.packettype.PacketType
-import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientInteractEntity
-import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerSetSlot
-import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerWindowItems
 import gg.aquatic.aquaticcrates.api.AbstractCratesPlugin
 import gg.aquatic.aquaticcrates.api.PluginSettings
 import gg.aquatic.aquaticcrates.api.animation.crate.CrateAnimation
@@ -61,6 +55,10 @@ import gg.aquatic.aquaticcrates.plugin.reroll.input.inventory.RerollMenu
 import gg.aquatic.aquaticcrates.plugin.restriction.impl.*
 import gg.aquatic.aquaticcrates.plugin.reward.menu.RewardsMenuSettings
 import gg.aquatic.aquaticcrates.plugin.serialize.CrateSerializer
+import gg.aquatic.waves.api.event.event
+import gg.aquatic.waves.api.event.packet.PacketContainerContentEvent
+import gg.aquatic.waves.api.event.packet.PacketContainerSetSlotEvent
+import gg.aquatic.waves.api.event.packet.PacketInteractEvent
 import gg.aquatic.waves.command.AquaticBaseCommand
 import gg.aquatic.waves.command.register
 import gg.aquatic.waves.inventory.InventoryManager
@@ -70,9 +68,9 @@ import gg.aquatic.waves.profile.ProfilesModule
 import gg.aquatic.waves.registry.WavesRegistry
 import gg.aquatic.waves.registry.registerAction
 import gg.aquatic.waves.registry.registerRequirement
-import gg.aquatic.waves.util.*
-import gg.aquatic.waves.util.event.event
-import io.github.retrooper.packetevents.util.SpigotConversionUtil
+import gg.aquatic.waves.util.Config
+import gg.aquatic.waves.util.runAsyncTimer
+import gg.aquatic.waves.util.toMMComponent
 import net.kyori.adventure.text.Component
 import org.bukkit.Bukkit
 import org.bukkit.NamespacedKey
@@ -89,7 +87,6 @@ import org.bukkit.persistence.PersistentDataType
 import java.util.*
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.CompletableFuture.runAsync
-import kotlin.collections.map
 
 class CratesPlugin : AbstractCratesPlugin() {
 
@@ -264,30 +261,25 @@ class CratesPlugin : AbstractCratesPlugin() {
             }
         }
 
-        packetEvent<PacketReceiveEvent> {
-            if (packetType == PacketType.Play.Client.INTERACT_ENTITY) {
-                val packet = WrapperPlayClientInteractEntity(this)
-                val player = player() ?: return@packetEvent
-                var isInAnimation = false
-                for (crate in CrateHandler.crates.values) {
-                    if (crate is OpenableCrate) {
-                        if (crate.animationManager.playingAnimations.containsKey(player.uniqueId)) {
-                            isInAnimation = true
-                            break
-                        }
+        event<PacketInteractEvent> {
+            val player = it.player
+            var isInAnimation = false
+            for (crate in CrateHandler.crates.values) {
+                if (crate is OpenableCrate) {
+                    if (crate.animationManager.playingAnimations.containsKey(player.uniqueId)) {
+                        isInAnimation = true
+                        break
                     }
                 }
-                if (isInAnimation) {
-                    isCancelled = true
-                    InteractionInputHandler.onInteract(this, packet)
-                }
+            }
+            if (isInAnimation) {
+                it.isCancelled = true
+                InteractionInputHandler.onInteract(it)
             }
         }
-        packetEvent<PacketSendEvent> {
-            val player = player() ?: return@packetEvent
-            if (packetType != PacketType.Play.Server.WINDOW_ITEMS && packetType != PacketType.Play.Server.SET_SLOT) {
-                return@packetEvent
-            }
+        event<PacketContainerSetSlotEvent> {
+            val player = it.player
+            if (it.inventoryId != 0) return@event
 
             var animation: CrateAnimation? = null
 
@@ -305,21 +297,36 @@ class CratesPlugin : AbstractCratesPlugin() {
                 }
             }
 
-            animation ?: return@packetEvent
-            if (packetType == PacketType.Play.Server.SET_SLOT) {
-                val packet = WrapperPlayServerSetSlot(this)
-                if (packet.windowId != 0) return@packetEvent
-                if (packet.slot !in animation.playerEquipment.map { it.key.toSlot(player) }) return@packetEvent
-                isCancelled = true
+            animation ?: return@event
 
-            } else if (packetType == PacketType.Play.Server.WINDOW_ITEMS) {
-                val packet = WrapperPlayServerWindowItems(this)
-                if (packet.windowId != 0) return@packetEvent
+            if (it.slot !in animation.playerEquipment.map { it.key.toSlot(player) }) return@event
+            it.isCancelled = true
+        }
+        event<PacketContainerContentEvent> {
+            val player = it.player
+            if (it.inventoryId != 0) return@event
 
-                animation.playerEquipment.forEach { (slot, equipment) ->
-                    val intSlot = slot.toSlot(player)
-                    packet.items[intSlot] = SpigotConversionUtil.fromBukkitItemStack(equipment)
+            var animation: CrateAnimation? = null
+
+            for (value in CrateHandler.crates.values) {
+                if (value !is OpenableCrate) {
+                    continue
                 }
+                val animations = value.animationManager.playingAnimations[player.uniqueId] ?: continue
+                for (animation1 in animations) {
+                    if (animation1.state == CrateAnimation.State.FINISHED) continue
+                    if (animation1.playerEquipment.isNotEmpty()) {
+                        animation = animation1
+                        break
+                    }
+                }
+            }
+
+            animation ?: return@event
+
+            animation.playerEquipment.forEach { (slot, equipment) ->
+                val intSlot = slot.toSlot(player)
+                it.contents[intSlot] = equipment
             }
         }
     }

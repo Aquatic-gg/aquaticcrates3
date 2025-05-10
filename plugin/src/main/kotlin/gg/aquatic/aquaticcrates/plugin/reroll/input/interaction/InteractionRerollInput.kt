@@ -7,7 +7,6 @@ import gg.aquatic.aquaticcrates.api.reward.RolledReward
 import gg.aquatic.aquaticcrates.plugin.reroll.input.InputSettingsFactory
 import org.bukkit.configuration.file.FileConfiguration
 import org.bukkit.entity.Player
-import java.util.UUID
 import java.util.concurrent.CompletableFuture
 
 class InteractionRerollInput(

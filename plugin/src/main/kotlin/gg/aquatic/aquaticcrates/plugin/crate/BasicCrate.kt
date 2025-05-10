@@ -70,6 +70,7 @@ class BasicCrate(
         -1,
         null,
         null,
+        null,
         null
     ).apply {
         val consumer: (AquaticItemInteractEvent) -> Unit = { e ->

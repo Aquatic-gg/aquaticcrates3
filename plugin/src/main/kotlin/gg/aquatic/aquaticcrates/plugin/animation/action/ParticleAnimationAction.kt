@@ -1,21 +1,6 @@
 package gg.aquatic.aquaticcrates.plugin.animation.action
 
-import com.github.retrooper.packetevents.protocol.color.AlphaColor
-import com.github.retrooper.packetevents.protocol.color.Color
-import com.github.retrooper.packetevents.protocol.particle.Particle
-import com.github.retrooper.packetevents.protocol.particle.data.ParticleBlockStateData
-import com.github.retrooper.packetevents.protocol.particle.data.ParticleColorData
-import com.github.retrooper.packetevents.protocol.particle.data.ParticleDustColorTransitionData
-import com.github.retrooper.packetevents.protocol.particle.data.ParticleDustData
-import com.github.retrooper.packetevents.protocol.particle.data.ParticleItemStackData
-import com.github.retrooper.packetevents.protocol.particle.data.ParticleSculkChargeData
-import com.github.retrooper.packetevents.protocol.particle.data.ParticleShriekData
-import com.github.retrooper.packetevents.protocol.particle.data.ParticleTrailData
-import com.github.retrooper.packetevents.protocol.particle.type.ParticleType
-import com.github.retrooper.packetevents.protocol.particle.type.ParticleTypes
-import com.github.retrooper.packetevents.util.Vector3d
-import com.github.retrooper.packetevents.util.Vector3f
-import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerParticle
+import com.destroystokyo.paper.ParticleBuilder
 import gg.aquatic.aquaticcrates.api.animation.Animation
 import gg.aquatic.waves.item.AquaticItem
 import gg.aquatic.waves.util.argument.AquaticObjectArgument
@@ -24,10 +9,11 @@ import gg.aquatic.waves.util.argument.impl.ItemObjectArgument
 import gg.aquatic.waves.util.argument.impl.PrimitiveObjectArgument
 import gg.aquatic.waves.util.generic.Action
 import gg.aquatic.waves.util.item.toCustomItem
-import gg.aquatic.waves.util.toUser
-import io.github.retrooper.packetevents.util.SpigotConversionUtil
 import org.bukkit.Bukkit
+import org.bukkit.Color
 import org.bukkit.Material
+import org.bukkit.Particle
+import org.bukkit.util.Vector
 
 class ParticleAnimationAction : Action<Animation> {
     override val arguments: List<AquaticObjectArgument<*>> = listOf(
@@ -52,84 +38,70 @@ class ParticleAnimationAction : Action<Animation> {
     override fun execute(binder: Animation, args: ObjectArguments, textUpdater: (Animation, String) -> String) {
         val particleId = args.string("particle") { textUpdater(binder, it) } ?: return
 
-        val particleType = ParticleTypes.getByName(particleId.lowercase()) ?: return
-        val particle = when (particleType) {
-            ParticleTypes.BLOCK, ParticleTypes.BLOCK_MARKER, ParticleTypes.FALLING_DUST, ParticleTypes.DUST_PLUME, ParticleTypes.BLOCK_CRUMBLE -> {
+        val particleType = Particle.valueOf(particleId.uppercase())
+        val particleBuilder = when (particleType) {
+            Particle.BLOCK, Particle.BLOCK_MARKER, Particle.FALLING_DUST, Particle.DUST_PLUME, Particle.BLOCK_CRUMBLE -> {
                 val blockMaterial =
                     Material.valueOf((args.string("block-material") { textUpdater(binder, it) } ?: "stone").uppercase())
-                Particle(
-                    (particleType as ParticleType<ParticleBlockStateData>),
-                    ParticleBlockStateData(SpigotConversionUtil.fromBukkitBlockData(blockMaterial.createBlockData()))
-                )
+                ParticleBuilder(particleType).data(blockMaterial).spawn()
+                    .data(blockMaterial.createBlockData())
             }
 
-            ParticleTypes.DUST -> {
+            Particle.DUST -> {
                 val scale = args.float("dust-scale") { textUpdater(binder, it) } ?: 1f
                 val color = args.string("color") { textUpdater(binder, it) } ?: "0;0;0"
                 val rgb = color.split(";").map { it.toIntOrNull() ?: 0 }
-                Particle(
-                    (particleType as ParticleType<ParticleDustData>),
-                    ParticleDustData(scale, rgb[0], rgb[1], rgb[2])
-                )
+
+                particleType.builder()
+                    .color(Color.fromRGB(rgb[0], rgb[1], rgb[2]), scale)
             }
 
-            ParticleTypes.DUST_COLOR_TRANSITION -> {
+            Particle.DUST_COLOR_TRANSITION -> {
                 val scale = args.float("dust-scale") { textUpdater(binder, it) } ?: 1f
                 val startColor = args.string("start-color") { textUpdater(binder, it) } ?: "0;0;0"
                 val endColor = args.string("end-color") { textUpdater(binder, it) } ?: "0;0;0"
-                val rgb1 = startColor.split(";").map { it.toFloatOrNull() ?: 0f }
-                val rgb2 = endColor.split(";").map { it.toFloatOrNull() ?: 0f }
+                val rgb1 = startColor.split(";").map { it.toIntOrNull() ?: 0 }
+                val rgb2 = endColor.split(";").map { it.toIntOrNull() ?: 0 }
 
-                Particle(
-                    (particleType as ParticleType<ParticleDustColorTransitionData>),
-                    ParticleDustColorTransitionData(scale, rgb1[0], rgb1[1], rgb1[2], rgb2[0], rgb2[1], rgb2[2])
+                particleType.builder().colorTransition(
+                    Color.fromRGB(rgb1[0], rgb1[1], rgb1[2]),
+                    Color.fromRGB(rgb2[0], rgb2[1], rgb2[2]),
+                    scale
                 )
             }
 
-            ParticleTypes.ENTITY_EFFECT -> {
+            Particle.ENTITY_EFFECT -> {
                 val color = args.string("color") { textUpdater(binder, it) } ?: "0;0;0;0"
                 val rgb = color.split(";").map { it.toIntOrNull() ?: 0 }
 
-                Particle(
-                    particleType as ParticleType<ParticleColorData>,
-                    ParticleColorData(AlphaColor(rgb.getOrNull(3) ?: 1, rgb[0], rgb[1], rgb[2]))
-                )
+                particleType.builder().color(Color.fromRGB(rgb[0], rgb[1], rgb[2]))
             }
 
-            ParticleTypes.SCULK_CHARGE -> {
+            Particle.SCULK_CHARGE -> {
                 val sculkRoll = args.float("sculk-roll") { textUpdater(binder, it) } ?: 0f
-                Particle(
-                    particleType as ParticleType<ParticleSculkChargeData>,
-                    ParticleSculkChargeData(sculkRoll)
-                )
+                particleType.builder().data(sculkRoll)
             }
 
-            ParticleTypes.ITEM -> {
+            Particle.ITEM -> {
                 val item = args.typed<AquaticItem>("item") { textUpdater(binder, it) } ?: Material.STONE.toCustomItem()
-                Particle(
-                    (particleType as ParticleType<ParticleItemStackData>),
-                    ParticleItemStackData(SpigotConversionUtil.fromBukkitItemStack(item.getItem()))
-                )
+                particleType.builder().data(item.getItem())
             }
 
-            ParticleTypes.SHRIEK -> {
+            Particle.SHRIEK -> {
                 val delay = args.int("delay") { textUpdater(binder, it) } ?: 1
-                Particle(
-                    (particleType as ParticleType<ParticleShriekData>),
-                    ParticleShriekData(delay)
-                )
+                particleType.builder().data(delay)
             }
 
-            ParticleTypes.TRAIL -> {
+            Particle.TRAIL -> {
                 val duration = args.int("duration") { textUpdater(binder, it) } ?: 1
                 val vector = args.string("vector") { textUpdater(binder, it) } ?: "0;0;0"
                 val actualVector = vector.split(";").map { it.toDoubleOrNull() ?: 0.0 }
-                val rgb = vector.split(";").map { it.toFloatOrNull() ?: 0f }
-                val color = Color(rgb[0], rgb[1], rgb[2])
-                Particle(
-                    (particleType as ParticleType<ParticleTrailData>),
-                    ParticleTrailData(
-                        Vector3d(actualVector[0], actualVector[1], actualVector[2]),
+                val rgb = vector.split(";").map { it.toIntOrNull() ?: 0 }
+                val color = Color.fromRGB(rgb[0], rgb[1], rgb[2])
+
+                particleType.builder().data(
+                    Particle.Trail(
+                        binder.baseLocation.clone().add(Vector(actualVector[0], actualVector[1], actualVector[2])),
                         color,
                         duration
                     )
@@ -137,51 +109,34 @@ class ParticleAnimationAction : Action<Animation> {
             }
 
             else -> {
-                Particle(
-                    particleType
-                )
+                particleType.builder()
             }
         }
 
         val locationOffsets = args.stringOrCollection("location-offset") { textUpdater(binder, it) } ?: listOf("0;0;0")
-
-        val packets = mutableListOf<WrapperPlayServerParticle>()
-        for (locationOffsetStr in locationOffsets) {
-            val offsetStr = args.string("offset") { textUpdater(binder, it) } ?: "0;0;0"
-            val locationOffset = locationOffsetStr.split(";").map { it.toDoubleOrNull() ?: 0.0 }
-            val offset = offsetStr.split(";").map { it.toFloatOrNull() ?: 0f }
-
-            val speed = args.float("speed") { textUpdater(binder, it) } ?: 1f
-            val count = args.int("count") { textUpdater(binder, it) } ?: 1
-            val baseVector = Vector3d(
-                binder.baseLocation.x + locationOffset[0],
-                binder.baseLocation.y + locationOffset[1],
-                binder.baseLocation.z + locationOffset[2]
-            )
-
-            val packet = WrapperPlayServerParticle(
-                particle,
-                true,
-                baseVector,
-                Vector3f(offset[0], offset[1], offset[2]),
-                speed,
-                count
-            )
-            packets += packet
-        }
-
-        for (onlinePlayer in Bukkit.getOnlinePlayers()) {
-            if (onlinePlayer.location.world != binder.baseLocation.world) continue
-            if (onlinePlayer.location.distanceSquared(binder.baseLocation) > 1000) continue
-
-            if (!binder.audience.canBeApplied(onlinePlayer)) continue
-
-            onlinePlayer.toUser()?.let {
-                for (packet in packets) {
-                    it.sendPacket(packet)
-                }
+        particleBuilder.receivers(
+            Bukkit.getOnlinePlayers().filter {
+                if (it.location.world != binder.baseLocation.world) return@filter false
+                if (it.location.distanceSquared(binder.baseLocation) > 1000) return@filter false
+                if (!binder.audience.canBeApplied(it)) return@filter false
+                true
             }
-        }
+        )
 
+        val offsetStr = args.string("offset") { textUpdater(binder, it) } ?: "0;0;0"
+        val offset = offsetStr.split(";").map { it.toDoubleOrNull() ?: 0.0 }
+        particleBuilder.offset(offset[0], offset[1], offset[2])
+
+        val speed = args.double("speed") { textUpdater(binder, it) } ?: 1.0
+        val count = args.int("count") { textUpdater(binder, it) } ?: 1
+        particleBuilder.extra(speed).count(count)
+
+        for (locationOffsetStr in locationOffsets) {
+            val locationOffset = locationOffsetStr.split(";").map { it.toDoubleOrNull() ?: 0.0 }
+            val location = binder.baseLocation.clone().add(Vector(locationOffset[0], locationOffset[1], locationOffset[2]))
+
+            particleBuilder.location(location)
+            particleBuilder.spawn()
+        }
     }
 }

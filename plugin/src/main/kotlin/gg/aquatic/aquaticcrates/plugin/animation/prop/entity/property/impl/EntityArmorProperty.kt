@@ -1,15 +1,17 @@
 package gg.aquatic.aquaticcrates.plugin.animation.prop.entity.property.impl
 
-import com.github.retrooper.packetevents.protocol.entity.type.EntityTypes
-import com.github.retrooper.packetevents.protocol.player.EquipmentSlot
 import gg.aquatic.aquaticcrates.api.util.animationitem.ArgumentItem
 import gg.aquatic.aquaticcrates.plugin.animation.prop.entity.EntityAnimationProp
 import gg.aquatic.aquaticcrates.plugin.animation.prop.entity.property.EntityProperty
 import gg.aquatic.aquaticcrates.plugin.animation.prop.entity.property.EntityPropertySerializer
 import gg.aquatic.waves.fake.entity.FakeEntity
-import gg.aquatic.waves.packetevents.EntityDataBuilder
-import gg.aquatic.waves.util.collection.mapPair
+import gg.aquatic.waves.fake.entity.data.EntityData
 import org.bukkit.configuration.ConfigurationSection
+import org.bukkit.entity.Entity
+import org.bukkit.entity.EntityType
+import org.bukkit.entity.Item
+import org.bukkit.entity.ItemDisplay
+import org.bukkit.inventory.EquipmentSlot
 
 class EntityArmorProperty(
     val helmet: ArgumentItem?,
@@ -19,35 +21,49 @@ class EntityArmorProperty(
 ) : EntityProperty {
     override fun apply(entity: FakeEntity, prop: EntityAnimationProp) {
 
-        if (entity.type == EntityTypes.ITEM) {
+        if (entity.type == EntityType.ITEM) {
             entity.updateEntity {
                 helmet?.getActualItem(prop.animation)?.getItem()?.let {
-                    entityData += EntityDataBuilder.ITEM().setItem(it).build()
-                        .mapPair { value -> value.index to value }
+                    entityData += "item" to object : EntityData {
+                        override val id: String
+                            get() = "item"
+
+                        override fun apply(entity: Entity) {
+                            if (entity !is Item) return
+                            entity.itemStack = it
+                        }
+
+                    }
                 }
             }
-        }
-        else if (entity.type != EntityTypes.ITEM_DISPLAY) {
+        } else if (entity.type != EntityType.ITEM_DISPLAY) {
             entity.updateEntity {
                 helmet?.getActualItem(prop.animation)?.getItem()?.let {
-                    equipment[EquipmentSlot.HELMET] = it
+                    equipment[EquipmentSlot.HEAD] = it
                 }
                 chestplate?.getActualItem(prop.animation)?.getItem()?.let {
-                    equipment[EquipmentSlot.CHEST_PLATE] = it
+                    equipment[EquipmentSlot.CHEST] = it
                 }
                 leggings?.getActualItem(prop.animation)?.getItem()?.let {
-                    equipment[EquipmentSlot.LEGGINGS] = it
+                    equipment[EquipmentSlot.LEGS] = it
                 }
                 boots?.getActualItem(prop.animation)?.getItem()?.let {
-                    equipment[EquipmentSlot.BOOTS] = it
+                    equipment[EquipmentSlot.FEET] = it
                 }
             }
             return
         } else {
             entity.updateEntity {
                 helmet?.getActualItem(prop.animation)?.getItem()?.let {
-                    entityData += EntityDataBuilder.ITEM_DISPLAY().setItem(it).build()
-                        .mapPair { value -> value.index to value }
+                    entityData += "item" to object : EntityData {
+                        override val id: String
+                            get() = "item"
+
+                        override fun apply(entity: Entity) {
+                            if (entity !is ItemDisplay) return
+                            entity.setItemStack(it)
+                        }
+                    }
                 }
             }
         }

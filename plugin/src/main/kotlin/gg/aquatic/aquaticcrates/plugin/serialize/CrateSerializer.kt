@@ -22,9 +22,9 @@ import gg.aquatic.aquaticcrates.plugin.animation.open.settings.InstantAnimationS
 import gg.aquatic.aquaticcrates.plugin.animation.open.settings.RegularAnimationSettings
 import gg.aquatic.aquaticcrates.plugin.crate.BasicCrate
 import gg.aquatic.aquaticcrates.plugin.crate.KeyImpl
-import gg.aquatic.aquaticcrates.plugin.interact.KeyInteractHandlerImpl
 import gg.aquatic.aquaticcrates.plugin.hologram.HologramSerializer
 import gg.aquatic.aquaticcrates.plugin.interact.BasicCrateInteractHandler
+import gg.aquatic.aquaticcrates.plugin.interact.KeyInteractHandlerImpl
 import gg.aquatic.aquaticcrates.plugin.interact.action.CrateBreakAction
 import gg.aquatic.aquaticcrates.plugin.interact.action.CrateInstantOpenAction
 import gg.aquatic.aquaticcrates.plugin.interact.action.CrateOpenAction
@@ -46,7 +46,6 @@ import gg.aquatic.waves.menu.MenuSerializer
 import gg.aquatic.waves.menu.settings.PrivateMenuSettings
 import gg.aquatic.waves.registry.serializer.ActionSerializer
 import gg.aquatic.waves.registry.serializer.InteractableSerializer
-import gg.aquatic.waves.registry.serializer.PriceSerializer
 import gg.aquatic.waves.registry.serializer.RequirementSerializer
 import gg.aquatic.waves.util.Config
 import gg.aquatic.waves.util.argument.ObjectArguments
@@ -54,8 +53,6 @@ import gg.aquatic.waves.util.block.impl.VanillaBlock
 import gg.aquatic.waves.util.generic.ConfiguredExecutableObject
 import gg.aquatic.waves.util.getSectionList
 import gg.aquatic.waves.util.item.loadFromYml
-import gg.aquatic.waves.util.keysForEach
-import gg.aquatic.waves.util.price.ConfiguredPrice
 import gg.aquatic.waves.util.toMMComponent
 import org.bukkit.Bukkit
 import org.bukkit.Material
@@ -65,8 +62,6 @@ import org.bukkit.entity.Player
 import org.bukkit.util.Vector
 import java.io.File
 import java.util.*
-import kotlin.collections.ArrayList
-import kotlin.collections.HashMap
 
 object CrateSerializer : BaseSerializer() {
 

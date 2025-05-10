@@ -1,9 +1,5 @@
 package gg.aquatic.aquaticcrates.plugin.animation.prop.entity
 
-import com.github.retrooper.packetevents.protocol.entity.type.EntityType
-import com.github.retrooper.packetevents.protocol.entity.type.EntityTypes
-import com.github.retrooper.packetevents.util.Vector3d
-import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerEntityVelocity
 import gg.aquatic.aquaticcrates.api.animation.Animation
 import gg.aquatic.aquaticcrates.api.animation.prop.AnimationProp
 import gg.aquatic.aquaticcrates.plugin.animation.prop.Moveable
@@ -12,9 +8,11 @@ import gg.aquatic.aquaticcrates.plugin.animation.prop.Throwable
 import gg.aquatic.aquaticcrates.plugin.animation.prop.entity.property.EntityProperty
 import gg.aquatic.aquaticcrates.plugin.animation.prop.path.PathBoundProperties
 import gg.aquatic.aquaticcrates.plugin.animation.prop.path.PathProp
+import gg.aquatic.waves.Waves
 import gg.aquatic.waves.fake.entity.FakeEntity
-import gg.aquatic.waves.util.toUser
+import gg.aquatic.waves.util.sendPacket
 import org.bukkit.Location
+import org.bukkit.entity.EntityType
 import org.bukkit.util.Vector
 import java.util.concurrent.ConcurrentHashMap
 
@@ -45,14 +43,7 @@ class EntityAnimationProp(
             newLocation
         }
 
-        var peEType: EntityType? = null
-        for (value in EntityTypes.values()) {
-            if (value.name.key.equals(entityType, ignoreCase = true)) {
-                peEType = value
-                break
-            }
-        }
-        entity = FakeEntity(peEType!!, currentLocation, 50, animation.audience)
+        entity = FakeEntity(EntityType.valueOf(entityType.uppercase()), currentLocation, 50, animation.audience)
         for (property in properties) {
             property.apply(entity, this@EntityAnimationProp)
         }
@@ -71,9 +62,9 @@ class EntityAnimationProp(
     }
 
     override fun throwObject(vector: Vector) {
-        val packet = WrapperPlayServerEntityVelocity(entity.entityId, Vector3d(vector.x, vector.y, vector.z))
+        val motionPacket = Waves.NMS_HANDLER.createEntityMotionPacket(entity.entityId, vector)
         for (viewer in entity.viewers) {
-            viewer.toUser()?.sendPacket(packet)
+            viewer.sendPacket(motionPacket)
         }
     }
 

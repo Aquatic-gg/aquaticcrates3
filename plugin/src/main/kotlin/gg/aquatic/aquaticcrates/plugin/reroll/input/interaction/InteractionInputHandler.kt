@@ -1,12 +1,9 @@
 package gg.aquatic.aquaticcrates.plugin.reroll.input.interaction
 
-import com.github.retrooper.packetevents.event.PacketReceiveEvent
-import com.github.retrooper.packetevents.protocol.player.InteractionHand
-import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientInteractEntity
 import gg.aquatic.aquaticcrates.api.reroll.RerollManager
 import gg.aquatic.aquaticcrates.plugin.reroll.input.interaction.InteractionRerollInput.Action
 import gg.aquatic.aquaticcrates.plugin.reroll.input.interaction.InteractionRerollInput.InteractionType
-import gg.aquatic.waves.util.player
+import gg.aquatic.waves.api.event.packet.PacketInteractEvent
 import org.bukkit.event.player.PlayerToggleSneakEvent
 import java.util.*
 import java.util.concurrent.CompletableFuture
@@ -31,12 +28,13 @@ object InteractionInputHandler {
         }
     }
 
-    fun onInteract(event: PacketReceiveEvent, packet: WrapperPlayClientInteractEntity) {
-        val player = event.player() ?: return
-        if (packet.hand == InteractionHand.OFF_HAND) return
-        if (packet.action == WrapperPlayClientInteractEntity.InteractAction.INTERACT_AT) return
+    fun onInteract(event: PacketInteractEvent) {
+        val player = event.player
+        if (event.isSecondary) return
+
+        if (event.interactType == PacketInteractEvent.InteractType.INTERACT_AT) return
         val (future, actions) = awaiting[player.uniqueId] ?: return
-        val type = if (packet.action == WrapperPlayClientInteractEntity.InteractAction.INTERACT) {
+        val type = if (event.interactType == PacketInteractEvent.InteractType.INTERACT) {
             InteractionType.RIGHT_CLICK
         } else {
             InteractionType.LEFT_CLICK

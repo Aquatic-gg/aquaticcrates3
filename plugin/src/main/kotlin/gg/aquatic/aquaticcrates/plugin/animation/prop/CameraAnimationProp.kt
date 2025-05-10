@@ -1,24 +1,23 @@
 package gg.aquatic.aquaticcrates.plugin.animation.prop
 
-import com.github.retrooper.packetevents.protocol.entity.type.EntityTypes
-import com.github.retrooper.packetevents.protocol.player.GameMode
-import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerCamera
-import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerChangeGameState
-import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerEntityMetadata
-import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerEntityTeleport
-import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerPlayerInfo
-import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerSpawnEntity
+import com.destroystokyo.paper.profile.PlayerProfile
 import gg.aquatic.aquaticcrates.api.animation.PlayerBoundAnimation
 import gg.aquatic.aquaticcrates.api.animation.prop.PlayerBoundAnimationProp
 import gg.aquatic.aquaticcrates.plugin.animation.prop.path.PathBoundProperties
 import gg.aquatic.aquaticcrates.plugin.animation.prop.path.PathProp
-import gg.aquatic.waves.packetevents.EntityDataBuilder
+import gg.aquatic.waves.Waves
+import gg.aquatic.waves.api.nms.PacketEntity
+import gg.aquatic.waves.api.nms.profile.GameEventAction
+import gg.aquatic.waves.api.nms.profile.ProfileEntry
+import gg.aquatic.waves.api.nms.profile.UserProfile
+import gg.aquatic.waves.util.modify
 import gg.aquatic.waves.util.runLaterSync
 import gg.aquatic.waves.util.runSync
-import gg.aquatic.waves.util.toUser
-import io.github.retrooper.packetevents.util.SpigotConversionUtil
-import io.github.retrooper.packetevents.util.SpigotReflectionUtil
+import gg.aquatic.waves.util.sendPacket
+import org.bukkit.GameMode
 import org.bukkit.Location
+import org.bukkit.entity.BlockDisplay
+import org.bukkit.entity.EntityType
 import org.bukkit.util.Vector
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
@@ -36,7 +35,13 @@ class CameraAnimationProp(
         smoothTeleport(location)
     }
 
-    val entityId = SpigotReflectionUtil.generateEntityId()
+    val packetEntity: PacketEntity = createEntity()
+
+    private fun createEntity(): PacketEntity {
+        val pe = Waves.NMS_HANDLER.createEntity(location, EntityType.BLOCK_DISPLAY, null)
+            ?: throw Exception("Failed to create entity")
+        return pe
+    }
 
     val previousGamemode = animation.player.gameMode
     val previousLocation = animation.player.location.clone()
@@ -50,40 +55,43 @@ class CameraAnimationProp(
         animation.player.teleportAsync(location).thenAccept {
             runSync {
                 animation.player.isInvisible = true
-                animation.player.gameMode = org.bukkit.GameMode.SPECTATOR
+                animation.player.gameMode = GameMode.SPECTATOR
             }
             runLaterSync(delay.toLong()) {
-                val spawnPacket = WrapperPlayServerSpawnEntity(
-                    entityId,
-                    UUID.randomUUID(),
-                    EntityTypes.BLOCK_DISPLAY,
-                    SpigotConversionUtil.fromBukkitLocation(location),
-                    location.yaw,
-                    0,
-                    null
-                )
-                val user = animation.player.toUser() ?: return@runLaterSync
-                user.sendPacket(spawnPacket)
+                val spawnPacket = packetEntity.spawnPacket
+                val player = animation.player
+                player.sendPacket(spawnPacket)
 
-                val playerInfoPacket = WrapperPlayServerPlayerInfo(
-                    WrapperPlayServerPlayerInfo.Action.UPDATE_GAME_MODE,
-                    WrapperPlayServerPlayerInfo.PlayerData(
-                        null,
-                        user.profile,
-                        GameMode.CREATIVE,
-                        0
-                    )
-                )
-                val gameModePacket = WrapperPlayServerChangeGameState(
-                    WrapperPlayServerChangeGameState.Reason.CHANGE_GAME_MODE,
-                    GameMode.SPECTATOR.id.toFloat()
-                )
-                val spectatorPacket = WrapperPlayServerCamera(entityId)
-                user.sendPacket(playerInfoPacket)
-                user.sendPacket(gameModePacket)
-                user.sendPacket(spectatorPacket)
+                val infopacket = Waves.NMS_HANDLER.createPlayerInfoUpdatePacket(2, ProfileEntry(
+                    player.playerProfile.toUserProfile(),
+                    true,
+                    0,
+                    GameMode.CREATIVE,
+                    null,
+                    true,
+                    player.playerListOrder
+                ))
+
+                val gameEventPacket = Waves.NMS_HANDLER.createChangeGameStatePacket(GameEventAction.CHANGE_GAME_MODE,
+                    GameMode.SPECTATOR.value.toFloat())
+
+                val spectatorPacket = Waves.NMS_HANDLER.createCameraPacket(packetEntity.entityId)
+                player.sendPacket(infopacket)
+                player.sendPacket(gameEventPacket)
+                player.sendPacket(spectatorPacket)
             }
         }
+    }
+
+    private fun PlayerProfile.toUserProfile(): UserProfile {
+        val profile = UserProfile(
+            this.id ?: UUID.randomUUID(),
+            this.name ?: "",
+            this.properties.map {
+                UserProfile.TextureProperty(it.name, it.value, it.signature ?: "")
+            }.toMutableList()
+        )
+        return profile
     }
 
     override fun tick() {
@@ -93,23 +101,21 @@ class CameraAnimationProp(
     }
 
     fun setTeleportInterpolation(interpolation: Int) {
-        val dataBuilder = EntityDataBuilder.BLOCK_DISPLAY().setPosRotInterpolationDuration(interpolation)
-        val metadataPacket = WrapperPlayServerEntityMetadata(entityId, dataBuilder.build())
-        animation.player.toUser()?.sendPacket(metadataPacket)
+        packetEntity.modify {
+            val display = it as BlockDisplay
+            display.teleportDuration = interpolation
+        }
+        animation.player.sendPacket(packetEntity.updatePacket!!,false)
     }
 
     fun smoothTeleport(location: Location) {
         setTeleportInterpolation(2)
-        val teleportPacket =
-            WrapperPlayServerEntityTeleport(entityId, SpigotConversionUtil.fromBukkitLocation(location), false)
-        animation.player.toUser()?.sendPacket(teleportPacket)
+        packetEntity.teleport(Waves.NMS_HANDLER,location,false,animation.player)
     }
 
     fun teleport(location: Location) {
         setTeleportInterpolation(0)
-        val teleportPacket =
-            WrapperPlayServerEntityTeleport(entityId, SpigotConversionUtil.fromBukkitLocation(location), false)
-        animation.player.toUser()?.sendPacket(teleportPacket)
+        packetEntity.teleport(Waves.NMS_HANDLER,location,false,animation.player)
     }
 
     override fun onAnimationEnd() {
@@ -128,15 +134,10 @@ class CameraAnimationProp(
     }
 
     fun detach() {
-        val gameModePacket = WrapperPlayServerChangeGameState(
-            WrapperPlayServerChangeGameState.Reason.CHANGE_GAME_MODE,
-            SpigotConversionUtil.fromBukkitGameMode(previousGamemode).id.toFloat()
-        )
-
-        animation.player.toUser()?.let {
-            it.sendPacket(WrapperPlayServerCamera(it.entityId))
-            it.sendPacket(gameModePacket)
-        }
+        val gameEventPacket = Waves.NMS_HANDLER.createChangeGameStatePacket(GameEventAction.CHANGE_GAME_MODE,previousGamemode.value.toFloat())
+        val cameraPacket = Waves.NMS_HANDLER.createCameraPacket(animation.player.entityId)
+        animation.player.sendPacket(cameraPacket)
+        animation.player.sendPacket(gameEventPacket)
         if (wasFlying) return
         animation.player.isFlying = false
         animation.player.allowFlight = false
