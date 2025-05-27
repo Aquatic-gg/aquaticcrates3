@@ -12,7 +12,7 @@ import org.bukkit.entity.Player
 class RewardManagerImpl(
     val crate: OpenableCrate,
     val possibleRewardRanges: MutableList<RewardAmountRange>,
-    val guaranteedRewards: HashMap<Int,Reward>,
+    val guaranteedRewards: HashMap<Int, Reward>,
     milestoneManager: (OpenableCrate) -> MilestoneManager,
     override val rewards: MutableMap<String, Reward>
 ) : RewardManager() {
@@ -26,15 +26,15 @@ class RewardManagerImpl(
         for ((_, pair) in randomRewards) {
             val reward = pair.first
             val amount = pair.second
-            for (i in 0..< amount) {
-                rolledRewards += RolledRewardImpl(reward,reward.amountRanges.randomItem()?.randomNum ?: 1)
+            for (i in 0..<amount) {
+                rolledRewards += RolledRewardImpl(reward, reward.amountRanges.randomItem()?.randomNum ?: 1)
             }
         }
         return rolledRewards
     }
 
-    fun getRandomRewards(player: Player, amount: Int): HashMap<String,Pair<Reward, Int>> {
-        val finalRewards = HashMap<String,Pair<Reward, Int>>()
+    fun getRandomRewards(player: Player, amount: Int): HashMap<String, Pair<Reward, Int>> {
+        val finalRewards = HashMap<String, Pair<Reward, Int>>()
         var amountLeft = amount
 
         val possibleRewards = getPossibleRewards(player)
@@ -58,26 +58,19 @@ class RewardManagerImpl(
 
     override fun getPossibleRewards(player: Player): MutableMap<String, Reward> {
         val finalRewards = LinkedHashMap<String, Reward>()
-        for ((id, reward) in rewards) {
+        rewardsLoop@ for ((id, reward) in rewards) {
             if (!reward.requirements.checkRequirements(player)) continue
-
-            var meetsRequirements = true
             for ((type, limit) in reward.globalLimits) {
                 if (HistoryHandler.rewardHistory(crate.identifier, id, type) >= limit) {
-                    meetsRequirements = false
-                    break
+                    continue@rewardsLoop
                 }
             }
-            if (!meetsRequirements) continue
             for ((type, limit) in reward.perPlayerLimits) {
                 if (HistoryHandler.rewardHistory(crate.identifier, id, type, player) >= limit) {
-                    meetsRequirements = false
-                    break
+                    continue@rewardsLoop
                 }
             }
-            if (!meetsRequirements) continue
             finalRewards[id] = reward
-
         }
         return finalRewards
     }

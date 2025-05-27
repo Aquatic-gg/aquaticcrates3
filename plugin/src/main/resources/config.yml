@@ -1,0 +1,60 @@
+reward-menu: # Rewards Menu contains unclaimed rewards - those rewards are being added while player has full inventory
+  size: 27
+  reward-slots:
+    - "0-8"
+  title: "Rewards Menu"
+  append-lore:
+    - "&7"
+    - "&fCurrent amount: &7%amount%"
+  buttons:
+    "button1":
+      material: BLACK_STAINED_GLASS_PANE
+      display-name: " "
+      slots:
+        - "18-26"
+
+log-menu:
+  size: 36
+  log-slots:
+    - "0-26"
+  title: "Logs"
+  buttons:
+    "border":
+      material: BLACK_STAINED_GLASS_PANE
+      display-name: " "
+      slots:
+        - 28
+        - 29
+        - 33
+        - 34
+    "next-page":
+      material: ARROW
+      display-name: " &b> "
+      slots:
+        - "35"
+    "prev-page":
+      material: ARROW
+      display-name: " &b< "
+      slots:
+        - "27"
+    "player-filter":
+      material: PLAYER_HEAD
+      display-name: "&bPlayer Name Filter"
+      lore:
+        - "&7Current filter: %player-filter%"
+      slots:
+        - "30"
+    "crate-filter":
+      material: CHEST
+      display-name: "&bCrate Filter"
+      lore:
+        - "&7Current filter: %crate-filter%"
+      slots:
+        - "31"
+    "sort":
+      material: REPEATER
+      display-name: "&bSorting"
+      lore:
+        - "&7Current sorting: %sorting%"
+      slots:
+        - "32"

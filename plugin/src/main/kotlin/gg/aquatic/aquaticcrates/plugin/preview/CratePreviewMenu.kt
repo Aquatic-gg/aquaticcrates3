@@ -79,8 +79,7 @@ class CratePreviewMenu(
                 SlotSelection(((type.size)..((type.size) + 36)).toMutableList()).slots,
                 -10,
                 1000,
-                null,
-                { true }
+                null
             )
             components += airButton.id to airButton
         }
@@ -120,7 +119,7 @@ class CratePreviewMenu(
                         .replace("%chance%", (reward.chance * 100.0).decimals(2))
                         .replace("%rarity%", reward.rarity.displayName)
                         .updatePAPIPlaceholders(player)
-                }, onClick = { _ ->
+                }, onClick = { e ->
                     if (player.hasPermission("aquaticcrates.admin")) {
                         RolledRewardImpl(reward, reward.amountRanges.randomItem()?.randomNum ?: 1).give(player, false)
                     }

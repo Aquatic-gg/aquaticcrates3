@@ -183,10 +183,11 @@ class CratesPlugin : AbstractCratesPlugin() {
                     }
                 }
                 if (animationhandler != null) {
-                    animationhandler.skipAnimation(it.player)
-                    InteractionInputHandler.onSneak(it)
+                    if (animationhandler.animationSettings.skippable) {
+                        animationhandler.skipAnimation(it.player)
+                        InteractionInputHandler.onSneak(it)
+                    }
                 }
-
             }
         }
 
