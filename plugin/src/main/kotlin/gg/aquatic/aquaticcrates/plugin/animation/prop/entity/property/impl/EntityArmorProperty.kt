@@ -4,12 +4,12 @@ import gg.aquatic.aquaticcrates.api.util.animationitem.ArgumentItem
 import gg.aquatic.aquaticcrates.plugin.animation.prop.entity.EntityAnimationProp
 import gg.aquatic.aquaticcrates.plugin.animation.prop.entity.property.EntityProperty
 import gg.aquatic.aquaticcrates.plugin.animation.prop.entity.property.EntityPropertySerializer
+import gg.aquatic.waves.api.nms.entity.EntityDataValue
 import gg.aquatic.waves.fake.entity.FakeEntity
-import gg.aquatic.waves.fake.entity.data.EntityData
+import gg.aquatic.waves.fake.entity.data.impl.ItemEntityData
+import gg.aquatic.waves.fake.entity.data.impl.display.ItemDisplayEntityData
 import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.entity.EntityType
-import org.bukkit.entity.Item
-import org.bukkit.entity.ItemDisplay
 import org.bukkit.inventory.EquipmentSlot
 
 class EntityArmorProperty(
@@ -23,10 +23,11 @@ class EntityArmorProperty(
         if (entity.type == EntityType.ITEM) {
             entity.updateEntity {
                 helmet?.getActualItem(prop.animation)?.getItem()?.let {
-                    entityData += "item" to EntityData.create("item") { entity, updater ->
-                        if (entity !is Item) return@create
-                        entity.itemStack = it
+                    val data = ArrayList<EntityDataValue>()
+                    if (entity.type == EntityType.ITEM) {
+                        data += ItemEntityData.Item.generate(it)
                     }
+                    setEntityData(data)
                 }
             }
         } else if (entity.type != EntityType.ITEM_DISPLAY) {
@@ -48,10 +49,11 @@ class EntityArmorProperty(
         } else {
             entity.updateEntity {
                 helmet?.getActualItem(prop.animation)?.getItem()?.let {
-                    entityData += "item" to EntityData.create("item") { entity, updater ->
-                        if (entity !is ItemDisplay) return@create
-                        entity.setItemStack(it)
+                    val data = ArrayList<EntityDataValue>()
+                    if (entity.type == EntityType.ITEM_DISPLAY) {
+                        data += ItemDisplayEntityData.Item.generate(it)
                     }
+                    setEntityData(data)
                 }
             }
         }
