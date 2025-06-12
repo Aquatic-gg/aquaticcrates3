@@ -3,7 +3,9 @@ package gg.aquatic.aquaticcrates.plugin.interact
 import gg.aquatic.aquaticcrates.api.crate.Crate
 import gg.aquatic.aquaticcrates.api.interaction.crate.CrateInteractHandler
 import gg.aquatic.aquaticcrates.api.crate.SpawnedCrate
+import gg.aquatic.aquaticcrates.api.event.CrateInteractEvent
 import gg.aquatic.aquaticcrates.api.interaction.CrateInteractAction
+import gg.aquatic.waves.api.event.call
 import gg.aquatic.waves.item.AquaticItemInteractEvent
 import gg.aquatic.waves.util.generic.ConfiguredExecutableObject
 import org.bukkit.Location
@@ -21,6 +23,14 @@ class BasicCrateInteractHandler(
         interactedLocation: Location,
         crate: SpawnedCrate?
     ): Boolean {
+
+        CrateInteractEvent(
+            player,
+            crate,
+            interactType,
+            interactedLocation
+        ).call()
+
         val action = clickActions[interactType] ?: return false
         action.execute(
             CrateInteractAction(
