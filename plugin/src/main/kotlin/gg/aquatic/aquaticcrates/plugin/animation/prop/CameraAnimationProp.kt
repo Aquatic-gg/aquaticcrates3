@@ -14,10 +14,12 @@ import gg.aquatic.waves.util.modify
 import gg.aquatic.waves.util.runLaterSync
 import gg.aquatic.waves.util.runSync
 import gg.aquatic.waves.util.sendPacket
+import gg.aquatic.waves.util.version.ServerVersion
 import org.bukkit.GameMode
 import org.bukkit.Location
 import org.bukkit.entity.BlockDisplay
 import org.bukkit.entity.EntityType
+import org.bukkit.entity.Player
 import org.bukkit.util.Vector
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
@@ -62,6 +64,10 @@ class CameraAnimationProp(
                 val player = animation.player
                 player.sendPacket(spawnPacket)
 
+                val listOrder = if (ServerVersion.ofAquatic(Waves.INSTANCE)?.isOlder(ServerVersion.V_1_21_4) ?: true) {
+                    0
+                } else modernPlayerListOrder(player)
+
                 val infopacket = Waves.NMS_HANDLER.createPlayerInfoUpdatePacket(2, ProfileEntry(
                     player.playerProfile.toUserProfile(),
                     true,
@@ -69,7 +75,7 @@ class CameraAnimationProp(
                     GameMode.CREATIVE,
                     null,
                     true,
-                    player.playerListOrder
+                    listOrder
                 ))
 
                 val gameEventPacket = Waves.NMS_HANDLER.createChangeGameStatePacket(GameEventAction.CHANGE_GAME_MODE,
@@ -81,6 +87,10 @@ class CameraAnimationProp(
                 player.sendPacket(spectatorPacket)
             }
         }
+    }
+
+    private fun modernPlayerListOrder(player: Player): Int {
+        return player.playerListOrder
     }
 
     private fun PlayerProfile.toUserProfile(): UserProfile {

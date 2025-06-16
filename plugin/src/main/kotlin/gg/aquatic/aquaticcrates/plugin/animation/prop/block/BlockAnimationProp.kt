@@ -10,7 +10,7 @@ import org.bukkit.util.Vector
 
 class BlockAnimationProp(
     override val animation: Animation,
-    val block: AquaticBlock,
+    block: AquaticBlock,
     val offset: Vector
 ) : AnimationProp() {
 

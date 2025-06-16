@@ -84,7 +84,7 @@ object PlayerHandler {
         for (storageContent in player.inventory.storageContents) {
             val pkey = Key.get(storageContent ?: continue) ?: continue
             if (pkey.crate.identifier != id) continue
-            if (storageContent.amount < amount) continue
+            //if (storageContent.amount < amount) continue
             items.add(storageContent)
             currentAmount += storageContent.amount
             if (currentAmount >= amount) {

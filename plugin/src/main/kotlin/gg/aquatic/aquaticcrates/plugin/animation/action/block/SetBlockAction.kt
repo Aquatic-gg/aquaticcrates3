@@ -26,7 +26,11 @@ class SetBlockAction : Action<Animation> {
 
         val offsetStr = "${offset.x.toInt()};${offset.y.toInt()};${offset.z.toInt()}"
 
-        binder.props["block:$offsetStr"]?.onAnimationEnd()
+        val previous = binder.props["block:$offsetStr"] as? BlockAnimationProp?
+        if (previous != null) {
+            previous.packetBlock.changeBlock(block)
+            return
+        }
         val prop = BlockAnimationProp(binder, block, offset)
         binder.props["block:$offsetStr"] = prop
     }
