@@ -4,7 +4,7 @@ plugins {
     id("co.uzzu.dotenv.gradle") version "2.0.0"
 }
 
-val projectVersion = "3.1.3-Beta"
+val projectVersion = "3.1.4-Beta"
 group = "gg.aquatic.aquaticcrates"
 version = projectVersion
 
@@ -52,7 +52,7 @@ subprojects {
         compileOnly("com.github.LoneDev6:API-ItemsAdder:3.6.2-beta-r3-b")
         compileOnly("gg.aquatic.comet:Comet-API:1.4.0")
         compileOnly ("com.ticxo.modelengine:ModelEngine:R4.0.8")
-        compileOnly("gg.aquatic.waves:Waves:1.2.18:publish")
+        compileOnly("gg.aquatic.waves:Waves:1.2.19:publish")
         //implementation("net.kyori:adventure-api:4.17.0")
     }
 

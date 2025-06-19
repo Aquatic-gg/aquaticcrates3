@@ -59,6 +59,7 @@ class BasicCrate(
     override val key = key(this)
 
     val crateItem = AquaticItem(
+        null,
         ItemStack(Material.CHEST).apply {
             val meta = this.itemMeta
             meta.displayName(Component.text("Crate: $identifier").decoration(TextDecoration.ITALIC, false))
