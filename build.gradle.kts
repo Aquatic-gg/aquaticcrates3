@@ -2,6 +2,8 @@ plugins {
     kotlin("jvm") version "2.1.10"
     id("com.gradleup.shadow") version "9.0.0-beta11"
     id("co.uzzu.dotenv.gradle") version "2.0.0"
+    id("xyz.jpenilla.run-paper") version "2.3.1"
+
 }
 
 val projectVersion = "3.1.4-Beta"
@@ -23,6 +25,7 @@ dependencies {
 subprojects {
     apply(plugin = "kotlin")
     apply(plugin = "com.gradleup.shadow")
+    apply(plugin = "xyz.jpenilla.run-paper")
 
     version = projectVersion
 
@@ -58,5 +61,11 @@ subprojects {
 
     kotlin {
         jvmToolchain(21)
+    }
+
+    tasks {
+        runServer {
+            minecraftVersion("1.21.4")
+        }
     }
 }
