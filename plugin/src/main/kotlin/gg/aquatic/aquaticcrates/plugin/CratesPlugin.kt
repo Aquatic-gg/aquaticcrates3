@@ -21,6 +21,9 @@ import gg.aquatic.aquaticcrates.plugin.animation.action.inventory.CloseInventory
 import gg.aquatic.aquaticcrates.plugin.animation.action.inventory.OpenInventoryAction
 import gg.aquatic.aquaticcrates.plugin.animation.action.inventory.SetInventoryItemsAction
 import gg.aquatic.aquaticcrates.plugin.animation.action.inventory.SetInventoryTitleAction
+import gg.aquatic.aquaticcrates.plugin.animation.action.model.BMHideModelAction
+import gg.aquatic.aquaticcrates.plugin.animation.action.model.BMPlayModelAnimationAction
+import gg.aquatic.aquaticcrates.plugin.animation.action.model.BMShowModelAction
 import gg.aquatic.aquaticcrates.plugin.animation.action.model.HideModelAction
 import gg.aquatic.aquaticcrates.plugin.animation.action.model.PlayModelAnimationAction
 import gg.aquatic.aquaticcrates.plugin.animation.action.model.ShowModelAction
@@ -418,6 +421,9 @@ class CratesPlugin : AbstractCratesPlugin() {
         WavesRegistry.registerAction("show-model", ShowModelAction())
         WavesRegistry.registerAction("play-model-animation", PlayModelAnimationAction())
         WavesRegistry.registerAction("hide-model", HideModelAction())
+        WavesRegistry.registerAction("show-bm-model", BMShowModelAction())
+        WavesRegistry.registerAction("play-bm-model-animation", BMPlayModelAnimationAction())
+        WavesRegistry.registerAction("hide-bm-model", BMHideModelAction())
         WavesRegistry.registerAction("play-sound", SoundAction())
         WavesRegistry.registerAction("stop-sound", StopSoundAction())
         WavesRegistry.registerAction("conditional-actions", ConditionalActionsAction())
