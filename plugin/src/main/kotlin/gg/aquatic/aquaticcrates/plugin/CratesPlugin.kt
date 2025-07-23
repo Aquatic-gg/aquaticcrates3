@@ -78,14 +78,17 @@ import net.kyori.adventure.text.Component
 import org.bukkit.Bukkit
 import org.bukkit.NamespacedKey
 import org.bukkit.entity.Player
+import org.bukkit.event.block.Action
 import org.bukkit.event.entity.EntityDamageEvent
 import org.bukkit.event.inventory.InventoryInteractEvent
 import org.bukkit.event.inventory.InventoryOpenEvent
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent
+import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerQuitEvent
 import org.bukkit.event.player.PlayerToggleSneakEvent
 import org.bukkit.event.world.WorldLoadEvent
+import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.persistence.PersistentDataType
 import java.util.*
 import java.util.concurrent.CompletableFuture
@@ -186,9 +189,9 @@ class CratesPlugin : AbstractCratesPlugin() {
                     }
                 }
                 if (animationhandler != null) {
+                    if (InteractionInputHandler.onSneak(it)) return@event
                     if (animationhandler.animationSettings.skippable) {
                         animationhandler.skipAnimation(it.player)
-                        InteractionInputHandler.onSneak(it)
                     }
                 }
             }
@@ -262,6 +265,33 @@ class CratesPlugin : AbstractCratesPlugin() {
                 inv.updateItems(player)
                 it.isCancelled = true
                 return@event
+            }
+        }
+
+        event<PlayerInteractEvent> {
+            val player = it.player
+            var isInAnimation = false
+            for (crate in CrateHandler.crates.values) {
+                if (crate is OpenableCrate) {
+                    if (crate.animationManager.playingAnimations.containsKey(player.uniqueId)) {
+                        isInAnimation = true
+                        break
+                    }
+                }
+            }
+            if (isInAnimation) {
+                it.isCancelled = true
+                InteractionInputHandler.onInteract(PacketInteractEvent(
+                    it.player,
+                    (it.action == Action.LEFT_CLICK_AIR || it.action == Action.LEFT_CLICK_BLOCK),
+                    (it.hand == EquipmentSlot.OFF_HAND),
+                    0,
+                    when (it.action) {
+                        Action.LEFT_CLICK_AIR, Action.LEFT_CLICK_BLOCK -> PacketInteractEvent.InteractType.ATTACK
+                        Action.RIGHT_CLICK_AIR, Action.RIGHT_CLICK_BLOCK -> PacketInteractEvent.InteractType.INTERACT
+                        else -> PacketInteractEvent.InteractType.INTERACT
+                    }
+                ))
             }
         }
 

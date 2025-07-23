@@ -17,8 +17,4 @@ class RerollManagerImpl(override val crate: Crate, override val groups: HashMap<
     ): CompletableFuture<RerollResult> {
         return rerollInput.handle(this, animation, player, rewards)
     }
-
-    override fun reroll(player: Player) {
-        TODO("Not yet implemented")
-    }
 }

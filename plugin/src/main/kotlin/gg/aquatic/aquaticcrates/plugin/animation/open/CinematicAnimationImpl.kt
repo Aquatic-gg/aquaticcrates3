@@ -9,6 +9,8 @@ import gg.aquatic.aquaticcrates.plugin.animation.open.settings.CinematicAnimatio
 import gg.aquatic.aquaticcrates.plugin.animation.prop.CameraAnimationProp
 import gg.aquatic.waves.util.audience.AquaticAudience
 import gg.aquatic.waves.util.runSync
+import net.kyori.adventure.text.Component
+import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.entity.Player
 import java.util.concurrent.CompletableFuture

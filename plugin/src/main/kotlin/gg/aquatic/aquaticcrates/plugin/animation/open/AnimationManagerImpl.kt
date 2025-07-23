@@ -47,7 +47,6 @@ class AnimationManagerImpl(
     }
 
     override fun playAnimation(animation: CrateAnimation) {
-        //Bukkit.broadcastMessage("\n Playing animation \n")
         val spawnedCrate = CrateHandler.spawned[animation.baseLocation]
         if (spawnedCrate != null) {
             val fail = failAnimations[spawnedCrate]?.remove(animation.player.uniqueId)

@@ -7,6 +7,8 @@ import gg.aquatic.aquaticcrates.api.runOrCatch
 import gg.aquatic.waves.util.decimals
 import gg.aquatic.waves.util.runSync
 import gg.aquatic.waves.util.updatePAPIPlaceholders
+import net.kyori.adventure.text.Component
+import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import java.util.concurrent.CompletableFuture
