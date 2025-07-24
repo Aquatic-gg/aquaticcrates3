@@ -40,6 +40,7 @@ import gg.aquatic.aquaticcrates.plugin.animation.prop.inventory.AnimationMenu
 import gg.aquatic.aquaticcrates.plugin.awaiters.AbstractAwaiter
 import gg.aquatic.aquaticcrates.plugin.awaiters.IAAwaiter
 import gg.aquatic.aquaticcrates.plugin.awaiters.MEGAwaiter
+import gg.aquatic.aquaticcrates.plugin.awaiters.NexoAwaiter
 import gg.aquatic.aquaticcrates.plugin.command.*
 import gg.aquatic.aquaticcrates.plugin.condition.impl.CustomPlayerCondition
 import gg.aquatic.aquaticcrates.plugin.condition.impl.DayRepeatCondition
@@ -134,6 +135,16 @@ class CratesPlugin : AbstractCratesPlugin() {
         PAPIHook.registerPAPIHook()
 
         val awaiters = mutableListOf<AbstractAwaiter>()
+        if (Bukkit.getPluginManager().getPlugin("Nexo") != null) {
+            val awaiter = NexoAwaiter()
+            awaiters += awaiter
+            awaiter.future.thenRun {
+                awaiters -= awaiter
+                if (awaiters.isEmpty()) {
+                    load()
+                }
+            }
+        }
         if (Bukkit.getPluginManager().getPlugin("ModelEngine") != null) {
             val awaiter = MEGAwaiter()
             awaiters += awaiter
