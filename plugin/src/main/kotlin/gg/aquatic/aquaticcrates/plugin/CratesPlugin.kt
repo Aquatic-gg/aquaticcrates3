@@ -124,8 +124,6 @@ class CratesPlugin : AbstractCratesPlugin() {
     override fun onEnable() {
         registerObjects()
 
-        gg.aquatic.waves.util.message.Messages.injectMessages<Messages>("aquaticcrates")
-
         if (server.pluginManager.getPlugin("Comet") != null) {
             CometHook()
         }
@@ -414,6 +412,7 @@ class CratesPlugin : AbstractCratesPlugin() {
         return runAsync {
             try {
                 Messages.load()
+                gg.aquatic.waves.util.message.Messages.injectMessages<Messages>("aquaticcrates")
                 CrateHandler.crates += CrateSerializer.loadCrates()
                 CrateHandler.loadSpawnedCrates(spawnedCratesConfig)
 
