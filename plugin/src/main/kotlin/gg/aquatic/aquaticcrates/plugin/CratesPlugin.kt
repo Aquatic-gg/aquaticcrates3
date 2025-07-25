@@ -124,6 +124,8 @@ class CratesPlugin : AbstractCratesPlugin() {
     override fun onEnable() {
         registerObjects()
 
+        gg.aquatic.waves.util.message.Messages.injectMessages<Messages>("aquaticcrates")
+
         if (server.pluginManager.getPlugin("Comet") != null) {
             CometHook()
         }
@@ -223,7 +225,7 @@ class CratesPlugin : AbstractCratesPlugin() {
                 "log" to LogCommand,
                 "convert" to ConvertCommand
             ),
-            Messages.HELP.message.messages.map { it.toMMComponent() }.toMutableList()
+            Messages.HELP.message
         ).register("aquaticcrates")
 
         event<AsyncPacketInventoryCloseEvent> {
