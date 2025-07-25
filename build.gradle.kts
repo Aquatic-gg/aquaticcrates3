@@ -55,7 +55,7 @@ subprojects {
         compileOnly("com.github.LoneDev6:API-ItemsAdder:3.6.2-beta-r3-b")
         compileOnly("gg.aquatic.comet:Comet-API:1.4.0")
         compileOnly ("com.ticxo.modelengine:ModelEngine:R4.0.8")
-        compileOnly("gg.aquatic.waves:Waves:1.2.22:publish")
+        compileOnly("gg.aquatic.waves:Waves:1.2.24:publish")
         compileOnly("io.github.toxicity188:BetterModel:1.8.0")
         //implementation("net.kyori:adventure-api:4.17.0")
     }

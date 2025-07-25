@@ -2,14 +2,14 @@ package gg.aquatic.aquaticcrates.plugin.misc
 
 import gg.aquatic.aquaticcrates.plugin.CratesPlugin
 import gg.aquatic.waves.util.Config
-import gg.aquatic.waves.util.Message
+import gg.aquatic.waves.util.message.handler.CfgMessageHandler
 import org.bukkit.command.CommandSender
 import org.bukkit.configuration.file.FileConfiguration
 
 enum class Messages(
-    val path: String,
-    val def: Any
-) {
+    override val path: String,
+    override val def: Any
+): CfgMessageHandler {
 
     HELP(
         "help", listOf(
@@ -33,14 +33,8 @@ enum class Messages(
     NON_INITIALIZED_PLAYER_SELF("non-initialized-player-self", "Your profile is not initialized!"),
     ;
 
-    val message: Message
-        get() {
-            val value = cfg.get(path, def)
-            return if (value is Collection<*>) {
-                Message(value.map { it.toString() })
-            } else
-                Message(value.toString())
-        }
+    override val config: FileConfiguration
+        get() = cfg
 
     fun send(sender: CommandSender) = message.send(sender)
 
