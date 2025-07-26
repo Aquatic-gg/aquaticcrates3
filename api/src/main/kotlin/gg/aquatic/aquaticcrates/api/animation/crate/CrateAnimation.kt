@@ -112,6 +112,7 @@ abstract class CrateAnimation : PlayerBoundAnimation() {
             return
         }
         updateState(State.ROLLING)
+        rerollManager.animationTasks.execute(this)
         onReroll()
     }
 

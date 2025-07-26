@@ -186,7 +186,18 @@ object CrateSerializer : BaseSerializer() {
                     Bukkit.getConsoleSender().sendMessage("Loaded $group with $amount")
                     groups[group] = amount
                 }
-                RerollManagerImpl(crate, groups, input)
+
+                val animationActions =
+                    ActionSerializer.fromSections<Animation>(cfg.getSectionList("animation.reroll-tasks")).toMutableList()
+                val playerBoundActions =
+                    ActionSerializer.fromSections<PlayerBoundAnimation>(cfg.getSectionList("animation.reroll-tasks")).toMutableList()
+
+                val actions = CrateAnimationActions(
+                    animationActions,
+                    playerBoundActions,
+                )
+
+                RerollManagerImpl(crate, groups, input, actions)
             } else null
         }
         val keySection = cfg.getConfigurationSection("key")

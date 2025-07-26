@@ -1,6 +1,7 @@
 package gg.aquatic.aquaticcrates.api.reroll
 
 import gg.aquatic.aquaticcrates.api.animation.crate.CrateAnimation
+import gg.aquatic.aquaticcrates.api.animation.crate.CrateAnimationActions
 import gg.aquatic.aquaticcrates.api.crate.Crate
 import gg.aquatic.aquaticcrates.api.reward.RolledReward
 import org.bukkit.entity.Player
@@ -12,6 +13,7 @@ abstract class RerollManager(
     abstract val crate: Crate
     abstract val groups: HashMap<String,Int>
     abstract val rerollInput: RerollInput
+    abstract val animationTasks: CrateAnimationActions
 
     abstract fun openReroll(player: Player, animation: CrateAnimation, rewards: Collection<RolledReward>): CompletableFuture<RerollResult>
 
