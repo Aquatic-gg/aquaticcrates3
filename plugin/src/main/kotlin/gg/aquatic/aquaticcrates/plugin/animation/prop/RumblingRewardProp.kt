@@ -1,12 +1,14 @@
 package gg.aquatic.aquaticcrates.plugin.animation.prop
 
+import gg.aquatic.aquaticcrates.api.animation.PlayerBoundAnimation
 import gg.aquatic.aquaticcrates.api.animation.crate.CrateAnimation
-import gg.aquatic.aquaticcrates.api.animation.crate.CrateAnimationActions
 import gg.aquatic.aquaticcrates.api.animation.prop.AnimationProp
 import gg.aquatic.aquaticcrates.api.animation.prop.ItemBasedProp
 import gg.aquatic.aquaticcrates.api.crate.OpenableCrate
 import gg.aquatic.aquaticcrates.api.reward.Reward
 import gg.aquatic.waves.item.AquaticItem
+import gg.aquatic.waves.util.collection.executeActions
+import gg.aquatic.waves.util.generic.ConfiguredExecutableObject
 
 class RumblingRewardProp(
     override val animation: CrateAnimation,
@@ -14,8 +16,8 @@ class RumblingRewardProp(
     val rumblingPeriod: Int,
     val easeOut: Boolean,
     val rewardIndex: Int,
-    val onRumbleActions: CrateAnimationActions,
-    val onFinishActions: CrateAnimationActions
+    val onRumbleActions: Collection<ConfiguredExecutableObject<PlayerBoundAnimation, Unit>>,
+    val onFinishActions: Collection<ConfiguredExecutableObject<PlayerBoundAnimation, Unit>>
 ) : AnimationProp(), ItemBasedProp {
 
     @Volatile
@@ -118,10 +120,10 @@ class RumblingRewardProp(
     private fun onUpdate(reward: Reward, final: Boolean) {
         currentReward = reward
         if (final) {
-            onFinishActions.execute(animation)
+            onFinishActions.executeActions(animation) { a, str -> a.updatePlaceholders(str) }
             finished = true
         } else {
-            onRumbleActions.execute(animation)
+            onRumbleActions.executeActions(animation) { a, str -> a.updatePlaceholders(str) }
         }
     }
 

@@ -3,7 +3,6 @@ package gg.aquatic.aquaticcrates.plugin.serialize
 import gg.aquatic.aquaticcrates.api.PluginSettings
 import gg.aquatic.aquaticcrates.api.animation.Animation
 import gg.aquatic.aquaticcrates.api.animation.PlayerBoundAnimation
-import gg.aquatic.aquaticcrates.api.animation.crate.CrateAnimationActions
 import gg.aquatic.aquaticcrates.api.crate.Crate
 import gg.aquatic.aquaticcrates.api.crate.OpenableCrate
 import gg.aquatic.aquaticcrates.api.interaction.CrateInteractAction
@@ -187,15 +186,10 @@ object CrateSerializer : BaseSerializer() {
                     groups[group] = amount
                 }
 
-                val animationActions =
-                    ActionSerializer.fromSections<Animation>(cfg.getSectionList("animation.reroll-tasks")).toMutableList()
-                val playerBoundActions =
-                    ActionSerializer.fromSections<PlayerBoundAnimation>(cfg.getSectionList("animation.reroll-tasks")).toMutableList()
-
-                val actions = CrateAnimationActions(
-                    animationActions,
-                    playerBoundActions,
-                )
+                val actions = ActionSerializer.fromSections<PlayerBoundAnimation>(
+                    cfg.getSectionList("animation.reroll-tasks"), ActionSerializer.ClassTransform(
+                        PlayerBoundAnimation::class.java, { a -> a.player })
+                ).toMutableList()
 
                 RerollManagerImpl(crate, groups, input, actions)
             } else null
@@ -244,26 +238,36 @@ object CrateSerializer : BaseSerializer() {
         }
 
         val milestoneManager = { crate: OpenableCrate ->
-            val milestones = TreeMap<Int,Milestone>()
-            val repeatableMilestone = TreeMap<Int,Milestone>()
+            val milestones = TreeMap<Int, Milestone>()
+            val repeatableMilestone = TreeMap<Int, Milestone>()
             cfg.getConfigurationSection("milestones")?.let { milestonesSection ->
                 milestonesSection.getKeys(false).forEach { milestoneKey ->
                     val milestoneSection = milestonesSection.getConfigurationSection(milestoneKey) ?: return@forEach
                     val name = milestoneSection.getString("display-name") ?: return@forEach
                     val milestone = milestoneKey.toIntOrNull() ?: return@forEach
-                    val rewards = loadRewards(milestoneSection.getConfigurationSection("rewards") ?: return@forEach, rarities)
+                    val rewards =
+                        loadRewards(milestoneSection.getConfigurationSection("rewards") ?: return@forEach, rarities)
                     Bukkit.getConsoleSender().sendMessage("Loaded milestone $milestone with ${rewards.size} rewards")
                     milestones += milestone to Milestone(milestone, name.toMMComponent(), rewards.values.toList())
                 }
             }
             cfg.getConfigurationSection("repeatable-milestones")?.let { repeatableMilestonesSection ->
                 repeatableMilestonesSection.getKeys(false).forEach { repeatableMilestoneKey ->
-                    val repeatableMilestoneSection = repeatableMilestonesSection.getConfigurationSection(repeatableMilestoneKey) ?: return@forEach
+                    val repeatableMilestoneSection =
+                        repeatableMilestonesSection.getConfigurationSection(repeatableMilestoneKey) ?: return@forEach
                     val name = repeatableMilestoneSection.getString("display-name") ?: return@forEach
                     val milestone = repeatableMilestoneKey.toIntOrNull() ?: return@forEach
-                    val rewards = loadRewards(repeatableMilestoneSection.getConfigurationSection("rewards") ?: return@forEach, rarities)
-                    Bukkit.getConsoleSender().sendMessage("Loaded repeatable milestone $milestone with ${rewards.size} rewards")
-                    repeatableMilestone += milestone to Milestone(milestone, name.toMMComponent(), rewards.values.toList())
+                    val rewards = loadRewards(
+                        repeatableMilestoneSection.getConfigurationSection("rewards") ?: return@forEach,
+                        rarities
+                    )
+                    Bukkit.getConsoleSender()
+                        .sendMessage("Loaded repeatable milestone $milestone with ${rewards.size} rewards")
+                    repeatableMilestone += milestone to Milestone(
+                        milestone,
+                        name.toMMComponent(),
+                        rewards.values.toList()
+                    )
                 }
             }
             MilestoneManagerImpl(
@@ -353,9 +357,11 @@ object CrateSerializer : BaseSerializer() {
             mutableListOf(
                 OpenPrice(
                     gg.aquatic.aquaticcrates.api.openprice.ConfiguredPrice(
-                        ObjectArguments(hashMapOf(
-                            "crate" to identifier
-                        )),
+                        ObjectArguments(
+                            hashMapOf(
+                                "crate" to identifier
+                            )
+                        ),
                         CrateKeyPrice()
                     ),
                     mutableListOf()
@@ -400,15 +406,14 @@ object CrateSerializer : BaseSerializer() {
     private fun loadFailAnimationSettings(cfg: FileConfiguration): FailAnimationSettings? {
         val section = cfg.getConfigurationSection("fail-animation") ?: return null
         val actionsSection = section.getConfigurationSection("actions") ?: return null
-        val actions = TreeMap<Int, CrateAnimationActions>()
+        val actions = TreeMap<Int, Collection<ConfiguredExecutableObject<PlayerBoundAnimation, Unit>>>()
         for (key in actionsSection.getKeys(false)) {
             val time = key.toIntOrNull() ?: continue
-            val animationActions = ActionSerializer.fromSections<Animation>(actionsSection.getSectionList(key))
             val playerAnimationActions =
-                ActionSerializer.fromSections<PlayerBoundAnimation>(actionsSection.getSectionList(key))
-            val crateAnimationActions =
-                CrateAnimationActions(animationActions.toMutableList(), playerAnimationActions.toMutableList())
-            actions[time] = crateAnimationActions
+                ActionSerializer.fromSections<PlayerBoundAnimation>(actionsSection.getSectionList(key), ActionSerializer.ClassTransform(
+                    PlayerBoundAnimation::class.java, { a -> a.player }
+                ))
+            actions[time] = playerAnimationActions
         }
         val length = section.getInt("length", -1)
         if (length < 0) return null

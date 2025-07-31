@@ -2,12 +2,13 @@ package gg.aquatic.aquaticcrates.api.util
 
 import gg.aquatic.aquaticcrates.api.animation.Animation
 import gg.aquatic.aquaticcrates.api.animation.PlayerBoundAnimation
-import gg.aquatic.aquaticcrates.api.animation.crate.CrateAnimationActions
 import gg.aquatic.waves.registry.serializer.ActionSerializer
 import gg.aquatic.waves.registry.serializer.RequirementSerializer
 import gg.aquatic.waves.util.argument.AbstractObjectArgumentSerializer
 import gg.aquatic.waves.util.argument.AquaticObjectArgument
 import gg.aquatic.waves.util.collection.checkRequirements
+import gg.aquatic.waves.util.collection.executeActions
+import gg.aquatic.waves.util.generic.ConfiguredExecutableObject
 import gg.aquatic.waves.util.getSectionList
 import gg.aquatic.waves.util.requirement.ConfiguredRequirement
 import org.bukkit.configuration.ConfigurationSection
@@ -31,32 +32,34 @@ class ConditionalActionsArgument(
             section: ConfigurationSection,
             id: String
         ): ConditionalAnimationActions {
-            val actions = ActionSerializer.fromSections<Animation>(section.getSectionList("actions"))
-            val playerBoundActions =
-                ActionSerializer.fromSections<PlayerBoundAnimation>(section.getSectionList("actions"))
+            val actions = ActionSerializer.fromSections<PlayerBoundAnimation>(
+                section.getSectionList("actions"),
+                ActionSerializer.ClassTransform(PlayerBoundAnimation::class.java, { a -> a.player })
+            )
 
             val conditions = RequirementSerializer.fromSections<Animation>(section.getSectionList("conditions"))
             val playerBoundConditions =
                 RequirementSerializer.fromSections<PlayerBoundAnimation>(section.getSectionList("conditions"))
-
-            val failActions = ActionSerializer.fromSections<Animation>(section.getSectionList("fail"))
             val failPlayerBoundActions =
-                ActionSerializer.fromSections<PlayerBoundAnimation>(section.getSectionList("fail"))
+                ActionSerializer.fromSections<PlayerBoundAnimation>(
+                    section.getSectionList("fail"),
+                    ActionSerializer.ClassTransform(PlayerBoundAnimation::class.java, { a -> a.player })
+                )
 
             return ConditionalAnimationActions(
-                CrateAnimationActions(actions.toMutableList(), playerBoundActions.toMutableList()),
+                actions,
                 conditions,
                 playerBoundConditions,
-                CrateAnimationActions(failActions.toMutableList(), failPlayerBoundActions.toMutableList())
+                failPlayerBoundActions
             )
         }
     }
 
     class ConditionalAnimationActions(
-        val actions: CrateAnimationActions,
+        val actions: Collection<ConfiguredExecutableObject<PlayerBoundAnimation, Unit>>,
         val conditions: List<ConfiguredRequirement<Animation>>,
         val playerBoundConditions: List<ConfiguredRequirement<PlayerBoundAnimation>>,
-        val failActions: CrateAnimationActions,
+        val failActions: Collection<ConfiguredExecutableObject<PlayerBoundAnimation, Unit>>,
     ) {
 
         fun tryExecute(animation: Animation) {
@@ -66,10 +69,12 @@ class ConditionalActionsArgument(
             }
             if (isMet && !conditions.checkRequirements(animation)) isMet = false
 
-            if (isMet) {
-                actions.execute(animation)
-            } else {
-                failActions.execute(animation)
+            if (animation is PlayerBoundAnimation) {
+                if (isMet) {
+                    actions.executeActions(animation) { a, str -> a.updatePlaceholders(str) }
+                } else {
+                    failActions.executeActions(animation) { a, str -> a.updatePlaceholders(str) }
+                }
             }
         }
 

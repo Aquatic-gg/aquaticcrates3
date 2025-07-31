@@ -39,7 +39,7 @@ class BasicOpenManager(val crate: BasicCrate) {
             reward.give(player, massOpen)
         }
 
-        crate.animationManager.animationSettings.finalAnimationTasks.execute(
+        crate.animationManager.animationSettings.finalAnimationTasks.executeActions(
             object : CrateAnimation() {
                 override val animationManager: CrateAnimationManager = crate.animationManager
                 override var state: State = State.FINISHED
@@ -57,7 +57,7 @@ class BasicOpenManager(val crate: BasicCrate) {
                 override val props: MutableMap<String, AnimationProp> = hashMapOf()
 
             }
-        )
+        ) { a, str -> a.updatePlaceholders(str) }
 
         HistoryHandler.registerCrateOpen(player, crate.identifier, rewards.mapPair { it.reward.id to it.randomAmount })
         InstantAnimationSettings.execute(player, crate.animationManager)

@@ -4,11 +4,11 @@ import gg.aquatic.aquaticcrates.api.animation.PlayerBoundAnimation
 import gg.aquatic.aquaticcrates.api.crate.OpenableCrate
 import gg.aquatic.aquaticcrates.api.reward.RolledReward
 import gg.aquatic.aquaticcrates.api.runOrCatch
+import gg.aquatic.waves.util.collection.executeActions
 import gg.aquatic.waves.util.decimals
+import gg.aquatic.waves.util.generic.ConfiguredExecutableObject
 import gg.aquatic.waves.util.runSync
 import gg.aquatic.waves.util.updatePAPIPlaceholders
-import net.kyori.adventure.text.Component
-import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import java.util.concurrent.CompletableFuture
@@ -35,9 +35,11 @@ abstract class CrateAnimation : PlayerBoundAnimation() {
         executeActions(animationManager.animationSettings.postAnimationTasks[tick] ?: return)
     }
 
-    open fun executeActions(actions: CrateAnimationActions) {
-        runOrCatch {
-            actions.execute(this)
+    open fun executeActions(actions: Collection<ConfiguredExecutableObject<PlayerBoundAnimation, Unit>>) {
+        for (a in actions) {
+            runOrCatch {
+                a.execute(this) { a, str -> a.updatePlaceholders(str) }
+            }
         }
     }
 
@@ -47,6 +49,9 @@ abstract class CrateAnimation : PlayerBoundAnimation() {
     val playerEquipment = ConcurrentHashMap<EquipmentSlot, ItemStack>()
 
     override fun tick() {
+        if (state == State.FINISHED) {
+            return
+        }
         try {
             onTick()
             when (state) {
@@ -112,7 +117,7 @@ abstract class CrateAnimation : PlayerBoundAnimation() {
             return
         }
         updateState(State.ROLLING)
-        rerollManager.animationTasks.execute(this)
+        rerollManager.animationTasks.executeActions(this) { a, str -> a.updatePlaceholders(str) }
         onReroll()
     }
 

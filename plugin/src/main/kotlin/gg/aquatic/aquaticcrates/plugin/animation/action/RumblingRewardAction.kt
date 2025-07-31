@@ -1,8 +1,8 @@
 package gg.aquatic.aquaticcrates.plugin.animation.action
 
 import gg.aquatic.aquaticcrates.api.animation.Animation
+import gg.aquatic.aquaticcrates.api.animation.PlayerBoundAnimation
 import gg.aquatic.aquaticcrates.api.animation.crate.CrateAnimation
-import gg.aquatic.aquaticcrates.api.animation.crate.CrateAnimationActions
 import gg.aquatic.aquaticcrates.api.util.ActionsArgument
 import gg.aquatic.aquaticcrates.plugin.animation.prop.RumblingRewardProp
 import gg.aquatic.waves.util.action.RegisterAction
@@ -11,6 +11,7 @@ import gg.aquatic.waves.util.argument.ObjectArguments
 import gg.aquatic.waves.util.argument.impl.PrimitiveObjectArgument
 import gg.aquatic.waves.util.decimals
 import gg.aquatic.waves.util.generic.Action
+import gg.aquatic.waves.util.generic.ConfiguredExecutableObject
 
 @RegisterAction("rumbling-reward")
 class RumblingRewardAction : Action<Animation> {
@@ -30,8 +31,8 @@ class RumblingRewardAction : Action<Animation> {
         val rumblingPeriod = args.int("rumbling-period") { textUpdater(binder, it) } ?: return
         val easeOut = args.boolean("ease-out") { textUpdater(binder, it) } ?: false
         val rewardIndex = args.int("reward-index") {textUpdater(binder,it)} ?: 0
-        val rumbleActions = args.typed<CrateAnimationActions>("rumble-actions") ?: CrateAnimationActions()
-        val rumbleFinishActions = args.typed<CrateAnimationActions>("rumble-finish-actions") ?: CrateAnimationActions()
+        val rumbleActions = args.typed<Collection<ConfiguredExecutableObject<PlayerBoundAnimation, Unit>>>("rumble-actions") ?: listOf()
+        val rumbleFinishActions = args.typed<Collection<ConfiguredExecutableObject<PlayerBoundAnimation, Unit>>>("rumble-finish-actions") ?: listOf()
 
         if (binder !is CrateAnimation) return
         val prop = RumblingRewardProp(

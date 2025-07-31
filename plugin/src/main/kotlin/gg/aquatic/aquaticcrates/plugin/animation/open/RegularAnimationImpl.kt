@@ -6,6 +6,7 @@ import gg.aquatic.aquaticcrates.api.animation.prop.AnimationProp
 import gg.aquatic.aquaticcrates.api.crate.OpenableCrate
 import gg.aquatic.aquaticcrates.api.reward.RolledReward
 import gg.aquatic.waves.util.audience.AquaticAudience
+import gg.aquatic.waves.util.runSync
 import org.bukkit.Location
 import org.bukkit.entity.Player
 import java.util.concurrent.CompletableFuture
@@ -46,6 +47,20 @@ class RegularAnimationImpl(
         }.exceptionally {
             it.printStackTrace()
             null
+        }
+    }
+
+    override fun onFinalize(isSync: Boolean) {
+        val runnable = {
+            player.updateInventory()
+        }
+
+        if (isSync) {
+            runnable()
+        } else {
+            runSync {
+                runnable()
+            }
         }
     }
 }

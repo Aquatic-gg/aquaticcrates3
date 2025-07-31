@@ -1,17 +1,18 @@
 package gg.aquatic.aquaticcrates.plugin.animation.prop.timer
 
-import gg.aquatic.aquaticcrates.api.animation.Animation
-import gg.aquatic.aquaticcrates.api.animation.crate.CrateAnimationActions
+import gg.aquatic.aquaticcrates.api.animation.PlayerBoundAnimation
 import gg.aquatic.aquaticcrates.api.animation.prop.AnimationProp
+import gg.aquatic.waves.util.collection.executeActions
+import gg.aquatic.waves.util.generic.ConfiguredExecutableObject
 
-class TimedActionsAnimationProp(override val animation: Animation, val actions: HashMap<Int, CrateAnimationActions>) :
+class TimedActionsAnimationProp(override val animation: PlayerBoundAnimation, val actions: HashMap<Int, Collection<ConfiguredExecutableObject<PlayerBoundAnimation, Unit>>>) :
     AnimationProp() {
 
     var tick = 0
         private set
 
     override fun tick() {
-        actions[tick]?.execute(animation)
+        actions[tick]?.executeActions(animation) { a, str -> a.updatePlaceholders(str) }
         tick++
     }
 

@@ -1,36 +1,40 @@
 package gg.aquatic.aquaticcrates.api.util
 
-import gg.aquatic.aquaticcrates.api.animation.Animation
 import gg.aquatic.aquaticcrates.api.animation.PlayerBoundAnimation
-import gg.aquatic.aquaticcrates.api.animation.crate.CrateAnimationActions
 import gg.aquatic.waves.registry.serializer.ActionSerializer
 import gg.aquatic.waves.util.argument.AbstractObjectArgumentSerializer
 import gg.aquatic.waves.util.argument.AquaticObjectArgument
+import gg.aquatic.waves.util.generic.ConfiguredExecutableObject
 import gg.aquatic.waves.util.getSectionList
 import org.bukkit.configuration.ConfigurationSection
 
-class ActionsArgument(id: String,
-                      defaultValue: CrateAnimationActions?, required: Boolean
-) : AquaticObjectArgument<CrateAnimationActions>(id, defaultValue, required) {
-    override val serializer: AbstractObjectArgumentSerializer<CrateAnimationActions?>
+class ActionsArgument(
+    id: String,
+    defaultValue: Collection<ConfiguredExecutableObject<PlayerBoundAnimation, Unit>>?, required: Boolean
+) : AquaticObjectArgument<Collection<ConfiguredExecutableObject<PlayerBoundAnimation, Unit>>>(
+    id,
+    defaultValue,
+    required
+) {
+    override val serializer: AbstractObjectArgumentSerializer<Collection<ConfiguredExecutableObject<PlayerBoundAnimation, Unit>>?>
         get() = Serializer
 
-    override fun load(section: ConfigurationSection): CrateAnimationActions? {
+    override fun load(section: ConfigurationSection): Collection<ConfiguredExecutableObject<PlayerBoundAnimation, Unit>>? {
         return Serializer.load(section, id)
     }
 
-    object Serializer: AbstractObjectArgumentSerializer<CrateAnimationActions?>() {
+    object Serializer :
+        AbstractObjectArgumentSerializer<Collection<ConfiguredExecutableObject<PlayerBoundAnimation, Unit>>?>() {
         override fun load(
             section: ConfigurationSection,
             id: String
-        ): CrateAnimationActions {
-            val actions = ActionSerializer.fromSections<Animation>(section.getSectionList(id))
-            val playerBoundActions = ActionSerializer.fromSections<PlayerBoundAnimation>(section.getSectionList(id))
-
-            return CrateAnimationActions(
-                actions.toMutableList(),
-                playerBoundActions.toMutableList(),
+        ): Collection<ConfiguredExecutableObject<PlayerBoundAnimation, Unit>> {
+            val actions = ActionSerializer.fromSections<PlayerBoundAnimation>(
+                section.getSectionList(id),
+                ActionSerializer.ClassTransform(PlayerBoundAnimation::class.java, { a -> a.player })
             )
+
+            return actions
         }
 
     }

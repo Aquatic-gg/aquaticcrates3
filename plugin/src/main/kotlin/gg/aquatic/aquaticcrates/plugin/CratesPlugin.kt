@@ -369,6 +369,7 @@ class CratesPlugin : AbstractCratesPlugin() {
             }
 
             animation ?: return@event
+            if (animation.state == CrateAnimation.State.FINISHED) return@event
 
             animation.playerEquipment.forEach { (slot, equipment) ->
                 val intSlot = slot.toSlot(player)
@@ -498,8 +499,8 @@ class CratesPlugin : AbstractCratesPlugin() {
         WavesRegistry.registerAction("destroy-crate", CrateBreakAction())
         WavesRegistry.registerAction("execute-actions", CrateExecuteActionsAction())
          */
-        ActionAnnotationProcessor.process("gg.aquatic.aquaticcrates.plugin.animation.action")
-        ActionAnnotationProcessor.process("gg.aquatic.aquaticcrates.plugin.interact.action")
+        ActionAnnotationProcessor.process(this,"gg.aquatic.aquaticcrates.plugin.animation.action")
+        ActionAnnotationProcessor.process(this,"gg.aquatic.aquaticcrates.plugin.interact.action")
 
         // Open Restrictions
         WavesRegistry.registerRequirement("player", PlayerOpenRestriction())

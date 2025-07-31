@@ -6,6 +6,7 @@ import gg.aquatic.aquaticcrates.api.crate.OpenableCrate
 import gg.aquatic.aquaticcrates.api.crate.SpawnedCrate
 import gg.aquatic.aquaticcrates.plugin.animation.fail.settings.FailAnimationSettings
 import gg.aquatic.waves.util.audience.FilterAudience
+import gg.aquatic.waves.util.collection.executeActions
 import gg.aquatic.waves.util.updatePAPIPlaceholders
 import org.bukkit.Location
 import org.bukkit.entity.Player
@@ -21,14 +22,14 @@ class FailAnimation(
     val future = CompletableFuture<FailAnimation>()
 
     override val baseLocation: Location = spawnedCrate.location
-    override val audience = FilterAudience { p -> p == player}
+    override val audience = FilterAudience { p -> p == player }
 
     override val props: MutableMap<String, AnimationProp> = ConcurrentHashMap()
     override fun tick() {
         for ((_, prop) in props) {
             prop.tick()
         }
-        settings.animationTasks[tick]?.execute(this)
+        settings.animationTasks[tick]?.executeActions(this) { a, str -> a.updatePlaceholders(str) }
         tick++
 
         if (tick > settings.length) {

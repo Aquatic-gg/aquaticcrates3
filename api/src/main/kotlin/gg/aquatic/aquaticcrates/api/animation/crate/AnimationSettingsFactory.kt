@@ -3,6 +3,8 @@ package gg.aquatic.aquaticcrates.api.animation.crate
 import gg.aquatic.aquaticcrates.api.animation.Animation
 import gg.aquatic.aquaticcrates.api.animation.PlayerBoundAnimation
 import gg.aquatic.waves.registry.serializer.ActionSerializer
+import gg.aquatic.waves.util.generic.Action
+import gg.aquatic.waves.util.generic.ConfiguredExecutableObject
 import gg.aquatic.waves.util.getSectionList
 import org.bukkit.configuration.ConfigurationSection
 import java.util.*
@@ -11,33 +13,38 @@ abstract class AnimationSettingsFactory {
 
     abstract fun serialize(section: ConfigurationSection?): CrateAnimationSettings?
 
-    protected fun loadFinalActions(section: ConfigurationSection): CrateAnimationActions {
-        val animationActions =
-            ActionSerializer.fromSections<Animation>(section.getSectionList("final-tasks")).toMutableList()
-        val playerBoundActions =
-            ActionSerializer.fromSections<PlayerBoundAnimation>(section.getSectionList("final-tasks")).toMutableList()
+    protected fun loadFinalActions(section: ConfigurationSection): Collection<ConfiguredExecutableObject<PlayerBoundAnimation, Unit>> {
+        val animationTasks = ActionSerializer.fromSections<PlayerBoundAnimation>(section.getSectionList("final-tasks"),
+            ActionSerializer.ClassTransform(PlayerBoundAnimation::class.java) { a -> a.player }).toMutableList()
 
-        return CrateAnimationActions(
-            animationActions,
-            playerBoundActions,
-        )
+        return animationTasks
     }
 
-    protected fun loadAnimationTasks(section: ConfigurationSection?): TreeMap<Int, CrateAnimationActions> {
-        val tasks = TreeMap<Int, CrateAnimationActions>()
+    protected fun loadAnimationTasksGlobal(section: ConfigurationSection?): TreeMap<Int, Collection<ConfiguredExecutableObject<Animation, Unit>>> {
+        val tasks = TreeMap<Int, Collection<ConfiguredExecutableObject<Animation, Unit>>>()
         if (section == null) return tasks
 
         for (key in section.getKeys(false)) {
             val delay = key.toIntOrNull() ?: continue
 
             val animationTasks = ActionSerializer.fromSections<Animation>(section.getSectionList(key)).toMutableList()
-            val playerBoundTasks =
-                ActionSerializer.fromSections<PlayerBoundAnimation>(section.getSectionList(key)).toMutableList()
 
-            tasks[delay] = CrateAnimationActions(
-                animationTasks,
-                playerBoundTasks,
-            )
+            tasks[delay] = animationTasks
+        }
+
+        return tasks
+    }
+    protected fun loadAnimationTasks(section: ConfigurationSection?): TreeMap<Int, Collection<ConfiguredExecutableObject<PlayerBoundAnimation, Unit>>> {
+        val tasks = TreeMap<Int, Collection<ConfiguredExecutableObject<PlayerBoundAnimation, Unit>>>()
+        if (section == null) return tasks
+
+        for (key in section.getKeys(false)) {
+            val delay = key.toIntOrNull() ?: continue
+
+            val animationTasks = ActionSerializer.fromSections<PlayerBoundAnimation>(section.getSectionList(key),
+                ActionSerializer.ClassTransform(PlayerBoundAnimation::class.java) { a -> a.player }).toMutableList()
+
+            tasks[delay] = animationTasks
         }
 
         return tasks
@@ -63,11 +70,11 @@ abstract class AnimationSettingsFactory {
         return section.getBoolean("personal", false)
     }
 
-    protected fun loadPreAnimationTasks(section: ConfigurationSection): TreeMap<Int, CrateAnimationActions> {
+    protected fun loadPreAnimationTasks(section: ConfigurationSection): TreeMap<Int, Collection<ConfiguredExecutableObject<PlayerBoundAnimation, Unit>>> {
         return loadAnimationTasks(section.getConfigurationSection("pre-animation.tasks"))
     }
 
-    protected fun loadPostAnimationTasks(section: ConfigurationSection): TreeMap<Int, CrateAnimationActions> {
+    protected fun loadPostAnimationTasks(section: ConfigurationSection): TreeMap<Int, Collection<ConfiguredExecutableObject<PlayerBoundAnimation, Unit>>> {
         return loadAnimationTasks(section.getConfigurationSection("post-animation.tasks"))
     }
 
