@@ -3,11 +3,13 @@ package gg.aquatic.aquaticcrates.plugin.animation.action
 import gg.aquatic.aquaticcrates.api.animation.PlayerBoundAnimation
 import gg.aquatic.aquaticcrates.api.animation.crate.CrateAnimation
 import gg.aquatic.waves.item.AquaticItem
+import gg.aquatic.waves.util.action.RegisterAction
 import gg.aquatic.waves.util.argument.AquaticObjectArgument
 import gg.aquatic.waves.util.argument.ObjectArguments
 import gg.aquatic.waves.util.argument.impl.ItemObjectArgument
 import gg.aquatic.waves.util.generic.Action
 
+@RegisterAction("player-equipment")
 class EquipmentAnimationAction: Action<PlayerBoundAnimation> {
     override val arguments: List<AquaticObjectArgument<*>> = listOf(
         ItemObjectArgument("helmet", null, false),

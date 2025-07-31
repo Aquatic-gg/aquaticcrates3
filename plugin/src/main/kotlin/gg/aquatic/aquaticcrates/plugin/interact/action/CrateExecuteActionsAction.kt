@@ -2,6 +2,7 @@ package gg.aquatic.aquaticcrates.plugin.interact.action
 
 import gg.aquatic.aquaticcrates.api.interaction.CrateInteractAction
 import gg.aquatic.waves.registry.serializer.ActionSerializer
+import gg.aquatic.waves.util.action.RegisterAction
 import gg.aquatic.waves.util.argument.AbstractObjectArgumentSerializer
 import gg.aquatic.waves.util.argument.AquaticObjectArgument
 import gg.aquatic.waves.util.argument.ObjectArguments
@@ -12,6 +13,7 @@ import gg.aquatic.waves.util.getSectionList
 import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.entity.Player
 
+@RegisterAction("execute-actions")
 class CrateExecuteActionsAction : Action<CrateInteractAction> {
 
     override val arguments: List<AquaticObjectArgument<*>> = listOf(ActionsArgument("actions", true))

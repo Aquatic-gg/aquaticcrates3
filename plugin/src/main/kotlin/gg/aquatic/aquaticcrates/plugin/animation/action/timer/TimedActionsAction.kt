@@ -5,6 +5,7 @@ import gg.aquatic.aquaticcrates.api.animation.PlayerBoundAnimation
 import gg.aquatic.aquaticcrates.api.animation.crate.CrateAnimationActions
 import gg.aquatic.aquaticcrates.plugin.animation.prop.timer.TimedActionsAnimationProp
 import gg.aquatic.waves.registry.serializer.ActionSerializer
+import gg.aquatic.waves.util.action.RegisterAction
 import gg.aquatic.waves.util.argument.AbstractObjectArgumentSerializer
 import gg.aquatic.waves.util.argument.AquaticObjectArgument
 import gg.aquatic.waves.util.argument.ObjectArguments
@@ -13,6 +14,7 @@ import gg.aquatic.waves.util.getSectionList
 import org.bukkit.configuration.ConfigurationSection
 import java.util.*
 
+@RegisterAction("timed-actions")
 class TimedActionsAction: Action<Animation> {
     override val arguments: List<AquaticObjectArgument<*>> = listOf(
         TimedActionsArgument("actions", hashMapOf(), true)

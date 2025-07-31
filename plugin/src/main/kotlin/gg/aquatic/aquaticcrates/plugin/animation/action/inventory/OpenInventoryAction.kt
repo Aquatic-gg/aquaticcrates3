@@ -4,6 +4,7 @@ import gg.aquatic.aquaticcrates.api.animation.PlayerBoundAnimation
 import gg.aquatic.aquaticcrates.api.util.animationitem.ArgumentItem
 import gg.aquatic.aquaticcrates.plugin.animation.prop.inventory.InventoryAnimationProp
 import gg.aquatic.waves.menu.MenuSerializer
+import gg.aquatic.waves.util.action.RegisterAction
 import gg.aquatic.waves.util.argument.AbstractObjectArgumentSerializer
 import gg.aquatic.waves.util.argument.AquaticObjectArgument
 import gg.aquatic.waves.util.argument.ObjectArguments
@@ -12,6 +13,7 @@ import gg.aquatic.waves.util.generic.Action
 import gg.aquatic.waves.util.getSectionList
 import org.bukkit.configuration.ConfigurationSection
 
+@RegisterAction("open-inventory")
 class OpenInventoryAction : Action<PlayerBoundAnimation> {
     override val arguments: List<AquaticObjectArgument<*>> = listOf(
         PrimitiveObjectArgument("size", 9, true),

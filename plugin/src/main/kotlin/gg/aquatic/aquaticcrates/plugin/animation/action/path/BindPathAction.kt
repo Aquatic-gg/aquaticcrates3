@@ -5,12 +5,14 @@ import gg.aquatic.aquaticcrates.plugin.animation.prop.Moveable
 import gg.aquatic.aquaticcrates.plugin.animation.prop.entity.BoundPathObjectArgument
 import gg.aquatic.aquaticcrates.plugin.animation.prop.path.PathBoundProperties
 import gg.aquatic.aquaticcrates.plugin.animation.prop.path.PathProp
+import gg.aquatic.waves.util.action.RegisterAction
 import gg.aquatic.waves.util.argument.AquaticObjectArgument
 import gg.aquatic.waves.util.argument.ObjectArguments
 import gg.aquatic.waves.util.argument.impl.PrimitiveObjectArgument
 import gg.aquatic.waves.util.generic.Action
 import java.util.concurrent.ConcurrentHashMap
 
+@RegisterAction("bind-path")
 class BindPathAction : Action<Animation>{
     override val arguments: List<AquaticObjectArgument<*>> = listOf(
         PrimitiveObjectArgument("object-id", "model", true),

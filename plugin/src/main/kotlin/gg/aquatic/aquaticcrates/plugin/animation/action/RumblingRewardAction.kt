@@ -5,12 +5,14 @@ import gg.aquatic.aquaticcrates.api.animation.crate.CrateAnimation
 import gg.aquatic.aquaticcrates.api.animation.crate.CrateAnimationActions
 import gg.aquatic.aquaticcrates.api.util.ActionsArgument
 import gg.aquatic.aquaticcrates.plugin.animation.prop.RumblingRewardProp
+import gg.aquatic.waves.util.action.RegisterAction
 import gg.aquatic.waves.util.argument.AquaticObjectArgument
 import gg.aquatic.waves.util.argument.ObjectArguments
 import gg.aquatic.waves.util.argument.impl.PrimitiveObjectArgument
 import gg.aquatic.waves.util.decimals
 import gg.aquatic.waves.util.generic.Action
 
+@RegisterAction("rumbling-reward")
 class RumblingRewardAction : Action<Animation> {
     override val arguments: List<AquaticObjectArgument<*>> = listOf(
         PrimitiveObjectArgument("id", "example", true),

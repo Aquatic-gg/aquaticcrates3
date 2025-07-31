@@ -9,6 +9,7 @@ import gg.aquatic.waves.util.argument.impl.PrimitiveObjectArgument
 import gg.aquatic.waves.util.generic.Action
 import java.util.*
 
+@gg.aquatic.waves.util.action.RegisterAction("smooth-path")
 class SmoothPathAction: Action<Animation> {
     override val arguments: List<AquaticObjectArgument<*>> = listOf(
         PrimitiveObjectArgument("id", "smooth-path1", true),

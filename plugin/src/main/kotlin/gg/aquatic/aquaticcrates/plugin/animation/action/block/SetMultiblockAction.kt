@@ -4,6 +4,7 @@ import gg.aquatic.aquaticcrates.api.animation.Animation
 import gg.aquatic.aquaticcrates.api.util.VectorListArgument
 import gg.aquatic.aquaticcrates.api.util.animationitem.BlockArgument
 import gg.aquatic.aquaticcrates.plugin.animation.prop.block.BlockAnimationProp
+import gg.aquatic.waves.util.action.RegisterAction
 import gg.aquatic.waves.util.argument.AquaticObjectArgument
 import gg.aquatic.waves.util.argument.ObjectArguments
 import gg.aquatic.waves.util.block.AquaticBlock
@@ -12,6 +13,7 @@ import gg.aquatic.waves.util.generic.Action
 import org.bukkit.Material
 import org.bukkit.util.Vector
 
+@RegisterAction("set-multiblock")
 class SetMultiblockAction : Action<Animation> {
 
     override val arguments: List<AquaticObjectArgument<*>> = listOf(

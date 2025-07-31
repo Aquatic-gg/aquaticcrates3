@@ -19,7 +19,9 @@ class EntityArmorProperty(
     val boots: ArgumentItem?,
 ) : EntityProperty {
     override fun apply(entity: FakeEntity, prop: EntityAnimationProp) {
-
+        if (helmet == null && chestplate == null && leggings == null && boots == null) {
+            return
+        }
         if (entity.type == EntityType.ITEM) {
             entity.updateEntity {
                 helmet?.getActualItem(prop.animation)?.getItem()?.let {

@@ -5,10 +5,12 @@ import gg.aquatic.aquaticcrates.api.util.animationitem.ArgumentItem
 import gg.aquatic.aquaticcrates.plugin.animation.action.inventory.OpenInventoryAction.ItemsArgument
 import gg.aquatic.aquaticcrates.plugin.animation.prop.inventory.InventoryAnimationProp
 import gg.aquatic.waves.menu.component.Button
+import gg.aquatic.waves.util.action.RegisterAction
 import gg.aquatic.waves.util.argument.AquaticObjectArgument
 import gg.aquatic.waves.util.argument.ObjectArguments
 import gg.aquatic.waves.util.generic.Action
 
+@RegisterAction("set-inventory-items")
 class SetInventoryItemsAction: Action<PlayerBoundAnimation> {
 
     override val arguments: List<AquaticObjectArgument<*>> = listOf(

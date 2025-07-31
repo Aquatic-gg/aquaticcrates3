@@ -258,24 +258,28 @@ object CrateProfileDriver {
     fun loadHistory(entry: CrateProfileEntry) {
         @Language("SQL")
         val crateHistorySql = if (driver is MySqlDriver)
-            "SELECT crate_id, " +
+            "SELECT crate_id, user_id, " +
                     "       COUNT(*) AS all_time, " +
                     "       SUM(CASE WHEN open_timestamp >= UNIX_TIMESTAMP(DATE_SUB(NOW(), INTERVAL 1 DAY)) THEN 1 ELSE 0 END) AS daily, " +
                     "       SUM(CASE WHEN open_timestamp >= UNIX_TIMESTAMP(DATE_SUB(NOW(), INTERVAL 7 DAY)) THEN 1 ELSE 0 END) AS weekly, " +
                     "       SUM(CASE WHEN open_timestamp >= UNIX_TIMESTAMP(DATE_SUB(NOW(), INTERVAL 1 MONTH)) THEN 1 ELSE 0 END) AS monthly " +
                     "FROM aquaticcrates_opens " +
+                    "WHERE user_id = ? " +
                     "GROUP BY crate_id;"
         else
-            "SELECT crate_id, " +
+            "SELECT crate_id, user_id, " +
                     "       COUNT(*) AS all_time, " +
                     "       SUM(CASE WHEN open_timestamp >= strftime('%s', 'now', '-1 day') THEN 1 ELSE 0 END) AS daily, " +
                     "       SUM(CASE WHEN open_timestamp >= strftime('%s', 'now', '-7 days') THEN 1 ELSE 0 END) AS weekly, " +
                     "       SUM(CASE WHEN open_timestamp >= strftime('%s', 'now', '-1 month') THEN 1 ELSE 0 END) AS monthly " +
                     "FROM aquaticcrates_opens " +
+                    "WHERE user_id = ? " +
                     "GROUP BY crate_id;"
 
 
-        driver.executeQuery(crateHistorySql, { }, {
+        driver.executeQuery(crateHistorySql, {
+            this.setInt(1, entry.aquaticPlayer.index)
+        }, {
             while (next()) {
                 val crateId = getString("crate_id")
                 val allTime = getInt("all_time")
@@ -291,23 +295,27 @@ object CrateProfileDriver {
 
         @Language("SQL")
         val rewardHistorySql = if (driver is MySqlDriver)
-            "SELECT CONCAT(o.crate_id, ':', r.reward_id) AS crate_reward_id, " +
+            "SELECT CONCAT(o.crate_id, ':', r.reward_id) AS crate_reward_id, o.user_id as uid, " +
                     "       COUNT(*) AS all_time, " +
                     "       SUM(CASE WHEN o.open_timestamp >= UNIX_TIMESTAMP(DATE_SUB(NOW(), INTERVAL 1 DAY)) THEN 1 ELSE 0 END) AS daily, " +
                     "       SUM(CASE WHEN o.open_timestamp >= UNIX_TIMESTAMP(DATE_SUB(NOW(), INTERVAL 7 DAY)) THEN 1 ELSE 0 END) AS weekly, " +
                     "       SUM(CASE WHEN o.open_timestamp >= UNIX_TIMESTAMP(DATE_SUB(NOW(), INTERVAL 1 MONTH)) THEN 1 ELSE 0 END) AS monthly " +
                     "FROM aquaticcrates_opens o " +
                     "         JOIN aquaticcrates_rewards r ON o.id = r.open_id " +
+                    "WHERE o.user_id = ? " +
                     "GROUP BY crate_reward_id;"
-        else "SELECT o.crate_id || ':' || r.reward_id AS crate_reward_id, " +
+        else "SELECT o.crate_id || ':' || r.reward_id AS crate_reward_id, o.user_id as uid, " +
                 "       COUNT(*) AS all_time, " +
                 "       SUM(CASE WHEN o.open_timestamp >= strftime('%s', 'now', '-1 day') THEN 1 ELSE 0 END) AS daily, " +
                 "       SUM(CASE WHEN o.open_timestamp >= strftime('%s', 'now', '-7 days') THEN 1 ELSE 0 END) AS weekly, " +
                 "       SUM(CASE WHEN o.open_timestamp >= strftime('%s', 'now', '-1 month') THEN 1 ELSE 0 END) AS monthly " +
                 "FROM aquaticcrates_opens o " +
                 "         JOIN aquaticcrates_rewards r ON o.id = r.open_id " +
+                "WHERE uid = ? " +
                 "GROUP BY crate_reward_id;"
-        driver.executeQuery(rewardHistorySql, { }, {
+        driver.executeQuery(rewardHistorySql, {
+            this.setInt(1, entry.aquaticPlayer.index)
+        }, {
             while (next()) {
                 val crateRewardId = getString("crate_reward_id")
                 val allTime = getInt("all_time")

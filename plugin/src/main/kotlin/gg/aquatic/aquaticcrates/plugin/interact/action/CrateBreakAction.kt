@@ -3,10 +3,12 @@ package gg.aquatic.aquaticcrates.plugin.interact.action
 import gg.aquatic.aquaticcrates.api.crate.CrateHandler
 import gg.aquatic.aquaticcrates.api.interaction.CrateInteractAction
 import gg.aquatic.aquaticcrates.plugin.CratesPlugin
+import gg.aquatic.waves.util.action.RegisterAction
 import gg.aquatic.waves.util.argument.AquaticObjectArgument
 import gg.aquatic.waves.util.argument.ObjectArguments
 import gg.aquatic.waves.util.generic.Action
 
+@RegisterAction("destroy-crate")
 class CrateBreakAction: Action<CrateInteractAction> {
 
     override val arguments: List<AquaticObjectArgument<*>> = listOf()

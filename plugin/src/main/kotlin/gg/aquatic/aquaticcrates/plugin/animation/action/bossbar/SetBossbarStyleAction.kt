@@ -8,6 +8,7 @@ import gg.aquatic.waves.util.argument.impl.PrimitiveObjectArgument
 import gg.aquatic.waves.util.generic.Action
 import net.kyori.adventure.bossbar.BossBar
 
+@gg.aquatic.waves.util.action.RegisterAction("set-bossbar-style")
 class SetBossbarStyleAction : Action<Animation> {
 
     override val arguments: List<AquaticObjectArgument<*>> = listOf(

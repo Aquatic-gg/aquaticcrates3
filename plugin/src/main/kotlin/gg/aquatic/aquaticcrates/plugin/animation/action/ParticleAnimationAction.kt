@@ -3,6 +3,7 @@ package gg.aquatic.aquaticcrates.plugin.animation.action
 import com.destroystokyo.paper.ParticleBuilder
 import gg.aquatic.aquaticcrates.api.animation.Animation
 import gg.aquatic.waves.item.AquaticItem
+import gg.aquatic.waves.util.action.RegisterAction
 import gg.aquatic.waves.util.argument.AquaticObjectArgument
 import gg.aquatic.waves.util.argument.ObjectArguments
 import gg.aquatic.waves.util.argument.impl.ItemObjectArgument
@@ -15,6 +16,7 @@ import org.bukkit.Material
 import org.bukkit.Particle
 import org.bukkit.util.Vector
 
+@RegisterAction("particle")
 class ParticleAnimationAction : Action<Animation> {
     override val arguments: List<AquaticObjectArgument<*>> = listOf(
         PrimitiveObjectArgument("particle", "example", true),

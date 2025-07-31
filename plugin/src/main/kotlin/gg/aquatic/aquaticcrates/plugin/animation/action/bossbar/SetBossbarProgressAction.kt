@@ -7,6 +7,7 @@ import gg.aquatic.waves.util.argument.ObjectArguments
 import gg.aquatic.waves.util.argument.impl.PrimitiveObjectArgument
 import gg.aquatic.waves.util.generic.Action
 
+@gg.aquatic.waves.util.action.RegisterAction("set-bossbar-progress")
 class SetBossbarProgressAction  : Action<Animation> {
 
     override val arguments: List<AquaticObjectArgument<*>> = listOf(

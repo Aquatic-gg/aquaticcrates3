@@ -1,6 +1,7 @@
 package gg.aquatic.aquaticcrates.plugin.animation.action.potion
 
 import gg.aquatic.aquaticcrates.api.animation.PlayerBoundAnimation
+import gg.aquatic.waves.util.action.RegisterAction
 import gg.aquatic.waves.util.argument.AbstractObjectArgumentSerializer
 import gg.aquatic.waves.util.argument.AquaticObjectArgument
 import gg.aquatic.waves.util.argument.ObjectArguments
@@ -12,6 +13,7 @@ import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.potion.PotionEffect
 import org.bukkit.potion.PotionEffectType
 
+@RegisterAction("add-potion-effects")
 class PotionEffectsAction : Action<PlayerBoundAnimation> {
     override val arguments: List<AquaticObjectArgument<*>> = listOf(
         PotionsArgument("potions", mapOf(), true)

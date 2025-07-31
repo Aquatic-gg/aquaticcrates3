@@ -6,6 +6,7 @@ import gg.aquatic.aquaticcrates.plugin.animation.prop.entity.BoundPathObjectArgu
 import gg.aquatic.aquaticcrates.plugin.animation.prop.model.ModelAnimationProp
 import gg.aquatic.aquaticcrates.plugin.animation.prop.path.PathBoundProperties
 import gg.aquatic.aquaticcrates.plugin.animation.prop.path.PathProp
+import gg.aquatic.waves.util.action.RegisterAction
 import gg.aquatic.waves.util.argument.AquaticObjectArgument
 import gg.aquatic.waves.util.argument.ObjectArguments
 import gg.aquatic.waves.util.argument.impl.PrimitiveObjectArgument
@@ -13,6 +14,7 @@ import gg.aquatic.waves.util.generic.Action
 import org.bukkit.util.Vector
 import java.util.concurrent.ConcurrentHashMap
 
+@RegisterAction("show-model")
 class ShowModelAction : Action<Animation> {
 
     override val arguments: List<AquaticObjectArgument<*>> = listOf(
