@@ -499,8 +499,7 @@ class CratesPlugin : AbstractCratesPlugin() {
         WavesRegistry.registerAction("destroy-crate", CrateBreakAction())
         WavesRegistry.registerAction("execute-actions", CrateExecuteActionsAction())
          */
-        ActionAnnotationProcessor.process(this,"gg.aquatic.aquaticcrates.plugin.animation.action")
-        ActionAnnotationProcessor.process(this,"gg.aquatic.aquaticcrates.plugin.interact.action")
+        ActionAnnotationProcessor.process(this,"gg.aquatic.aquaticcrates.plugin")
 
         // Open Restrictions
         WavesRegistry.registerRequirement("player", PlayerOpenRestriction())
