@@ -34,14 +34,16 @@ class RegularAnimationSettings(
         location: Location,
         rolledRewards: MutableList<RolledReward>
     ): CompletableFuture<CrateAnimation> {
+        val futureValue = CompletableFuture<CrateAnimation>()
         val animation = RegularAnimationImpl(
             player,
             animationManager,
             location,
             rolledRewards,
-            if (personal) FilterAudience { it == player } else GlobalAudience(),
+            if (personal) FilterAudience { it == player && futureValue.get().state != CrateAnimation.State.FINISHED } else GlobalAudience(),
             CompletableFuture()
         )
+        futureValue.complete(animation)
 
         val spawnedCrate = CrateHandler.spawned[location]
         animation.tick()

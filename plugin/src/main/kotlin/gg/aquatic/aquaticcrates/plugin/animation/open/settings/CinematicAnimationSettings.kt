@@ -39,14 +39,17 @@ class CinematicAnimationSettings(
         rolledRewards: MutableList<RolledReward>
     ): CompletableFuture<CrateAnimation> {
         val cinematicLocation = this.cinematicLocation.toLocation()!!
+        val futureValue = CompletableFuture<CrateAnimation>()
         val animation = CinematicAnimationImpl(
             player,
             animationManager,
             cinematicLocation,
             rolledRewards,
-            FilterAudience { it == player },
+            FilterAudience { it == player && futureValue.get().state != CrateAnimation.State.FINISHED },
             CompletableFuture()
         )
+        futureValue.complete(animation)
+
         for (entry in CrateAnimation.EquipmentSlot.entries) {
             animation.playerEquipment[entry] = ItemStack(Material.AIR)
         }

@@ -26,6 +26,7 @@ class CinematicAnimationImpl(
     //val camera: CameraAnimationProp
 ) : CrateAnimation() {
 
+    @Volatile
     override var state: State = State.PRE_OPEN
 
     override val settings = animationManager.animationSettings as CinematicAnimationSettings

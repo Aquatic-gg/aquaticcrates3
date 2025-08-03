@@ -20,6 +20,7 @@ class RegularAnimationImpl(
     override val audience: AquaticAudience,
     override val completionFuture: CompletableFuture<CrateAnimation>
 ) : CrateAnimation() {
+    @Volatile
     override var state: State = State.PRE_OPEN
 
     override val settings = animationManager.animationSettings

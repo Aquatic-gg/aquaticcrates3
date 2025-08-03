@@ -41,6 +41,9 @@ class RewardsMenu(val settings: RewardsMenuSettings, player: Player) : PrivateAq
         loadRewards()
     }
 
+    @Volatile
+    private var processing = false
+
     private fun loadRewards() {
         val crateEntry = player.toAquaticPlayer()?.crateEntry() ?: return
 
@@ -65,15 +68,20 @@ class RewardsMenu(val settings: RewardsMenuSettings, player: Player) : PrivateAq
                 { true },
                 textUpdater = { str, _ -> str.updatePAPIPlaceholders(player).replace("%amount%", amount.toString()) },
                 onClick = { e ->
+                    if (processing) return@Button
+                    processing = true
                     runSync {
                         for ((_, i) in player.inventory.addItem(item.clone().apply { this.amount = amount })) {
                             player.location.world!!.dropItem(player.location, i)
                         }
+                        crateEntry.rewardContainer.items.remove(item)
+                        rewardComponents.forEach { removeComponent(it) }
+                        rewardComponents.clear()
+                        loadRewards()
+                        updateComponents()
+
+                        processing = false
                     }
-                    crateEntry.rewardContainer.items.remove(item)
-                    rewardComponents.forEach { removeComponent(it) }
-                    rewardComponents.clear()
-                    loadRewards()
                 }
             )
             rewardComponents += button
