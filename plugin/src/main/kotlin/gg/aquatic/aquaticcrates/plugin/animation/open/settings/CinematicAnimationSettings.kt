@@ -45,7 +45,20 @@ class CinematicAnimationSettings(
             animationManager,
             cinematicLocation,
             rolledRewards,
-            FilterAudience { it == player && futureValue.get().state != CrateAnimation.State.FINISHED },
+            FilterAudience {
+                if (it == player) {
+                    if (futureValue.get().state != CrateAnimation.State.FINISHED) {
+                        return@FilterAudience true
+                    } else {
+                        for (prop in futureValue.get().props.values) {
+                            prop.onAnimationEnd()
+                        }
+                        futureValue.get().props.clear()
+                        false
+                    }
+                }
+                false
+            },
             CompletableFuture()
         )
         futureValue.complete(animation)

@@ -40,7 +40,20 @@ class RegularAnimationSettings(
             animationManager,
             location,
             rolledRewards,
-            if (personal) FilterAudience { it == player && futureValue.get().state != CrateAnimation.State.FINISHED } else GlobalAudience(),
+            if (personal) FilterAudience {
+                if (it == player) {
+                    if (futureValue.get().state != CrateAnimation.State.FINISHED) {
+                        return@FilterAudience false
+                    } else {
+                        for (prop in futureValue.get().props.values) {
+                            prop.onAnimationEnd()
+                        }
+                        futureValue.get().props.clear()
+                        false
+                    }
+                }
+                false
+            } else GlobalAudience(),
             CompletableFuture()
         )
         futureValue.complete(animation)
@@ -68,13 +81,17 @@ class RegularAnimationSettings(
         }
     }
 
-    override fun canBeOpened(player: Player, animationManager: CrateAnimationManager, location: Location): AnimationResult {
+    override fun canBeOpened(
+        player: Player,
+        animationManager: CrateAnimationManager,
+        location: Location
+    ): AnimationResult {
         if (animationManager.playingAnimations.isNotEmpty() && !personal) return AnimationResult.ALREADY_BEING_OPENED_OTHER
         if (personal && animationManager.playingAnimations.containsKey(player.uniqueId)) return AnimationResult.ALREADY_BEING_OPENED
         return AnimationResult.SUCCESS
     }
 
-    companion object: AnimationSettingsFactory() {
+    companion object : AnimationSettingsFactory() {
         override fun serialize(section: ConfigurationSection?): CrateAnimationSettings? {
             if (section == null) return null
             return RegularAnimationSettings(
