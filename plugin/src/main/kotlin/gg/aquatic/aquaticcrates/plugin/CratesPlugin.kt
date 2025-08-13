@@ -38,6 +38,7 @@ import gg.aquatic.aquaticcrates.plugin.animation.action.timer.TimedActionsAction
 import gg.aquatic.aquaticcrates.plugin.animation.condition.CustomCondition
 import gg.aquatic.aquaticcrates.plugin.animation.prop.inventory.AnimationMenu
 import gg.aquatic.aquaticcrates.plugin.awaiters.AbstractAwaiter
+import gg.aquatic.aquaticcrates.plugin.awaiters.CEAwaiter
 import gg.aquatic.aquaticcrates.plugin.awaiters.IAAwaiter
 import gg.aquatic.aquaticcrates.plugin.awaiters.MEGAwaiter
 import gg.aquatic.aquaticcrates.plugin.awaiters.NexoAwaiter
@@ -146,6 +147,16 @@ class CratesPlugin : AbstractCratesPlugin() {
                 }
             }
         }
+        if (Bukkit.getPluginManager().getPlugin("CraftEngine") != null) {
+            val awaiter = CEAwaiter()
+            awaiters += awaiter
+            awaiter.future.thenRun {
+                awaiters -= awaiter
+                if (awaiters.isEmpty()) {
+                    load()
+                }
+            }
+        }
         if (Bukkit.getPluginManager().getPlugin("ModelEngine") != null) {
             val awaiter = MEGAwaiter()
             awaiters += awaiter
@@ -224,8 +235,9 @@ class CratesPlugin : AbstractCratesPlugin() {
                 "log" to LogCommand,
                 "convert" to ConvertCommand
             ),
-            Messages.HELP.message
-        ).register("aquaticcrates")
+            {
+                Messages.HELP.message
+            }).register("aquaticcrates")
 
         event<AsyncPacketInventoryCloseEvent> {
             val inv = it.inventory
@@ -293,17 +305,19 @@ class CratesPlugin : AbstractCratesPlugin() {
             }
             if (isInAnimation) {
                 it.isCancelled = true
-                InteractionInputHandler.onInteract(PacketInteractEvent(
-                    it.player,
-                    (it.action == Action.LEFT_CLICK_AIR || it.action == Action.LEFT_CLICK_BLOCK),
-                    (it.hand == EquipmentSlot.OFF_HAND),
-                    0,
-                    when (it.action) {
-                        Action.LEFT_CLICK_AIR, Action.LEFT_CLICK_BLOCK -> PacketInteractEvent.InteractType.ATTACK
-                        Action.RIGHT_CLICK_AIR, Action.RIGHT_CLICK_BLOCK -> PacketInteractEvent.InteractType.INTERACT
-                        else -> PacketInteractEvent.InteractType.INTERACT
-                    }
-                ))
+                InteractionInputHandler.onInteract(
+                    PacketInteractEvent(
+                        it.player,
+                        (it.action == Action.LEFT_CLICK_AIR || it.action == Action.LEFT_CLICK_BLOCK),
+                        (it.hand == EquipmentSlot.OFF_HAND),
+                        0,
+                        when (it.action) {
+                            Action.LEFT_CLICK_AIR, Action.LEFT_CLICK_BLOCK -> PacketInteractEvent.InteractType.ATTACK
+                            Action.RIGHT_CLICK_AIR, Action.RIGHT_CLICK_BLOCK -> PacketInteractEvent.InteractType.INTERACT
+                            else -> PacketInteractEvent.InteractType.INTERACT
+                        }
+                    )
+                )
             }
         }
 
@@ -468,12 +482,12 @@ class CratesPlugin : AbstractCratesPlugin() {
         //WavesRegistry.registerAction("show-bm-model", BMShowModelAction())
         //WavesRegistry.registerAction("play-bm-model-animation", BMPlayModelAnimationAction())
         //WavesRegistry.registerAction("hide-bm-model", BMHideModelAction())
-            //WavesRegistry.registerAction("play-sound", SoundAction())
-            //WavesRegistry.registerAction("stop-sound", StopSoundAction())
+        //WavesRegistry.registerAction("play-sound", SoundAction())
+        //WavesRegistry.registerAction("stop-sound", StopSoundAction())
         //WavesRegistry.registerAction("conditional-actions", ConditionalActionsAction())
         //WavesRegistry.registerAction("start-ticker", StartTickerAction())
         //WavesRegistry.registerAction("bind-path", BindPathAction())
-            //WavesRegistry.registerAction("title", TitleAction())
+        //WavesRegistry.registerAction("title", TitleAction())
         //WavesRegistry.registerAction("string-deobfuscation", StringDeobfuscationAction())
         //WavesRegistry.registerAction("push-player", PushPlayerAction())
         //WavesRegistry.registerAction("open-inventory", OpenInventoryAction())
@@ -486,7 +500,7 @@ class CratesPlugin : AbstractCratesPlugin() {
         //WavesRegistry.registerAction("delayed-actions", LaterActionsAction())
         //WavesRegistry.registerAction("rumbling-reward", RumblingRewardAction())
         //WavesRegistry.registerAction("player-equipment", EquipmentAnimationAction())
-                //WavesRegistry.registerAction("player-actions", PlayerActionsAction())
+        //WavesRegistry.registerAction("player-actions", PlayerActionsAction())
         //WavesRegistry.registerAction("add-passenger", AddPassengerAction())
         //WavesRegistry.registerAction("remove-passenger", RemovePassengerAction())
         //WavesRegistry.registerAction("particle", ParticleAnimationAction())
@@ -499,7 +513,7 @@ class CratesPlugin : AbstractCratesPlugin() {
         WavesRegistry.registerAction("destroy-crate", CrateBreakAction())
         WavesRegistry.registerAction("execute-actions", CrateExecuteActionsAction())
          */
-        ActionAnnotationProcessor.process(this,"gg.aquatic.aquaticcrates.plugin")
+        ActionAnnotationProcessor.process(this, "gg.aquatic.aquaticcrates.plugin")
 
         // Open Restrictions
         WavesRegistry.registerRequirement("player", PlayerOpenRestriction())
@@ -526,7 +540,10 @@ class CratesPlugin : AbstractCratesPlugin() {
 
         event<AsyncPlayerPreLoginEvent>(ignoredCancelled = true) {
             if (loading) {
-                it.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, Component.text("Server is currently loading..."))
+                it.disallow(
+                    AsyncPlayerPreLoginEvent.Result.KICK_OTHER,
+                    Component.text("Server is currently loading...")
+                )
                 return@event
             }
         }

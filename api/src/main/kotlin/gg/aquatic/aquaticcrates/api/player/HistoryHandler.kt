@@ -44,7 +44,14 @@ object HistoryHandler {
                         val list = latestRewards.getOrPut(crateId) { Collections.synchronizedList(ArrayList()) }
                         list.add(latestReward)
                         if (list.size > 10) {
-                            list.removeLast()
+                            for (i in 10 until Int.MAX_VALUE) {
+                                if (list.size <= i) break
+                                try {
+                                    list.removeAt(i)
+                                } catch (_: Exception) {
+                                    break
+                                }
+                            }
                         }
                     }
                 }

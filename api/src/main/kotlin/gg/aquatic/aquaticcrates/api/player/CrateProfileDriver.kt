@@ -169,12 +169,15 @@ object CrateProfileDriver {
         val insertOpensQuery = "INSERT INTO aquaticcrates_opens (user_id, open_timestamp, crate_id) VALUES (?, ?, ?);"
         val insertRewardsQuery = "INSERT INTO aquaticcrates_rewards (open_id, reward_id, amount) VALUES (?, ?, ?);"
 
+        val newEntries = ConcurrentHashMap(profileEntry.newEntries)
+        profileEntry.newEntries.clear()
+
         // Collect auto-generated open IDs and their related rewards
         val openIdToRewards = mutableListOf<Pair<Int, List<Pair<String, Int>>>>()
 
         // Insert into `aquaticcrates_opens` and retrieve auto-generated keys
         connection.prepareStatement(insertOpensQuery, PreparedStatement.RETURN_GENERATED_KEYS).use { opensStmt ->
-            for ((_, entries) in profileEntry.newEntries) {
+            for ((_, entries) in newEntries) {
                 for (entry in entries) {
                     // Prepare batch for "opens" table inserts
                     opensStmt.setInt(1, profileEntry.aquaticPlayer.index) // Assuming userId is numeric in string form

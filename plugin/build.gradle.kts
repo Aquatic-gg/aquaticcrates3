@@ -4,12 +4,16 @@ group = "gg.aquatic.aquaticcrates.plugin"
 
 repositories {
     maven("https://repo.nexomc.com/releases")
+    maven("https://repo.momirealms.net/releases/")
 }
 
 dependencies {
     implementation(project(":api"))
     //implementation("gg.aquatic.aquaticseries","aquatic-lib","1.0")
     compileOnly("com.nexomc:nexo:1.8.0") //Nexo 1.X -> 1.X.0
+
+    compileOnly("net.momirealms:craft-engine-core:0.0.61")
+    compileOnly("net.momirealms:craft-engine-bukkit:0.0.61")
 }
 
 version = parent!!.version
