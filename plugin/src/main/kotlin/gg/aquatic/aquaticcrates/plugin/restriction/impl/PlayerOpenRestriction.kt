@@ -15,7 +15,7 @@ class PlayerOpenRestriction: OpenRestriction() {
     override fun execute(binder: OpenData, args: ObjectArguments, textUpdater: (OpenData, String) -> String): Boolean {
         val radius = args.int("radius") { textUpdater(binder, it) } ?: return true
         val player = binder.player
-        val location = binder.location
+        val location = binder.location ?: return true
         val crate = binder.crate
 
         val playerAnimations = crate.animationManager.playingAnimations[player.uniqueId] ?: return true

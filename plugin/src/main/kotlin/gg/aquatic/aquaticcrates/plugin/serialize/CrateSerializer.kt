@@ -168,9 +168,6 @@ object CrateSerializer : BaseSerializer() {
             interactableSettings += BlockInteractableSettings(VanillaBlock(Material.STONE.createBlockData()), Vector())
         }
 
-        val openRequirements =
-            RequirementSerializer.fromSections<Player>(cfg.getSectionList("open-requirements")).toMutableList()
-
         val rerollInputSection = cfg.getConfigurationSection("reroll")
         val type = rerollInputSection?.getString("type") ?: "inventory"
         val serializer = rerollInputSerializers[type.lowercase()] ?: InventoryRerollInput.Companion
@@ -335,7 +332,10 @@ object CrateSerializer : BaseSerializer() {
         val massOpenPerRewardActions =
             ActionSerializer.fromSections<Player>(cfg.getSectionList("mass-open.per-reward-tasks")).toMutableList()
         val openRestrictions =
-            RequirementSerializer.fromSections<OpenData>(cfg.getSectionList("open-restrictions")).toMutableList()
+            RequirementSerializer.fromSections<OpenData>(
+                cfg.getSectionList("open-restrictions"), RequirementSerializer.ClassTransform(
+                    OpenData::class.java
+                ) { d -> d.player }).toMutableList()
 
         val openPriceGroups = ArrayList<OpenPriceGroup>()
         for (groupSection in cfg.getSectionList("open-price-groups")) {
@@ -375,7 +375,6 @@ object CrateSerializer : BaseSerializer() {
             cfg.getString("display-name") ?: identifier,
             HologramSerializer.loadAquaticHologram(cfg.getConfigurationSection("hologram")),
             interactableSettings,
-            openRequirements,
             openPriceGroups,
             { bc ->
                 AnimationManagerImpl(
@@ -410,9 +409,11 @@ object CrateSerializer : BaseSerializer() {
         for (key in actionsSection.getKeys(false)) {
             val time = key.toIntOrNull() ?: continue
             val playerAnimationActions =
-                ActionSerializer.fromSections<PlayerBoundAnimation>(actionsSection.getSectionList(key), ActionSerializer.ClassTransform(
-                    PlayerBoundAnimation::class.java, { a -> a.player }
-                ))
+                ActionSerializer.fromSections<PlayerBoundAnimation>(
+                    actionsSection.getSectionList(key),
+                    ActionSerializer.ClassTransform(
+                        PlayerBoundAnimation::class.java, { a -> a.player }
+                    ))
             actions[time] = playerAnimationActions
         }
         val length = section.getInt("length", -1)

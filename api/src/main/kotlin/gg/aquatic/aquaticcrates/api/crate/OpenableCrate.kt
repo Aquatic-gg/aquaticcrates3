@@ -10,7 +10,7 @@ import java.util.concurrent.CompletableFuture
 abstract class OpenableCrate : Crate(), Rewardable {
 
     abstract val key: Key
-    abstract val openRequirements: MutableList<ConfiguredRequirement<Player>>
+    //abstract val openRequirements: MutableList<ConfiguredRequirement<Player>>
     abstract val openPriceGroups: MutableList<OpenPriceGroup>
     abstract val animationManager: CrateAnimationManager
 

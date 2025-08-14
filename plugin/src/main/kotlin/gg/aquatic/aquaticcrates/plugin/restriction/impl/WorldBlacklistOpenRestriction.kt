@@ -14,6 +14,7 @@ class WorldBlacklistOpenRestriction: OpenRestriction() {
 
     override fun execute(binder: OpenData, args: ObjectArguments, textUpdater: (OpenData, String) -> String): Boolean {
         val blacklist = args.stringOrCollection("blacklist") { textUpdater(binder, it) } ?: return true
+        if (binder.location == null) return true
         return binder.location.world?.name !in blacklist
     }
 }

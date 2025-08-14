@@ -39,7 +39,7 @@ class BasicCrate(
     override val displayName: String,
     override val hologramSettings: HologramSettings,
     override val interactables: List<InteractableSettings>,
-    override val openRequirements: MutableList<ConfiguredRequirement<Player>>,
+    //override val openRequirements: MutableList<ConfiguredRequirement<Player>>,
     override val openPriceGroups: MutableList<OpenPriceGroup>,
     animationManager: (BasicCrate) -> CrateAnimationManager,
     key: (BasicCrate) -> Key,
@@ -103,7 +103,7 @@ class BasicCrate(
         location: Location,
         spawnedCrate: SpawnedCrate?
     ) {
-        if (!canBeOpened(player, 1, null)) {
+        if (!canBeOpened(player, 1, OpenData(player, null, this))) {
             return
         }
         instantOpen(player, location, spawnedCrate)
@@ -136,7 +136,7 @@ class BasicCrate(
     }
 
     override fun tryMassOpen(player: Player, amount: Int, threads: Int?): CompletableFuture<Void> {
-        if (!canBeOpened(player, amount, null)) {
+        if (!canBeOpened(player, amount, OpenData(player, null, this))) {
             return CompletableFuture.completedFuture(null)
         }
         return massOpen(
@@ -156,13 +156,14 @@ class BasicCrate(
     }
 
 
-    fun canBeOpened(player: Player, amount: Int, openData: OpenData?): Boolean {
-        if (openData != null) {
-            if (!openRestrictions.checkRequirements(openData)) {
-                //player.sendMessage("You cannot open the crate here!")
-                return false
-            }
-            val spawned = CrateHandler.spawned[openData.location]
+    fun canBeOpened(player: Player, amount: Int, openData: OpenData): Boolean {
+        if (!openRestrictions.checkRequirements(openData)) {
+            //player.sendMessage("You cannot open the crate here!")
+            return false
+        }
+        val location = openData.location
+        if (location != null) {
+            val spawned = CrateHandler.spawned[location]
             if (spawned != null) {
                 if (animationManager.failAnimations[spawned]?.containsKey(player.uniqueId) == true) {
                     return false
@@ -170,7 +171,7 @@ class BasicCrate(
             }
 
             val animationResult =
-                animationManager.animationSettings.canBeOpened(player, animationManager, openData.location)
+                animationManager.animationSettings.canBeOpened(player, animationManager, location)
             when (animationResult) {
                 CrateAnimationSettings.AnimationResult.ALREADY_BEING_OPENED -> {
                     //player.sendMessage("You are already opening a crate!")
@@ -185,6 +186,7 @@ class BasicCrate(
                 else -> {}
             }
         }
+
         //var priceGroup: OpenPriceGroup? = null
         if (rewardManager.getPossibleRewards(player).isEmpty()) {
             return false

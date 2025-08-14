@@ -6,7 +6,7 @@ import org.bukkit.entity.Player
 
 class OpenData(
     val player: Player,
-    val location: Location,
+    val location: Location?,
     val crate: OpenableCrate
 ) {
 }
