@@ -49,6 +49,7 @@ import gg.aquatic.waves.registry.serializer.RequirementSerializer
 import gg.aquatic.waves.util.Config
 import gg.aquatic.waves.util.argument.ObjectArguments
 import gg.aquatic.waves.util.block.impl.VanillaBlock
+import gg.aquatic.waves.util.generic.ClassTransform
 import gg.aquatic.waves.util.generic.ConfiguredExecutableObject
 import gg.aquatic.waves.util.getSectionList
 import gg.aquatic.waves.util.item.loadFromYml
@@ -184,7 +185,7 @@ object CrateSerializer : BaseSerializer() {
                 }
 
                 val actions = ActionSerializer.fromSections<PlayerBoundAnimation>(
-                    cfg.getSectionList("animation.reroll-tasks"), ActionSerializer.ClassTransform(
+                    cfg.getSectionList("animation.reroll-tasks"), ClassTransform(
                         PlayerBoundAnimation::class.java, { a -> a.player })
                 ).toMutableList()
 
@@ -333,7 +334,7 @@ object CrateSerializer : BaseSerializer() {
             ActionSerializer.fromSections<Player>(cfg.getSectionList("mass-open.per-reward-tasks")).toMutableList()
         val openRestrictions =
             RequirementSerializer.fromSections<OpenData>(
-                cfg.getSectionList("open-restrictions"), RequirementSerializer.ClassTransform(
+                cfg.getSectionList("open-restrictions"), ClassTransform(
                     OpenData::class.java
                 ) { d -> d.player }).toMutableList()
 
@@ -411,7 +412,7 @@ object CrateSerializer : BaseSerializer() {
             val playerAnimationActions =
                 ActionSerializer.fromSections<PlayerBoundAnimation>(
                     actionsSection.getSectionList(key),
-                    ActionSerializer.ClassTransform(
+                    ClassTransform(
                         PlayerBoundAnimation::class.java, { a -> a.player }
                     ))
             actions[time] = playerAnimationActions

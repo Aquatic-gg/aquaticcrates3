@@ -8,6 +8,7 @@ import gg.aquatic.waves.util.argument.AbstractObjectArgumentSerializer
 import gg.aquatic.waves.util.argument.AquaticObjectArgument
 import gg.aquatic.waves.util.collection.checkRequirements
 import gg.aquatic.waves.util.collection.executeActions
+import gg.aquatic.waves.util.generic.ClassTransform
 import gg.aquatic.waves.util.generic.ConfiguredExecutableObject
 import gg.aquatic.waves.util.getSectionList
 import gg.aquatic.waves.util.requirement.ConfiguredRequirement
@@ -34,7 +35,7 @@ class ConditionalActionsArgument(
         ): ConditionalAnimationActions {
             val actions = ActionSerializer.fromSections<PlayerBoundAnimation>(
                 section.getSectionList("actions"),
-                ActionSerializer.ClassTransform(PlayerBoundAnimation::class.java, { a -> a.player })
+                ClassTransform(PlayerBoundAnimation::class.java, { a -> a.player })
             )
 
             val conditions = RequirementSerializer.fromSections<Animation>(section.getSectionList("conditions"))
@@ -43,7 +44,7 @@ class ConditionalActionsArgument(
             val failPlayerBoundActions =
                 ActionSerializer.fromSections<PlayerBoundAnimation>(
                     section.getSectionList("fail"),
-                    ActionSerializer.ClassTransform(PlayerBoundAnimation::class.java, { a -> a.player })
+                    ClassTransform(PlayerBoundAnimation::class.java, { a -> a.player })
                 )
 
             return ConditionalAnimationActions(
