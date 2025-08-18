@@ -1,6 +1,7 @@
 package gg.aquatic.aquaticcrates.plugin.animation.action
 
 import gg.aquatic.aquaticcrates.api.animation.Animation
+import gg.aquatic.waves.util.action.RegisterAction
 import gg.aquatic.waves.util.argument.AquaticObjectArgument
 import gg.aquatic.waves.util.argument.ObjectArguments
 import gg.aquatic.waves.util.argument.impl.PrimitiveObjectArgument
@@ -8,6 +9,7 @@ import gg.aquatic.waves.util.generic.Action
 import org.bukkit.Bukkit
 import org.bukkit.SoundCategory
 
+@RegisterAction("play-sound")
 class SoundAction : Action<Animation> {
     override val arguments: List<AquaticObjectArgument<*>> = listOf(
         PrimitiveObjectArgument("sound","",true),

@@ -8,6 +8,7 @@ import gg.aquatic.waves.util.generic.ClassTransform
 import gg.aquatic.waves.util.generic.ConfiguredExecutableObject
 import gg.aquatic.waves.util.getSectionList
 import org.bukkit.configuration.ConfigurationSection
+import org.bukkit.entity.Player
 
 class ActionsArgument(
     id: String,
@@ -32,7 +33,7 @@ class ActionsArgument(
         ): Collection<ConfiguredExecutableObject<PlayerBoundAnimation, Unit>> {
             val actions = ActionSerializer.fromSections<PlayerBoundAnimation>(
                 section.getSectionList(id),
-                ClassTransform(PlayerBoundAnimation::class.java, { a -> a.player })
+                ClassTransform(Player::class.java, { a -> a.player })
             )
 
             return actions

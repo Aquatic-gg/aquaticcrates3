@@ -13,6 +13,7 @@ import gg.aquatic.waves.util.generic.ConfiguredExecutableObject
 import gg.aquatic.waves.util.getSectionList
 import gg.aquatic.waves.util.requirement.ConfiguredRequirement
 import org.bukkit.configuration.ConfigurationSection
+import org.bukkit.entity.Player
 
 class ConditionalActionsArgument(
     id: String, defaultValue: ConditionalAnimationActions?,
@@ -35,7 +36,7 @@ class ConditionalActionsArgument(
         ): ConditionalAnimationActions {
             val actions = ActionSerializer.fromSections<PlayerBoundAnimation>(
                 section.getSectionList("actions"),
-                ClassTransform(PlayerBoundAnimation::class.java, { a -> a.player })
+                ClassTransform(Player::class.java, { a -> a.player })
             )
 
             val conditions = RequirementSerializer.fromSections<Animation>(section.getSectionList("conditions"))
@@ -44,7 +45,7 @@ class ConditionalActionsArgument(
             val failPlayerBoundActions =
                 ActionSerializer.fromSections<PlayerBoundAnimation>(
                     section.getSectionList("fail"),
-                    ClassTransform(PlayerBoundAnimation::class.java, { a -> a.player })
+                    ClassTransform(Player::class.java, { a -> a.player })
                 )
 
             return ConditionalAnimationActions(

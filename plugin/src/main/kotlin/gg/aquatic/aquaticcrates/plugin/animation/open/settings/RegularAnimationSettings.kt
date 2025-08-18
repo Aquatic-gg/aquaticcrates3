@@ -43,13 +43,12 @@ class RegularAnimationSettings(
             if (personal) FilterAudience {
                 if (it == player) {
                     if (futureValue.get().state != CrateAnimation.State.FINISHED) {
-                        return@FilterAudience false
+                        return@FilterAudience true
                     } else {
                         for (prop in futureValue.get().props.values) {
                             prop.onAnimationEnd()
                         }
                         futureValue.get().props.clear()
-                        false
                     }
                 }
                 false
@@ -94,13 +93,16 @@ class RegularAnimationSettings(
     companion object : AnimationSettingsFactory() {
         override fun serialize(section: ConfigurationSection?): CrateAnimationSettings? {
             if (section == null) return null
+            val duration = loadAnimationLength(section)
+            val delay = loadPreAnimationDelay(section)
+            val postDelay = loadPostAnimationDelay(section)
             return RegularAnimationSettings(
-                loadAnimationTasks(section.getConfigurationSection("tasks")),
-                loadAnimationLength(section),
-                loadPreAnimationDelay(section),
-                loadPreAnimationTasks(section),
-                loadPostAnimationDelay(section),
-                loadPostAnimationTasks(section),
+                loadAnimationTasks(section.getConfigurationSection("tasks"), duration),
+                duration,
+                delay,
+                loadPreAnimationTasks(section, delay),
+                postDelay,
+                loadPostAnimationTasks(section, postDelay),
                 loadFinalActions(section),
                 loadSkippable(section),
                 loadIsPersonal(section)

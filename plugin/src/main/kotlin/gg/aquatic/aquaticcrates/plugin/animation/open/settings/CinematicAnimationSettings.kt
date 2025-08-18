@@ -112,13 +112,16 @@ class CinematicAnimationSettings(
 
             val cameraLocation = Pair(Vector(cameraX, cameraY, cameraZ), Pair(cameraYaw, cameraPitch))
 
+            val duration = loadAnimationLength(section)
+            val delay = loadPreAnimationDelay(section)
+            val postDelay = loadPostAnimationDelay(section)
             return CinematicAnimationSettings(
-                loadAnimationTasks(section.getConfigurationSection("tasks")),
-                loadAnimationLength(section),
-                loadPreAnimationDelay(section),
-                loadPreAnimationTasks(section),
-                loadPostAnimationDelay(section),
-                loadPostAnimationTasks(section),
+                loadAnimationTasks(section.getConfigurationSection("tasks"),duration),
+                duration,
+                delay,
+                loadPreAnimationTasks(section,delay),
+                postDelay,
+                loadPostAnimationTasks(section,postDelay),
                 loadFinalActions(section),
                 loadSkippable(section),
                 cinematicLocation,

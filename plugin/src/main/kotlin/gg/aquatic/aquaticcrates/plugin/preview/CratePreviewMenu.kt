@@ -29,9 +29,7 @@ class CratePreviewMenu(
 
     init {
         loadItems()
-        for (component in components.values) {
-            updateComponent(component)
-        }
+        updateComponents()
     }
 
     private fun openPage(page: Int) {
@@ -70,7 +68,7 @@ class CratePreviewMenu(
                     }
                 }
             )
-            components += id to comp
+            addComponent(comp)
         }
         if (settings.clearBottomInventory) {
             val airButton = Button(
@@ -81,7 +79,7 @@ class CratePreviewMenu(
                 1000,
                 null
             )
-            components += airButton.id to airButton
+            addComponent(airButton)
         }
     }
 

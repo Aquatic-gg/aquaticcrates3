@@ -1,6 +1,5 @@
 package gg.aquatic.aquaticcrates.plugin.animation.action
 
-import gg.aquatic.aquaticcrates.api.animation.Animation
 import gg.aquatic.aquaticcrates.api.animation.PlayerBoundAnimation
 import gg.aquatic.aquaticcrates.api.util.ActionsArgument
 import gg.aquatic.aquaticcrates.plugin.animation.prop.StringDeobfuscationAnimationProp

@@ -1,13 +1,12 @@
 package gg.aquatic.aquaticcrates.api.animation.crate
 
-import gg.aquatic.aquaticcrates.api.animation.Animation
 import gg.aquatic.aquaticcrates.api.animation.PlayerBoundAnimation
 import gg.aquatic.waves.registry.serializer.ActionSerializer
-import gg.aquatic.waves.util.generic.Action
 import gg.aquatic.waves.util.generic.ClassTransform
 import gg.aquatic.waves.util.generic.ConfiguredExecutableObject
 import gg.aquatic.waves.util.getSectionList
 import org.bukkit.configuration.ConfigurationSection
+import org.bukkit.entity.Player
 import java.util.*
 
 abstract class AnimationSettingsFactory {
@@ -16,36 +15,42 @@ abstract class AnimationSettingsFactory {
 
     protected fun loadFinalActions(section: ConfigurationSection): Collection<ConfiguredExecutableObject<PlayerBoundAnimation, Unit>> {
         val animationTasks = ActionSerializer.fromSections<PlayerBoundAnimation>(section.getSectionList("final-tasks"),
-            ClassTransform(PlayerBoundAnimation::class.java) { a -> a.player }).toMutableList()
+            ClassTransform(Player::class.java) { a -> a.player }).toMutableList()
 
         return animationTasks
     }
 
-    protected fun loadAnimationTasksGlobal(section: ConfigurationSection?): TreeMap<Int, Collection<ConfiguredExecutableObject<Animation, Unit>>> {
-        val tasks = TreeMap<Int, Collection<ConfiguredExecutableObject<Animation, Unit>>>()
-        if (section == null) return tasks
-
-        for (key in section.getKeys(false)) {
-            val delay = key.toIntOrNull() ?: continue
-
-            val animationTasks = ActionSerializer.fromSections<Animation>(section.getSectionList(key)).toMutableList()
-
-            tasks[delay] = animationTasks
-        }
-
-        return tasks
-    }
-    protected fun loadAnimationTasks(section: ConfigurationSection?): TreeMap<Int, Collection<ConfiguredExecutableObject<PlayerBoundAnimation, Unit>>> {
+    protected fun loadAnimationTasks(section: ConfigurationSection?, duration: Int): TreeMap<Int, Collection<ConfiguredExecutableObject<PlayerBoundAnimation, Unit>>> {
         val tasks = TreeMap<Int, Collection<ConfiguredExecutableObject<PlayerBoundAnimation, Unit>>>()
         if (section == null) return tasks
 
         for (key in section.getKeys(false)) {
-            val delay = key.toIntOrNull() ?: continue
+            val actions = ActionSerializer.fromSections<PlayerBoundAnimation>(section.getSectionList(key),
+                ClassTransform(Player::class.java) { a -> a.player }).toMutableList()
 
-            val animationTasks = ActionSerializer.fromSections<PlayerBoundAnimation>(section.getSectionList(key),
-                ClassTransform(PlayerBoundAnimation::class.java) { a -> a.player }).toMutableList()
+            if (key.lowercase().startsWith("every-")) {
+                val every = key.substringAfter("every-").toInt()
+                var currentI = 0
+                while (true) {
+                    if (currentI >= duration) {
+                        break
+                    }
+                    val list = tasks.getOrPut(currentI) { mutableListOf() } as MutableList
+                    list += actions
+                    currentI += every
+                }
+                continue
+            } else if (key.contains(";")) {
+                val split = key.split(";").map { it.toInt() }
+                for (i in split) {
+                    val list = tasks.getOrPut(i) { mutableListOf() } as MutableList
+                    list += actions
+                }
+                continue
+            }
 
-            tasks[delay] = animationTasks
+            val list = tasks.getOrPut(key.toIntOrNull() ?: continue) { mutableListOf() } as MutableList
+            list += actions
         }
 
         return tasks
@@ -71,12 +76,12 @@ abstract class AnimationSettingsFactory {
         return section.getBoolean("personal", false)
     }
 
-    protected fun loadPreAnimationTasks(section: ConfigurationSection): TreeMap<Int, Collection<ConfiguredExecutableObject<PlayerBoundAnimation, Unit>>> {
-        return loadAnimationTasks(section.getConfigurationSection("pre-animation.tasks"))
+    protected fun loadPreAnimationTasks(section: ConfigurationSection, duration: Int): TreeMap<Int, Collection<ConfiguredExecutableObject<PlayerBoundAnimation, Unit>>> {
+        return loadAnimationTasks(section.getConfigurationSection("pre-animation.tasks"),duration)
     }
 
-    protected fun loadPostAnimationTasks(section: ConfigurationSection): TreeMap<Int, Collection<ConfiguredExecutableObject<PlayerBoundAnimation, Unit>>> {
-        return loadAnimationTasks(section.getConfigurationSection("post-animation.tasks"))
+    protected fun loadPostAnimationTasks(section: ConfigurationSection, duration: Int): TreeMap<Int, Collection<ConfiguredExecutableObject<PlayerBoundAnimation, Unit>>> {
+        return loadAnimationTasks(section.getConfigurationSection("post-animation.tasks"),duration)
     }
 
 }

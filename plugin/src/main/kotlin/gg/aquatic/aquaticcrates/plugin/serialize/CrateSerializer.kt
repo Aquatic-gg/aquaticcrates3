@@ -186,7 +186,7 @@ object CrateSerializer : BaseSerializer() {
 
                 val actions = ActionSerializer.fromSections<PlayerBoundAnimation>(
                     cfg.getSectionList("animation.reroll-tasks"), ClassTransform(
-                        PlayerBoundAnimation::class.java, { a -> a.player })
+                        Player::class.java, { a -> a.player })
                 ).toMutableList()
 
                 RerollManagerImpl(crate, groups, input, actions)
@@ -335,7 +335,7 @@ object CrateSerializer : BaseSerializer() {
         val openRestrictions =
             RequirementSerializer.fromSections<OpenData>(
                 cfg.getSectionList("open-restrictions"), ClassTransform(
-                    OpenData::class.java
+                    Player::class.java
                 ) { d -> d.player }).toMutableList()
 
         val openPriceGroups = ArrayList<OpenPriceGroup>()
@@ -413,7 +413,7 @@ object CrateSerializer : BaseSerializer() {
                 ActionSerializer.fromSections<PlayerBoundAnimation>(
                     actionsSection.getSectionList(key),
                     ClassTransform(
-                        PlayerBoundAnimation::class.java, { a -> a.player }
+                        Player::class.java, { a -> a.player }
                     ))
             actions[time] = playerAnimationActions
         }

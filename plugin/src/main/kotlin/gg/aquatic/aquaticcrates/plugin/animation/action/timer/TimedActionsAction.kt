@@ -13,6 +13,7 @@ import gg.aquatic.waves.util.generic.ClassTransform
 import gg.aquatic.waves.util.generic.ConfiguredExecutableObject
 import gg.aquatic.waves.util.getSectionList
 import org.bukkit.configuration.ConfigurationSection
+import org.bukkit.entity.Player
 import java.util.*
 
 @RegisterAction("timed-actions")
@@ -50,7 +51,7 @@ class TimedActionsAction: Action<PlayerBoundAnimation> {
                 for (key in actionsSection.getKeys(false)) {
                     val sections = actionsSection.getSectionList(key)
                     val actions = ActionSerializer.fromSections<PlayerBoundAnimation>(sections, ClassTransform(
-                        PlayerBoundAnimation::class.java
+                        Player::class.java
                     ) { a -> a.player })
                     map[key.toInt()] = actions
                 }
