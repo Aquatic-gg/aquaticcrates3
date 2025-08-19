@@ -3,7 +3,9 @@ package gg.aquatic.aquaticcrates.plugin.misc.hook
 import gg.aquatic.aquaticcrates.api.animation.Animation
 import gg.aquatic.aquaticcrates.api.animation.prop.AnimationProp
 import gg.aquatic.comet.api.CometRegistry
+import gg.aquatic.comet.api.emitter.AbstractEmitter
 import gg.aquatic.comet.api.emitter.AbstractUnrealizedEmitter
+import gg.aquatic.comet.api.emitter.parent.Pose
 import gg.aquatic.waves.registry.WavesRegistry
 import gg.aquatic.waves.registry.registerAction
 import gg.aquatic.waves.util.argument.AquaticObjectArgument
@@ -11,6 +13,8 @@ import gg.aquatic.waves.util.argument.ObjectArguments
 import gg.aquatic.waves.util.argument.impl.PrimitiveObjectArgument
 import gg.aquatic.waves.util.generic.Action
 import org.bukkit.util.Vector
+import org.joml.Quaterniond
+import org.joml.Vector3d
 
 class CometHook {
 
@@ -67,20 +71,39 @@ class CometHook {
     ) :
         AnimationProp() {
 
-        val spawnedEmitter = emitter.realize(
-            null, animation.baseLocation.clone().apply {
+
+
+        private var spawnedEmitter: AbstractEmitter? = null
+        private var killed = false
+
+        init {
+            val loc = animation.baseLocation.clone().apply {
                 add(offset)
                 yaw += yawOffset
                 pitch += pitchOffset
-            }, audience = animation.audience
-        )
+            }
+
+            emitter.realize(
+                null, Pose(
+                    loc.world,
+                    Vector3d(loc.x, loc.y, loc.z),
+                    Quaterniond().rotateX(pitchOffset.toDouble()).rotateY(yawOffset.toDouble())
+                ), audience = animation.audience, after = { spawnedEmitter ->
+                    this.spawnedEmitter = spawnedEmitter
+                    if (killed) {
+                        spawnedEmitter.kill()
+                    }
+                }
+            )
+        }
 
         override fun tick() {
 
         }
 
         override fun onAnimationEnd() {
-            spawnedEmitter.kill()
+            killed = true
+            spawnedEmitter?.kill()
         }
     }
 }

@@ -27,7 +27,7 @@ object HistoryHandler {
     // CrateId:RewardId, Daily/Weekly/Monthly/Alltime, Amount
     val rewardHistory = ConcurrentHashMap<String,ConcurrentHashMap<HistoryType, Int>>()
 
-    fun registerCrateOpen(player: Player, crateId: String, rewards: Map<String, Int>) {
+    fun registerCrateOpen(player: Player, crateId: String, rewards: Map<Reward, Int>) {
         val crateEntry = player.toAquaticPlayer()?.crateEntry() ?: return
         val newEntries = crateEntry.newEntries
 
@@ -39,8 +39,7 @@ object HistoryHandler {
             for ((reward, amount) in rewards) {
                 CrateHandler.crates[crateId]?.let { crate ->
                     if (crate is OpenableCrate) {
-                        val crateReward = crate.rewardManager.rewards[reward]!!
-                        val latestReward = LatestReward(crateReward, System.currentTimeMillis(), amount, player.name)
+                        val latestReward = LatestReward(reward, System.currentTimeMillis(), amount, player.name)
                         val list = latestRewards.getOrPut(crateId) { Collections.synchronizedList(ArrayList()) }
                         list.add(latestReward)
                         if (list.size > 10) {
@@ -66,7 +65,7 @@ object HistoryHandler {
         entries += OpenHistoryEntry(
             System.currentTimeMillis() / 60000,
             crateId,
-            HashMap(rewards)
+            rewards.mapKeys { it.key.id }.toMutableMap()
         )
         val crateHistory = crateEntry.openHistory.getOrPut(crateId) { ConcurrentHashMap() }
         for (historyType in HistoryType.entries) {

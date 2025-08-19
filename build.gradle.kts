@@ -6,7 +6,7 @@ plugins {
 
 }
 
-val projectVersion = "3.1.7-Beta"
+val projectVersion = "3.1.8-Beta"
 group = "gg.aquatic.aquaticcrates"
 version = projectVersion
 
@@ -53,7 +53,7 @@ subprojects {
     dependencies {
         compileOnly("io.papermc.paper:paper-api:1.21.4-R0.1-SNAPSHOT")
         compileOnly("com.github.LoneDev6:API-ItemsAdder:3.6.2-beta-r3-b")
-        compileOnly("gg.aquatic.comet:Comet-API:1.4.0")
+        compileOnly("gg.aquatic.comet:Comet-API:1.13.0")
         compileOnly("com.ticxo.modelengine:ModelEngine:R4.0.8")
         compileOnly("gg.aquatic.waves:Waves:1.3.7:publish")
         compileOnly("io.github.toxicity188:BetterModel:1.10.1")

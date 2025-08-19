@@ -15,10 +15,8 @@ import gg.aquatic.waves.util.audience.AquaticAudience
 import gg.aquatic.waves.util.audience.FilterAudience
 import gg.aquatic.waves.util.collection.executeActions
 import gg.aquatic.waves.util.collection.mapPair
-import gg.aquatic.waves.util.decimals
 import gg.aquatic.waves.util.runAsync
 import gg.aquatic.waves.util.runSync
-import gg.aquatic.waves.util.updatePAPIPlaceholders
 import org.bukkit.Location
 import org.bukkit.entity.Player
 import java.util.concurrent.CompletableFuture
@@ -59,7 +57,14 @@ class BasicOpenManager(val crate: BasicCrate) {
             }
         ) { a, str -> a.updatePlaceholders(str) }
 
-        HistoryHandler.registerCrateOpen(player, crate.identifier, rewards.mapPair { it.reward.id to it.randomAmount })
+        val milestones = crate.rewardManager.milestoneManager.milestonesReached(player)
+        for (milestone in milestones) {
+            for (reward in milestone.rewards) {
+                reward.give(player, 1, false)
+            }
+        }
+
+        HistoryHandler.registerCrateOpen(player, crate.identifier, rewards.mapPair { it.reward to it.randomAmount })
         InstantAnimationSettings.execute(player, crate.animationManager)
     }
 
@@ -81,7 +86,7 @@ class BasicOpenManager(val crate: BasicCrate) {
             HistoryHandler.registerCrateOpen(
                 player,
                 crate.identifier,
-                animation.rewards.mapPair { it.reward.id to it.randomAmount })
+                animation.rewards.mapPair { it.reward to it.randomAmount })
         }
     }
 
@@ -108,7 +113,7 @@ class BasicOpenManager(val crate: BasicCrate) {
                             HistoryHandler.registerCrateOpen(
                                 player,
                                 crate.identifier,
-                                rewards.mapPair { it.reward.id to it.randomAmount })
+                                rewards.mapPair { it.reward to it.randomAmount })
                             for (reward in rewards) {
                                 val current =
                                     wonRewards.getOrPut(reward.reward) { (AtomicInteger(0) to AtomicInteger(0)) }
@@ -159,7 +164,7 @@ class BasicOpenManager(val crate: BasicCrate) {
                 HistoryHandler.registerCrateOpen(
                     player,
                     crate.identifier,
-                    rewards.mapPair { it.reward.id to it.randomAmount })
+                    rewards.mapPair { it.reward to it.randomAmount })
                 for (reward in rewards) {
                     val current = wonRewards[reward.reward] ?: (0 to 0)
                     wonRewards[reward.reward] = current.first + 1 to current.second + reward.randomAmount

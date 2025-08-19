@@ -17,9 +17,9 @@ class MilestoneManagerImpl(
 
     override fun milestonesReached(player: Player): List<Milestone> {
         val milestonesReached = mutableListOf<Milestone>()
-        val totalOpened = HistoryHandler.history(crate.identifier, CrateProfileEntry.HistoryType.ALLTIME, player)
-        if (milestones.containsKey(totalOpened)) {
-            milestonesReached += milestones[totalOpened]!!
+        val totalOpened = HistoryHandler.history(crate.identifier, CrateProfileEntry.HistoryType.ALLTIME, player) + 1
+        milestones[totalOpened]?.let {
+            milestonesReached += it
         }
         repeatableMilestones.forEach { (key, value) ->
             if (totalOpened % key == 0) {

@@ -10,6 +10,9 @@ dependencies:
     Waves:
       load: BEFORE
       required: true
+    Comet:
+      load: BEFORE
+      required: false
     PlaceholderAPI:
       load: BEFORE
       required: false

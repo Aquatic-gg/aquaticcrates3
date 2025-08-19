@@ -41,8 +41,7 @@ class RewardManagerImpl(
         if (possibleRewards.isEmpty()) return finalRewards
 
         val alltimeHistory = HistoryHandler.history(crate.identifier, CrateProfileEntry.HistoryType.ALLTIME, player)
-        if (guaranteedRewards.containsKey(alltimeHistory)) {
-            val reward = guaranteedRewards[alltimeHistory]!!
+        guaranteedRewards[alltimeHistory+1]?.let { reward ->
             finalRewards[reward.id] = reward to 1
             amountLeft--
         }

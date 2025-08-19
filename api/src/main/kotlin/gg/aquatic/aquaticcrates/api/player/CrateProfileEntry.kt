@@ -92,7 +92,7 @@ class CrateProfileEntry(aquaticPlayer: AquaticPlayer, val rewardContainer: Rewar
     data class OpenHistoryEntry(
         val timestamp: Long,
         val crateId: String,
-        val rewardIds: HashMap<String, Int>,
+        val rewardIds: MutableMap<String, Int>,
     ) {
 
     }
