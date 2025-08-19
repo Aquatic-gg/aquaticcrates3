@@ -39,7 +39,7 @@ object HistoryHandler {
             for ((reward, amount) in rewards) {
                 CrateHandler.crates[crateId]?.let { crate ->
                     if (crate is OpenableCrate) {
-                        val latestReward = LatestReward(reward, System.currentTimeMillis(), amount, player.name)
+                        val latestReward = LatestReward(reward, System.currentTimeMillis() / 60000, amount, player.name)
                         val list = latestRewards.getOrPut(crateId) { Collections.synchronizedList(ArrayList()) }
                         list.add(latestReward)
                         if (list.size > 10) {

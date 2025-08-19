@@ -62,7 +62,7 @@ object PAPIHook {
                         return@registerExtension ""
                     }
                     val place = args[2].toIntOrNull() ?: return@registerExtension ""
-                    val found = HistoryHandler.latestRewards[crateId]?.get(place)
+                    val found = HistoryHandler.latestRewards[crateId]?.getOrNull(place)
 
                     when (args[3].lowercase()) {
                         "name" -> {
@@ -74,7 +74,8 @@ object PAPIHook {
                         }
 
                         "timestamp" -> {
-                            return@registerExtension found?.timestamp?.toFriendlyTimeFromSeconds() ?: ""
+                            val timestamp = found?.timestamp ?: return@registerExtension ""
+                            return@registerExtension timestamp.toFriendlyTimeFromSeconds()
                         }
 
                         "winner" -> {
