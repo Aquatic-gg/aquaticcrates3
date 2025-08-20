@@ -1,12 +1,14 @@
 package gg.aquatic.aquaticcrates.api.reward.showcase
 
+import gg.aquatic.aquaticcrates.api.reward.showcase.empty.EmptyRewardShowcaseFactory
 import gg.aquatic.aquaticcrates.api.reward.showcase.item.ItemRewardShowcaseFactory
 import org.bukkit.configuration.ConfigurationSection
 
 object RewardShowcaseSerializer {
 
-    val factories = mutableMapOf<String, RewardShowcaseFactory>(
-        "item" to ItemRewardShowcaseFactory
+    val factories = mutableMapOf(
+        "item" to ItemRewardShowcaseFactory,
+        "empty" to EmptyRewardShowcaseFactory,
     )
 
     fun load(section: ConfigurationSection): RewardShowcase? {

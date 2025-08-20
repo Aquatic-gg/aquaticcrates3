@@ -11,8 +11,9 @@ import gg.aquatic.waves.util.generic.ClassTransform
 import gg.aquatic.waves.util.getSectionList
 import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.entity.Player
+import org.joml.Vector3d
 
-class EmptyRewardShowcaseFactory : RewardShowcaseFactory {
+object EmptyRewardShowcaseFactory : RewardShowcaseFactory {
     override fun load(section: ConfigurationSection): RewardShowcase? {
         val hologram = HologramSerializer.loadLines(section.getSectionList("hologram"))
         val hologramTranslation = section.getString("hologram-translation")?.split(";")?.let {
