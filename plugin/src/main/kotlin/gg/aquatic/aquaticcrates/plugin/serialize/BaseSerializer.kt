@@ -8,6 +8,7 @@ import gg.aquatic.aquaticcrates.api.reward.RewardRarity
 import gg.aquatic.aquaticcrates.plugin.reward.RewardImpl
 import gg.aquatic.waves.item.AquaticItem
 import gg.aquatic.waves.registry.serializer.ActionSerializer
+import gg.aquatic.waves.registry.serializer.ItemSerializer
 import gg.aquatic.waves.registry.serializer.RequirementSerializer
 import gg.aquatic.waves.util.getSectionList
 import gg.aquatic.waves.util.item.loadFromYml
@@ -107,6 +108,7 @@ abstract class BaseSerializer {
         section.getConfigurationSection("variables")?.getKeys(false)?.forEach { key ->
             variables[key] = section.getString("variables.$key") ?: return@forEach
         }
+        val fallbackPreviewItem = ItemSerializer.fromSection(section.getConfigurationSection("fallback-preview-item"))
 
         return RewardImpl(
             chance,
@@ -121,6 +123,7 @@ abstract class BaseSerializer {
             chances,
             rarity,
             variables,
+            fallbackPreviewItem
         )
     }
 

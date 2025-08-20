@@ -25,7 +25,12 @@ class CratePreviewMenu(
     settings.invSettings.type,
     player
 ) {
-    val rewards = crate.rewardManager.getPossibleRewards(player).values
+    val possibleRewards = crate.rewardManager.getPossibleRewards(player).keys
+
+    val rewards = crate.rewardManager.rewards.mapNotNull {
+        val reward = it.value
+        reward to (if (reward.id in possibleRewards) reward.item else reward.previewFallbackItem ?: return@mapNotNull null)
+    }
 
     init {
         loadItems()
@@ -94,8 +99,8 @@ class CratePreviewMenu(
             //val rewardIndex = page * settings.rewardSlots.size + index
             val rewardIndex = lowerIndex + index
             if (rewardIndex >= rewards.size) break
-            val reward = rewards.elementAtOrNull(rewardIndex) ?: break
-            val rewardItem = reward.item.getItem().clone()
+            val (reward, item) = rewards.elementAtOrNull(rewardIndex) ?: break
+            val rewardItem = item.getItem().clone()
 
             val meta = rewardItem.itemMeta
             meta.lore(mutableListOf<Component>().apply {
@@ -131,7 +136,7 @@ class CratePreviewMenu(
         for (slot in settings.randomRewards.slots) {
             val button = RandomRewardComponent(
                 crate,
-                rewards,
+                rewards.map { it.first },
                 settings.randomRewards.changeDuration,
                 { e ->
 

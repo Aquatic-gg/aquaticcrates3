@@ -17,7 +17,6 @@ import gg.aquatic.aquaticcrates.plugin.animation.action.block.SetBlockAction
 import gg.aquatic.aquaticcrates.plugin.animation.action.block.SetMultiblockAction
 import gg.aquatic.aquaticcrates.plugin.animation.action.bossbar.*
 import gg.aquatic.aquaticcrates.plugin.animation.action.entity.*
-import gg.aquatic.aquaticcrates.plugin.animation.action.inventory.CloseInventoryAction
 import gg.aquatic.aquaticcrates.plugin.animation.action.inventory.OpenInventoryAction
 import gg.aquatic.aquaticcrates.plugin.animation.action.inventory.SetInventoryItemsAction
 import gg.aquatic.aquaticcrates.plugin.animation.action.inventory.SetInventoryTitleAction

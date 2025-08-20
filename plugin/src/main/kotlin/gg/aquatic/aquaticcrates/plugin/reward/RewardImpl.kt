@@ -23,4 +23,5 @@ class RewardImpl(
     override val amountRanges: MutableList<RewardAmountRange>,
     override val rarity: RewardRarity,
     override val variables: MutableMap<String, String>,
+    override val previewFallbackItem: AquaticItem?,
 ) : Reward

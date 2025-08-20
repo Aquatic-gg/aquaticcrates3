@@ -26,6 +26,7 @@ interface Reward : IChance {
     val amountRanges: MutableList<RewardAmountRange>
     val rarity: RewardRarity
     val variables: MutableMap<String, String>
+    val previewFallbackItem: AquaticItem?
 
     fun give(player: Player, randomAmount: Int, massOpen: Boolean) {
         val crateEntry = player.toAquaticPlayer()?.crateEntry() ?: return
