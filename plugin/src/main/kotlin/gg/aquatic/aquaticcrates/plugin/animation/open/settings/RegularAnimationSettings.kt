@@ -25,7 +25,8 @@ class RegularAnimationSettings(
     override val postAnimationTasks: TreeMap<Int, Collection<ConfiguredExecutableObject<PlayerBoundAnimation, Unit>>>,
     override val finalAnimationTasks: Collection<ConfiguredExecutableObject<PlayerBoundAnimation, Unit>>,
     override val skippable: Boolean,
-    val personal: Boolean, override val variables: Map<String, String>,
+    val personal: Boolean,
+    override val variables: Map<String, String>,
 ) : CrateAnimationSettings() {
 
     override fun create(

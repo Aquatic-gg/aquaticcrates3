@@ -26,6 +26,12 @@ class RegularAnimationImpl(
     override val settings = animationManager.animationSettings
     override val props: ConcurrentHashMap<String, AnimationProp> = ConcurrentHashMap()
 
+    init {
+        for ((id, value) in settings.variables) {
+            extraPlaceholders["variable:$id"] = { str -> str.replace("%variable:$id%", value) }
+        }
+    }
+
     override fun onReroll() {
         val crate = animationManager.crate as OpenableCrate
         val rerollManager = animationManager.rerollManager!!

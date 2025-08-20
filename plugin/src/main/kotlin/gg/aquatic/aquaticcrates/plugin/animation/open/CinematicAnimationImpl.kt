@@ -28,8 +28,13 @@ class CinematicAnimationImpl(
 
     @Volatile
     override var state: State = State.PRE_OPEN
-
     override val settings = animationManager.animationSettings as CinematicAnimationSettings
+
+    init {
+        for ((id, value) in settings.variables) {
+            extraPlaceholders["variable:$id"] = { str -> str.replace("%variable:$id%", value) }
+        }
+    }
 
     private var attached = false
     override val props: ConcurrentHashMap<String, AnimationProp> = ConcurrentHashMap()
