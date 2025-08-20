@@ -2,6 +2,7 @@ package gg.aquatic.aquaticcrates.api.crate
 
 import gg.aquatic.aquaticcrates.api.animation.crate.CrateAnimationManager
 import gg.aquatic.aquaticcrates.api.openprice.OpenPriceGroup
+import gg.aquatic.aquaticcrates.api.reward.showcase.RewardShowcase
 import gg.aquatic.aquaticcrates.api.util.Rewardable
 import gg.aquatic.waves.util.requirement.ConfiguredRequirement
 import org.bukkit.entity.Player
@@ -13,6 +14,7 @@ abstract class OpenableCrate : Crate(), Rewardable {
     //abstract val openRequirements: MutableList<ConfiguredRequirement<Player>>
     abstract val openPriceGroups: MutableList<OpenPriceGroup>
     abstract val animationManager: CrateAnimationManager
+    abstract val defaultRewardShowcase: RewardShowcase?
 
     abstract fun tryInstantOpen(player: Player, location: org.bukkit.Location, spawnedCrate: SpawnedCrate?)
     abstract fun instantOpen(player: Player, location: org.bukkit.Location, spawnedCrate: SpawnedCrate?)

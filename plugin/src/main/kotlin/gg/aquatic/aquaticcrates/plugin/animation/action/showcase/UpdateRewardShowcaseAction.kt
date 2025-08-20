@@ -31,7 +31,7 @@ class UpdateRewardShowcaseAction: Action<Animation> {
 
         val crate = binder.animationManager.crate as OpenableCrate
         val reward = crate.rewardManager.rewards[rewardId] ?: return
-        val showcase = reward.showcase ?: return
+        val showcase = reward.showcase ?: crate.defaultRewardShowcase ?: return
 
         prop.showcaseHandle?.showcase?.despawnActions?.executeActions(binder) { p, str -> textUpdater(p, str)}
         prop.update(reward, showcase)

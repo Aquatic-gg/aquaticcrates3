@@ -12,6 +12,7 @@ import gg.aquatic.aquaticcrates.api.openprice.OpenPriceGroup
 import gg.aquatic.aquaticcrates.api.openprice.impl.CrateKeyPrice
 import gg.aquatic.aquaticcrates.api.reward.Reward
 import gg.aquatic.aquaticcrates.api.reward.RewardRarity
+import gg.aquatic.aquaticcrates.api.reward.showcase.RewardShowcaseSerializer
 import gg.aquatic.aquaticcrates.plugin.CratesPlugin
 import gg.aquatic.aquaticcrates.plugin.animation.fail.settings.FailAnimationSettings
 import gg.aquatic.aquaticcrates.plugin.animation.idle.settings.IdleAnimationSettings
@@ -371,6 +372,11 @@ object CrateSerializer : BaseSerializer() {
             mutableListOf()
         )
         Bukkit.getConsoleSender().sendMessage("Loaded ${openPriceGroups.sumOf { it.prices.size }} open price groups")
+
+        val defaultRewardShowcase = cfg.getConfigurationSection("showcase")?.let {
+            RewardShowcaseSerializer.load(it)
+        }
+
         return BasicCrate(
             identifier,
             cfg.getString("display-name") ?: identifier,
@@ -399,7 +405,8 @@ object CrateSerializer : BaseSerializer() {
             previewMenuPages,
             massOpenFinalActions,
             massOpenPerRewardActions,
-            openRestrictions
+            openRestrictions,
+            defaultRewardShowcase
         )
     }
 

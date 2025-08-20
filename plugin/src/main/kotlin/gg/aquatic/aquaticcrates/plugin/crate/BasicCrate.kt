@@ -10,6 +10,7 @@ import gg.aquatic.aquaticcrates.api.hologram.HologramSettings
 import gg.aquatic.aquaticcrates.api.interaction.crate.CrateInteractHandler
 import gg.aquatic.aquaticcrates.api.openprice.OpenPriceGroup
 import gg.aquatic.aquaticcrates.api.reward.RewardManager
+import gg.aquatic.aquaticcrates.api.reward.showcase.RewardShowcase
 import gg.aquatic.aquaticcrates.plugin.CratesPlugin
 import gg.aquatic.aquaticcrates.plugin.preview.CratePreviewMenu
 import gg.aquatic.aquaticcrates.plugin.preview.CratePreviewMenuSettings
@@ -48,7 +49,8 @@ class BasicCrate(
     val previewMenuSettings: MutableList<CratePreviewMenuSettings>,
     val massOpenFinalActions: MutableList<ConfiguredExecutableObject<Player, Unit>>,
     val massOpenPerRewardActions: MutableList<ConfiguredExecutableObject<Player, Unit>>,
-    val openRestrictions: MutableList<ConfiguredRequirement<OpenData>>
+    val openRestrictions: MutableList<ConfiguredRequirement<OpenData>>,
+    override val defaultRewardShowcase: RewardShowcase?
 ) : OpenableCrate() {
 
     var openManager = BasicOpenManager(this)
