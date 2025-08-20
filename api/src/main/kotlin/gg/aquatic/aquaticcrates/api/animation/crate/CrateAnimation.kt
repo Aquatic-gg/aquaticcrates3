@@ -23,6 +23,12 @@ abstract class CrateAnimation : PlayerBoundAnimation() {
 
     abstract val rewards: MutableList<RolledReward>
 
+    init {
+        for ((id, value) in settings.variables) {
+            extraPlaceholders["variable:$id"] = { str -> str.replace("%variable:$id%", value) }
+        }
+    }
+
     fun tickPreOpen() {
         executeActions(animationManager.animationSettings.preAnimationTasks[tick] ?: return)
     }

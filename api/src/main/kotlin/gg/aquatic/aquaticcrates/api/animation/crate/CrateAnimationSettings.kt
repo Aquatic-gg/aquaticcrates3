@@ -18,6 +18,7 @@ abstract class CrateAnimationSettings {
     abstract val postAnimationTasks: TreeMap<Int, Collection<ConfiguredExecutableObject<PlayerBoundAnimation, Unit>>>
     abstract val finalAnimationTasks: Collection<ConfiguredExecutableObject<PlayerBoundAnimation, Unit>>
     abstract val skippable: Boolean
+    abstract val variables: Map<String, String>
 
     abstract fun create(player: Player, animationManager: CrateAnimationManager, location: Location, rolledRewards: MutableList<RolledReward>): CompletableFuture<CrateAnimation>
 

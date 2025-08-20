@@ -29,7 +29,8 @@ class CinematicAnimationSettings(
     override val finalAnimationTasks: Collection<ConfiguredExecutableObject<PlayerBoundAnimation, Unit>>,
     override val skippable: Boolean,
     val cinematicLocation: AquaticLocation,
-    val cameraLocation: Pair<Vector, Pair<Float,Float>>
+    val cameraLocation: Pair<Vector, Pair<Float,Float>>,
+    override val variables: Map<String, String>
 ) : CrateAnimationSettings() {
 
     override fun create(
@@ -115,6 +116,11 @@ class CinematicAnimationSettings(
             val duration = loadAnimationLength(section)
             val delay = loadPreAnimationDelay(section)
             val postDelay = loadPostAnimationDelay(section)
+            val variables = HashMap<String, String>()
+            val variableSection = section.getConfigurationSection("variables") ?: return null
+            variableSection.getKeys(false).forEach { key ->
+                variables[key] = variableSection.getString(key) ?: ""
+            }
             return CinematicAnimationSettings(
                 loadAnimationTasks(section.getConfigurationSection("tasks"),duration),
                 duration,
@@ -125,7 +131,8 @@ class CinematicAnimationSettings(
                 loadFinalActions(section),
                 loadSkippable(section),
                 cinematicLocation,
-                cameraLocation
+                cameraLocation,
+                variables
             )
         }
 

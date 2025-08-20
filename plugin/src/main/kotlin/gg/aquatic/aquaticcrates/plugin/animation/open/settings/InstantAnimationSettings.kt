@@ -30,6 +30,7 @@ class InstantAnimationSettings(
     override val postAnimationTasks: TreeMap<Int, Collection<ConfiguredExecutableObject<PlayerBoundAnimation, Unit>>> =
         TreeMap()
     override val skippable: Boolean = false
+    override val variables: Map<String, String> = mapOf()
 
     override fun create(
         player: Player,

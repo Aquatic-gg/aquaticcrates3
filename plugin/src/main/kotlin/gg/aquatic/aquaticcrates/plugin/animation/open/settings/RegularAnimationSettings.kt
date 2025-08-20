@@ -25,7 +25,7 @@ class RegularAnimationSettings(
     override val postAnimationTasks: TreeMap<Int, Collection<ConfiguredExecutableObject<PlayerBoundAnimation, Unit>>>,
     override val finalAnimationTasks: Collection<ConfiguredExecutableObject<PlayerBoundAnimation, Unit>>,
     override val skippable: Boolean,
-    val personal: Boolean,
+    val personal: Boolean, override val variables: Map<String, String>,
 ) : CrateAnimationSettings() {
 
     override fun create(
@@ -96,6 +96,11 @@ class RegularAnimationSettings(
             val duration = loadAnimationLength(section)
             val delay = loadPreAnimationDelay(section)
             val postDelay = loadPostAnimationDelay(section)
+            val variables = HashMap<String, String>()
+            val variableSection = section.getConfigurationSection("variables") ?: return null
+            variableSection.getKeys(false).forEach { key ->
+                variables[key] = variableSection.getString(key) ?: ""
+            }
             return RegularAnimationSettings(
                 loadAnimationTasks(section.getConfigurationSection("tasks"), duration),
                 duration,
@@ -105,7 +110,8 @@ class RegularAnimationSettings(
                 loadPostAnimationTasks(section, postDelay),
                 loadFinalActions(section),
                 loadSkippable(section),
-                loadIsPersonal(section)
+                loadIsPersonal(section),
+                variables
             )
         }
 

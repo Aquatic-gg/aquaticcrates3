@@ -3,6 +3,7 @@ package gg.aquatic.aquaticcrates.api.reward
 import gg.aquatic.aquaticcrates.api.AbstractCratesPlugin
 import gg.aquatic.aquaticcrates.api.player.CrateProfileEntry
 import gg.aquatic.aquaticcrates.api.player.crateEntry
+import gg.aquatic.aquaticcrates.api.reward.showcase.RewardShowcase
 import gg.aquatic.waves.item.AquaticItem
 import gg.aquatic.waves.profile.toAquaticPlayer
 import gg.aquatic.waves.util.chance.IChance
@@ -27,6 +28,7 @@ interface Reward : IChance {
     val rarity: RewardRarity
     val variables: MutableMap<String, String>
     val previewFallbackItem: AquaticItem?
+    val showcase: RewardShowcase?
 
     fun give(player: Player, randomAmount: Int, massOpen: Boolean) {
         val crateEntry = player.toAquaticPlayer()?.crateEntry() ?: return
