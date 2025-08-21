@@ -50,6 +50,7 @@ class ShowModelAction : Action<Animation> {
             (locationOffsetStrings.getOrNull(3)?.toFloatOrNull() ?: 0.0f) to (locationOffsetStrings.getOrNull(4)
                 ?.toFloatOrNull() ?: 0.0f)
 
+        binder.props["model:$id"]?.onAnimationEnd()
         val boundPaths = boundPropertiesFactory(binder)
         var i = 0
         val prop = ModelAnimationProp(
