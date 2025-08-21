@@ -95,6 +95,8 @@ import org.bukkit.persistence.PersistentDataType
 import java.util.*
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.CompletableFuture.runAsync
+import java.util.concurrent.Executors
+import java.util.concurrent.TimeUnit
 
 class CratesPlugin : AbstractCratesPlugin() {
 
@@ -409,13 +411,14 @@ class CratesPlugin : AbstractCratesPlugin() {
     }
 
     private fun startTicker() {
-        runAsyncTimer(1, 1) {
+        val scheduler = Executors.newSingleThreadScheduledExecutor()
+        scheduler.scheduleWithFixedDelay({
             for ((_, crate) in CrateHandler.crates) {
                 if (crate is OpenableCrate) {
                     crate.animationManager.tick()
                 }
             }
-        }
+        },0,50, TimeUnit.MILLISECONDS)
     }
 
     private fun load(): CompletableFuture<Void> {
