@@ -3,14 +3,7 @@ package gg.aquatic.aquaticcrates.api.reward.showcase.empty
 import gg.aquatic.aquaticcrates.api.animation.Animation
 import gg.aquatic.aquaticcrates.api.reward.Reward
 import gg.aquatic.aquaticcrates.api.reward.showcase.RewardShowcaseHandle
-import gg.aquatic.aquaticcrates.api.reward.showcase.item.ItemRewardShowcase
-import gg.aquatic.waves.fake.entity.FakeEntity
-import gg.aquatic.waves.fake.entity.data.impl.ItemEntityData
-import gg.aquatic.waves.fake.entity.data.impl.living.BaseEntityData
 import gg.aquatic.waves.hologram.AquaticHologram
-import gg.aquatic.waves.interactable.type.EntityInteractable
-import gg.aquatic.waves.util.collection.mapPair
-import org.bukkit.entity.EntityType
 import org.bukkit.util.Vector
 
 class EmptyRewardShowcaseHandle(

@@ -117,9 +117,10 @@ class CinematicAnimationSettings(
             val delay = loadPreAnimationDelay(section)
             val postDelay = loadPostAnimationDelay(section)
             val variables = HashMap<String, String>()
-            val variableSection = section.getConfigurationSection("variables") ?: return null
-            variableSection.getKeys(false).forEach { key ->
-                variables[key] = variableSection.getString(key) ?: ""
+            section.getConfigurationSection("variables")?.let {
+                it.getKeys(false).forEach { key ->
+                    variables[key] = it.getString(key) ?: ""
+                }
             }
             return CinematicAnimationSettings(
                 loadAnimationTasks(section.getConfigurationSection("tasks"),duration),
