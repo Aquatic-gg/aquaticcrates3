@@ -8,6 +8,7 @@ import gg.aquatic.aquaticcrates.plugin.animation.prop.path.PathBoundProperties
 import gg.aquatic.aquaticcrates.plugin.animation.prop.path.PathProp
 import gg.aquatic.waves.interactable.type.MEGInteractable
 import gg.aquatic.waves.util.runSync
+import org.bukkit.Color
 import org.bukkit.Location
 import org.bukkit.entity.Player
 import org.bukkit.util.Vector
@@ -17,6 +18,7 @@ class ModelAnimationProp(
     override val animation: Animation,
     val model: String,
     val skin: Player?,
+    tint: Color?,
     val modelAnimation: String?,
     override val locationOffset: Vector,
     override val boundPaths: ConcurrentHashMap<PathProp, Pair<PathBoundProperties, Int>>,
@@ -51,7 +53,12 @@ class ModelAnimationProp(
             if (modelAnimation != null) {
                 playAnimation(modelAnimation)
             }
+            tint?.let { interactable!!.setTint(it) }
         }
+    }
+
+    fun setTint(color: Color) {
+        interactable?.setTint(color)
     }
 
     override fun tick() {

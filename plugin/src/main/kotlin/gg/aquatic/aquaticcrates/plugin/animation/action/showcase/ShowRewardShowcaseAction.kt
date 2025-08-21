@@ -13,7 +13,9 @@ import org.bukkit.util.Vector
 class ShowRewardShowcaseAction: Action<Animation> {
     override val arguments: List<AquaticObjectArgument<*>> = listOf(
         PrimitiveObjectArgument("id", "example", true),
-        PrimitiveObjectArgument("location-offset","0;0;0", false)
+        PrimitiveObjectArgument("location-offset","0;0;0", false),
+        PrimitiveObjectArgument("velocity", "0;0;0", false),
+        PrimitiveObjectArgument("power", 1.0, false),
     )
 
     override fun execute(
@@ -22,6 +24,10 @@ class ShowRewardShowcaseAction: Action<Animation> {
         textUpdater: (Animation, String) -> String
     ) {
         val id = args.string("id") { textUpdater(binder, it) } ?: return
+        val velocity = args.vector("velocity") { textUpdater(binder, it) } ?: return
+        val power = args.double("power") { textUpdater(binder, it) } ?: 0.0
+
+        val vector = velocity.clone().multiply(power)
 
         val locationOffsetStrings = (args.string("location-offset") { textUpdater(binder, it)} ?: "").split(";")
 
@@ -34,7 +40,7 @@ class ShowRewardShowcaseAction: Action<Animation> {
             (locationOffsetStrings.getOrNull(3)?.toFloatOrNull() ?: 0.0f) to (locationOffsetStrings.getOrNull(4)
                 ?.toFloatOrNull() ?: 0.0f)
 
-        val prop = RewardShowcaseAnimationProp(binder, locationOffsetVector to locationOffsetYawPitch)
+        val prop = RewardShowcaseAnimationProp(binder, locationOffsetVector to locationOffsetYawPitch, vector)
         binder.props["reward-showcase:$id"]?.onAnimationEnd()
         binder.props["reward-showcase:$id"] = prop
     }

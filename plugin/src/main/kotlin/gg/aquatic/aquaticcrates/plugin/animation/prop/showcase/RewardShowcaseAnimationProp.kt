@@ -13,7 +13,8 @@ import org.bukkit.util.Vector
 
 class RewardShowcaseAnimationProp(
     override val animation: Animation,
-    val locationOffset: Pair<Vector, Pair<Float, Float>>
+    val locationOffset: Pair<Vector, Pair<Float, Float>>,
+    val velocity: Vector,
 ) : AnimationProp(), Throwable {
 
     var showcaseHandle: RewardShowcaseHandle<*>? = null
@@ -34,7 +35,11 @@ class RewardShowcaseAnimationProp(
             return
         }
         showcaseHandle?.destroy()
+        val isFirst = showcaseHandle == null
         showcaseHandle = rewardShowcase.create(animation, reward, locationOffset)
+        if (isFirst) {
+            throwObject(velocity)
+        }
     }
 
     override fun throwObject(vector: Vector) {

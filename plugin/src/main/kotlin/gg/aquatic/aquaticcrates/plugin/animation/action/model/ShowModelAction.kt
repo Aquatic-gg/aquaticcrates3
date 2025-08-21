@@ -11,6 +11,7 @@ import gg.aquatic.waves.util.argument.AquaticObjectArgument
 import gg.aquatic.waves.util.argument.ObjectArguments
 import gg.aquatic.waves.util.argument.impl.PrimitiveObjectArgument
 import gg.aquatic.waves.util.generic.Action
+import org.bukkit.Color
 import org.bukkit.util.Vector
 import java.util.concurrent.ConcurrentHashMap
 
@@ -22,6 +23,7 @@ class ShowModelAction : Action<Animation> {
         PrimitiveObjectArgument("model", "", true),
         PrimitiveObjectArgument("apply-skin", true, required = false),
         PrimitiveObjectArgument("animation", null, false),
+        PrimitiveObjectArgument("tint","255;255;255", false),
         PrimitiveObjectArgument("location-offset", "0;0;0", false),
         BoundPathObjectArgument(
             "bound-paths",
@@ -35,6 +37,7 @@ class ShowModelAction : Action<Animation> {
         val id = args.string("id") { textUpdater(binder, it) } ?: return
         val model = args.string("model") { textUpdater(binder, it) } ?: return
         val applySkin = args.boolean("apply-skin") { textUpdater(binder, it) } ?: true
+        val tint = args.string("tint") { textUpdater(binder, it) }
         val animation = args.string("animation") { textUpdater(binder, it) }
         val boundPropertiesFactory =
             args.any("bound-paths") as? ((Animation) -> ConcurrentHashMap<PathProp, PathBoundProperties>)
@@ -50,6 +53,11 @@ class ShowModelAction : Action<Animation> {
             (locationOffsetStrings.getOrNull(3)?.toFloatOrNull() ?: 0.0f) to (locationOffsetStrings.getOrNull(4)
                 ?.toFloatOrNull() ?: 0.0f)
 
+        val tintColor = tint?.let {
+            val split = it.split(";")
+            Color.fromRGB(split[0].toInt(), split[1].toInt(), split[2].toInt())
+        }
+
         binder.props["model:$id"]?.onAnimationEnd()
         val boundPaths = boundPropertiesFactory(binder)
         var i = 0
@@ -57,6 +65,7 @@ class ShowModelAction : Action<Animation> {
             binder,
             model,
             if (applySkin && binder is PlayerBoundAnimation) binder.player else null,
+            tintColor,
             animation,
             locationOffsetVector,
             ConcurrentHashMap(boundPaths.mapValues {
