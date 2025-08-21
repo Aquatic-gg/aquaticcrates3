@@ -12,7 +12,7 @@ import gg.aquatic.waves.util.collection.executeActions
 import gg.aquatic.waves.util.generic.Action
 
 @RegisterAction("update-reward-showcase")
-class UpdateRewardShowcaseAction: Action<Animation> {
+class UpdateRewardShowcaseAction : Action<Animation> {
     override val arguments: List<AquaticObjectArgument<*>> = listOf(
         PrimitiveObjectArgument("id", "example", true),
         PrimitiveObjectArgument("reward-id", "example", true),
@@ -33,8 +33,14 @@ class UpdateRewardShowcaseAction: Action<Animation> {
         val reward = crate.rewardManager.rewards[rewardId] ?: return
         val showcase = reward.showcase ?: crate.defaultRewardShowcase ?: return
 
-        prop.showcaseHandle?.showcase?.despawnActions?.executeActions(binder) { p, str -> textUpdater(p, str)}
+
+        prop.showcaseHandle?.showcase?.despawnActions?.executeActions(binder) { p, str ->
+            textUpdater(
+                p, prop.showcaseHandle?.reward?.updatePlaceholders(str)
+                    ?: str
+            )
+        }
         prop.update(reward, showcase)
-        showcase.spawnActions.executeActions(binder) { p, str -> textUpdater(p, str)}
+        showcase.spawnActions.executeActions(binder) { p, str -> textUpdater(p, reward.updatePlaceholders(str)) }
     }
 }

@@ -16,7 +16,7 @@ class ItemRewardShowcaseHandle(
     override val animation: Animation,
     override var showcase: ItemRewardShowcase,
     val locationOffset: Pair<Vector, Pair<Float, Float>>,
-    var reward: Reward
+    override var reward: Reward
 ) :
     RewardShowcaseHandle<ItemRewardShowcase> {
 
@@ -58,7 +58,7 @@ class ItemRewardShowcaseHandle(
                 this.pitch = locationOffset.second.second
             },
             { p -> animation.audience.canBeApplied(p) },
-            { _, str -> animation.updatePlaceholders(str) },
+            { _, str -> animation.updatePlaceholders(reward.updatePlaceholders(str)) },
             50,
             showcase.hologram.map { it.create() }.toSet()
         ).apply {

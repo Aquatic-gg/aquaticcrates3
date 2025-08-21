@@ -5,6 +5,7 @@ import gg.aquatic.aquaticcrates.api.reward.Reward
 
 interface RewardShowcaseHandle<T : RewardShowcase> {
 
+    var reward: Reward
     val showcase: T
     val animation: Animation
 
