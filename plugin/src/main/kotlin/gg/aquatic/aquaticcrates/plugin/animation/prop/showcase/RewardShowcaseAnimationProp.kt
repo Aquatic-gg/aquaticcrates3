@@ -28,7 +28,7 @@ class RewardShowcaseAnimationProp(
     }
 
     fun <T : RewardShowcase> update(reward: Reward, rewardShowcase: T) {
-        if (showcaseHandle?.javaClass?.genericInterfaces?.firstOrNull() == rewardShowcase.javaClass) {
+        if (showcaseHandle?.showcase?.javaClass == rewardShowcase.javaClass) {
             (showcaseHandle as RewardShowcaseHandle<T>).update(
                 rewardShowcase, reward
             )
