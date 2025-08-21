@@ -318,14 +318,16 @@ object CrateSerializer : BaseSerializer() {
             ?: InstantAnimationSettings.serialize(null)
         Bukkit.getConsoleSender().sendMessage("Loaded ${animationSettings.animationTasks.size} animation tasks")
 
+        val rewards = loadRewards(rewardSection, rarities)
         val guaranteedRewardsSection = cfg.getConfigurationSection("guaranteed-rewards")
         val guaranteedRewards = HashMap<Int, Reward>()
         if (guaranteedRewardsSection != null) {
             for (milestoneStr in guaranteedRewardsSection.getKeys(false)) {
                 val milestone = milestoneStr.toIntOrNull() ?: continue
-                val section = guaranteedRewardsSection.getConfigurationSection(milestoneStr) ?: continue
-                val reward = loadReward(section, rarities) ?: continue
-                guaranteedRewards += milestone to reward
+                val rewardId = guaranteedRewardsSection.getString(milestoneStr) ?: continue
+                val reward = rewards[rewardId] ?: continue
+                guaranteedRewards[milestone] = reward
+                Bukkit.getConsoleSender().sendMessage("Loaded guaranteed reward $rewardId for milestone $milestone")
             }
         }
 
@@ -397,8 +399,6 @@ object CrateSerializer : BaseSerializer() {
             key,
             { bc ->
                 val possibleRewardRanges = loadRewardRanges(cfg.getSectionList("possible-rewards"))
-                val rewards = loadRewards(rewardSection, rarities)
-
                 RewardManagerImpl(bc, possibleRewardRanges, guaranteedRewards, milestoneManager, rewards)
             },
             interactHandler,
