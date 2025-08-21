@@ -5,11 +5,16 @@ import gg.aquatic.aquaticcrates.api.animation.prop.AnimationProp
 import gg.aquatic.aquaticcrates.api.reward.Reward
 import gg.aquatic.aquaticcrates.api.reward.showcase.RewardShowcase
 import gg.aquatic.aquaticcrates.api.reward.showcase.RewardShowcaseHandle
+import gg.aquatic.aquaticcrates.api.reward.showcase.item.ItemRewardShowcaseHandle
+import gg.aquatic.aquaticcrates.plugin.animation.prop.Throwable
+import gg.aquatic.waves.Waves
+import gg.aquatic.waves.util.sendPacket
+import org.bukkit.util.Vector
 
 class RewardShowcaseAnimationProp(
     override val animation: Animation,
-    val locationOffset: Pair<org.bukkit.util.Vector, Pair<Float, Float>>
-) : AnimationProp() {
+    val locationOffset: Pair<Vector, Pair<Float, Float>>
+) : AnimationProp(), Throwable {
 
     var showcaseHandle: RewardShowcaseHandle<*>? = null
 
@@ -30,6 +35,16 @@ class RewardShowcaseAnimationProp(
         }
         showcaseHandle?.destroy()
         showcaseHandle = rewardShowcase.create(animation, reward, locationOffset)
+    }
+
+    override fun throwObject(vector: Vector) {
+        val handle = showcaseHandle ?: return
+        if (handle !is ItemRewardShowcaseHandle) return
+        val entity = handle.interactable.entity
+        val motionPacket = Waves.NMS_HANDLER.createEntityMotionPacket(entity.entityId, vector)
+        for (viewer in entity.viewers) {
+            viewer.sendPacket(motionPacket)
+        }
     }
 
 
