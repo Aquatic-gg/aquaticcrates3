@@ -11,7 +11,7 @@ import gg.aquatic.aquaticcrates.api.interaction.crate.CrateInteractHandler
 import gg.aquatic.aquaticcrates.api.openprice.OpenPriceGroup
 import gg.aquatic.aquaticcrates.api.reward.RewardManager
 import gg.aquatic.aquaticcrates.api.reward.showcase.RewardShowcase
-import gg.aquatic.aquaticcrates.plugin.CratesPlugin
+import gg.aquatic.aquaticcrates.plugin.Bootstrap
 import gg.aquatic.aquaticcrates.plugin.preview.CratePreviewMenu
 import gg.aquatic.aquaticcrates.plugin.preview.CratePreviewMenuSettings
 import gg.aquatic.aquaticcrates.plugin.restriction.OpenData
@@ -87,7 +87,7 @@ class BasicCrate(
                         runLaterSync(2) {
                             CrateHandler.spawnCrate(this@BasicCrate, location.clone().add(.5, 1.0, .5))
                             runAsync {
-                                CrateHandler.saveSpawnedCrates(CratesPlugin.spawnedCratesConfig)
+                                CrateHandler.saveSpawnedCrates(Bootstrap.spawnedCratesConfig)
                             }
                         }
                         e.player.sendMessage("Crate Spawned")

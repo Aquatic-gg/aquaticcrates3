@@ -39,7 +39,7 @@ enum class Messages(
     fun send(sender: CommandSender) = message.send(sender)
 
     companion object {
-        private val config = Config("messages.yml", CratesPlugin.INSTANCE)
+        private val config = Config("messages.yml", CratesPlugin.getInstance())
 
         fun load() {
             config.load()

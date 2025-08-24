@@ -9,7 +9,7 @@ dependencies:
   server:
     Waves:
       load: BEFORE
-      required: true
+      required: false
     Comet:
       load: BEFORE
       required: false
@@ -20,5 +20,8 @@ dependencies:
       load: BEFORE
       required: false
     CraftEngine:
+      load: BEFORE
+      required: false
+    HMCCosmetics:
       load: BEFORE
       required: false

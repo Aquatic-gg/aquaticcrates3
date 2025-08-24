@@ -3,6 +3,7 @@ plugins {
     id("com.gradleup.shadow") version "9.0.0-beta11"
     id("co.uzzu.dotenv.gradle") version "2.0.0"
     id("xyz.jpenilla.run-paper") version "2.3.1"
+    java
 
 }
 
@@ -26,6 +27,7 @@ subprojects {
     apply(plugin = "kotlin")
     apply(plugin = "com.gradleup.shadow")
     apply(plugin = "xyz.jpenilla.run-paper")
+    apply(plugin = "java")
 
     version = projectVersion
 
@@ -48,6 +50,9 @@ subprojects {
         maven {
             url = uri("https://repo.codemc.io/repository/maven-snapshots/")
         }
+        maven {
+            url = uri("https://repo.hibiscusmc.com/releases")
+        }
     }
 
     dependencies {
@@ -57,6 +62,7 @@ subprojects {
         compileOnly("com.ticxo.modelengine:ModelEngine:R4.0.8")
         compileOnly("gg.aquatic.waves:Waves:1.3.8:publish")
         compileOnly("io.github.toxicity188:BetterModel:1.10.1")
+        compileOnly("com.hibiscusmc:HMCCosmetics:2.8.1-1ef7f475")
         //implementation("net.kyori:adventure-api:4.17.0")
     }
 

@@ -16,9 +16,26 @@ dependencies {
     compileOnly("net.momirealms:craft-engine-bukkit:0.0.61")
 }
 
+sourceSets {
+    main {
+        kotlin {
+            srcDir("src/main/kotlin")
+        }
+        java {
+            srcDir("src/main/java")
+        }
+    }
+}
+
 version = parent!!.version
 
 tasks {
+
+    withType<Jar> {
+        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    }
+
+
 
     build {
         dependsOn(shadowJar)
@@ -44,6 +61,11 @@ tasks {
     val sourcesJar by creating(Jar::class) {
         archiveClassifier.set("sources")
         from(sourceSets["main"].allSource)
+    }
+
+    // Or specifically for sourcesJar if it's defined separately
+    named<Jar>("sourcesJar") {
+        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     }
 
     artifacts {

@@ -20,20 +20,20 @@ object ConvertCommand: ICommand {
 
         fun convert(file: File) {
             val time = System.currentTimeMillis()
-            converter.convert(Config(file, CratesPlugin.INSTANCE).apply { load() })
+            converter.convert(Config(file, CratesPlugin.getInstance()).apply { load() })
             sender.sendMessage("Converted ${file.name} in ${System.currentTimeMillis() - time}ms")
         }
 
         val fileName = args[2]
         if (fileName == "*") {
             runAsync {
-                CratesPlugin.INSTANCE.dataFolder.resolve("convert").listFiles()?.forEach {
+                CratesPlugin.getInstance().dataFolder.resolve("convert").listFiles()?.forEach {
                     convert(it)
                 }
             }
             return
         }
-        val inputFile = CratesPlugin.INSTANCE.dataFolder.resolve("convert").resolve(args[2])
+        val inputFile = CratesPlugin.getInstance().dataFolder.resolve("convert").resolve(args[2])
         runAsync {
             convert(inputFile)
         }
@@ -43,7 +43,7 @@ object ConvertCommand: ICommand {
     override fun tabComplete(sender: CommandSender, args: Array<out String>): List<String> {
         return when (args.size) {
             1 -> CONVERTERS.keys.toList()
-            2 -> CratesPlugin.INSTANCE.dataFolder.resolve("convert").listFiles()?.map { it.name }?.toMutableList()?.apply {
+            2 -> CratesPlugin.getInstance().dataFolder.resolve("convert").listFiles()?.map { it.name }?.toMutableList()?.apply {
                 add("*")
             } ?: emptyList()
             else -> emptyList()

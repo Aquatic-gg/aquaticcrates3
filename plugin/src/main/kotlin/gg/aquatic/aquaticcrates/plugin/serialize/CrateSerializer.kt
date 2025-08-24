@@ -77,7 +77,7 @@ object CrateSerializer : BaseSerializer() {
     )
 
     fun loadPluginSettings(): PluginSettings {
-        val config = Config("config.yml", CratesPlugin.INSTANCE)
+        val config = Config("config.yml", CratesPlugin.getInstance())
         config.load()
         val cfg = config.getConfiguration()!!
 
@@ -89,7 +89,7 @@ object CrateSerializer : BaseSerializer() {
     }
 
     fun loadLogMenuSettings(): LogMenuSettings {
-        val config = Config("config.yml", CratesPlugin.INSTANCE)
+        val config = Config("config.yml", CratesPlugin.getInstance())
         config.load()
         val cfg = config.getConfiguration()!!
 
@@ -109,7 +109,7 @@ object CrateSerializer : BaseSerializer() {
     }
 
     fun loadRewardMenuSettings(): RewardsMenuSettings {
-        val config = Config("config.yml", CratesPlugin.INSTANCE)
+        val config = Config("config.yml", CratesPlugin.getInstance())
         config.load()
         val cfg = config.getConfiguration()!!
 
@@ -134,10 +134,10 @@ object CrateSerializer : BaseSerializer() {
     }
 
     fun loadCrates(): HashMap<String, Crate> {
-        CratesPlugin.INSTANCE.dataFolder.mkdirs()
+        CratesPlugin.getInstance().dataFolder.mkdirs()
         val crates = HashMap<String, Crate>()
 
-        val basicFolder = File(CratesPlugin.INSTANCE.dataFolder, "crates")
+        val basicFolder = File(CratesPlugin.getInstance().dataFolder, "crates")
         basicFolder.mkdirs()
 
         crates += loadBasicCrates(basicFolder)
@@ -160,7 +160,7 @@ object CrateSerializer : BaseSerializer() {
 
     fun loadBasicCrate(file: File): BasicCrate? {
         val identifier = file.nameWithoutExtension
-        val config = Config(file, CratesPlugin.INSTANCE)
+        val config = Config(file, CratesPlugin.getInstance())
         config.load()
         val cfg = config.getConfiguration()!!
 

@@ -2,7 +2,7 @@ package gg.aquatic.aquaticcrates.plugin.interact.action
 
 import gg.aquatic.aquaticcrates.api.crate.CrateHandler
 import gg.aquatic.aquaticcrates.api.interaction.CrateInteractAction
-import gg.aquatic.aquaticcrates.plugin.CratesPlugin
+import gg.aquatic.aquaticcrates.plugin.Bootstrap
 import gg.aquatic.waves.util.action.RegisterAction
 import gg.aquatic.waves.util.argument.AquaticObjectArgument
 import gg.aquatic.waves.util.argument.ObjectArguments
@@ -27,6 +27,6 @@ class CrateBreakAction: Action<CrateInteractAction> {
         }
          */
         CrateHandler.spawned -= spawnedCrate.location
-        CrateHandler.saveSpawnedCrates(CratesPlugin.spawnedCratesConfig)
+        CrateHandler.saveSpawnedCrates(Bootstrap.spawnedCratesConfig)
     }
 }

@@ -1,0 +1,404 @@
+display-name: "<gradient:#f786be:#6abb64>Demo1 Crate</gradient>"
+key:
+  material: TRIPWIRE_HOOK # Possible values: MATERIAL; itemsadder:ItemId; oraxen:ItemId
+  display-name: "<gradient:#f786be:#6abb64><bold>Demo1 Key</gradient>"
+  lore:
+    - ''
+    - '<#D3D3D3>Open this key at <#f786be>/crates<#D3D3D3>.'
+  #model-data: 0 # Custom Model Data of the ItemStack (Used for custom textures)
+interaction: #Not needed if you want to keep these interactions default
+  RIGHT: # Click type
+    type: "open-crate" # Action type
+  SHIFT_RIGHT:
+    type: "open-crate-instant"
+  LEFT:
+    type: "preview-crate"
+  SHIFT_LEFT: #To view crate config
+    type: "execute-actions"
+    actions:
+      - type: "message"
+        message: "<#C4F1F1>[ <click:open_url:'https://discord.com/channels/884159187565826179/1395460355462926367'><u>Click to view this crate config...</u></click> ]"
+  #SHIFT_LEFT:
+  #  type: "destroy-crate" # Only players with "aquaticcrates.admin" can really break it
+open-price-groups:
+  - prices:
+      - type: "crate-key"
+        crate: "demo1"
+        fail-actions:
+          - type: message
+            message: "<#FF474C>You do not have a <gradient:#f786be:#6abb64>Demo1 Key</gradient> <#FF474C>to open this."
+open-restrictions: #cancel crate open if inventory is full
+  - type: "full-inventory"
+interactables:
+  - type: MODELENGINE
+    model: iron_crate_1
+    offset: "0;0;0"
+  - type: BLOCK
+    material: BARRIER
+hologram:
+  offset: "0;2;0"
+  lines:
+    - type: "text"
+      text: "<#75CCD7>[ <u>INSTANT REWARD ANIMATION</u> ]\n\n<gradient:#f786be:#6abb64:%papianimations_mmphase1%><bold>DEMO1 CRATE</gradient>\n\n<#D3D3D3>ᴄʟɪᴄᴋ ᴛᴏ <#f786be>ᴘʀᴇᴠɪᴇᴡ</#f786be>\n<#D3D3D3>ᴀɴᴅ <#f786be>ᴏᴘᴇɴ</#f786be> ᴄʀᴀᴛᴇ\n"
+      line-width: 175
+      has-shadow: true
+      is-see-through: false
+      billboard: FIXED
+      default-background: false
+      background-color: "255;255;255;0"
+      height: 0.5
+possible-rewards:
+  - min: 1
+    max: 1
+    chance: 100
+rewards:
+  demo_axe:
+    item:
+      material: DIAMOND_AXE
+      display-name: "<#f786be>Diamond Axe"
+      amount: 1
+      enchants:
+        - EFFICIENCY:1
+        - UNBREAKING:1
+      flags:
+        - HIDE_ATTRIBUTES
+      lore:
+        - ''
+    chance: 9
+    give-item: false
+    actions:
+      - type: message
+        message: "<#90EE90>You've won a Diamond Axe."
+      - type: giveitem
+        item:
+          display-name: "<#f786be>Diamond Axe"
+          material: DIAMOND_AXE
+          amount: 1
+          enchants:
+            - EFFICIENCY:1
+            - UNBREAKING:1
+          lore: []
+  ironingots:
+    item:
+      material: IRON_INGOT
+      display-name: "<#f786be>8x Iron Ingots"
+      amount: 8
+      lore:
+        - ''
+    chance: 8
+    give-item: true
+    actions:
+      - type: message
+        message: "<#90EE90>You've won 8x Iron Ingots."
+  goldingots:
+    item:
+      material: GOLD_INGOT
+      display-name: "<#f786be>12x Gold Ingots"
+      amount: 12
+      lore:
+        - ''
+    chance: 6
+    give-item: true
+    actions:
+      - type: message
+        message: "<#90EE90>You've won 12x Gold Ingots."
+  stone:
+    item:
+      material: STONE
+      display-name: "<#f786be>25x Stone"
+      amount: 25
+      lore:
+        - ''
+    chance: 5
+    give-item: true
+    actions:
+      - type: message
+        message: "<#90EE90>You've won 25x Stone."
+  cooked_beef:
+    item:
+      material: COOKED_BEEF
+      display-name: "<#f786be>20x Cooked Beef"
+      amount: 20
+      lore:
+        - ''
+    chance: 5
+    give-item: true
+    actions:
+      - type: message
+        message: "<#90EE90>You've won 20x Cooked Beef."
+  golden_apple:
+    item:
+      material: GOLDEN_APPLE
+      display-name: "<#f786be>1x Golden Apple"
+      amount: 1
+      lore:
+        - ''
+    chance: 5
+    give-item: false
+    actions:
+      - type: command
+        command: "give %player% golden_apple 1"
+      - type: message
+        message: "<#90EE90>You've won 1x Golden Apple."
+  nexo_item:
+    item:
+      material: NEXO:forest_helmet
+      display-name: "<#f786be>1x Forest Helmet"
+      amount: 1
+      lore:
+        - ''
+    chance: 5
+    give-item: false
+    actions:
+      - type: message
+        message: "<#90EE90>You've won 1x Forest Helmet."
+      - type: command
+        command: "nexo give forest_helmet 1 %player%"
+  birch_planks:
+    item:
+      material: BIRCH_PLANKS
+      display-name: "<#f786be>64x Birch Planks"
+      amount: 64
+      lore:
+        - ''
+    chance: 6
+    give-item: true
+    actions:
+      - type: message
+        message: "<#90EE90>You've won 64x Birch Planks."
+  spruce_log:
+    item:
+      material: SPRUCE_LOG
+      display-name: "<#f786be>32x Spruce Logs"
+      amount: 32
+      lore:
+        - ''
+    chance: 6
+    give-item: true
+    actions:
+      - type: message
+        message: "<#90EE90>You've won 32x Spruce Logs."
+  jungle_wood:
+    item:
+      material: JUNGLE_WOOD
+      display-name: "<#f786be>48x Jungle Wood"
+      amount: 48
+      lore:
+        - ''
+    chance: 5
+    give-item: true
+    actions:
+      - type: message
+        message: "<#90EE90>You've won 48x Jungle Wood."
+  dark_oak_log:
+    item:
+      material: DARK_OAK_LOG
+      display-name: "<#f786be>32x Dark Oak Logs"
+      amount: 32
+      lore:
+        - ''
+    chance: 5
+    give-item: true
+    actions:
+      - type: message
+        message: "<#90EE90>You've won 32x Dark Oak Logs."
+  mangrove_log:
+    item:
+      material: MANGROVE_LOG
+      display-name: "<#f786be>32x Mangrove Logs"
+      amount: 32
+      lore:
+        - ''
+    chance: 5
+    give-item: true
+    actions:
+      - type: message
+        message: "<#90EE90>You've won 32x Mangrove Logs."
+  bamboo:
+    item:
+      material: BAMBOO
+      display-name: "<#f786be>64x Bamboo"
+      amount: 64
+      lore:
+        - ''
+    chance: 7
+    give-item: true
+    actions:
+      - type: message
+        message: "<#90EE90>You've won 64x Bamboo."
+  scaffolding:
+    item:
+      material: SCAFFOLDING
+      display-name: "<#f786be>32x Scaffolding"
+      amount: 32
+      lore:
+        - ''
+    chance: 5
+    give-item: true
+    actions:
+      - type: message
+        message: "<#90EE90>You've won 32x Scaffolding."
+  slime_ball:
+    item:
+      material: SLIME_BALL
+      display-name: "<#f786be>12x Slime Balls"
+      amount: 12
+      lore:
+        - ''
+    chance: 4
+    give-item: true
+    actions:
+      - type: message
+        message: "<#90EE90>You've won 12x Slime Balls."
+  ghast_tear:
+    item:
+      material: GHAST_TEAR
+      display-name: "<#f786be>3x Ghast Tears"
+      amount: 3
+      lore:
+        - ''
+    chance: 2
+    give-item: true
+    actions:
+      - type: message
+        message: "<#90EE90>You've won 3x Ghast Tears."
+  blaze_rod:
+    item:
+      material: BLAZE_ROD
+      display-name: "<#f786be>8x Blaze Rods"
+      amount: 8
+      lore:
+        - ''
+    chance: 3
+    give-item: true
+    actions:
+      - type: message
+        message: "<#90EE90>You've won 8x Blaze Rods."
+  ender_eye:
+    item:
+      material: ENDER_EYE
+      display-name: "<#f786be>2x Eyes of Ender"
+      amount: 2
+      lore:
+        - ''
+    chance: 2
+    give-item: true
+    actions:
+      - type: message
+        message: "<#90EE90>You've won 2x Eyes of Ender."
+  string:
+    item:
+      material: STRING
+      display-name: "<#f786be>24x String"
+      amount: 24
+      lore:
+        - ''
+    chance: 6
+    give-item: true
+    actions:
+      - type: message
+        message: "<#90EE90>You've won 24x String."
+  honey_bottle:
+    item:
+      material: HONEY_BOTTLE
+      display-name: "<#f786be>4x Honey Bottles"
+      amount: 4
+      lore:
+        - ''
+    chance: 3
+    give-item: true
+    actions:
+      - type: message
+        message: "<#90EE90>You've won 4x Honey Bottles."
+  netherite_helmet:
+    item:
+      material: NETHERITE_HELMET
+      display-name: "<#f786be>1x Netherite Helmet"
+      amount: 1
+      enchants:
+        - PROTECTION:2
+        - UNBREAKING:1
+      lore:
+        - ''
+    chance: 4
+    give-item: false
+    actions:
+      - type: message
+        message: "<#90EE90>You've won 1x Netherite Helmet."
+      - type: giveitem
+        item:
+          display-name: "<#f786be>Netherite Helmet"
+          material: NETHERITE_HELMET
+          amount: 1
+          enchants:
+            - PROTECTION:2
+            - UNBREAKING:1
+
+reroll:
+  type: inventory
+  inventory:
+    title: "            Reroll Prize?"
+    size: 27
+    reward-slots:
+      - 13
+    buttons:
+      reroll:
+        material: RED_STAINED_GLASS_PANE
+        display-name: "<#FF474C>Click to reroll reward."
+        lore:
+          - ""
+          - "&7You can only reroll once per key."
+        slots:
+          - "0-2"
+          - "9-11"
+          - "18-20"
+      claim:
+        material: LIME_STAINED_GLASS_PANE
+        display-name: "<#90EE90>Click to claim reward."
+        slots:
+          - "6-8"
+          - "15-20"
+          - "24-26"
+      border:
+        material: BLACK_STAINED_GLASS_PANE
+        display-name: " "
+        slots:
+          - "3-5"
+          - "12"
+          - "14"
+          - "21-23"
+  groups:
+    unlocked: 1
+
+preview:
+  pages:
+    - reward-slots:
+        - "10-16"
+        - "19-25"
+        - "28-34"
+      reward-lore:
+        - "<#D3D3D3>Chance <dark_gray>| <#f786be>%chance%%"
+      size: 9
+      clear-bottom-inventory: true
+      title: "      <dark_gray>Demo1 Crate Preview"
+      buttons:
+        border:
+          material: BLACK_STAINED_GLASS_PANE
+          display-name: " "
+          slots:
+            - "0-9"
+            - "17-18"
+            - "26-27"
+            - "35-39"
+            - "41-44"
+            #- "50-53"
+        open:
+          material: CHEST_MINECART
+          display-name: "<#f786be>Open Crate"
+          slots:
+            - "40"
+          lore:
+            - ""
+            - "<#D3D3D3>Click to open crate..."
+animation:
+  type: INSTANT

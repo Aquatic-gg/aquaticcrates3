@@ -2,8 +2,11 @@ package gg.aquatic.aquaticcrates.api.animation.crate
 
 import gg.aquatic.aquaticcrates.api.animation.PlayerBoundAnimation
 import gg.aquatic.aquaticcrates.api.crate.OpenableCrate
+import gg.aquatic.aquaticcrates.api.event.CrateAnimationEndEvent
+import gg.aquatic.aquaticcrates.api.event.CrateAnimationStartEvent
 import gg.aquatic.aquaticcrates.api.reward.RolledReward
 import gg.aquatic.aquaticcrates.api.runOrCatch
+import gg.aquatic.waves.api.event.call
 import gg.aquatic.waves.util.collection.executeActions
 import gg.aquatic.waves.util.decimals
 import gg.aquatic.waves.util.generic.ConfiguredExecutableObject
@@ -58,6 +61,7 @@ abstract class CrateAnimation : PlayerBoundAnimation() {
                 State.PRE_OPEN -> {
                     tickPreOpen()
                     if (tick >= settings.preAnimationDelay) {
+                        CrateAnimationStartEvent(animationManager.crate as OpenableCrate,this,player).call()
                         updateState(State.OPENING)
                         tick()
                         return
@@ -125,6 +129,7 @@ abstract class CrateAnimation : PlayerBoundAnimation() {
 
     fun finalizeAnimation(isSync: Boolean = false) {
         updateState(State.FINISHED)
+        CrateAnimationEndEvent(animationManager.crate as OpenableCrate,this,player).call()
         runOrCatch {
             onFinalize(isSync)
         }

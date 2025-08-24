@@ -11,7 +11,7 @@ object LogCommand: ICommand {
         if (sender !is Player) return
         if (!sender.hasPermission("aquaticcrates.admin")) return
 
-        val menu = LogMenu((CratesPlugin.INSTANCE as CratesPlugin).logMenuSettings, sender)
+        val menu = LogMenu((CratesPlugin.getInstance() as CratesPlugin).logMenuSettings, sender)
         menu.open()
     }
 

@@ -12,7 +12,7 @@ object ReloadCommand : ICommand{
             return
         }
         Messages.PLUGIN_RELOADING.send(sender)
-        (CratesPlugin.INSTANCE as CratesPlugin).reloadPlugin().thenAccept {
+        (CratesPlugin.getInstance() as CratesPlugin).reloadPlugin().thenAccept {
             if (!it) {
                 Messages.PLUGIN_IS_NOT_LOADED.send(sender)
                 return@thenAccept

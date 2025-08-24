@@ -9,7 +9,7 @@ import org.bukkit.entity.Player
 object RewardMenuCommand : ICommand {
     override fun run(sender: CommandSender, args: Array<out String>) {
         if (sender !is Player) return
-        val menu = RewardsMenu((CratesPlugin.INSTANCE as CratesPlugin).rewardsMenuSettings, sender)
+        val menu = RewardsMenu((CratesPlugin.getInstance() as CratesPlugin).rewardsMenuSettings, sender)
         menu.open()
     }
 

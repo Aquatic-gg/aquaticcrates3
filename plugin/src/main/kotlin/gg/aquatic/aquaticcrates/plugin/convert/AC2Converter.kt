@@ -10,10 +10,10 @@ object AC2Converter: Converter {
     override fun convert(config: Config) {
         val cfg = config.getConfiguration()!!
 
-        val folder = CratesPlugin.INSTANCE.dataFolder.resolve("converted")
+        val folder = CratesPlugin.getInstance().dataFolder.resolve("converted")
         folder.mkdirs()
 
-        val newConfig = Config(folder.resolve(config.getFile().name), CratesPlugin.INSTANCE)
+        val newConfig = Config(folder.resolve(config.getFile().name), CratesPlugin.getInstance())
         newConfig.load()
         val newCfg = newConfig.getConfiguration()!!
 

@@ -1,7 +1,5 @@
 package gg.aquatic.aquaticcrates.plugin
 
-import gg.aquatic.aquaticcrates.api.AbstractCratesPlugin
-import gg.aquatic.aquaticcrates.api.PluginSettings
 import gg.aquatic.aquaticcrates.api.animation.crate.CrateAnimation
 import gg.aquatic.aquaticcrates.api.animation.crate.CrateAnimationManager
 import gg.aquatic.aquaticcrates.api.crate.CrateHandler
@@ -12,52 +10,24 @@ import gg.aquatic.aquaticcrates.api.player.CrateProfileDriver
 import gg.aquatic.aquaticcrates.api.player.CrateProfileModule
 import gg.aquatic.aquaticcrates.api.player.HistoryHandler
 import gg.aquatic.aquaticcrates.api.reroll.RerollManager
-import gg.aquatic.aquaticcrates.plugin.animation.action.*
-import gg.aquatic.aquaticcrates.plugin.animation.action.block.SetBlockAction
-import gg.aquatic.aquaticcrates.plugin.animation.action.block.SetMultiblockAction
-import gg.aquatic.aquaticcrates.plugin.animation.action.bossbar.*
-import gg.aquatic.aquaticcrates.plugin.animation.action.entity.*
-import gg.aquatic.aquaticcrates.plugin.animation.action.inventory.OpenInventoryAction
-import gg.aquatic.aquaticcrates.plugin.animation.action.inventory.SetInventoryItemsAction
-import gg.aquatic.aquaticcrates.plugin.animation.action.inventory.SetInventoryTitleAction
-import gg.aquatic.aquaticcrates.plugin.animation.action.model.BMHideModelAction
-import gg.aquatic.aquaticcrates.plugin.animation.action.model.BMPlayModelAnimationAction
-import gg.aquatic.aquaticcrates.plugin.animation.action.model.BMShowModelAction
-import gg.aquatic.aquaticcrates.plugin.animation.action.model.HideModelAction
-import gg.aquatic.aquaticcrates.plugin.animation.action.model.PlayModelAnimationAction
-import gg.aquatic.aquaticcrates.plugin.animation.action.model.ShowModelAction
-import gg.aquatic.aquaticcrates.plugin.animation.action.path.BindPathAction
-import gg.aquatic.aquaticcrates.plugin.animation.action.path.LinearPathAction
-import gg.aquatic.aquaticcrates.plugin.animation.action.path.SmoothPathAction
-import gg.aquatic.aquaticcrates.plugin.animation.action.potion.ClearPotionEffectsAction
-import gg.aquatic.aquaticcrates.plugin.animation.action.potion.PotionEffectsAction
-import gg.aquatic.aquaticcrates.plugin.animation.action.timer.LaterActionsAction
-import gg.aquatic.aquaticcrates.plugin.animation.action.timer.StartTickerAction
-import gg.aquatic.aquaticcrates.plugin.animation.action.timer.TimedActionsAction
 import gg.aquatic.aquaticcrates.plugin.animation.condition.CustomCondition
 import gg.aquatic.aquaticcrates.plugin.animation.prop.inventory.AnimationMenu
-import gg.aquatic.aquaticcrates.plugin.awaiters.AbstractAwaiter
-import gg.aquatic.aquaticcrates.plugin.awaiters.CEAwaiter
-import gg.aquatic.aquaticcrates.plugin.awaiters.IAAwaiter
-import gg.aquatic.aquaticcrates.plugin.awaiters.MEGAwaiter
-import gg.aquatic.aquaticcrates.plugin.awaiters.NexoAwaiter
+import gg.aquatic.aquaticcrates.plugin.awaiters.*
 import gg.aquatic.aquaticcrates.plugin.command.*
 import gg.aquatic.aquaticcrates.plugin.condition.impl.CustomPlayerCondition
 import gg.aquatic.aquaticcrates.plugin.condition.impl.DayRepeatCondition
 import gg.aquatic.aquaticcrates.plugin.condition.impl.PermissionCondition
 import gg.aquatic.aquaticcrates.plugin.condition.impl.WeekRepeatCondition
-import gg.aquatic.aquaticcrates.plugin.interact.action.*
-import gg.aquatic.aquaticcrates.plugin.log.LogMenuSettings
 import gg.aquatic.aquaticcrates.plugin.misc.Messages
 import gg.aquatic.aquaticcrates.plugin.misc.hook.BStatsHook
 import gg.aquatic.aquaticcrates.plugin.misc.hook.CometHook
+import gg.aquatic.aquaticcrates.plugin.misc.hook.HMCCosmeticsHook
 import gg.aquatic.aquaticcrates.plugin.misc.hook.PAPIHook
 import gg.aquatic.aquaticcrates.plugin.preview.CratePreviewMenu
 import gg.aquatic.aquaticcrates.plugin.reroll.input.interaction.InteractionInputHandler
 import gg.aquatic.aquaticcrates.plugin.reroll.input.inventory.InventoryRerollInput
 import gg.aquatic.aquaticcrates.plugin.reroll.input.inventory.RerollMenu
 import gg.aquatic.aquaticcrates.plugin.restriction.impl.*
-import gg.aquatic.aquaticcrates.plugin.reward.menu.RewardsMenuSettings
 import gg.aquatic.aquaticcrates.plugin.serialize.CrateSerializer
 import gg.aquatic.waves.api.event.event
 import gg.aquatic.waves.api.event.packet.PacketContainerContentEvent
@@ -70,12 +40,9 @@ import gg.aquatic.waves.inventory.event.AsyncPacketInventoryCloseEvent
 import gg.aquatic.waves.item.ItemHandler
 import gg.aquatic.waves.profile.ProfilesModule
 import gg.aquatic.waves.registry.WavesRegistry
-import gg.aquatic.waves.registry.registerAction
 import gg.aquatic.waves.registry.registerRequirement
 import gg.aquatic.waves.util.Config
 import gg.aquatic.waves.util.action.ActionAnnotationProcessor
-import gg.aquatic.waves.util.runAsyncTimer
-import gg.aquatic.waves.util.toMMComponent
 import net.kyori.adventure.text.Component
 import org.bukkit.Bukkit
 import org.bukkit.NamespacedKey
@@ -84,51 +51,35 @@ import org.bukkit.event.block.Action
 import org.bukkit.event.entity.EntityDamageEvent
 import org.bukkit.event.inventory.InventoryInteractEvent
 import org.bukkit.event.inventory.InventoryOpenEvent
-import org.bukkit.event.player.AsyncPlayerPreLoginEvent
-import org.bukkit.event.player.PlayerInteractEvent
-import org.bukkit.event.player.PlayerJoinEvent
-import org.bukkit.event.player.PlayerQuitEvent
-import org.bukkit.event.player.PlayerToggleSneakEvent
+import org.bukkit.event.player.*
 import org.bukkit.event.world.WorldLoadEvent
 import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.persistence.PersistentDataType
+import java.io.File
+import java.net.URLDecoder
 import java.util.*
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.CompletableFuture.runAsync
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
+import java.util.jar.JarFile
 
-class CratesPlugin : AbstractCratesPlugin() {
+object Bootstrap {
 
-    companion object {
-        val INSTANCE: AbstractCratesPlugin
-            get() {
-                return AbstractCratesPlugin.INSTANCE
-            }
-        lateinit var spawnedCratesConfig: Config
+    lateinit var spawnedCratesConfig: Config
+
+    internal fun onLoad() {
+        spawnedCratesConfig = Config("spawnedcrates.yml", CratesPlugin.getInstance())
     }
 
-    override lateinit var settings: PluginSettings
-
-    override fun onLoad() {
-        AbstractCratesPlugin.INSTANCE = this
-        spawnedCratesConfig = Config("spawnedcrates.yml", INSTANCE)
-    }
-
-    var loading = true
-        private set
-
-    lateinit var rewardsMenuSettings: RewardsMenuSettings
-        private set
-
-    lateinit var logMenuSettings: LogMenuSettings
-        private set
-
-    override fun onEnable() {
+    internal fun enable() {
         registerObjects()
 
-        if (server.pluginManager.getPlugin("Comet") != null) {
+        if (Bukkit.getServer().pluginManager.getPlugin("Comet") != null) {
             CometHook()
+        }
+        if (Bukkit.getServer().pluginManager.getPlugin("HMCCosmetics") != null) {
+            HMCCosmeticsHook()
         }
         BStatsHook.register()
 
@@ -393,23 +344,6 @@ class CratesPlugin : AbstractCratesPlugin() {
         }
     }
 
-    fun reloadPlugin(): CompletableFuture<Boolean> {
-        if (loading) {
-            return CompletableFuture.completedFuture(false)
-        }
-        for (value in CrateHandler.crates.values) {
-            if (value is OpenableCrate) {
-                value.animationManager.forceStopAllAnimations()
-            }
-        }
-        CrateHandler.crates.clear()
-        for (value in CrateHandler.spawned.values) {
-            value.destroy()
-        }
-        CrateHandler.spawned.clear()
-        return load().thenApply { true }
-    }
-
     private fun startTicker() {
         val scheduler = Executors.newSingleThreadScheduledExecutor()
         scheduler.scheduleWithFixedDelay({
@@ -418,19 +352,21 @@ class CratesPlugin : AbstractCratesPlugin() {
                     crate.animationManager.tick()
                 }
             }
-        },0,50, TimeUnit.MILLISECONDS)
+        }, 0, 50, TimeUnit.MILLISECONDS)
     }
 
-    private fun load(): CompletableFuture<Void> {
-        loading = true
-        dataFolder.mkdirs()
-        settings = CrateSerializer.loadPluginSettings()
-        rewardsMenuSettings = CrateSerializer.loadRewardMenuSettings()
-        logMenuSettings = CrateSerializer.loadLogMenuSettings()
+    internal fun load(): CompletableFuture<Void> {
+        CratesPlugin.getInstance().isLoading = true
+        CratesPlugin.getInstance().dataFolder.mkdirs()
+        CratesPlugin.getInstance().setSettings(CrateSerializer.loadPluginSettings())
+        CratesPlugin.getInstance().rewardsMenuSettings = CrateSerializer.loadRewardMenuSettings()
+        CratesPlugin.getInstance().logMenuSettings = CrateSerializer.loadLogMenuSettings()
         return runAsync {
             try {
                 Messages.load()
                 gg.aquatic.waves.util.message.Messages.injectMessages<Messages>("aquaticcrates")
+                loadExampleCrates()
+
                 CrateHandler.crates += CrateSerializer.loadCrates()
                 CrateHandler.loadSpawnedCrates(spawnedCratesConfig)
 
@@ -454,67 +390,16 @@ class CratesPlugin : AbstractCratesPlugin() {
             } catch (e: Exception) {
                 e.printStackTrace()
             }
-            loading = false
+            CratesPlugin.getInstance().isLoading = false
         }.exceptionally {
             it.printStackTrace()
-            loading = false
+            CratesPlugin.getInstance().isLoading = false
             null
         }
     }
 
-    private fun registerObjects() {
-        // Animation Actions
-        //WavesRegistry.registerAction("show-bossbar", ShowBossbarAction())
-        //WavesRegistry.registerAction("hide-bossbar", HideBossbarAction())
-        //WavesRegistry.registerAction("set-bossbar-message", SetBossbarTextAction())
-        //WavesRegistry.registerAction("set-bossbar-color", SetBossbarColorAction())
-        //WavesRegistry.registerAction("set-bossbar-style", SetBossbarStyleAction())
-        //WavesRegistry.registerAction("set-bossbar-progress", SetBossbarProgressAction())
-        //WavesRegistry.registerAction("linear-path", LinearPathAction())
-        //WavesRegistry.registerAction("smooth-path", SmoothPathAction())
-        //WavesRegistry.registerAction("show-entity", ShowEntityAction())
-        //WavesRegistry.registerAction("hide-entity", HideEntityAction())
-        //WavesRegistry.registerAction("throw-entity", ThrowEntityAction())
-        //WavesRegistry.registerAction("update-entity-properties", UpdateEntityPropertiesAction())
-        //WavesRegistry.registerAction("set-block", SetBlockAction())
-        //WavesRegistry.registerAction("set-multiblock", SetMultiblockAction())
-        //WavesRegistry.registerAction("show-model", ShowModelAction())
-        //WavesRegistry.registerAction("play-model-animation", PlayModelAnimationAction())
-        //WavesRegistry.registerAction("hide-model", HideModelAction())
-        //WavesRegistry.registerAction("show-bm-model", BMShowModelAction())
-        //WavesRegistry.registerAction("play-bm-model-animation", BMPlayModelAnimationAction())
-        //WavesRegistry.registerAction("hide-bm-model", BMHideModelAction())
-        //WavesRegistry.registerAction("play-sound", SoundAction())
-        //WavesRegistry.registerAction("stop-sound", StopSoundAction())
-        //WavesRegistry.registerAction("conditional-actions", ConditionalActionsAction())
-        //WavesRegistry.registerAction("start-ticker", StartTickerAction())
-        //WavesRegistry.registerAction("bind-path", BindPathAction())
-        //WavesRegistry.registerAction("title", TitleAction())
-        //WavesRegistry.registerAction("string-deobfuscation", StringDeobfuscationAction())
-        //WavesRegistry.registerAction("push-player", PushPlayerAction())
-        //WavesRegistry.registerAction("open-inventory", OpenInventoryAction())
-        //WavesRegistry.registerAction("set-inventory-items", SetInventoryItemsAction())
-        //WavesRegistry.registerAction("set-inventory-title", SetInventoryTitleAction())
-        //WavesRegistry.registerAction("close-inventory", CloseInventoryAction())
-        //WavesRegistry.registerAction("add-potion-effects", PotionEffectsAction())
-        //WavesRegistry.registerAction("remove-potion-effects", ClearPotionEffectsAction())
-        //WavesRegistry.registerAction("timed-actions", TimedActionsAction())
-        //WavesRegistry.registerAction("delayed-actions", LaterActionsAction())
-        //WavesRegistry.registerAction("rumbling-reward", RumblingRewardAction())
-        //WavesRegistry.registerAction("player-equipment", EquipmentAnimationAction())
-        //WavesRegistry.registerAction("player-actions", PlayerActionsAction())
-        //WavesRegistry.registerAction("add-passenger", AddPassengerAction())
-        //WavesRegistry.registerAction("remove-passenger", RemovePassengerAction())
-        //WavesRegistry.registerAction("particle", ParticleAnimationAction())
 
-        // Interaction Actions
-        /*
-        WavesRegistry.registerAction("open-crate", CrateOpenAction())
-        WavesRegistry.registerAction("open-crate-instant", CrateInstantOpenAction())
-        WavesRegistry.registerAction("preview-crate", CratePreviewAction())
-        WavesRegistry.registerAction("destroy-crate", CrateBreakAction())
-        WavesRegistry.registerAction("execute-actions", CrateExecuteActionsAction())
-         */
+    private fun registerObjects() {
         ActionAnnotationProcessor.process(this, "gg.aquatic.aquaticcrates.plugin")
 
         // Open Restrictions
@@ -541,7 +426,7 @@ class CratesPlugin : AbstractCratesPlugin() {
     private fun injectLegacyConverterListeners() {
 
         event<AsyncPlayerPreLoginEvent>(ignoredCancelled = true) {
-            if (loading) {
+            if (CratesPlugin.getInstance().isLoading) {
                 it.disallow(
                     AsyncPlayerPreLoginEvent.Result.KICK_OTHER,
                     Component.text("Server is currently loading...")
@@ -581,6 +466,60 @@ class CratesPlugin : AbstractCratesPlugin() {
                     pdc.remove(oldNamespace)
                     pdc.set(ItemHandler.NAMESPACE_KEY, PersistentDataType.STRING, "aquaticcrates-key:$keyId")
                     item.itemMeta = meta
+                }
+            }
+        }
+    }
+
+    fun getResourceFileNames(folderPath: String): List<String> {
+        val fileNames = mutableListOf<String>()
+
+        try {
+            val jarPath = javaClass.protectionDomain.codeSource.location.path
+            val jarFile = JarFile(URLDecoder.decode(jarPath, "UTF-8"))
+
+            val entries = jarFile.entries()
+            val folderPrefix = if (folderPath.endsWith("/")) folderPath else "$folderPath/"
+
+            while (entries.hasMoreElements()) {
+                val entry = entries.nextElement()
+                val name = entry.name
+
+                if (name.startsWith(folderPrefix) && !entry.isDirectory) {
+                    val fileName = name.substring(folderPrefix.length)
+                    if (!fileName.contains("/")) { // Ensure it's not in a subdirectory
+                        fileNames.add(fileName)
+                    }
+                }
+            }
+
+            jarFile.close()
+        } catch (e: Exception) {
+            CratesPlugin.getInstance().logger.warning("Failed to read resource files: ${e.message}")
+        }
+
+        return fileNames
+    }
+
+    private fun loadExampleCrates() {
+        val cratesFolder = CratesPlugin.getInstance().dataFolder.resolve("crates")
+        if (!cratesFolder.exists() || cratesFolder.listFiles().isEmpty()) {
+            cratesFolder.mkdirs()
+
+            // Get all file names in the examples resource folder
+            val exampleFileNames = getResourceFileNames("examplecrates")
+
+            // Copy each example file to the data folder
+            for (fileName in exampleFileNames) {
+                val resourcePath = "examplecrates/$fileName"
+
+                // Use getResource from JavaPlugin to get the file
+                CratesPlugin.getInstance().getResource(resourcePath)?.use { inputStream ->
+                    val targetFile = File(cratesFolder, fileName)
+                    targetFile.outputStream().use { output ->
+                        inputStream.copyTo(output)
+                        CratesPlugin.getInstance().logger.info("Copied example file: $fileName")
+                    }
                 }
             }
         }
