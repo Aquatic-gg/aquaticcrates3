@@ -70,6 +70,7 @@ object Bootstrap {
 
     internal fun onLoad() {
         spawnedCratesConfig = Config("spawnedcrates.yml", CratesPlugin.getInstance())
+        loadExampleCrates()
     }
 
     internal fun enable() {
