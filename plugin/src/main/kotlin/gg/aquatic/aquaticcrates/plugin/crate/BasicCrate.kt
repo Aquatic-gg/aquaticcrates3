@@ -163,8 +163,8 @@ class BasicCrate(
 
 
     fun canBeOpened(player: Player, amount: Int, openData: OpenData): Boolean {
-        if (!openRestrictions.any { it.check(openData) { data, msg -> msg.updatePAPIPlaceholders(data.player) } }) {
-            return false
+        for (handle in openRestrictions) {
+            if (!handle.check(openData) { data, msg -> msg.updatePAPIPlaceholders(data.player) }) return false
         }
         val location = openData.location
         if (location != null) {
