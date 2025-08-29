@@ -17,9 +17,7 @@ import java.util.logging.Logger;
 
 public class WavesHook {
 
-    private static final String REQUIRED_VERSION = "1.3.8";
-    private static final String SPIGOT_RESOURCE_ID = "119819";
-    private static final String SPIGOT_VERSION = "latest";
+    private static final String REQUIRED_VERSION = "1.3.10";
 
     private static Logger logger;
     /**
@@ -70,8 +68,7 @@ public class WavesHook {
         String targetFileName = "Waves-" + REQUIRED_VERSION + ".jar";
         File targetFile = new File(new File("plugins"), targetFileName);
 
-        String url = "https://api.spiget.org/v2/resources/" + SPIGOT_RESOURCE_ID +
-                "/versions/" + SPIGOT_VERSION + "/download";
+        String url = "https://repo.nekroplex.com/releases/gg/aquatic/waves/Waves/"+REQUIRED_VERSION+"/Waves-"+REQUIRED_VERSION+"-plugin.jar";
 
         try {
             logger.info("Downloading Waves plugin from " + url + " to " + targetFile.getAbsolutePath() + "...");
