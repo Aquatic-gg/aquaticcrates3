@@ -5,7 +5,7 @@ import gg.aquatic.waves.menu.PrivateAquaticMenu
 import net.kyori.adventure.text.Component
 import org.bukkit.entity.Player
 
-class AnimationMenu(title: Component, type: InventoryType, player: Player) : PrivateAquaticMenu(title, type, player) {
+class AnimationMenu(title: Component, type: InventoryType, player: Player) : PrivateAquaticMenu(title, type, player, true) {
 
     var closed = false
     fun close() {

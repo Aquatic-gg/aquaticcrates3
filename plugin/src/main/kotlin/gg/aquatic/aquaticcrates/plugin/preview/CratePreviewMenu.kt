@@ -23,7 +23,7 @@ class CratePreviewMenu(
 ) : PrivateAquaticMenu(
     settings.invSettings.title.toMMString().updatePAPIPlaceholders(player).toMMComponent(),
     settings.invSettings.type,
-    player
+    player, true
 ) {
     val possibleRewards = crate.rewardManager.getPossibleRewards(player).keys
 
@@ -67,8 +67,8 @@ class CratePreviewMenu(
                         openPage(page - 1)
                     } else if (id == "open") {
                         runSync {
-                            crate.tryOpen(player, placedCrate?.location ?: player.location.clone(), placedCrate)
                             player.closeInventory()
+                            crate.tryOpen(player, placedCrate?.location ?: player.location.clone(), placedCrate)
                         }
                     }
                 }

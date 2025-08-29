@@ -27,36 +27,36 @@ class RandomRewardComponent(
     override val id: String = "random-reward:${UUID.randomUUID()}"
     var currentReward = rewards.randomOrNull()
     override fun itemstack(menu: AquaticMenu): ItemStack {
-        val iS = currentReward?.item?.getItem()?.clone()
-        currentReward?.let { cr ->
+        val cr = currentReward ?: return ItemStack(Material.AIR)
+        val iS = cr.item.getItem().clone()
 
-            val meta = iS?.itemMeta ?: return@let
-            meta.displayName()?.let { comp ->
-                meta.displayName(MiniMessage.miniMessage().deserialize(textUpdater(MiniMessage.miniMessage().serialize(comp), menu))
-                    .decoration(TextDecoration.ITALIC, false))
-            }
-
-            meta.lore()?.let { lore ->
-                meta.lore(
-                    lore + settings.additionalRewardLore.map {
-                        it.toMMComponent()
-                    }.map {
-                        MiniMessage.miniMessage().deserialize(
-                            textUpdater(
-                                MiniMessage.miniMessage().serialize(it)
-                                    .replace("%chance%", (cr.chance * 100.0).decimals(2))
-                                    .replace("%rarity%", cr.rarity.displayName),
-                                menu
-                            )
-                        )
-                            .decoration(TextDecoration.ITALIC, false)
-                    }
-                )
-            }
-            iS.itemMeta = meta
-
+        val meta = iS.itemMeta ?: return iS
+        meta.displayName()?.let { comp ->
+            meta.displayName(
+                MiniMessage.miniMessage().deserialize(textUpdater(MiniMessage.miniMessage().serialize(comp), menu))
+                    .decoration(TextDecoration.ITALIC, false)
+            )
         }
-        return iS ?: ItemStack(Material.AIR)
+
+        meta.lore()?.let { lore ->
+            meta.lore(
+                lore + settings.additionalRewardLore.map {
+                    it.toMMComponent()
+                }.map {
+                    MiniMessage.miniMessage().deserialize(
+                        textUpdater(
+                            MiniMessage.miniMessage().serialize(it)
+                                .replace("%chance%", (cr.chance * 100.0).decimals(2))
+                                .replace("%rarity%", cr.rarity.displayName),
+                            menu
+                        )
+                    )
+                        .decoration(TextDecoration.ITALIC, false)
+                }
+            )
+        }
+        iS.itemMeta = meta
+        return iS
     }
 
     var changeTick = 0

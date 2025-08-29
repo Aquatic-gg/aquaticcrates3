@@ -16,7 +16,7 @@ class EditorMenu(
     player: Player,
     val category: EditorCategory,
     val previousMenu: EditorMenu? = null
-) : PrivateAquaticMenu(Component.text("Editor | ${crateModel.id}"), InventoryType.GENERIC9X6, player) {
+) : PrivateAquaticMenu(Component.text("Editor | ${crateModel.id}"), InventoryType.GENERIC9X6, player, true) {
 
     init {
         var slot = 0

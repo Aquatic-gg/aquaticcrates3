@@ -13,7 +13,7 @@ import org.bukkit.entity.Player
 
 class RewardsMenu(val settings: RewardsMenuSettings, player: Player) : PrivateAquaticMenu(
     settings.invSettings.title.toMMString().updatePAPIPlaceholders(player).toMMComponent(),
-    settings.invSettings.type, player,
+    settings.invSettings.type, player, true
 ) {
     private var page = 0
     private val rewardComponents = HashSet<MenuComponent>()

@@ -10,6 +10,7 @@ import gg.aquatic.aquaticcrates.api.milestone.Milestone
 import gg.aquatic.aquaticcrates.api.openprice.OpenPrice
 import gg.aquatic.aquaticcrates.api.openprice.OpenPriceGroup
 import gg.aquatic.aquaticcrates.api.openprice.impl.CrateKeyPrice
+import gg.aquatic.aquaticcrates.api.player.CrateProfileEntry
 import gg.aquatic.aquaticcrates.api.reward.Reward
 import gg.aquatic.aquaticcrates.api.reward.RewardRarity
 import gg.aquatic.aquaticcrates.api.reward.showcase.RewardShowcaseSerializer
@@ -36,6 +37,7 @@ import gg.aquatic.aquaticcrates.plugin.reroll.RerollManagerImpl
 import gg.aquatic.aquaticcrates.plugin.reroll.input.interaction.InteractionRerollInput
 import gg.aquatic.aquaticcrates.plugin.reroll.input.inventory.InventoryRerollInput
 import gg.aquatic.aquaticcrates.plugin.restriction.OpenData
+import gg.aquatic.aquaticcrates.plugin.restriction.OpenRestrictionHandle
 import gg.aquatic.aquaticcrates.plugin.reward.RewardManagerImpl
 import gg.aquatic.aquaticcrates.plugin.reward.menu.RewardsMenuSettings
 import gg.aquatic.waves.interactable.settings.BlockInteractableSettings
@@ -336,10 +338,18 @@ object CrateSerializer : BaseSerializer() {
         val massOpenPerRewardActions =
             ActionSerializer.fromSections<Player>(cfg.getSectionList("mass-open.per-reward-tasks")).toMutableList()
         val openRestrictions =
-            RequirementSerializer.fromSections<OpenData>(
-                cfg.getSectionList("open-restrictions"), ClassTransform(
-                    Player::class.java
-                ) { d -> d.player }).toMutableList()
+            cfg.getSectionList("open-restrictions").mapNotNull { section ->
+                val restriction = RequirementSerializer.fromSection<OpenData>(
+                    section, ClassTransform(
+                        Player::class.java
+                    ) { d -> d.player }) ?: return@mapNotNull null
+                val failActions = ActionSerializer.fromSections<OpenData>(
+                    section.getSectionList("fail-actions"), ClassTransform(
+                        Player::class.java
+                    ) { d -> d.player })
+
+                OpenRestrictionHandle(restriction, failActions)
+            }.toMutableList()
 
         val openPriceGroups = ArrayList<OpenPriceGroup>()
         for (groupSection in cfg.getSectionList("open-price-groups")) {

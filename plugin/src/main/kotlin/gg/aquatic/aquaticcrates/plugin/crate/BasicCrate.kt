@@ -9,12 +9,14 @@ import gg.aquatic.aquaticcrates.api.crate.SpawnedCrate
 import gg.aquatic.aquaticcrates.api.hologram.HologramSettings
 import gg.aquatic.aquaticcrates.api.interaction.crate.CrateInteractHandler
 import gg.aquatic.aquaticcrates.api.openprice.OpenPriceGroup
+import gg.aquatic.aquaticcrates.api.player.CrateProfileEntry
 import gg.aquatic.aquaticcrates.api.reward.RewardManager
 import gg.aquatic.aquaticcrates.api.reward.showcase.RewardShowcase
 import gg.aquatic.aquaticcrates.plugin.Bootstrap
 import gg.aquatic.aquaticcrates.plugin.preview.CratePreviewMenu
 import gg.aquatic.aquaticcrates.plugin.preview.CratePreviewMenuSettings
 import gg.aquatic.aquaticcrates.plugin.restriction.OpenData
+import gg.aquatic.aquaticcrates.plugin.restriction.OpenRestrictionHandle
 import gg.aquatic.waves.interactable.settings.InteractableSettings
 import gg.aquatic.waves.item.AquaticItem
 import gg.aquatic.waves.item.AquaticItemInteractEvent
@@ -24,6 +26,7 @@ import gg.aquatic.waves.util.collection.checkRequirements
 import gg.aquatic.waves.util.generic.ConfiguredExecutableObject
 import gg.aquatic.waves.util.requirement.ConfiguredRequirement
 import gg.aquatic.waves.util.runLaterSync
+import gg.aquatic.waves.util.updatePAPIPlaceholders
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.TextDecoration
 import org.bukkit.Location
@@ -32,6 +35,7 @@ import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.ItemStack
+import java.util.HashMap
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.CompletableFuture.runAsync
 
@@ -49,7 +53,7 @@ class BasicCrate(
     val previewMenuSettings: MutableList<CratePreviewMenuSettings>,
     val massOpenFinalActions: MutableList<ConfiguredExecutableObject<Player, Unit>>,
     val massOpenPerRewardActions: MutableList<ConfiguredExecutableObject<Player, Unit>>,
-    val openRestrictions: MutableList<ConfiguredRequirement<OpenData>>,
+    val openRestrictions: MutableList<OpenRestrictionHandle>,
     override val defaultRewardShowcase: RewardShowcase?
 ) : OpenableCrate() {
 
@@ -159,8 +163,7 @@ class BasicCrate(
 
 
     fun canBeOpened(player: Player, amount: Int, openData: OpenData): Boolean {
-        if (!openRestrictions.checkRequirements(openData)) {
-            //player.sendMessage("You cannot open the crate here!")
+        if (!openRestrictions.any { it.check(openData) { data, msg -> msg.updatePAPIPlaceholders(data.player) } }) {
             return false
         }
         val location = openData.location

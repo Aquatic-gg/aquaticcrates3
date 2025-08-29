@@ -24,7 +24,7 @@ class RerollMenu(
 ) : PrivateAquaticMenu(
     animation.updatePlaceholders(settings.inventorySettings.title.toMMString()).updatePAPIPlaceholders(player).toMMComponent(),
     settings.inventorySettings.type,
-    player
+    player, true
 ) {
 
     init {

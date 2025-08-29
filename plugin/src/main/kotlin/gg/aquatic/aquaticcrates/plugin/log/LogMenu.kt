@@ -15,7 +15,7 @@ import java.util.concurrent.TimeUnit
 
 class LogMenu(val settings: LogMenuSettings, player: Player) : PrivateAquaticMenu(
     settings.menuSettings.title,
-    settings.menuSettings.type, player,
+    settings.menuSettings.type, player,true
 ) {
 
     var crateFilter: String? = null

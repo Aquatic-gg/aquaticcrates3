@@ -38,6 +38,6 @@ class MilestoneManagerImpl(
     override fun remainingRepeatable(player: Player, milestone: Int): Int {
         if (milestone < 1) return 0
         val totalOpened = HistoryHandler.history(crate.identifier, CrateProfileEntry.HistoryType.ALLTIME, player)
-        return max(milestone - (totalOpened % milestone), milestone)
+        return milestone - (totalOpened % milestone)
     }
 }

@@ -10,8 +10,10 @@ import gg.aquatic.waves.api.event.call
 import gg.aquatic.waves.util.collection.executeActions
 import gg.aquatic.waves.util.decimals
 import gg.aquatic.waves.util.generic.ConfiguredExecutableObject
+import gg.aquatic.waves.util.runAsync
 import gg.aquatic.waves.util.runSync
 import gg.aquatic.waves.util.updatePAPIPlaceholders
+import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import java.util.concurrent.CompletableFuture
@@ -61,7 +63,15 @@ abstract class CrateAnimation : PlayerBoundAnimation() {
                 State.PRE_OPEN -> {
                     tickPreOpen()
                     if (tick >= settings.preAnimationDelay) {
-                        CrateAnimationStartEvent(animationManager.crate as OpenableCrate,this,player).call()
+                        val event = CrateAnimationStartEvent(animationManager.crate as OpenableCrate,this,player)
+                        if (Bukkit.isPrimaryThread()) {
+                            runAsync {
+                                event.call()
+                            }
+                        } else {
+                            event.call()
+                        }
+
                         updateState(State.OPENING)
                         tick()
                         return

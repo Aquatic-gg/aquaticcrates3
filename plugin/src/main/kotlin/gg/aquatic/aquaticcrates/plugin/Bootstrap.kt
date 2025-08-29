@@ -43,6 +43,7 @@ import gg.aquatic.waves.registry.WavesRegistry
 import gg.aquatic.waves.registry.registerRequirement
 import gg.aquatic.waves.util.Config
 import gg.aquatic.waves.util.action.ActionAnnotationProcessor
+import gg.aquatic.waves.util.requirement.RequirementAnnotationProcessor
 import net.kyori.adventure.text.Component
 import org.bukkit.Bukkit
 import org.bukkit.NamespacedKey
@@ -402,6 +403,7 @@ object Bootstrap {
 
     private fun registerObjects() {
         ActionAnnotationProcessor.process(this, "gg.aquatic.aquaticcrates.plugin")
+        RequirementAnnotationProcessor.process(this, "gg.aquatic.aquaticcrates.plugin")
 
         // Open Restrictions
         WavesRegistry.registerRequirement("player", PlayerOpenRestriction())
@@ -410,6 +412,8 @@ object Bootstrap {
         WavesRegistry.registerRequirement("all-global", AllGlobalOpenRestriction())
         WavesRegistry.registerRequirement("world-blacklist", WorldBlacklistOpenRestriction())
         WavesRegistry.registerRequirement("full-inventory", EmptyInventoryOpenRestriction())
+        WavesRegistry.registerRequirement("per-player-open-limit", PlayerLimitOpenRestriction())
+        WavesRegistry.registerRequirement("global-open-limit", GlobalLimitOpenRestriction())
 
         // Player Conditions
         WavesRegistry.registerRequirement("custom", CustomPlayerCondition())
