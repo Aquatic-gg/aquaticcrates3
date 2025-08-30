@@ -1,22 +1,23 @@
 package gg.aquatic.aquaticcrates.plugin.animation.action.model
 
-import gg.aquatic.aquaticcrates.api.animation.Animation
-import gg.aquatic.aquaticcrates.api.animation.PlayerBoundAnimation
-import gg.aquatic.aquaticcrates.plugin.animation.prop.entity.BoundPathObjectArgument
 import gg.aquatic.aquaticcrates.plugin.animation.prop.model.ModelAnimationProp
-import gg.aquatic.aquaticcrates.plugin.animation.prop.path.PathBoundProperties
-import gg.aquatic.aquaticcrates.plugin.animation.prop.path.PathProp
+import gg.aquatic.waves.scenario.PlayerScenario
+import gg.aquatic.waves.scenario.Scenario
+import gg.aquatic.waves.scenario.action.path.BoundPathObjectArgument
+import gg.aquatic.waves.scenario.prop.path.PathBoundProperties
+import gg.aquatic.waves.scenario.prop.path.PathProp
 import gg.aquatic.waves.util.action.RegisterAction
 import gg.aquatic.waves.util.argument.AquaticObjectArgument
 import gg.aquatic.waves.util.argument.ObjectArguments
 import gg.aquatic.waves.util.argument.impl.PrimitiveObjectArgument
 import gg.aquatic.waves.util.generic.Action
+import net.kyori.adventure.key.Key
 import org.bukkit.Color
 import org.bukkit.util.Vector
 import java.util.concurrent.ConcurrentHashMap
 
 @RegisterAction("show-model")
-class ShowModelAction : Action<Animation> {
+class ShowModelAction : Action<Scenario> {
 
     override val arguments: List<AquaticObjectArgument<*>> = listOf(
         PrimitiveObjectArgument("id", "example", true),
@@ -33,14 +34,14 @@ class ShowModelAction : Action<Animation> {
     )
 
     @Suppress("UNCHECKED_CAST")
-    override fun execute(binder: Animation, args: ObjectArguments, textUpdater: (Animation, String) -> String) {
+    override fun execute(binder: Scenario, args: ObjectArguments, textUpdater: (Scenario, String) -> String) {
         val id = args.string("id") { textUpdater(binder, it) } ?: return
         val model = args.string("model") { textUpdater(binder, it) } ?: return
         val applySkin = args.boolean("apply-skin") { textUpdater(binder, it) } ?: true
         val tint = args.string("tint") { textUpdater(binder, it) }
         val animation = args.string("animation") { textUpdater(binder, it) }
         val boundPropertiesFactory =
-            args.any("bound-paths") as? ((Animation) -> ConcurrentHashMap<PathProp, PathBoundProperties>)
+            args.any("bound-paths") as? ((Scenario) -> ConcurrentHashMap<PathProp, PathBoundProperties>)
                 ?: { _ -> ConcurrentHashMap() }
 
         val locationOffsetStrings = (args.string("location-offset") { textUpdater(binder, it) })?.split(";") ?: listOf()
@@ -58,13 +59,14 @@ class ShowModelAction : Action<Animation> {
             Color.fromRGB(split[0].toInt(), split[1].toInt(), split[2].toInt())
         }
 
-        binder.props["model:$id"]?.onAnimationEnd()
+        val key = Key.key("model:$id")
+        binder.props[key]?.onEnd()
         val boundPaths = boundPropertiesFactory(binder)
         var i = 0
         val prop = ModelAnimationProp(
             binder,
             model,
-            if (applySkin && binder is PlayerBoundAnimation) binder.player else null,
+            if (applySkin && binder is PlayerScenario) binder.player else null,
             tintColor,
             animation,
             locationOffsetVector,
@@ -79,6 +81,6 @@ class ShowModelAction : Action<Animation> {
             path.boundProps += prop to pathProperties
         }
 
-        binder.props["model:$id"] = prop
+        binder.props[key] = prop
     }
 }

@@ -1,8 +1,7 @@
 package gg.aquatic.aquaticcrates.plugin.serialize
 
 import gg.aquatic.aquaticcrates.api.PluginSettings
-import gg.aquatic.aquaticcrates.api.animation.Animation
-import gg.aquatic.aquaticcrates.api.animation.PlayerBoundAnimation
+import gg.aquatic.aquaticcrates.api.animation.crate.CrateAnimation
 import gg.aquatic.aquaticcrates.api.crate.Crate
 import gg.aquatic.aquaticcrates.api.crate.OpenableCrate
 import gg.aquatic.aquaticcrates.api.interaction.CrateInteractAction
@@ -10,13 +9,12 @@ import gg.aquatic.aquaticcrates.api.milestone.Milestone
 import gg.aquatic.aquaticcrates.api.openprice.OpenPrice
 import gg.aquatic.aquaticcrates.api.openprice.OpenPriceGroup
 import gg.aquatic.aquaticcrates.api.openprice.impl.CrateKeyPrice
-import gg.aquatic.aquaticcrates.api.player.CrateProfileEntry
 import gg.aquatic.aquaticcrates.api.reward.Reward
 import gg.aquatic.aquaticcrates.api.reward.RewardRarity
 import gg.aquatic.aquaticcrates.api.reward.showcase.RewardShowcaseSerializer
 import gg.aquatic.aquaticcrates.plugin.CratesPlugin
-import gg.aquatic.aquaticcrates.plugin.animation.fail.settings.FailAnimationSettings
-import gg.aquatic.aquaticcrates.plugin.animation.idle.settings.IdleAnimationSettings
+import gg.aquatic.aquaticcrates.plugin.animation.fail.FailAnimationSettings
+import gg.aquatic.aquaticcrates.plugin.animation.idle.IdleAnimationSettings
 import gg.aquatic.aquaticcrates.plugin.animation.open.AnimationManagerImpl
 import gg.aquatic.aquaticcrates.plugin.animation.open.settings.CinematicAnimationSettings
 import gg.aquatic.aquaticcrates.plugin.animation.open.settings.InstantAnimationSettings
@@ -49,6 +47,8 @@ import gg.aquatic.waves.menu.settings.PrivateMenuSettings
 import gg.aquatic.waves.registry.serializer.ActionSerializer
 import gg.aquatic.waves.registry.serializer.InteractableSerializer
 import gg.aquatic.waves.registry.serializer.RequirementSerializer
+import gg.aquatic.waves.scenario.PlayerScenario
+import gg.aquatic.waves.scenario.Scenario
 import gg.aquatic.waves.util.Config
 import gg.aquatic.waves.util.argument.ObjectArguments
 import gg.aquatic.waves.util.block.impl.VanillaBlock
@@ -187,7 +187,7 @@ object CrateSerializer : BaseSerializer() {
                     groups[group] = amount
                 }
 
-                val actions = ActionSerializer.fromSections<PlayerBoundAnimation>(
+                val actions = ActionSerializer.fromSections<CrateAnimation>(
                     cfg.getSectionList("animation.reroll-tasks"), ClassTransform(
                         Player::class.java, { a -> a.player })
                 ).toMutableList()
@@ -423,15 +423,15 @@ object CrateSerializer : BaseSerializer() {
     private fun loadFailAnimationSettings(cfg: FileConfiguration): FailAnimationSettings? {
         val section = cfg.getConfigurationSection("fail-animation") ?: return null
         val actionsSection = section.getConfigurationSection("actions") ?: return null
-        val actions = TreeMap<Int, Collection<ConfiguredExecutableObject<PlayerBoundAnimation, Unit>>>()
+        val actions = TreeMap<Int, Collection<ConfiguredExecutableObject<PlayerScenario, Unit>>>()
         for (key in actionsSection.getKeys(false)) {
             val time = key.toIntOrNull() ?: continue
             val playerAnimationActions =
-                ActionSerializer.fromSections<PlayerBoundAnimation>(
+                ActionSerializer.fromSections<PlayerScenario>(
                     actionsSection.getSectionList(key),
                     ClassTransform(
-                        Player::class.java, { a -> a.player }
-                    ))
+                        Player::class.java
+                    ) { a -> a.player })
             actions[time] = playerAnimationActions
         }
         val length = section.getInt("length", -1)
@@ -443,10 +443,10 @@ object CrateSerializer : BaseSerializer() {
         val list = ArrayList<IdleAnimationSettings>()
         for (configurationSection in cfg.getSectionList("idle-animations")) {
             val actionsSection = configurationSection.getConfigurationSection("actions") ?: continue
-            val actions = TreeMap<Int, MutableList<ConfiguredExecutableObject<Animation, Unit>>>()
+            val actions = TreeMap<Int, MutableList<ConfiguredExecutableObject<Scenario, Unit>>>()
             for (key in actionsSection.getKeys(false)) {
                 val time = key.toIntOrNull() ?: continue
-                actions.getOrPut(time) { Collections.synchronizedList(ArrayList()) } += ActionSerializer.fromSections<Animation>(
+                actions.getOrPut(time) { Collections.synchronizedList(ArrayList()) } += ActionSerializer.fromSections<Scenario>(
                     actionsSection.getSectionList(key)
                 )
             }

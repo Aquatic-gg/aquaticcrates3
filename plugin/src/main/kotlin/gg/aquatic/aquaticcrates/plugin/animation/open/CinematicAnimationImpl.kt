@@ -2,15 +2,14 @@ package gg.aquatic.aquaticcrates.plugin.animation.open
 
 import gg.aquatic.aquaticcrates.api.animation.crate.CrateAnimation
 import gg.aquatic.aquaticcrates.api.animation.crate.CrateAnimationManager
-import gg.aquatic.aquaticcrates.api.animation.prop.AnimationProp
 import gg.aquatic.aquaticcrates.api.crate.OpenableCrate
 import gg.aquatic.aquaticcrates.api.reward.RolledReward
 import gg.aquatic.aquaticcrates.plugin.animation.open.settings.CinematicAnimationSettings
 import gg.aquatic.aquaticcrates.plugin.animation.prop.CameraAnimationProp
+import gg.aquatic.waves.scenario.ScenarioProp
 import gg.aquatic.waves.util.audience.AquaticAudience
 import gg.aquatic.waves.util.runSync
-import net.kyori.adventure.text.Component
-import org.bukkit.Bukkit
+import net.kyori.adventure.key.Key
 import org.bukkit.Location
 import org.bukkit.entity.Player
 import java.util.concurrent.CompletableFuture
@@ -26,39 +25,40 @@ class CinematicAnimationImpl(
     //val camera: CameraAnimationProp
 ) : CrateAnimation() {
 
-    @Volatile
-    override var state: State = State.PRE_OPEN
     override val settings = animationManager.animationSettings as CinematicAnimationSettings
+
+    override val props: MutableMap<Key, ScenarioProp> = ConcurrentHashMap()
+    override val extraPlaceholders: MutableMap<Key, (String) -> String> = ConcurrentHashMap()
 
     init {
         for ((id, value) in settings.variables) {
-            extraPlaceholders["variable:$id"] = { str -> str.replace("%variable:$id%", value) }
+            extraPlaceholders[Key.key("variable:$id")] = { str -> str.replace("%variable:$id%", value) }
         }
     }
 
     private var attached = false
-    override val props: ConcurrentHashMap<String, AnimationProp> = ConcurrentHashMap()
 
     override fun onReroll() {
         val crate = animationManager.crate as OpenableCrate
         val rerollManager = animationManager.rerollManager!!
         rerollManager.openReroll(player, this, rewards).thenAccept { result ->
             if (result.reroll) {
-                updateState(State.OPENING)
-                rewards.clear()
-
                 for ((_, prop) in props) {
                     if (prop is CameraAnimationProp) {
                         prop.boundPaths.clear()
                         continue
                     }
-                    prop.onAnimationEnd()
+                    prop.onEnd()
                 }
-                props.toList().forEach { if (it.first.lowercase() != "camera") props.remove(it.first) }
+                props.toList().forEach { if (it.first != Key.key("camera")) props.remove(it.first) }
+
+                rewards.clear()
+                updatePhase(OpeningPhase())
+
                 rewards += crate.rewardManager.getRewards(player)
                 tick()
             } else {
-                updateState(State.POST_OPEN)
+                updatePhase(PostOpenPhase())
                 tick()
             }
 
@@ -68,7 +68,7 @@ class CinematicAnimationImpl(
 
     override fun onFinalize(isSync: Boolean) {
 
-        val prop = props["camera"] as CameraAnimationProp
+        val prop = prop<CameraAnimationProp>(Key.key("camera"))!!
         val runnable = {
             try {
                 player.isInvisible = false
@@ -91,13 +91,14 @@ class CinematicAnimationImpl(
         }
     }
 
-    override fun onStateUpdate(state: State) {
-        if (state == State.OPENING && !attached) {
+    override fun onPhaseUpdate(phase: Phase) {
+        if (phase is OpeningPhase && !attached) {
             attached = true
-            val cameraProp = props["camera"] as CameraAnimationProp
+            val cameraProp = prop<CameraAnimationProp>(Key.key("camera"))!!
             cameraProp.attachPlayer()
         }
     }
+
 
 
 }

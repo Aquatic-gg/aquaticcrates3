@@ -303,7 +303,7 @@ object Bootstrap {
                 }
                 val animations = value.animationManager.playingAnimations[player.uniqueId] ?: continue
                 for (animation1 in animations) {
-                    if (animation1.state == CrateAnimation.State.FINISHED) continue
+                    if (animation1.phase is CrateAnimation.FinalPhase) continue
                     if (animation1.playerEquipment.isNotEmpty()) {
                         animation = animation1
                         break
@@ -328,7 +328,7 @@ object Bootstrap {
                 }
                 val animations = value.animationManager.playingAnimations[player.uniqueId] ?: continue
                 for (animation1 in animations) {
-                    if (animation1.state == CrateAnimation.State.FINISHED) continue
+                    if (animation1.phase is CrateAnimation.FinalPhase) continue
                     if (animation1.playerEquipment.isNotEmpty()) {
                         animation = animation1
                         break
@@ -337,7 +337,7 @@ object Bootstrap {
             }
 
             animation ?: return@event
-            if (animation.state == CrateAnimation.State.FINISHED) return@event
+            if (animation.phase is CrateAnimation.FinalPhase) return@event
 
             animation.playerEquipment.forEach { (slot, equipment) ->
                 val intSlot = slot.toSlot(player)

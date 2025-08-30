@@ -1,15 +1,15 @@
 package gg.aquatic.aquaticcrates.plugin.animation.prop.entity
 
-import gg.aquatic.aquaticcrates.api.animation.Animation
-import gg.aquatic.aquaticcrates.api.animation.prop.AnimationProp
-import gg.aquatic.aquaticcrates.plugin.animation.prop.Moveable
-import gg.aquatic.aquaticcrates.plugin.animation.prop.Seatable
-import gg.aquatic.aquaticcrates.plugin.animation.prop.Throwable
 import gg.aquatic.aquaticcrates.plugin.animation.prop.entity.property.EntityProperty
-import gg.aquatic.aquaticcrates.plugin.animation.prop.path.PathBoundProperties
-import gg.aquatic.aquaticcrates.plugin.animation.prop.path.PathProp
 import gg.aquatic.waves.Waves
 import gg.aquatic.waves.fake.entity.FakeEntity
+import gg.aquatic.waves.scenario.Scenario
+import gg.aquatic.waves.scenario.ScenarioProp
+import gg.aquatic.waves.scenario.prop.Moveable
+import gg.aquatic.waves.scenario.prop.Seatable
+import gg.aquatic.waves.scenario.prop.Throwable
+import gg.aquatic.waves.scenario.prop.path.PathBoundProperties
+import gg.aquatic.waves.scenario.prop.path.PathProp
 import gg.aquatic.waves.util.sendPacket
 import org.bukkit.Location
 import org.bukkit.entity.EntityType
@@ -17,33 +17,33 @@ import org.bukkit.util.Vector
 import java.util.concurrent.ConcurrentHashMap
 
 class EntityAnimationProp(
-    override val animation: Animation,
+    override val scenario: Scenario,
     override val locationOffset: Vector,
     override val boundPaths: ConcurrentHashMap<PathProp, Pair<PathBoundProperties, Int>>,
     entityType: String,
     properties: Collection<EntityProperty>,
     override val locationOffsetYawPitch: Pair<Float, Float>
-) : AnimationProp(), Moveable, Throwable, Seatable {
+) : ScenarioProp, Moveable, Throwable, Seatable {
 
     var entity: FakeEntity
 
     override val processedPaths: MutableSet<PathProp> = ConcurrentHashMap.newKeySet()
 
     init {
-        val currentLocation = if (boundPaths.isEmpty()) animation.baseLocation.clone().add(locationOffset).apply {
+        val currentLocation = if (boundPaths.isEmpty()) scenario.baseLocation.clone().add(locationOffset).apply {
             yaw += locationOffsetYawPitch.first
             pitch += locationOffsetYawPitch.second
         }
         else {
             val point = calculatePoint()
-            val newLocation = animation.baseLocation.clone().add(point.vector).add(locationOffset)
+            val newLocation = scenario.baseLocation.clone().add(point.vector).add(locationOffset)
             newLocation.yaw = point.yaw + locationOffsetYawPitch.first
             newLocation.pitch = point.pitch + locationOffsetYawPitch.second
 
             newLocation
         }
 
-        entity = FakeEntity(EntityType.valueOf(entityType.uppercase()), currentLocation, 50, animation.audience)
+        entity = FakeEntity(EntityType.valueOf(entityType.uppercase()), currentLocation, 50, scenario.audience)
         for (property in properties) {
             property.apply(entity, this@EntityAnimationProp)
         }
@@ -53,7 +53,7 @@ class EntityAnimationProp(
 
     }
 
-    override fun onAnimationEnd() {
+    override fun onEnd() {
         entity.destroy()
     }
 
@@ -68,13 +68,15 @@ class EntityAnimationProp(
         }
     }
 
-    override fun addPassenger(entityAnimationProp: EntityAnimationProp) {
+    override fun addPassenger(entityAnimationProp: ScenarioProp) {
+        if (entityAnimationProp !is EntityAnimationProp) return
         entity.updateEntity {
             passengers += entityAnimationProp.entity.entityId
         }
     }
 
-    override fun removePassenger(entityAnimationProp: EntityAnimationProp) {
+    override fun removePassenger(entityAnimationProp: ScenarioProp) {
+        if (entityAnimationProp !is EntityAnimationProp) return
         entity.updateEntity {
             passengers -= entityAnimationProp.entity.entityId
         }

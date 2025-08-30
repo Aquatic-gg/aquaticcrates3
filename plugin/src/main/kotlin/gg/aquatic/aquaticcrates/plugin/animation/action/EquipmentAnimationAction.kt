@@ -1,6 +1,5 @@
 package gg.aquatic.aquaticcrates.plugin.animation.action
 
-import gg.aquatic.aquaticcrates.api.animation.PlayerBoundAnimation
 import gg.aquatic.aquaticcrates.api.animation.crate.CrateAnimation
 import gg.aquatic.waves.item.AquaticItem
 import gg.aquatic.waves.util.action.RegisterAction
@@ -10,7 +9,7 @@ import gg.aquatic.waves.util.argument.impl.ItemObjectArgument
 import gg.aquatic.waves.util.generic.Action
 
 @RegisterAction("player-equipment")
-class EquipmentAnimationAction: Action<PlayerBoundAnimation> {
+class EquipmentAnimationAction: Action<CrateAnimation> {
     override val arguments: List<AquaticObjectArgument<*>> = listOf(
         ItemObjectArgument("helmet", null, false),
         ItemObjectArgument("chestplate", null, false),
@@ -22,11 +21,10 @@ class EquipmentAnimationAction: Action<PlayerBoundAnimation> {
     )
 
     override fun execute(
-        binder: PlayerBoundAnimation,
+        binder: CrateAnimation,
         args: ObjectArguments,
-        textUpdater: (PlayerBoundAnimation, String) -> String
+        textUpdater: (CrateAnimation, String) -> String
     ) {
-        if (binder !is CrateAnimation) return
         val helmet = args.typed<AquaticItem>("helmet")
         val chestplate = args.typed<AquaticItem>("chestplate")
         val leggings = args.typed<AquaticItem>("leggings")

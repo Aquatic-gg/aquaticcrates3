@@ -1,18 +1,19 @@
 package gg.aquatic.aquaticcrates.plugin.animation.action.model
 
-import gg.aquatic.aquaticcrates.api.animation.Animation
 import gg.aquatic.aquaticcrates.plugin.animation.idle.IdleAnimationImpl
 import gg.aquatic.aquaticcrates.plugin.animation.prop.model.BMModelAnimationProp
 import gg.aquatic.waves.interactable.type.BMInteractable
+import gg.aquatic.waves.scenario.Scenario
 import gg.aquatic.waves.util.action.RegisterAction
 import gg.aquatic.waves.util.argument.AquaticObjectArgument
 import gg.aquatic.waves.util.argument.ObjectArguments
 import gg.aquatic.waves.util.argument.impl.PrimitiveObjectArgument
 import gg.aquatic.waves.util.generic.Action
 import kr.toxicity.model.api.animation.AnimationModifier
+import net.kyori.adventure.key.Key
 
 @RegisterAction("play-bm-model-animation")
-class BMPlayModelAnimationAction : Action<Animation> {
+class BMPlayModelAnimationAction : Action<Scenario> {
 
     override val arguments: List<AquaticObjectArgument<*>> = listOf(
         PrimitiveObjectArgument("id", null, false),
@@ -22,7 +23,7 @@ class BMPlayModelAnimationAction : Action<Animation> {
         PrimitiveObjectArgument("speed", 1.0f, false),
     )
 
-    override fun execute(binder: Animation, args: ObjectArguments, textUpdater: (Animation, String) -> String) {
+    override fun execute(binder: Scenario, args: ObjectArguments, textUpdater: (Scenario, String) -> String) {
         val id = args.string("id") { textUpdater(binder, it) }
         val animation = args.string("animation") { textUpdater(binder, it) } ?: return
         val fadeIn = args.int("fade-in") { textUpdater(binder, it) } ?: return
@@ -45,7 +46,7 @@ class BMPlayModelAnimationAction : Action<Animation> {
             }
             return
         }
-        val prop = binder.props["model:$id"] as? BMModelAnimationProp ?: return
+        val prop = binder.props[Key.key("model:$id")] as? BMModelAnimationProp ?: return
         prop.playAnimation(animation, fadeIn, fadeOut, speed)
     }
 }

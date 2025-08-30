@@ -1,41 +1,39 @@
 package gg.aquatic.aquaticcrates.plugin.animation.idle
 
-import gg.aquatic.aquaticcrates.api.animation.Animation
-import gg.aquatic.aquaticcrates.api.animation.prop.AnimationProp
 import gg.aquatic.aquaticcrates.api.crate.OpenableCrate
 import gg.aquatic.aquaticcrates.api.crate.SpawnedCrate
-import gg.aquatic.aquaticcrates.plugin.animation.idle.settings.IdleAnimationSettings
+import gg.aquatic.waves.scenario.Scenario
+import gg.aquatic.waves.scenario.ScenarioProp
 import gg.aquatic.waves.util.audience.AquaticAudience
 import gg.aquatic.waves.util.collection.executeActions
+import net.kyori.adventure.key.Key
 import java.util.concurrent.ConcurrentHashMap
 
 class IdleAnimationImpl(
     val crate: SpawnedCrate,
     val settings: IdleAnimationSettings
-) : Animation() {
+) : Scenario() {
     override val baseLocation = crate.location
     override val audience: AquaticAudience = crate.audience
-    override val props: MutableMap<String, AnimationProp> = ConcurrentHashMap()
+    override val props: MutableMap<Key, ScenarioProp> = ConcurrentHashMap()
 
-    override fun tick() {
-        for ((_, prop) in props) {
-            prop.tick()
-        }
+    override fun onTick() {
+        tickProps()
         settings.animationTasks[tick]?.executeActions(this) { a, str ->
             a.updatePlaceholders(str)
         }
-
-        tick++
 
         if (tick > settings.length) {
             if (settings.isLoop) {
                 tick = 0
                 return
             }
-            props.values.forEach { it.onAnimationEnd() }
+            props.values.forEach { it.onEnd() }
             (crate.crate as OpenableCrate).animationManager.playNewIdleAnimation(crate)
         }
     }
+
+    override val extraPlaceholders: MutableMap<Key, (String) -> String> = ConcurrentHashMap()
 
     override fun updatePlaceholders(str: String): String {
         var finalString = str

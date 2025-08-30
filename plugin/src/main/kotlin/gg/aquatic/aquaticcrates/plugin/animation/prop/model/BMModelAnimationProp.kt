@@ -1,11 +1,11 @@
 package gg.aquatic.aquaticcrates.plugin.animation.prop.model
 
-import gg.aquatic.aquaticcrates.api.animation.Animation
-import gg.aquatic.aquaticcrates.api.animation.prop.AnimationProp
-import gg.aquatic.aquaticcrates.plugin.animation.prop.Moveable
-import gg.aquatic.aquaticcrates.plugin.animation.prop.path.PathBoundProperties
-import gg.aquatic.aquaticcrates.plugin.animation.prop.path.PathProp
 import gg.aquatic.waves.interactable.type.BMInteractable
+import gg.aquatic.waves.scenario.Scenario
+import gg.aquatic.waves.scenario.ScenarioProp
+import gg.aquatic.waves.scenario.prop.Moveable
+import gg.aquatic.waves.scenario.prop.path.PathBoundProperties
+import gg.aquatic.waves.scenario.prop.path.PathProp
 import gg.aquatic.waves.util.runSync
 import kr.toxicity.model.api.animation.AnimationModifier
 import org.bukkit.Location
@@ -13,26 +13,26 @@ import org.bukkit.util.Vector
 import java.util.concurrent.ConcurrentHashMap
 
 class BMModelAnimationProp(
-    override val animation: Animation,
+    override val scenario: Scenario,
     val model: String,
     val modelAnimation: String?,
     override val locationOffset: Vector,
     override val boundPaths: ConcurrentHashMap<PathProp, Pair<PathBoundProperties, Int>>,
     override val locationOffsetYawPitch: Pair<Float, Float>
-) : AnimationProp(), Moveable {
+) : ScenarioProp, Moveable {
 
     override val processedPaths: MutableSet<PathProp> = ConcurrentHashMap.newKeySet()
     var interactable: BMInteractable? = null
         private set
 
     init {
-        val currentLocation = if (boundPaths.isEmpty()) animation.baseLocation.clone().add(locationOffset).apply {
+        val currentLocation = if (boundPaths.isEmpty()) scenario.baseLocation.clone().add(locationOffset).apply {
             yaw += locationOffsetYawPitch.first
             pitch += locationOffsetYawPitch.second
         }
         else {
             val point = calculatePoint()
-            val newLocation = animation.baseLocation.clone().add(point.vector).add(locationOffset)
+            val newLocation = scenario.baseLocation.clone().add(point.vector).add(locationOffset)
             newLocation.yaw = point.yaw + locationOffsetYawPitch.first
             newLocation.pitch = point.pitch + locationOffsetYawPitch.second
 
@@ -43,7 +43,7 @@ class BMModelAnimationProp(
             interactable = BMInteractable(
                 currentLocation,
                 model,
-                animation.audience,
+                scenario.audience,
             ) {}
             if (modelAnimation != null) {
                 playAnimation(modelAnimation)
@@ -61,7 +61,7 @@ class BMModelAnimationProp(
         }
     }
 
-    override fun onAnimationEnd() {
+    override fun onEnd() {
         runSync {
             interactable?.destroy()
         }

@@ -1,12 +1,13 @@
 package gg.aquatic.aquaticcrates.api.util.animationitem
 
-import gg.aquatic.aquaticcrates.api.animation.Animation
 import gg.aquatic.aquaticcrates.api.animation.crate.CrateAnimation
 import gg.aquatic.aquaticcrates.api.animation.prop.ItemBasedProp
 import gg.aquatic.aquaticcrates.api.crate.OpenableCrate
 import gg.aquatic.waves.item.AquaticItem
+import gg.aquatic.waves.scenario.Scenario
 import gg.aquatic.waves.util.item.loadFromYml
 import gg.aquatic.waves.util.item.toCustomItem
+import net.kyori.adventure.key.Key
 import org.bukkit.Material
 import org.bukkit.configuration.ConfigurationSection
 
@@ -15,7 +16,7 @@ class ArgumentItem(
     val baseItem: AquaticItem?
 ) {
 
-    fun getActualItem(animation: Animation): AquaticItem {
+    fun getActualItem(animation: Scenario): AquaticItem {
         if (type.lowercase().startsWith("rewarditem:")) {
             val rewardIndex = type.substringAfter("rewarditem:").toIntOrNull() ?: 0
             return if (animation is CrateAnimation) {
@@ -24,7 +25,7 @@ class ArgumentItem(
         }
         if (type.lowercase().startsWith("rumbling-reward:")) {
             val rewardId = type.substringAfter("rumbling-reward:")
-            return (animation.props["rumbling-reward:$rewardId"] as? ItemBasedProp)?.item() ?: Material.STONE.toCustomItem()
+            return (animation.props[Key.key("rumbling-reward:$rewardId")] as? ItemBasedProp)?.item() ?: Material.STONE.toCustomItem()
         }
         if (type.lowercase() == "randomrewarditem") {
             return if (animation is CrateAnimation) {

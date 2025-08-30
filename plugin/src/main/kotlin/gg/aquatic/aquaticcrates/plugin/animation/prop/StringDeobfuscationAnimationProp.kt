@@ -1,25 +1,26 @@
 package gg.aquatic.aquaticcrates.plugin.animation.prop
 
-import gg.aquatic.aquaticcrates.api.animation.PlayerBoundAnimation
-import gg.aquatic.aquaticcrates.api.animation.prop.AnimationProp
+import gg.aquatic.waves.scenario.PlayerScenario
+import gg.aquatic.waves.scenario.PlayerScenarioProp
 import gg.aquatic.waves.util.collection.executeActions
 import gg.aquatic.waves.util.generic.ConfiguredExecutableObject
 import gg.aquatic.waves.util.toMMComponent
 import gg.aquatic.waves.util.toPlain
+import net.kyori.adventure.key.Key
 
 class StringDeobfuscationAnimationProp(
     val id: String,
-    override val animation: PlayerBoundAnimation,
+    override val scenario: PlayerScenario,
     val deobfuscateEvery: Int,
     deobfuscationString: String,
     val obfuscatedFormat: String,
     val deobfuscatedFormat: String,
-    val deobfuscationActions: Collection<ConfiguredExecutableObject<PlayerBoundAnimation, Unit>>,
+    val deobfuscationActions: Collection<ConfiguredExecutableObject<PlayerScenario, Unit>>,
     stripColors: Boolean
-) : AnimationProp() {
+) : PlayerScenarioProp {
 
-    val obfuscationString = if (stripColors) animation.updatePlaceholders(deobfuscationString).toMMComponent()
-        .toPlain() else animation.updatePlaceholders(deobfuscationString)
+    val obfuscationString = if (stripColors) scenario.updatePlaceholders(deobfuscationString).toMMComponent()
+        .toPlain() else scenario.updatePlaceholders(deobfuscationString)
     val length = obfuscationString.length
     var deobfuscated = 0
 
@@ -27,7 +28,7 @@ class StringDeobfuscationAnimationProp(
     private var currentString = "$obfuscatedFormat$obfuscationString"
 
     init {
-        animation.extraPlaceholders += "stringdeobfuscation:$id" to { str ->
+        scenario.extraPlaceholders += Key.key("stringdeobfuscation:$id") to { str ->
             str.replace("%stringdeobfuscation:$id%", currentString)
         }
     }
@@ -49,12 +50,12 @@ class StringDeobfuscationAnimationProp(
         val deobfuscated = obfuscationString.substring((length - 1) - deobfuscated, length)
         currentString = "$obfuscatedFormat$obfuscated$deobfuscatedFormat$deobfuscated"
 
-        deobfuscationActions.executeActions(animation) { a, str ->
+        deobfuscationActions.executeActions(scenario) { a, str ->
             a.updatePlaceholders(str)
         }
     }
 
-    override fun onAnimationEnd() {
+    override fun onEnd() {
 
     }
 }

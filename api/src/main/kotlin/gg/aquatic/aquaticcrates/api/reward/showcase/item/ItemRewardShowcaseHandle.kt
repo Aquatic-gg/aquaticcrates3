@@ -1,6 +1,6 @@
 package gg.aquatic.aquaticcrates.api.reward.showcase.item
 
-import gg.aquatic.aquaticcrates.api.animation.Animation
+import gg.aquatic.aquaticcrates.api.animation.crate.CrateAnimation
 import gg.aquatic.aquaticcrates.api.reward.Reward
 import gg.aquatic.aquaticcrates.api.reward.showcase.RewardShowcaseHandle
 import gg.aquatic.waves.fake.entity.FakeEntity
@@ -13,7 +13,7 @@ import org.bukkit.entity.EntityType
 import org.bukkit.util.Vector
 
 class ItemRewardShowcaseHandle(
-    override val animation: Animation,
+    override val animation: CrateAnimation,
     override var showcase: ItemRewardShowcase,
     val locationOffset: Pair<Vector, Pair<Float, Float>>,
     override var reward: Reward

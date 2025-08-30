@@ -1,24 +1,23 @@
 package gg.aquatic.aquaticcrates.plugin.animation.prop
 
-import gg.aquatic.aquaticcrates.api.animation.PlayerBoundAnimation
 import gg.aquatic.aquaticcrates.api.animation.crate.CrateAnimation
-import gg.aquatic.aquaticcrates.api.animation.prop.AnimationProp
 import gg.aquatic.aquaticcrates.api.animation.prop.ItemBasedProp
 import gg.aquatic.aquaticcrates.api.crate.OpenableCrate
 import gg.aquatic.aquaticcrates.api.reward.Reward
 import gg.aquatic.waves.item.AquaticItem
+import gg.aquatic.waves.scenario.ScenarioProp
 import gg.aquatic.waves.util.collection.executeActions
 import gg.aquatic.waves.util.generic.ConfiguredExecutableObject
 
 class RumblingRewardProp(
-    override val animation: CrateAnimation,
+    override val scenario: CrateAnimation,
     val rumblingLength: Int,
     val rumblingPeriod: Int,
     val easeOut: Boolean,
     val rewardIndex: Int,
-    val onRumbleActions: Collection<ConfiguredExecutableObject<PlayerBoundAnimation, Unit>>,
-    val onFinishActions: Collection<ConfiguredExecutableObject<PlayerBoundAnimation, Unit>>
-) : AnimationProp(), ItemBasedProp {
+    val onRumbleActions: Collection<ConfiguredExecutableObject<CrateAnimation, Unit>>,
+    val onFinishActions: Collection<ConfiguredExecutableObject<CrateAnimation, Unit>>
+) : ScenarioProp, ItemBasedProp {
 
     @Volatile
     var tick = -1
@@ -104,13 +103,13 @@ class RumblingRewardProp(
 
     private fun performUpdate(final: Boolean) {
         if (final) {
-            onUpdate(animation.rewards.getOrNull(rewardIndex)?.reward ?: animation.rewards.first().reward, true)
+            onUpdate(scenario.rewards.getOrNull(rewardIndex)?.reward ?: scenario.rewards.first().reward, true)
             finished = true
             return
         }
 
-        val rewards = (animation.animationManager.crate as OpenableCrate).rewardManager
-            .getPossibleRewards(animation.player).values.toMutableList()
+        val rewards = (scenario.animationManager.crate as OpenableCrate).rewardManager
+            .getPossibleRewards(scenario.player).values.toMutableList()
 
         if (currentReward != null) rewards.remove(currentReward)
 
@@ -120,10 +119,10 @@ class RumblingRewardProp(
     private fun onUpdate(reward: Reward, final: Boolean) {
         currentReward = reward
         if (final) {
-            onFinishActions.executeActions(animation) { a, str -> a.updatePlaceholders(str) }
+            onFinishActions.executeActions(scenario) { a, str -> a.updatePlaceholders(str) }
             finished = true
         } else {
-            onRumbleActions.executeActions(animation) { a, str -> a.updatePlaceholders(str) }
+            onRumbleActions.executeActions(scenario) { a, str -> a.updatePlaceholders(str) }
         }
     }
 
@@ -170,7 +169,7 @@ class RumblingRewardProp(
     }
      */
 
-    override fun onAnimationEnd() {
+    override fun onEnd() {
 
     }
 

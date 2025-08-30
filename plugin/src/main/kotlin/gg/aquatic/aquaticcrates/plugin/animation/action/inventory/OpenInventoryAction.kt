@@ -1,9 +1,9 @@
 package gg.aquatic.aquaticcrates.plugin.animation.action.inventory
 
-import gg.aquatic.aquaticcrates.api.animation.PlayerBoundAnimation
 import gg.aquatic.aquaticcrates.api.util.animationitem.ArgumentItem
 import gg.aquatic.aquaticcrates.plugin.animation.prop.inventory.InventoryAnimationProp
 import gg.aquatic.waves.menu.MenuSerializer
+import gg.aquatic.waves.scenario.PlayerScenario
 import gg.aquatic.waves.util.action.RegisterAction
 import gg.aquatic.waves.util.argument.AbstractObjectArgumentSerializer
 import gg.aquatic.waves.util.argument.AquaticObjectArgument
@@ -11,10 +11,11 @@ import gg.aquatic.waves.util.argument.ObjectArguments
 import gg.aquatic.waves.util.argument.impl.PrimitiveObjectArgument
 import gg.aquatic.waves.util.generic.Action
 import gg.aquatic.waves.util.getSectionList
+import net.kyori.adventure.key.Key
 import org.bukkit.configuration.ConfigurationSection
 
 @RegisterAction("open-inventory")
-class OpenInventoryAction : Action<PlayerBoundAnimation> {
+class OpenInventoryAction : Action<PlayerScenario> {
     override val arguments: List<AquaticObjectArgument<*>> = listOf(
         PrimitiveObjectArgument("size", 9, true),
         PrimitiveObjectArgument("title", "Inventory", true),
@@ -22,9 +23,9 @@ class OpenInventoryAction : Action<PlayerBoundAnimation> {
     )
 
     override fun execute(
-        binder: PlayerBoundAnimation,
+        binder: PlayerScenario,
         args: ObjectArguments,
-        textUpdater: (PlayerBoundAnimation, String) -> String
+        textUpdater: (PlayerScenario, String) -> String
     ) {
         val size = args.int("size") { textUpdater(binder, it) } ?: 9
         val title = args.string("title") { textUpdater(binder, it) } ?: "Inventory"
@@ -33,10 +34,10 @@ class OpenInventoryAction : Action<PlayerBoundAnimation> {
             binder,
             title, size, items.mapValues { it.value.getActualItem(binder) }
         )
-        val animationMenu = binder.props["inventory"] as? InventoryAnimationProp
+        val animationMenu = binder.props[Key.key("inventory")] as? InventoryAnimationProp
         animationMenu?.menu?.close()
 
-        binder.props["inventory"] = prop
+        binder.props[Key.key("inventory")] = prop
         prop.menu.open()
     }
 

@@ -1,17 +1,18 @@
 package gg.aquatic.aquaticcrates.plugin.misc.hook
 
-import gg.aquatic.aquaticcrates.api.animation.Animation
-import gg.aquatic.aquaticcrates.api.animation.prop.AnimationProp
 import gg.aquatic.comet.api.CometRegistry
 import gg.aquatic.comet.api.emitter.AbstractEmitter
 import gg.aquatic.comet.api.emitter.AbstractUnrealizedEmitter
 import gg.aquatic.comet.api.emitter.parent.Pose
 import gg.aquatic.waves.registry.WavesRegistry
 import gg.aquatic.waves.registry.registerAction
+import gg.aquatic.waves.scenario.Scenario
+import gg.aquatic.waves.scenario.ScenarioProp
 import gg.aquatic.waves.util.argument.AquaticObjectArgument
 import gg.aquatic.waves.util.argument.ObjectArguments
 import gg.aquatic.waves.util.argument.impl.PrimitiveObjectArgument
 import gg.aquatic.waves.util.generic.Action
+import net.kyori.adventure.key.Key
 import org.bukkit.util.Vector
 import org.joml.Quaterniond
 import org.joml.Vector3d
@@ -23,14 +24,14 @@ class CometHook {
         WavesRegistry.registerAction("hide-comet-particle", HideCometParticleAction())
     }
 
-    class ShowCometParticleAction : Action<Animation> {
+    class ShowCometParticleAction : Action<Scenario> {
         override val arguments: List<AquaticObjectArgument<*>> = listOf(
             PrimitiveObjectArgument("id", "example", true),
             PrimitiveObjectArgument("emitter", "example", true),
             PrimitiveObjectArgument("offset", "0;0;0", false)
         )
 
-        override fun execute(binder: Animation, args: ObjectArguments, textUpdater: (Animation, String) -> String) {
+        override fun execute(binder: Scenario, args: ObjectArguments, textUpdater: (Scenario, String) -> String) {
             val id = args.string("id") { textUpdater(binder, it) } ?: return
             val emitterId = args.string("emitter") { textUpdater(binder, it) } ?: return
             val offsetWithYawPitch = args.string("offset") { textUpdater(binder, it) } ?: "0;0;0"
@@ -46,38 +47,37 @@ class CometHook {
 
             val emitter = CometRegistry.unrealizedEmitterByID(emitterId) ?: return
             val prop = CometParticleAnimationProp(binder, emitter, offset, yaw, pitch)
-            binder.props.remove(id)?.onAnimationEnd()
-            binder.props[id] = prop
+            val key = Key.key("comet:$id")
+            binder.props.remove(key)?.onEnd()
+            binder.props[key] = prop
         }
     }
 
-    class HideCometParticleAction : Action<Animation> {
+    class HideCometParticleAction : Action<Scenario> {
         override val arguments: List<AquaticObjectArgument<*>> = listOf(
             PrimitiveObjectArgument("id", "example", true)
         )
 
-        override fun execute(binder: Animation, args: ObjectArguments, textUpdater: (Animation, String) -> String) {
+        override fun execute(binder: Scenario, args: ObjectArguments, textUpdater: (Scenario, String) -> String) {
             val id = args.string("id") { textUpdater(binder, it) } ?: return
-            binder.props.remove(id)?.onAnimationEnd()
+            val key = Key.key("comet:$id")
+            binder.props.remove(key)?.onEnd()
         }
     }
 
     class CometParticleAnimationProp(
-        override val animation: Animation,
+        override val scenario: Scenario,
         emitter: AbstractUnrealizedEmitter,
         val offset: Vector,
         val yawOffset: Float,
         val pitchOffset: Float
-    ) :
-        AnimationProp() {
-
-
+    ) : ScenarioProp {
 
         private var spawnedEmitter: AbstractEmitter? = null
         private var killed = false
 
         init {
-            val loc = animation.baseLocation.clone().apply {
+            val loc = scenario.baseLocation.clone().apply {
                 add(offset)
                 yaw += yawOffset
                 pitch += pitchOffset
@@ -88,7 +88,7 @@ class CometHook {
                     loc.world,
                     Vector3d(loc.x, loc.y, loc.z),
                     Quaterniond().rotateX(pitchOffset.toDouble()).rotateY(yawOffset.toDouble())
-                ), audience = animation.audience, after = { spawnedEmitter ->
+                ), audience = scenario.audience, after = { spawnedEmitter ->
                     this.spawnedEmitter = spawnedEmitter
                     if (killed) {
                         spawnedEmitter.kill()
@@ -101,7 +101,7 @@ class CometHook {
 
         }
 
-        override fun onAnimationEnd() {
+        override fun onEnd() {
             killed = true
             spawnedEmitter?.kill()
         }

@@ -1,21 +1,21 @@
 package gg.aquatic.aquaticcrates.plugin.animation.prop.inventory
 
-import gg.aquatic.aquaticcrates.api.animation.PlayerBoundAnimation
-import gg.aquatic.aquaticcrates.api.animation.prop.PlayerBoundAnimationProp
 import gg.aquatic.waves.inventory.InventoryType
 import gg.aquatic.waves.item.AquaticItem
 import gg.aquatic.waves.menu.component.Button
+import gg.aquatic.waves.scenario.PlayerScenario
+import gg.aquatic.waves.scenario.PlayerScenarioProp
 import gg.aquatic.waves.util.toMMComponent
 
 class InventoryAnimationProp(
-    override val animation: PlayerBoundAnimation,
+    override val scenario: PlayerScenario,
     title: String,
     size: Int,
     items: Map<Int, AquaticItem>
-) : PlayerBoundAnimationProp() {
+) : PlayerScenarioProp {
 
     val menu = AnimationMenu(
-        animation.updatePlaceholders(title).toMMComponent(),
+        scenario.updatePlaceholders(title).toMMComponent(),
         when (size) {
             54 -> InventoryType.GENERIC9X6
             45 -> InventoryType.GENERIC9X5
@@ -25,7 +25,7 @@ class InventoryAnimationProp(
             9 -> InventoryType.GENERIC9X1
             else -> InventoryType.GENERIC9X6
         },
-        animation.player
+        scenario.player
     ).apply {
         for ((slot, item) in items) {
             components += "slot_$slot" to Button(
@@ -36,7 +36,7 @@ class InventoryAnimationProp(
                 1,
                 null,
                 { m -> true },
-                { str, menu -> animation.updatePlaceholders(str) },
+                { str, menu -> scenario.updatePlaceholders(str) },
                 { e -> }
             )
         }
@@ -46,7 +46,7 @@ class InventoryAnimationProp(
 
     }
 
-    override fun onAnimationEnd() {
+    override fun onEnd() {
         menu.close()
     }
 }

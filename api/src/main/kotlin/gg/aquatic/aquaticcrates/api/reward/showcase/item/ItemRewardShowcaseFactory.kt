@@ -1,6 +1,6 @@
 package gg.aquatic.aquaticcrates.api.reward.showcase.item
 
-import gg.aquatic.aquaticcrates.api.animation.PlayerBoundAnimation
+import gg.aquatic.aquaticcrates.api.animation.crate.CrateAnimation
 import gg.aquatic.aquaticcrates.api.reward.showcase.RewardShowcase
 import gg.aquatic.aquaticcrates.api.reward.showcase.RewardShowcaseFactory
 import gg.aquatic.waves.hologram.HologramSerializer
@@ -34,11 +34,11 @@ object ItemRewardShowcaseFactory : RewardShowcaseFactory {
             interactables.add(interactable)
         }
 
-        val spawnActions = ActionSerializer.fromSections<PlayerBoundAnimation>(
+        val spawnActions = ActionSerializer.fromSections<CrateAnimation>(
             section.getSectionList("spawn-actions"),
             ClassTransform(Player::class.java) { it.player }
         )
-        val despawnActions = ActionSerializer.fromSections<PlayerBoundAnimation>(
+        val despawnActions = ActionSerializer.fromSections<CrateAnimation>(
             section.getSectionList("despawn-actions"),
             ClassTransform(Player::class.java) { it.player }
         )

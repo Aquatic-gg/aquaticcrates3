@@ -1,32 +1,34 @@
 package gg.aquatic.aquaticcrates.api.animation.crate
 
-import gg.aquatic.aquaticcrates.api.animation.PlayerBoundAnimation
 import gg.aquatic.aquaticcrates.api.crate.OpenableCrate
 import gg.aquatic.aquaticcrates.api.event.CrateAnimationEndEvent
 import gg.aquatic.aquaticcrates.api.event.CrateAnimationStartEvent
 import gg.aquatic.aquaticcrates.api.reward.RolledReward
 import gg.aquatic.aquaticcrates.api.runOrCatch
 import gg.aquatic.waves.api.event.call
+import gg.aquatic.waves.scenario.PlayerScenario
+import gg.aquatic.waves.scenario.ScenarioProp
 import gg.aquatic.waves.util.collection.executeActions
 import gg.aquatic.waves.util.decimals
 import gg.aquatic.waves.util.generic.ConfiguredExecutableObject
 import gg.aquatic.waves.util.runAsync
 import gg.aquatic.waves.util.runSync
 import gg.aquatic.waves.util.updatePAPIPlaceholders
+import net.kyori.adventure.key.Key
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ConcurrentHashMap
 
-abstract class CrateAnimation : PlayerBoundAnimation() {
+abstract class CrateAnimation : PlayerScenario() {
 
     abstract val animationManager: CrateAnimationManager
 
-    abstract var state: State
-        protected set
-
     abstract val rewards: MutableList<RolledReward>
+
+    override val extraPlaceholders: MutableMap<Key, (String) -> String> = ConcurrentHashMap()
+    override val props: MutableMap<Key, ScenarioProp> = ConcurrentHashMap()
 
     fun tickPreOpen() {
         executeActions(animationManager.animationSettings.preAnimationTasks[tick] ?: return)
@@ -40,7 +42,7 @@ abstract class CrateAnimation : PlayerBoundAnimation() {
         executeActions(animationManager.animationSettings.postAnimationTasks[tick] ?: return)
     }
 
-    open fun executeActions(actions: Collection<ConfiguredExecutableObject<PlayerBoundAnimation, Unit>>) {
+    open fun executeActions(actions: Collection<ConfiguredExecutableObject<CrateAnimation, Unit>>) {
         for (a in actions) {
             runOrCatch {
                 a.execute(this) { a, str -> a.updatePlaceholders(str) }
@@ -48,89 +50,90 @@ abstract class CrateAnimation : PlayerBoundAnimation() {
         }
     }
 
+    var phase: Phase = PreOpenPhase()
+
+    override fun onTick() {
+        phase.tick()
+    }
+
     abstract val completionFuture: CompletableFuture<CrateAnimation>
     abstract val settings: CrateAnimationSettings
 
     val playerEquipment = ConcurrentHashMap<EquipmentSlot, ItemStack>()
 
-    override fun tick() {
-        if (state == State.FINISHED) {
-            return
-        }
-        try {
-            onTick()
-            when (state) {
-                State.PRE_OPEN -> {
-                    tickPreOpen()
-                    if (tick >= settings.preAnimationDelay) {
-                        val event = CrateAnimationStartEvent(animationManager.crate as OpenableCrate,this,player)
-                        if (Bukkit.isPrimaryThread()) {
-                            runAsync {
-                                event.call()
-                            }
-                        } else {
-                            event.call()
-                        }
-
-                        updateState(State.OPENING)
-                        tick()
-                        return
+    inner class PreOpenPhase : Phase {
+        override fun tick() {
+            tickPreOpen()
+            if (tick >= settings.preAnimationDelay) {
+                val event =
+                    CrateAnimationStartEvent(animationManager.crate as OpenableCrate, this@CrateAnimation, player)
+                if (Bukkit.isPrimaryThread()) {
+                    runAsync {
+                        event.call()
                     }
+                } else {
+                    event.call()
                 }
-
-                State.OPENING -> {
-                    tickOpening()
-                    if (tick >= settings.animationLength) {
-                        tryReroll()
-                        return
-                    }
-                }
-
-                State.POST_OPEN -> {
-                    tickPostOpen()
-                    if (tick >= settings.postAnimationDelay) {
-                        finalizeAnimation()
-                        return
-                    }
-                }
-
-                else -> {
-                    return
-                }
+                updatePhase(OpeningPhase())
+                return
             }
-            for ((_, prop) in props) {
-                prop.tick()
-            }
-            tick++
-        } catch (e: Exception) {
-            e.printStackTrace()
+            tickProps()
         }
     }
 
-    open fun onTick() {}
+    inner class OpeningPhase : Phase {
+        override fun tick() {
+            tickOpening()
+            if (tick >= settings.animationLength) {
+                tryReroll()
+                return
+            }
+            tickProps()
+        }
+    }
+
+    inner class PostOpenPhase : Phase {
+        override fun tick() {
+            tickPostOpen()
+            if (tick >= settings.postAnimationDelay) {
+                finalizeAnimation()
+                return
+            }
+            tickProps()
+        }
+    }
+
+    inner class RollingPhase : Phase {
+        override fun tick() {
+
+        }
+    }
+
+    inner class FinalPhase : Phase {
+        override fun tick() {
+
+        }
+    }
 
     fun tryReroll() {
         val crate = animationManager.crate
 
         if (crate !is OpenableCrate) {
-            updateState(State.POST_OPEN)
-            tick()
+            updatePhase(PostOpenPhase())
             return
         }
 
         val rerollManager = animationManager.rerollManager
         if (rerollManager == null) {
-            updateState(State.POST_OPEN)
-            tick()
+            updatePhase(PostOpenPhase())
             return
         }
         val availableRerolls = rerollManager.availableRerolls(player)
         if (availableRerolls <= usedRerolls) {
-            updateState(State.POST_OPEN)
-            tick()
+            updatePhase(PostOpenPhase())
             return
         }
-        updateState(State.ROLLING)
+        updatePhase(RollingPhase())
         rerollManager.animationTasks.executeActions(this) { a, str -> a.updatePlaceholders(str) }
         onReroll()
     }
@@ -138,18 +141,13 @@ abstract class CrateAnimation : PlayerBoundAnimation() {
     abstract fun onReroll()
 
     fun finalizeAnimation(isSync: Boolean = false) {
-        updateState(State.FINISHED)
-        CrateAnimationEndEvent(animationManager.crate as OpenableCrate,this,player).call()
+        updatePhase(FinalPhase())
+        CrateAnimationEndEvent(animationManager.crate as OpenableCrate, this, player).call()
         runOrCatch {
             onFinalize(isSync)
         }
         executeActions(animationManager.animationSettings.finalAnimationTasks)
-        for ((_, prop) in props) {
-            runOrCatch {
-                prop.onAnimationEnd()
-            }
-        }
-        props.clear()
+        destroy()
         val block = {
             for (reward in rewards) {
                 runOrCatch {
@@ -177,16 +175,17 @@ abstract class CrateAnimation : PlayerBoundAnimation() {
 
     open fun onFinalize(isSync: Boolean) {}
 
-    fun updateState(state: State) {
-        onStateUpdate(state)
-        this.state = state
+    fun updatePhase(phase: Phase) {
+        onPhaseUpdate(phase)
+        this.phase = phase
         tick = 0
+        phase.tick()
     }
 
-    open fun onStateUpdate(state: State) {}
+    open fun onPhaseUpdate(phase: Phase) {}
 
-    override fun updatePlaceholders(str: String): String {
-        var finalString = str.replace("%player%", player.name)
+    override fun updatePlaceholders(original: String): String {
+        var finalString = original.replace("%player%", player.name)
 
         for ((i, reward) in rewards.withIndex()) {
             finalString = finalString
@@ -216,16 +215,8 @@ abstract class CrateAnimation : PlayerBoundAnimation() {
     var usedRerolls = 0
 
     fun skip() {
-        if (state == State.ROLLING || state == State.FINISHED) return
+        if (phase is RollingPhase || phase is FinalPhase) return
         tryReroll()
-    }
-
-    enum class State {
-        PRE_OPEN,
-        OPENING,
-        ROLLING,
-        POST_OPEN,
-        FINISHED,
     }
 
     enum class EquipmentSlot {
@@ -240,6 +231,7 @@ abstract class CrateAnimation : PlayerBoundAnimation() {
                 HAND -> {
                     player.inventory.heldItemSlot
                 }
+
                 OFFHAND -> 45
                 NUM_0 -> 36
                 NUM_1 -> 37

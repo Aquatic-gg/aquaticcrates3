@@ -1,14 +1,14 @@
 package gg.aquatic.aquaticcrates.plugin.animation.open.settings
 
-import gg.aquatic.aquaticcrates.api.animation.PlayerBoundAnimation
-import gg.aquatic.aquaticcrates.api.animation.crate.*
-import gg.aquatic.aquaticcrates.api.animation.prop.AnimationProp
+import gg.aquatic.aquaticcrates.api.animation.crate.AnimationSettingsFactory
+import gg.aquatic.aquaticcrates.api.animation.crate.CrateAnimation
+import gg.aquatic.aquaticcrates.api.animation.crate.CrateAnimationManager
+import gg.aquatic.aquaticcrates.api.animation.crate.CrateAnimationSettings
 import gg.aquatic.aquaticcrates.api.reward.RolledReward
 import gg.aquatic.waves.util.audience.AquaticAudience
 import gg.aquatic.waves.util.audience.GlobalAudience
 import gg.aquatic.waves.util.collection.executeActions
 import gg.aquatic.waves.util.generic.ConfiguredExecutableObject
-import gg.aquatic.waves.util.updatePAPIPlaceholders
 import org.bukkit.Location
 import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.entity.Player
@@ -16,18 +16,18 @@ import java.util.*
 import java.util.concurrent.CompletableFuture
 
 class InstantAnimationSettings(
-    override val finalAnimationTasks: Collection<ConfiguredExecutableObject<PlayerBoundAnimation, Unit>>,
+    override val finalAnimationTasks: Collection<ConfiguredExecutableObject<CrateAnimation, Unit>>,
 ) : CrateAnimationSettings() {
 
 
-    override val animationTasks: TreeMap<Int, Collection<ConfiguredExecutableObject<PlayerBoundAnimation, Unit>>> =
+    override val animationTasks: TreeMap<Int, Collection<ConfiguredExecutableObject<CrateAnimation, Unit>>> =
         TreeMap()
     override val animationLength: Int = 0
     override val preAnimationDelay: Int = 0
-    override val preAnimationTasks: TreeMap<Int, Collection<ConfiguredExecutableObject<PlayerBoundAnimation, Unit>>> =
+    override val preAnimationTasks: TreeMap<Int, Collection<ConfiguredExecutableObject<CrateAnimation, Unit>>> =
         TreeMap()
     override val postAnimationDelay: Int = 0
-    override val postAnimationTasks: TreeMap<Int, Collection<ConfiguredExecutableObject<PlayerBoundAnimation, Unit>>> =
+    override val postAnimationTasks: TreeMap<Int, Collection<ConfiguredExecutableObject<CrateAnimation, Unit>>> =
         TreeMap()
     override val skippable: Boolean = false
     override val variables: Map<String, String> = mapOf()
@@ -73,7 +73,6 @@ class InstantAnimationSettings(
 
             val obj = object : CrateAnimation() {
                 override val animationManager: CrateAnimationManager = animationManager
-                override var state: State = State.FINISHED
 
                 override val baseLocation: Location = player.location
                 override val player: Player = player
@@ -82,13 +81,10 @@ class InstantAnimationSettings(
                 override val completionFuture: CompletableFuture<CrateAnimation> =
                     CompletableFuture.completedFuture(this)
                 override val settings: CrateAnimationSettings = animationManager.animationSettings
-                override val props: MutableMap<String, AnimationProp> = mutableMapOf()
-
-                override fun tick() {
-                }
-
                 override fun onReroll() {
+
                 }
+
             }
             finalAnimationTasks.executeActions(obj) { a, str -> a.updatePlaceholders(str) }
         }

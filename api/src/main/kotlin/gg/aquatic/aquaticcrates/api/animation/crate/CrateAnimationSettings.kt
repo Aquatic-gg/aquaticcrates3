@@ -1,6 +1,5 @@
 package gg.aquatic.aquaticcrates.api.animation.crate
 
-import gg.aquatic.aquaticcrates.api.animation.PlayerBoundAnimation
 import gg.aquatic.aquaticcrates.api.reward.RolledReward
 import gg.aquatic.waves.util.generic.ConfiguredExecutableObject
 import org.bukkit.Location
@@ -10,13 +9,13 @@ import java.util.concurrent.CompletableFuture
 
 abstract class CrateAnimationSettings {
 
-    abstract val animationTasks: TreeMap<Int, Collection<ConfiguredExecutableObject<PlayerBoundAnimation, Unit>>>
+    abstract val animationTasks: TreeMap<Int, Collection<ConfiguredExecutableObject<CrateAnimation, Unit>>>
     abstract val animationLength: Int
     abstract val preAnimationDelay: Int
-    abstract val preAnimationTasks: TreeMap<Int, Collection<ConfiguredExecutableObject<PlayerBoundAnimation, Unit>>>
+    abstract val preAnimationTasks: TreeMap<Int, Collection<ConfiguredExecutableObject<CrateAnimation, Unit>>>
     abstract val postAnimationDelay: Int
-    abstract val postAnimationTasks: TreeMap<Int, Collection<ConfiguredExecutableObject<PlayerBoundAnimation, Unit>>>
-    abstract val finalAnimationTasks: Collection<ConfiguredExecutableObject<PlayerBoundAnimation, Unit>>
+    abstract val postAnimationTasks: TreeMap<Int, Collection<ConfiguredExecutableObject<CrateAnimation, Unit>>>
+    abstract val finalAnimationTasks: Collection<ConfiguredExecutableObject<CrateAnimation, Unit>>
     abstract val skippable: Boolean
     abstract val variables: Map<String, String>
 

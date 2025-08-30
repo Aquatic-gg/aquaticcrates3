@@ -1,22 +1,23 @@
 package gg.aquatic.aquaticcrates.plugin.animation.action.entity
 
-import gg.aquatic.aquaticcrates.api.animation.Animation
-import gg.aquatic.aquaticcrates.plugin.animation.prop.entity.BoundPathObjectArgument
 import gg.aquatic.aquaticcrates.plugin.animation.prop.entity.EntityAnimationProp
 import gg.aquatic.aquaticcrates.plugin.animation.prop.entity.property.EntityPropertiesObjectArgument
 import gg.aquatic.aquaticcrates.plugin.animation.prop.entity.property.EntityProperty
-import gg.aquatic.aquaticcrates.plugin.animation.prop.path.PathBoundProperties
-import gg.aquatic.aquaticcrates.plugin.animation.prop.path.PathProp
+import gg.aquatic.waves.scenario.Scenario
+import gg.aquatic.waves.scenario.action.path.BoundPathObjectArgument
+import gg.aquatic.waves.scenario.prop.path.PathBoundProperties
+import gg.aquatic.waves.scenario.prop.path.PathProp
 import gg.aquatic.waves.util.action.RegisterAction
 import gg.aquatic.waves.util.argument.AquaticObjectArgument
 import gg.aquatic.waves.util.argument.ObjectArguments
 import gg.aquatic.waves.util.argument.impl.PrimitiveObjectArgument
 import gg.aquatic.waves.util.generic.Action
+import net.kyori.adventure.key.Key
 import org.bukkit.util.Vector
 import java.util.concurrent.ConcurrentHashMap
 
 @RegisterAction("show-entity")
-class ShowEntityAction : Action<Animation> {
+class ShowEntityAction : Action<Scenario> {
 
     override val arguments: List<AquaticObjectArgument<*>> = listOf(
         PrimitiveObjectArgument("id", "example-entity", true),
@@ -31,7 +32,7 @@ class ShowEntityAction : Action<Animation> {
     )
 
     @Suppress("UNCHECKED_CAST")
-    override fun execute(binder: Animation, args: ObjectArguments, textUpdater: (Animation, String) -> String) {
+    override fun execute(binder: Scenario, args: ObjectArguments, textUpdater: (Scenario, String) -> String) {
         val id = args.string("id") { textUpdater(binder, it)} ?: return
         val type = args.string("entity-type") { textUpdater(binder, it) } ?: return
         val properties = args.typed<List<EntityProperty>>("properties") { textUpdater(binder, it) } ?: return
@@ -47,7 +48,7 @@ class ShowEntityAction : Action<Animation> {
                 ?.toFloatOrNull() ?: 0.0f)
 
         val boundPropertiesFactory =
-            args.any("bound-paths") as ((Animation) -> ConcurrentHashMap<PathProp, PathBoundProperties>)?
+            args.any("bound-paths") as ((Scenario) -> ConcurrentHashMap<PathProp, PathBoundProperties>)?
                 ?: { _ -> ConcurrentHashMap() }
 
         val boundPaths = boundPropertiesFactory(binder)
@@ -74,6 +75,6 @@ class ShowEntityAction : Action<Animation> {
             }
         }
 
-        binder.props["entity:$id"] = entity
+        binder.props[Key.key("entity:$id")] = entity
     }
 }

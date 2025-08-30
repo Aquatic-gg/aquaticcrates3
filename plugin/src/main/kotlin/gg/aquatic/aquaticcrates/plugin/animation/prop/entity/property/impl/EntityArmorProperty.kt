@@ -24,7 +24,7 @@ class EntityArmorProperty(
         }
         if (entity.type == EntityType.ITEM) {
             entity.updateEntity {
-                helmet?.getActualItem(prop.animation)?.getItem()?.let {
+                helmet?.getActualItem(prop.scenario)?.getItem()?.let {
                     val data = ArrayList<EntityDataValue>()
                     if (entity.type == EntityType.ITEM) {
                         data += ItemEntityData.Item.generate(it)
@@ -34,23 +34,23 @@ class EntityArmorProperty(
             }
         } else if (entity.type != EntityType.ITEM_DISPLAY) {
             entity.updateEntity {
-                helmet?.getActualItem(prop.animation)?.getItem()?.let {
+                helmet?.getActualItem(prop.scenario)?.getItem()?.let {
                     equipment[EquipmentSlot.HEAD] = it
                 }
-                chestplate?.getActualItem(prop.animation)?.getItem()?.let {
+                chestplate?.getActualItem(prop.scenario)?.getItem()?.let {
                     equipment[EquipmentSlot.CHEST] = it
                 }
-                leggings?.getActualItem(prop.animation)?.getItem()?.let {
+                leggings?.getActualItem(prop.scenario)?.getItem()?.let {
                     equipment[EquipmentSlot.LEGS] = it
                 }
-                boots?.getActualItem(prop.animation)?.getItem()?.let {
+                boots?.getActualItem(prop.scenario)?.getItem()?.let {
                     equipment[EquipmentSlot.FEET] = it
                 }
             }
             return
         } else {
             entity.updateEntity {
-                helmet?.getActualItem(prop.animation)?.getItem()?.let {
+                helmet?.getActualItem(prop.scenario)?.getItem()?.let {
                     val data = ArrayList<EntityDataValue>()
                     if (entity.type == EntityType.ITEM_DISPLAY) {
                         data += ItemDisplayEntityData.Item.generate(it)

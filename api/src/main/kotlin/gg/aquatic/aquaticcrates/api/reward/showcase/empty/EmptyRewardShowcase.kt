@@ -1,7 +1,6 @@
 package gg.aquatic.aquaticcrates.api.reward.showcase.empty
 
-import gg.aquatic.aquaticcrates.api.animation.Animation
-import gg.aquatic.aquaticcrates.api.animation.PlayerBoundAnimation
+import gg.aquatic.aquaticcrates.api.animation.crate.CrateAnimation
 import gg.aquatic.aquaticcrates.api.reward.Reward
 import gg.aquatic.aquaticcrates.api.reward.showcase.RewardShowcase
 import gg.aquatic.aquaticcrates.api.reward.showcase.RewardShowcaseHandle
@@ -15,12 +14,12 @@ class EmptyRewardShowcase(
     override val hologram: Collection<LineSettings>,
     val hologramTranslation: Vector3d,
     override val interactables: Collection<InteractableSettings>,
-    override val spawnActions: Collection<ConfiguredExecutableObject<PlayerBoundAnimation, Unit>>,
-    override val despawnActions: Collection<ConfiguredExecutableObject<PlayerBoundAnimation, Unit>>
+    override val spawnActions: Collection<ConfiguredExecutableObject<CrateAnimation, Unit>>,
+    override val despawnActions: Collection<ConfiguredExecutableObject<CrateAnimation, Unit>>
 ) : RewardShowcase {
 
     override fun create(
-        animation: Animation,
+        animation: CrateAnimation,
         reward: Reward,
         locationOffset: Pair<Vector, Pair<Float, Float>>
     ): RewardShowcaseHandle<*> {

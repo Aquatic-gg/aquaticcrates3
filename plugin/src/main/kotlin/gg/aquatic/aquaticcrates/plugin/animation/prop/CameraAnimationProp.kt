@@ -1,15 +1,16 @@
 package gg.aquatic.aquaticcrates.plugin.animation.prop
 
 import com.destroystokyo.paper.profile.PlayerProfile
-import gg.aquatic.aquaticcrates.api.animation.PlayerBoundAnimation
-import gg.aquatic.aquaticcrates.api.animation.prop.PlayerBoundAnimationProp
-import gg.aquatic.aquaticcrates.plugin.animation.prop.path.PathBoundProperties
-import gg.aquatic.aquaticcrates.plugin.animation.prop.path.PathProp
 import gg.aquatic.waves.Waves
 import gg.aquatic.waves.api.nms.PacketEntity
 import gg.aquatic.waves.api.nms.profile.GameEventAction
 import gg.aquatic.waves.api.nms.profile.ProfileEntry
 import gg.aquatic.waves.api.nms.profile.UserProfile
+import gg.aquatic.waves.scenario.PlayerScenario
+import gg.aquatic.waves.scenario.PlayerScenarioProp
+import gg.aquatic.waves.scenario.prop.Moveable
+import gg.aquatic.waves.scenario.prop.path.PathBoundProperties
+import gg.aquatic.waves.scenario.prop.path.PathProp
 import gg.aquatic.waves.util.modify
 import gg.aquatic.waves.util.runLaterSync
 import gg.aquatic.waves.util.runSync
@@ -25,12 +26,12 @@ import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 
 class CameraAnimationProp(
-    override val animation: PlayerBoundAnimation,
+    override val scenario: PlayerScenario,
     val location: Location,
     override val locationOffset: Vector,
     override val boundPaths: ConcurrentHashMap<PathProp, Pair<PathBoundProperties, Int>>,
     override val locationOffsetYawPitch: Pair<Float, Float>,
-) : PlayerBoundAnimationProp(), Moveable {
+) : PlayerScenarioProp, Moveable {
 
     override val processedPaths: MutableSet<PathProp> = ConcurrentHashMap.newKeySet()
     override fun move(location: Location) {
@@ -45,23 +46,22 @@ class CameraAnimationProp(
         return pe
     }
 
-    val previousGamemode = animation.player.gameMode
-    val previousLocation = animation.player.location.clone()
-    val wasFlying = animation.player.allowFlight
+    val previousGamemode = scenario.player.gameMode
+    val previousLocation = scenario.player.location.clone()
+    val wasFlying = scenario.player.allowFlight
 
     fun attachPlayer() {
-
         val delay = if (previousLocation.world == location.world) {
             0
         } else 5
-        animation.player.teleportAsync(location).thenAccept {
+        scenario.player.teleportAsync(location).thenAccept {
             runSync {
-                animation.player.isInvisible = true
-                animation.player.gameMode = GameMode.SPECTATOR
+                scenario.player.isInvisible = true
+                scenario.player.gameMode = GameMode.SPECTATOR
             }
             runLaterSync(delay.toLong()) {
                 val spawnPacket = packetEntity.spawnPacket
-                val player = animation.player
+                val player = scenario.player
                 player.sendPacket(spawnPacket)
 
                 val listOrder = if (ServerVersion.ofAquatic(Waves.INSTANCE)?.isOlder(ServerVersion.V_1_21_4) ?: true) {
@@ -106,8 +106,12 @@ class CameraAnimationProp(
 
     override fun tick() {
         if (wasFlying) return
-        animation.player.allowFlight = true
-        animation.player.isFlying = true
+        scenario.player.allowFlight = true
+        scenario.player.isFlying = true
+    }
+
+    override fun onEnd() {
+
     }
 
     fun setTeleportInterpolation(interpolation: Int) {
@@ -115,41 +119,27 @@ class CameraAnimationProp(
             val display = it as BlockDisplay
             display.teleportDuration = interpolation
         }
-        animation.player.sendPacket(packetEntity.updatePacket!!,false)
+        scenario.player.sendPacket(packetEntity.updatePacket!!,false)
     }
 
     fun smoothTeleport(location: Location) {
         setTeleportInterpolation(2)
-        packetEntity.teleport(Waves.NMS_HANDLER,location,false,animation.player)
+        packetEntity.teleport(Waves.NMS_HANDLER,location,false,scenario.player)
     }
 
     fun teleport(location: Location) {
         setTeleportInterpolation(0)
-        packetEntity.teleport(Waves.NMS_HANDLER,location,false,animation.player)
-    }
-
-    override fun onAnimationEnd() {
-        /*
-        runSync {
-            try {
-                animation.player.isInvisible = false
-                detach()
-                animation.player.gameMode = previousGamemode
-                animation.player.teleport(previousLocation)
-            } catch (ex: Exception) {
-                ex.printStackTrace()
-            }
-        }
-         */
+        packetEntity.teleport(Waves.NMS_HANDLER,location,false,scenario.player)
     }
 
     fun detach() {
+        val player = scenario.player
         val gameEventPacket = Waves.NMS_HANDLER.createChangeGameStatePacket(GameEventAction.CHANGE_GAME_MODE,previousGamemode.value.toFloat())
-        val cameraPacket = Waves.NMS_HANDLER.createCameraPacket(animation.player.entityId)
-        animation.player.sendPacket(cameraPacket)
-        animation.player.sendPacket(gameEventPacket)
+        val cameraPacket = Waves.NMS_HANDLER.createCameraPacket(player.entityId)
+        player.sendPacket(cameraPacket)
+        player.sendPacket(gameEventPacket)
         if (wasFlying) return
-        animation.player.isFlying = false
-        animation.player.allowFlight = false
+        player.isFlying = false
+        player.allowFlight = false
     }
 }

@@ -1,7 +1,9 @@
 package gg.aquatic.aquaticcrates.plugin.animation.open.settings
 
-import gg.aquatic.aquaticcrates.api.animation.PlayerBoundAnimation
-import gg.aquatic.aquaticcrates.api.animation.crate.*
+import gg.aquatic.aquaticcrates.api.animation.crate.AnimationSettingsFactory
+import gg.aquatic.aquaticcrates.api.animation.crate.CrateAnimation
+import gg.aquatic.aquaticcrates.api.animation.crate.CrateAnimationManager
+import gg.aquatic.aquaticcrates.api.animation.crate.CrateAnimationSettings
 import gg.aquatic.aquaticcrates.api.reward.RolledReward
 import gg.aquatic.aquaticcrates.plugin.animation.open.CinematicAnimationImpl
 import gg.aquatic.aquaticcrates.plugin.animation.prop.CameraAnimationProp
@@ -9,6 +11,7 @@ import gg.aquatic.waves.util.audience.FilterAudience
 import gg.aquatic.waves.util.generic.ConfiguredExecutableObject
 import gg.aquatic.waves.util.location.AquaticLocation
 import gg.aquatic.waves.util.runSync
+import net.kyori.adventure.key.Key
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.configuration.ConfigurationSection
@@ -20,13 +23,13 @@ import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ConcurrentHashMap
 
 class CinematicAnimationSettings(
-    override val animationTasks: TreeMap<Int, Collection<ConfiguredExecutableObject<PlayerBoundAnimation, Unit>>>,
+    override val animationTasks: TreeMap<Int, Collection<ConfiguredExecutableObject<CrateAnimation, Unit>>>,
     override val animationLength: Int,
     override val preAnimationDelay: Int,
-    override val preAnimationTasks: TreeMap<Int, Collection<ConfiguredExecutableObject<PlayerBoundAnimation, Unit>>>,
+    override val preAnimationTasks: TreeMap<Int, Collection<ConfiguredExecutableObject<CrateAnimation, Unit>>>,
     override val postAnimationDelay: Int,
-    override val postAnimationTasks: TreeMap<Int, Collection<ConfiguredExecutableObject<PlayerBoundAnimation, Unit>>>,
-    override val finalAnimationTasks: Collection<ConfiguredExecutableObject<PlayerBoundAnimation, Unit>>,
+    override val postAnimationTasks: TreeMap<Int, Collection<ConfiguredExecutableObject<CrateAnimation, Unit>>>,
+    override val finalAnimationTasks: Collection<ConfiguredExecutableObject<CrateAnimation, Unit>>,
     override val skippable: Boolean,
     val cinematicLocation: AquaticLocation,
     val cameraLocation: Pair<Vector, Pair<Float,Float>>,
@@ -48,14 +51,13 @@ class CinematicAnimationSettings(
             rolledRewards,
             FilterAudience {
                 if (it == player) {
-                    if (futureValue.get().state != CrateAnimation.State.FINISHED) {
+                    if (futureValue.get().phase !is CrateAnimation.FinalPhase) {
                         return@FilterAudience true
                     } else {
                         for (prop in futureValue.get().props.values) {
-                            prop.onAnimationEnd()
+                            prop.onEnd()
                         }
                         futureValue.get().props.clear()
-                        false
                     }
                 }
                 false
@@ -80,7 +82,7 @@ class CinematicAnimationSettings(
             pitch = cameraLocation.second.second
         }
         val cameraProp = CameraAnimationProp(animation, cameraLocation, Vector(), ConcurrentHashMap(), 0.0f to 0.0f)
-        animation.props["camera"] = cameraProp
+        animation.props[Key.key("camera")] = cameraProp
 
         animationManager.playAnimation(animation)
         return animation.completionFuture

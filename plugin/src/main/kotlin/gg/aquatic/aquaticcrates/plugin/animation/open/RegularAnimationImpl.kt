@@ -2,11 +2,12 @@ package gg.aquatic.aquaticcrates.plugin.animation.open
 
 import gg.aquatic.aquaticcrates.api.animation.crate.CrateAnimation
 import gg.aquatic.aquaticcrates.api.animation.crate.CrateAnimationManager
-import gg.aquatic.aquaticcrates.api.animation.prop.AnimationProp
 import gg.aquatic.aquaticcrates.api.crate.OpenableCrate
 import gg.aquatic.aquaticcrates.api.reward.RolledReward
+import gg.aquatic.waves.scenario.ScenarioProp
 import gg.aquatic.waves.util.audience.AquaticAudience
 import gg.aquatic.waves.util.runSync
+import net.kyori.adventure.key.Key
 import org.bukkit.Location
 import org.bukkit.entity.Player
 import java.util.concurrent.CompletableFuture
@@ -20,15 +21,14 @@ class RegularAnimationImpl(
     override val audience: AquaticAudience,
     override val completionFuture: CompletableFuture<CrateAnimation>
 ) : CrateAnimation() {
-    @Volatile
-    override var state: State = State.PRE_OPEN
 
+    override val props: MutableMap<Key, ScenarioProp> = ConcurrentHashMap()
+    override val extraPlaceholders: MutableMap<Key, (String) -> String> = ConcurrentHashMap()
     override val settings = animationManager.animationSettings
-    override val props: ConcurrentHashMap<String, AnimationProp> = ConcurrentHashMap()
 
     init {
         for ((id, value) in settings.variables) {
-            extraPlaceholders["variable:$id"] = { str -> str.replace("%variable:$id%", value) }
+            extraPlaceholders[Key.key("variable:$id")] = { str -> str.replace("%variable:$id%", value) }
         }
     }
 
@@ -38,16 +38,16 @@ class RegularAnimationImpl(
 
         rerollManager.openReroll(player, this, rewards).thenAcceptAsync { result ->
             if (result.reroll) {
-                updateState(State.OPENING)
+                updatePhase(OpeningPhase())
                 rewards.clear()
                 for ((_, prop) in props) {
-                    prop.onAnimationEnd()
+                    prop.onEnd()
                 }
                 props.clear()
                 rewards += crate.rewardManager.getRewards(player)
                 tick()
             } else {
-                updateState(State.POST_OPEN)
+                updatePhase(PostOpenPhase())
                 tick()
             }
             usedRerolls++
@@ -70,4 +70,5 @@ class RegularAnimationImpl(
             }
         }
     }
+
 }

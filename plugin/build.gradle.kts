@@ -84,6 +84,7 @@ tasks.withType<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar> {
     relocate("kotlinx", "gg.aquatic.waves.libs.kotlinx")
     relocate("org.jetbrains.kotlin", "gg.aquatic.waves.libs.kotlin")
     relocate("kotlin", "gg.aquatic.waves.libs.kotlin")
+    relocate("org.bstats", "gg.aquatic.waves.shadow.bstats")
 
     relocate("com.zaxxer.hikari", "gg.aquatic.waves.libs.hikari")
 }

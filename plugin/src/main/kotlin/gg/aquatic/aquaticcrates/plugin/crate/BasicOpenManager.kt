@@ -3,7 +3,6 @@ package gg.aquatic.aquaticcrates.plugin.crate
 import gg.aquatic.aquaticcrates.api.animation.crate.CrateAnimation
 import gg.aquatic.aquaticcrates.api.animation.crate.CrateAnimationManager
 import gg.aquatic.aquaticcrates.api.animation.crate.CrateAnimationSettings
-import gg.aquatic.aquaticcrates.api.animation.prop.AnimationProp
 import gg.aquatic.aquaticcrates.api.crate.SpawnedCrate
 import gg.aquatic.aquaticcrates.api.player.HistoryHandler
 import gg.aquatic.aquaticcrates.api.player.crateEntry
@@ -40,7 +39,6 @@ class BasicOpenManager(val crate: BasicCrate) {
         crate.animationManager.animationSettings.finalAnimationTasks.executeActions(
             object : CrateAnimation() {
                 override val animationManager: CrateAnimationManager = crate.animationManager
-                override var state: State = State.FINISHED
                 override val rewards: MutableList<RolledReward> = rewards
                 override val completionFuture: CompletableFuture<CrateAnimation> = CompletableFuture.completedFuture(this)
                 override val settings: CrateAnimationSettings = crate.animationManager.animationSettings
@@ -52,7 +50,6 @@ class BasicOpenManager(val crate: BasicCrate) {
                 override val player: Player = player
                 override val baseLocation: Location = player.location
                 override val audience: AquaticAudience = FilterAudience { it == player}
-                override val props: MutableMap<String, AnimationProp> = hashMapOf()
 
             }
         ) { a, str -> a.updatePlaceholders(str) }

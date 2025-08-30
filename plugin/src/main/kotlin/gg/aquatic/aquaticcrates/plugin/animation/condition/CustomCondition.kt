@@ -1,21 +1,21 @@
 package gg.aquatic.aquaticcrates.plugin.animation.condition
 
-import gg.aquatic.aquaticcrates.api.animation.Animation
 import gg.aquatic.aquaticcrates.plugin.condition.Evaluation
+import gg.aquatic.waves.scenario.Scenario
 import gg.aquatic.waves.util.argument.AquaticObjectArgument
 import gg.aquatic.waves.util.argument.ObjectArguments
 import gg.aquatic.waves.util.argument.impl.PrimitiveObjectArgument
 import gg.aquatic.waves.util.generic.Condition
 
-class CustomCondition : Condition<Animation> {
+class CustomCondition : Condition<Scenario> {
     override val arguments: List<AquaticObjectArgument<*>> = listOf(
         PrimitiveObjectArgument("condition", "", true)
     )
 
     override fun execute(
-        binder: Animation,
+        binder: Scenario,
         args: ObjectArguments,
-        textUpdater: (Animation, String) -> String
+        textUpdater: (Scenario, String) -> String
     ): Boolean {
         val condition = binder.updatePlaceholders(
             textUpdater(

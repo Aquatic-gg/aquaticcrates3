@@ -1,14 +1,13 @@
-package gg.aquatic.aquaticcrates.plugin.animation.idle.settings
+package gg.aquatic.aquaticcrates.plugin.animation.idle
 
-import gg.aquatic.aquaticcrates.api.animation.Animation
 import gg.aquatic.aquaticcrates.api.crate.SpawnedCrate
-import gg.aquatic.aquaticcrates.plugin.animation.idle.IdleAnimationImpl
+import gg.aquatic.waves.scenario.Scenario
 import gg.aquatic.waves.util.chance.IChance
 import gg.aquatic.waves.util.generic.ConfiguredExecutableObject
 import java.util.*
 
 class IdleAnimationSettings(
-    val animationTasks: TreeMap<Int, MutableList<ConfiguredExecutableObject<Animation, Unit>>>,
+    val animationTasks: TreeMap<Int, MutableList<ConfiguredExecutableObject<Scenario, Unit>>>,
     val length: Int,
     val isLoop: Boolean,
     override val chance: Double

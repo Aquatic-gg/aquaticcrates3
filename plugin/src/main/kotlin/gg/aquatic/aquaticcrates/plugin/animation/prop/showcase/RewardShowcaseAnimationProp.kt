@@ -1,28 +1,29 @@
 package gg.aquatic.aquaticcrates.plugin.animation.prop.showcase
 
-import gg.aquatic.aquaticcrates.api.animation.Animation
-import gg.aquatic.aquaticcrates.api.animation.prop.AnimationProp
+import gg.aquatic.aquaticcrates.api.animation.crate.CrateAnimation
 import gg.aquatic.aquaticcrates.api.reward.Reward
 import gg.aquatic.aquaticcrates.api.reward.showcase.RewardShowcase
 import gg.aquatic.aquaticcrates.api.reward.showcase.RewardShowcaseHandle
 import gg.aquatic.aquaticcrates.api.reward.showcase.item.ItemRewardShowcaseHandle
-import gg.aquatic.aquaticcrates.plugin.animation.prop.Throwable
 import gg.aquatic.waves.Waves
+import gg.aquatic.waves.scenario.Scenario
+import gg.aquatic.waves.scenario.ScenarioProp
+import gg.aquatic.waves.scenario.prop.Throwable
 import gg.aquatic.waves.util.sendPacket
 import org.bukkit.util.Vector
 
 class RewardShowcaseAnimationProp(
-    override val animation: Animation,
+    override val scenario: Scenario,
     val locationOffset: Pair<Vector, Pair<Float, Float>>,
     val velocity: Vector,
-) : AnimationProp(), Throwable {
+) : ScenarioProp, Throwable {
 
     var showcaseHandle: RewardShowcaseHandle<*>? = null
 
     override fun tick() {
     }
 
-    override fun onAnimationEnd() {
+    override fun onEnd() {
         showcaseHandle?.destroy()
         showcaseHandle = null
     }
@@ -36,7 +37,7 @@ class RewardShowcaseAnimationProp(
         }
         showcaseHandle?.destroy()
         val isFirst = showcaseHandle == null
-        showcaseHandle = rewardShowcase.create(animation, reward, locationOffset)
+        showcaseHandle = rewardShowcase.create(scenario as CrateAnimation, reward, locationOffset)
         if (isFirst) {
             throwObject(velocity)
         }
