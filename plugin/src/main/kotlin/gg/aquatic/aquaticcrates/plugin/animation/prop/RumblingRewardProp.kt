@@ -111,7 +111,7 @@ class RumblingRewardProp(
         val rewards = (scenario.animationManager.crate as OpenableCrate).rewardManager
             .getPossibleRewards(scenario.player).values.toMutableList()
 
-        if (currentReward != null) rewards.remove(currentReward)
+        if (currentReward != null && rewards.size > 1) rewards.remove(currentReward)
 
         onUpdate(rewards.random(), false)
     }
