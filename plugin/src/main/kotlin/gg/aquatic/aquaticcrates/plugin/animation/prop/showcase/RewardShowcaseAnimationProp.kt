@@ -28,6 +28,7 @@ class RewardShowcaseAnimationProp(
         showcaseHandle = null
     }
 
+    @Suppress("UNCHECKED_CAST")
     fun <T : RewardShowcase> update(reward: Reward, rewardShowcase: T) {
         if (showcaseHandle?.showcase?.javaClass == rewardShowcase.javaClass) {
             (showcaseHandle as RewardShowcaseHandle<T>).update(

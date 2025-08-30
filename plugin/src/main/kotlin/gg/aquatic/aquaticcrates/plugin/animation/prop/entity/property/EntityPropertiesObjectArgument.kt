@@ -8,13 +8,9 @@ import org.bukkit.configuration.ConfigurationSection
 
 class EntityPropertiesObjectArgument(
     id: String,
-    defaultValue: List<EntityProperty>?, required: Boolean
-) : AquaticObjectArgument<List<EntityProperty>>(id, defaultValue, required) {
+    defaultValue: List<EntityProperty>?, required: Boolean, aliases: Collection<String> = listOf()
+) : AquaticObjectArgument<List<EntityProperty>>(id, defaultValue, required, aliases) {
     override val serializer: AbstractObjectArgumentSerializer<List<EntityProperty>?> = Serializer
-
-    override fun load(section: ConfigurationSection): List<EntityProperty>? {
-        return serializer.load(section, id)
-    }
 
     object Serializer : AbstractObjectArgumentSerializer<List<EntityProperty>?>() {
 

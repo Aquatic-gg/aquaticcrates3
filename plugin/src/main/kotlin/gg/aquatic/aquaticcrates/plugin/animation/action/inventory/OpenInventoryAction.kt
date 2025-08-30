@@ -43,13 +43,9 @@ class OpenInventoryAction : Action<PlayerScenario> {
 
     class ItemsArgument(
         id: String,
-        defaultValue: Map<Int, ArgumentItem>?, required: Boolean
-    ) : AquaticObjectArgument<Map<Int, ArgumentItem>>(id, defaultValue, required) {
+        defaultValue: Map<Int, ArgumentItem>?, required: Boolean, aliases: Collection<String> = listOf()
+    ) : AquaticObjectArgument<Map<Int, ArgumentItem>>(id, defaultValue, required, aliases) {
         override val serializer: AbstractObjectArgumentSerializer<Map<Int, ArgumentItem>?> = Companion
-
-        override fun load(section: ConfigurationSection): Map<Int, ArgumentItem> {
-            return Companion.load(section, id)
-        }
 
         companion object : AbstractObjectArgumentSerializer<Map<Int, ArgumentItem>?>() {
             override fun load(section: ConfigurationSection, id: String): Map<Int, ArgumentItem> {

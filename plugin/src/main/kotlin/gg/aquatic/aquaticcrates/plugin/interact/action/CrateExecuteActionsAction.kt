@@ -23,24 +23,25 @@ class CrateExecuteActionsAction : Action<CrateInteractAction> {
         args: ObjectArguments,
         textUpdater: (CrateInteractAction, String) -> String
     ) {
-        val actions = args.typed<List<ConfiguredExecutableObject<Player,Unit>>>("actions") ?: return
-        actions.executeActions(binder.player) { _, str -> textUpdater(binder, str)
+        val actions = args.typed<List<ConfiguredExecutableObject<Player, Unit>>>("actions") ?: return
+        actions.executeActions(binder.player) { _, str ->
+            textUpdater(binder, str)
         }
     }
 
-    class ActionsArgument(id: String, required: Boolean) : AquaticObjectArgument<List<ConfiguredExecutableObject<Player,Unit>>>(
-        id,
-        arrayListOf(), required
-    ) {
-        override val serializer: AbstractObjectArgumentSerializer<List<ConfiguredExecutableObject<Player,Unit>>?>
+    class ActionsArgument(id: String, required: Boolean, aliases: Collection<String> = listOf()) :
+        AquaticObjectArgument<List<ConfiguredExecutableObject<Player, Unit>>>(
+            id,
+            arrayListOf(), required, aliases
+        ) {
+        override val serializer: AbstractObjectArgumentSerializer<List<ConfiguredExecutableObject<Player, Unit>>?>
             get() = Companion
 
-        override fun load(section: ConfigurationSection): List<ConfiguredExecutableObject<Player,Unit>>? {
-            return serializer.load(section, id) ?: defaultValue
-        }
-
-        companion object : AbstractObjectArgumentSerializer<List<ConfiguredExecutableObject<Player,Unit>>?>() {
-            override fun load(section: ConfigurationSection, id: String): List<ConfiguredExecutableObject<Player,Unit>> {
+        companion object : AbstractObjectArgumentSerializer<List<ConfiguredExecutableObject<Player, Unit>>?>() {
+            override fun load(
+                section: ConfigurationSection,
+                id: String
+            ): List<ConfiguredExecutableObject<Player, Unit>> {
                 return ActionSerializer.fromSections(section.getSectionList(id))
             }
         }
