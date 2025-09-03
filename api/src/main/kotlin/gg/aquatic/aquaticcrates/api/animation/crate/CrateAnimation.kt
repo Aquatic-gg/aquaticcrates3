@@ -142,7 +142,18 @@ abstract class CrateAnimation : PlayerScenario() {
 
     fun finalizeAnimation(isSync: Boolean = false) {
         updatePhase(FinalPhase())
-        CrateAnimationEndEvent(animationManager.crate as OpenableCrate, this, player).call()
+
+        val eventRunnable = {
+            CrateAnimationEndEvent(animationManager.crate as OpenableCrate, this, player).call()
+        }
+        if (Bukkit.isPrimaryThread()) {
+            runAsync {
+                eventRunnable()
+            }
+        } else {
+            eventRunnable()
+        }
+
         runOrCatch {
             onFinalize(isSync)
         }
