@@ -31,15 +31,15 @@ abstract class CrateAnimation : PlayerScenario() {
     override val props: MutableMap<Key, ScenarioProp> = ConcurrentHashMap()
 
     fun tickPreOpen() {
-        executeActions(animationManager.animationSettings.preAnimationTasks[tick] ?: return)
+        executeActions(settings.preAnimationTasks[tick] ?: return)
     }
 
     fun tickOpening() {
-        executeActions(animationManager.animationSettings.animationTasks[tick] ?: return)
+        executeActions(settings.animationTasks[tick] ?: return)
     }
 
     fun tickPostOpen() {
-        executeActions(animationManager.animationSettings.postAnimationTasks[tick] ?: return)
+        executeActions(settings.postAnimationTasks[tick] ?: return)
     }
 
     open fun executeActions(actions: Collection<ConfiguredExecutableObject<CrateAnimation, Unit>>) {
@@ -157,7 +157,7 @@ abstract class CrateAnimation : PlayerScenario() {
         runOrCatch {
             onFinalize(isSync)
         }
-        executeActions(animationManager.animationSettings.finalAnimationTasks)
+        executeActions(settings.finalAnimationTasks)
         destroy()
         val block = {
             for (reward in rewards) {
