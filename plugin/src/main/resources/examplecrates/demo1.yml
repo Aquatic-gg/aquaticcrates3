@@ -140,20 +140,6 @@ rewards:
         command: "give %player% golden_apple 1"
       - type: message
         message: "<#90EE90>You've won 1x Golden Apple."
-  nexo_item:
-    item:
-      material: NEXO:forest_helmet
-      display-name: "<#f786be>1x Forest Helmet"
-      amount: 1
-      lore:
-        - ''
-    chance: 5
-    give-item: false
-    actions:
-      - type: message
-        message: "<#90EE90>You've won 1x Forest Helmet."
-      - type: command
-        command: "nexo give forest_helmet 1 %player%"
   birch_planks:
     item:
       material: BIRCH_PLANKS
