@@ -15,7 +15,9 @@ class HMCCosmeticsHook {
             val player = e.player
             if (e.animation !is CinematicAnimationImpl) return@event
             val user = HMCCosmeticsAPI.getUser(player.uniqueId) ?: return@event
-            user.hideCosmetics(CosmeticUser.HiddenReason.PLUGIN)
+            runSync {
+                user.hideCosmetics(CosmeticUser.HiddenReason.PLUGIN)
+            }
         }
         event<CrateAnimationEndEvent> { e ->
             val player = e.player

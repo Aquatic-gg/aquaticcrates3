@@ -439,41 +439,6 @@ object Bootstrap {
                 return@event
             }
         }
-
-        event<PlayerJoinEvent> {
-            val player = it.player
-            val inventory = player.inventory
-            val contents = inventory.contents
-            for (item in contents) {
-                if (item == null) continue
-                val meta = item.itemMeta ?: continue
-                val pdc = meta.persistentDataContainer
-                val oldNamespace = NamespacedKey("aquaticcrates", "keyidentifier")
-                if (pdc.has(oldNamespace, PersistentDataType.STRING)) {
-                    val keyId = pdc.get(oldNamespace, PersistentDataType.STRING)!!
-                    pdc.remove(oldNamespace)
-                    pdc.set(ItemHandler.NAMESPACE_KEY, PersistentDataType.STRING, "aquaticcrates-key:$keyId")
-                    item.itemMeta = meta
-                }
-            }
-        }
-
-        event<InventoryOpenEvent>(ignoredCancelled = true) {
-            val inventory = it.inventory
-            val contents = inventory.contents
-            for (item in contents) {
-                if (item == null) continue
-                val meta = item.itemMeta ?: continue
-                val pdc = meta.persistentDataContainer
-                val oldNamespace = NamespacedKey("aquaticcrates", "keyidentifier")
-                if (pdc.has(oldNamespace, PersistentDataType.STRING)) {
-                    val keyId = pdc.get(oldNamespace, PersistentDataType.STRING)!!
-                    pdc.remove(oldNamespace)
-                    pdc.set(ItemHandler.NAMESPACE_KEY, PersistentDataType.STRING, "aquaticcrates-key:$keyId")
-                    item.itemMeta = meta
-                }
-            }
-        }
     }
 
     fun getResourceFileNames(folderPath: String): List<String> {
