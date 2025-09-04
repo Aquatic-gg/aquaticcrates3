@@ -1,9 +1,11 @@
 package gg.aquatic.aquaticcrates.plugin.crate
 
+import com.nexomc.nexo.utils.EventUtils.call
 import gg.aquatic.aquaticcrates.api.animation.crate.CrateAnimation
 import gg.aquatic.aquaticcrates.api.animation.crate.CrateAnimationManager
 import gg.aquatic.aquaticcrates.api.animation.crate.CrateAnimationSettings
 import gg.aquatic.aquaticcrates.api.crate.SpawnedCrate
+import gg.aquatic.aquaticcrates.api.event.CrateOpenEvent
 import gg.aquatic.aquaticcrates.api.player.HistoryHandler
 import gg.aquatic.aquaticcrates.api.player.crateEntry
 import gg.aquatic.aquaticcrates.api.reward.Reward
@@ -16,6 +18,7 @@ import gg.aquatic.waves.util.collection.executeActions
 import gg.aquatic.waves.util.collection.mapPair
 import gg.aquatic.waves.util.runAsync
 import gg.aquatic.waves.util.runSync
+import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.entity.Player
 import java.util.concurrent.CompletableFuture
@@ -31,6 +34,17 @@ class BasicOpenManager(val crate: BasicCrate) {
     fun instantOpen(player: Player, massOpen: Boolean = false) {
         player.toAquaticPlayer()?.crateEntry() ?: return
 
+        val runnable = {
+            CrateOpenEvent(crate, player).callEvent()
+        }
+        if (Bukkit.isPrimaryThread()) {
+            runAsync {
+                runnable()
+            }
+        } else {
+            runnable()
+        }
+
         val rewards = crate.rewardManager.getRewards(player)
         for (reward in rewards) {
             reward.give(player, massOpen)
@@ -40,7 +54,8 @@ class BasicOpenManager(val crate: BasicCrate) {
             object : CrateAnimation() {
                 override val animationManager: CrateAnimationManager = crate.animationManager
                 override val rewards: MutableList<RolledReward> = rewards
-                override val completionFuture: CompletableFuture<CrateAnimation> = CompletableFuture.completedFuture(this)
+                override val completionFuture: CompletableFuture<CrateAnimation> =
+                    CompletableFuture.completedFuture(this)
                 override val settings: CrateAnimationSettings = crate.animationManager.animationSettings
 
                 override fun onReroll() {
@@ -49,7 +64,7 @@ class BasicOpenManager(val crate: BasicCrate) {
 
                 override val player: Player = player
                 override val baseLocation: Location = player.location
-                override val audience: AquaticAudience = FilterAudience { it == player}
+                override val audience: AquaticAudience = FilterAudience { it == player }
 
             }
         ) { a, str -> a.updatePlaceholders(str) }
@@ -69,6 +84,16 @@ class BasicOpenManager(val crate: BasicCrate) {
         player.toAquaticPlayer()?.crateEntry() ?: return CompletableFuture.completedFuture(null)
 
         val rewards = crate.rewardManager.getRewards(player)
+        val runnable = {
+            CrateOpenEvent(crate, player).callEvent()
+        }
+        if (Bukkit.isPrimaryThread()) {
+            runAsync {
+                runnable()
+            }
+        } else {
+            runnable()
+        }
 
         return crate.animationManager.animationSettings.create(
             player, crate.animationManager, location, rewards
@@ -92,6 +117,17 @@ class BasicOpenManager(val crate: BasicCrate) {
         //val crateEntry = player.toAquaticPlayer()?.crateEntry() ?: return CompletableFuture.completedFuture(null)
         //player.sendMessage("Mass opening!")
         val finalFuture = CompletableFuture<Void>()
+
+        val runnable = {
+            CrateOpenEvent(crate, player, amount).callEvent()
+        }
+        if (Bukkit.isPrimaryThread()) {
+            runAsync {
+                runnable()
+            }
+        } else {
+            runnable()
+        }
 
         if (amount > 10000) {
             //val previousTime = System.currentTimeMillis()
