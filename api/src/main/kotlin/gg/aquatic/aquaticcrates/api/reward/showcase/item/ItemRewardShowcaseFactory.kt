@@ -10,7 +10,6 @@ import gg.aquatic.waves.registry.serializer.ActionSerializer
 import gg.aquatic.waves.registry.serializer.InteractableSerializer
 import gg.aquatic.waves.util.generic.ClassTransform
 import gg.aquatic.waves.util.getSectionList
-import gg.aquatic.waves.util.item.loadFromYml
 import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.entity.Player
 import org.joml.Vector3d

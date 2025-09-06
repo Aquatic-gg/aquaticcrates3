@@ -5,7 +5,6 @@ import gg.aquatic.aquaticcrates.api.animation.prop.ItemBasedProp
 import gg.aquatic.aquaticcrates.api.crate.OpenableCrate
 import gg.aquatic.waves.item.AquaticItem
 import gg.aquatic.waves.scenario.Scenario
-import gg.aquatic.waves.util.item.loadFromYml
 import gg.aquatic.waves.util.item.toCustomItem
 import net.kyori.adventure.key.Key
 import org.bukkit.Material

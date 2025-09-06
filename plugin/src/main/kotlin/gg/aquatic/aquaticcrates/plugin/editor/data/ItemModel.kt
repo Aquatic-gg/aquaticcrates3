@@ -18,7 +18,7 @@ data class ItemModel(
                 aquaticItem.internalId!!,
                 aquaticItem.amount,
                 aquaticItem.name,
-                aquaticItem.description ?: mutableListOf()
+                aquaticItem.lore.toMutableList()
             )
         }
 
@@ -37,7 +37,8 @@ data class ItemModel(
                     ItemStack.of(Material.valueOf(material.uppercase())),
                     displayName,
                     lore.toMutableList(),
-                    amount
+                    amount,
+                    listOf()
                 )
             }
             // TODO: ADD FACTORIES

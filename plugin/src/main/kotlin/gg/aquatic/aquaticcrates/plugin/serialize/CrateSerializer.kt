@@ -55,7 +55,6 @@ import gg.aquatic.waves.util.block.impl.VanillaBlock
 import gg.aquatic.waves.util.generic.ClassTransform
 import gg.aquatic.waves.util.generic.ConfiguredExecutableObject
 import gg.aquatic.waves.util.getSectionList
-import gg.aquatic.waves.util.item.loadFromYml
 import gg.aquatic.waves.util.toMMComponent
 import org.bukkit.Bukkit
 import org.bukkit.Material

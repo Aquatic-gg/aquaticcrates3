@@ -12,7 +12,6 @@ import gg.aquatic.waves.registry.serializer.ActionSerializer
 import gg.aquatic.waves.registry.serializer.ItemSerializer
 import gg.aquatic.waves.registry.serializer.RequirementSerializer
 import gg.aquatic.waves.util.getSectionList
-import gg.aquatic.waves.util.item.loadFromYml
 import gg.aquatic.waves.util.runSync
 import gg.aquatic.waves.util.toMMString
 import org.bukkit.Bukkit

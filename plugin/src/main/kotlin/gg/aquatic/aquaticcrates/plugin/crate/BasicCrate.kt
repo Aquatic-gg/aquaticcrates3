@@ -72,13 +72,9 @@ class BasicCrate(
             this.itemMeta = meta
         },
         null,
-        null,
+        listOf(),
         1,
-        -1,
-        null,
-        null,
-        null,
-        null
+        listOf()
     ).apply {
         val consumer: (AquaticItemInteractEvent) -> Unit = { e ->
             val originalEvent = e.originalEvent
