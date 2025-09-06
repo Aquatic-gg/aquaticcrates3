@@ -1,11 +1,12 @@
 package gg.aquatic.aquaticcrates.plugin.misc.hook
 
-import gg.aquatic.waves.util.BStatsUtils
+import gg.aquatic.aquaticcrates.plugin.CratesPlugin
+import gg.aquatic.waves.util.registerMetrics
 
 object BStatsHook {
 
     internal fun register() {
-        BStatsUtils.registerMetrics(19254)
+        CratesPlugin.getInstance().registerMetrics(19254)
     }
 
 }
