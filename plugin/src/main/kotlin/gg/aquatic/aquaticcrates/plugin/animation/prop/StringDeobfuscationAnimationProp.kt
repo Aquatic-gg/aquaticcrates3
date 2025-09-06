@@ -43,16 +43,16 @@ class StringDeobfuscationAnimationProp(
     }
 
     private fun deobfuscateNext() {
-        deobfuscated++
-        if (deobfuscated >= length) return
+        if (deobfuscated > length) return
 
-        val obfuscated = obfuscationString.substring(0, (length - 1) - deobfuscated)
-        val deobfuscated = obfuscationString.substring((length - 1) - deobfuscated, length)
+        val obfuscated = obfuscationString.take((length) - deobfuscated)
+        val deobfuscated = if (deobfuscated == this.length) obfuscationString else obfuscationString.substring((length) - deobfuscated, length)
         currentString = "$obfuscatedFormat$obfuscated$deobfuscatedFormat$deobfuscated"
 
         deobfuscationActions.executeActions(scenario) { a, str ->
             a.updatePlaceholders(str)
         }
+        this.deobfuscated++
     }
 
     override fun onEnd() {
