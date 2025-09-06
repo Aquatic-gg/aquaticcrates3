@@ -71,9 +71,6 @@ class BasicCrate(
             meta.displayName(Component.text("Crate: $identifier").decoration(TextDecoration.ITALIC, false))
             this.itemMeta = meta
         },
-        null,
-        listOf(),
-        1,
         listOf()
     ).apply {
         val consumer: (AquaticItemInteractEvent) -> Unit = { e ->

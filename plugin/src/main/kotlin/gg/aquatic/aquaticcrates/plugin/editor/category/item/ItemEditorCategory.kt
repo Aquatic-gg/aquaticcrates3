@@ -33,7 +33,8 @@ class ItemEditorCategory(val itemModel: ItemModel) : EditorCategory(itemModel.aq
             },
             ChatInput.createHandle(listOf("cancel")),
             { str ->
-                itemModel.displayName = str
+                itemModel.options
+                //itemModel.displayName = str
             },
             listOf(
                 "Enter the Display Name for the Item...",
@@ -41,6 +42,7 @@ class ItemEditorCategory(val itemModel: ItemModel) : EditorCategory(itemModel.aq
             ),
 
             )
+        /*
         this.items += "lore" to CategoryEditorItem(
             CollectionEditorCategory(
                 createItem(Material.BOOK) {
@@ -115,6 +117,8 @@ class ItemEditorCategory(val itemModel: ItemModel) : EditorCategory(itemModel.aq
                 str.toIntOrNull() != null && str.toInt() > 0
             }
         )
+
+         */
     }
 
 }

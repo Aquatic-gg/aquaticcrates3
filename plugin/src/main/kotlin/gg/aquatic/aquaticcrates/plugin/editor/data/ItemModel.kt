@@ -2,23 +2,21 @@ package gg.aquatic.aquaticcrates.plugin.editor.data
 
 import gg.aquatic.waves.item.AquaticItem
 import gg.aquatic.waves.item.ItemHandler
+import gg.aquatic.waves.item.option.ItemOptionHandle
+import net.kyori.adventure.key.Key
 import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
 
 data class ItemModel(
     var material: String,
-    var amount: Int,
-    var displayName: String?,
-    var lore: MutableList<String> = mutableListOf(),
+    val options: MutableMap<Key, ItemOptionHandle>
 ) {
 
     companion object {
         fun of(aquaticItem: AquaticItem): ItemModel {
             return ItemModel(
                 aquaticItem.internalId!!,
-                aquaticItem.amount,
-                aquaticItem.name,
-                aquaticItem.lore.toMutableList()
+                aquaticItem.options
             )
         }
 
@@ -35,9 +33,6 @@ data class ItemModel(
                 return ItemHandler.create(
                     material,
                     ItemStack.of(Material.valueOf(material.uppercase())),
-                    displayName,
-                    lore.toMutableList(),
-                    amount,
                     listOf()
                 )
             }
