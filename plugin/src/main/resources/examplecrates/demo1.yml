@@ -1,3 +1,14 @@
+###############################################
+#  ____  ____      _     _____  _____  ____   #
+# / ___||  _ \    / \   |_   _|| ____|/ ___|  #
+#| |    | |_) |  / _ \    | |  |  _|  \___ \  #
+#| |___ |  _ <  / ___ \   | |  | |___  ___) | #
+# \____||_| \_\/_/   \_\  |_|  |_____||____/  #
+###############################################
+##### DISCORD: https://discord.aquatic.gg #####
+##### DOCS: https://docs.aquatic.gg ###########
+###############################################
+
 display-name: "<gradient:#f786be:#6abb64>Demo1 Crate</gradient>"
 key:
   material: TRIPWIRE_HOOK # Possible values: MATERIAL; itemsadder:ItemId; oraxen:ItemId
@@ -23,7 +34,6 @@ interaction: #Not needed if you want to keep these interactions default
 open-price-groups:
   - prices:
       - type: "crate-key"
-        crate: "demo1"
         fail-actions:
           - type: message
             message: "<#FF474C>You do not have a <gradient:#f786be:#6abb64>Demo1 Key</gradient> <#FF474C>to open this."
@@ -31,7 +41,7 @@ open-restrictions: #cancel crate open if inventory is full
   - type: "full-inventory"
 interactables:
   - type: MODELENGINE
-    model: iron_crate_1
+    model: iron_crate_1 #replace to what model you will use
     offset: "0;0;0"
   - type: BLOCK
     material: BARRIER
@@ -39,7 +49,7 @@ hologram:
   offset: "0;2;0"
   lines:
     - type: "text"
-      text: "<#75CCD7>[ <u>INSTANT REWARD ANIMATION</u> ]\n\n<gradient:#f786be:#6abb64:%papianimations_mmphase1%><bold>DEMO1 CRATE</gradient>\n\n<#D3D3D3>ᴄʟɪᴄᴋ ᴛᴏ <#f786be>ᴘʀᴇᴠɪᴇᴡ</#f786be>\n<#D3D3D3>ᴀɴᴅ <#f786be>ᴏᴘᴇɴ</#f786be> ᴄʀᴀᴛᴇ\n"
+      text: "<#75CCD7>[ <u>INSTANT REWARD ANIMATION</u> ]\n\n<gradient:#f786be:#6abb64><bold>DEMO1 CRATE</gradient>\n\n<#D3D3D3>ᴄʟɪᴄᴋ ᴛᴏ <#f786be>ᴘʀᴇᴠɪᴇᴡ</#f786be>\n<#D3D3D3>ᴀɴᴅ <#f786be>ᴏᴘᴇɴ</#f786be> ᴄʀᴀᴛᴇ\n"
       line-width: 175
       has-shadow: true
       is-see-through: false
@@ -90,42 +100,6 @@ rewards:
     actions:
       - type: message
         message: "<#90EE90>You've won 8x Iron Ingots."
-  goldingots:
-    item:
-      material: GOLD_INGOT
-      display-name: "<#f786be>12x Gold Ingots"
-      amount: 12
-      lore:
-        - ''
-    chance: 6
-    give-item: true
-    actions:
-      - type: message
-        message: "<#90EE90>You've won 12x Gold Ingots."
-  stone:
-    item:
-      material: STONE
-      display-name: "<#f786be>25x Stone"
-      amount: 25
-      lore:
-        - ''
-    chance: 5
-    give-item: true
-    actions:
-      - type: message
-        message: "<#90EE90>You've won 25x Stone."
-  cooked_beef:
-    item:
-      material: COOKED_BEEF
-      display-name: "<#f786be>20x Cooked Beef"
-      amount: 20
-      lore:
-        - ''
-    chance: 5
-    give-item: true
-    actions:
-      - type: message
-        message: "<#90EE90>You've won 20x Cooked Beef."
   golden_apple:
     item:
       material: GOLDEN_APPLE
@@ -140,162 +114,6 @@ rewards:
         command: "give %player% golden_apple 1"
       - type: message
         message: "<#90EE90>You've won 1x Golden Apple."
-  birch_planks:
-    item:
-      material: BIRCH_PLANKS
-      display-name: "<#f786be>64x Birch Planks"
-      amount: 64
-      lore:
-        - ''
-    chance: 6
-    give-item: true
-    actions:
-      - type: message
-        message: "<#90EE90>You've won 64x Birch Planks."
-  spruce_log:
-    item:
-      material: SPRUCE_LOG
-      display-name: "<#f786be>32x Spruce Logs"
-      amount: 32
-      lore:
-        - ''
-    chance: 6
-    give-item: true
-    actions:
-      - type: message
-        message: "<#90EE90>You've won 32x Spruce Logs."
-  jungle_wood:
-    item:
-      material: JUNGLE_WOOD
-      display-name: "<#f786be>48x Jungle Wood"
-      amount: 48
-      lore:
-        - ''
-    chance: 5
-    give-item: true
-    actions:
-      - type: message
-        message: "<#90EE90>You've won 48x Jungle Wood."
-  dark_oak_log:
-    item:
-      material: DARK_OAK_LOG
-      display-name: "<#f786be>32x Dark Oak Logs"
-      amount: 32
-      lore:
-        - ''
-    chance: 5
-    give-item: true
-    actions:
-      - type: message
-        message: "<#90EE90>You've won 32x Dark Oak Logs."
-  mangrove_log:
-    item:
-      material: MANGROVE_LOG
-      display-name: "<#f786be>32x Mangrove Logs"
-      amount: 32
-      lore:
-        - ''
-    chance: 5
-    give-item: true
-    actions:
-      - type: message
-        message: "<#90EE90>You've won 32x Mangrove Logs."
-  bamboo:
-    item:
-      material: BAMBOO
-      display-name: "<#f786be>64x Bamboo"
-      amount: 64
-      lore:
-        - ''
-    chance: 7
-    give-item: true
-    actions:
-      - type: message
-        message: "<#90EE90>You've won 64x Bamboo."
-  scaffolding:
-    item:
-      material: SCAFFOLDING
-      display-name: "<#f786be>32x Scaffolding"
-      amount: 32
-      lore:
-        - ''
-    chance: 5
-    give-item: true
-    actions:
-      - type: message
-        message: "<#90EE90>You've won 32x Scaffolding."
-  slime_ball:
-    item:
-      material: SLIME_BALL
-      display-name: "<#f786be>12x Slime Balls"
-      amount: 12
-      lore:
-        - ''
-    chance: 4
-    give-item: true
-    actions:
-      - type: message
-        message: "<#90EE90>You've won 12x Slime Balls."
-  ghast_tear:
-    item:
-      material: GHAST_TEAR
-      display-name: "<#f786be>3x Ghast Tears"
-      amount: 3
-      lore:
-        - ''
-    chance: 2
-    give-item: true
-    actions:
-      - type: message
-        message: "<#90EE90>You've won 3x Ghast Tears."
-  blaze_rod:
-    item:
-      material: BLAZE_ROD
-      display-name: "<#f786be>8x Blaze Rods"
-      amount: 8
-      lore:
-        - ''
-    chance: 3
-    give-item: true
-    actions:
-      - type: message
-        message: "<#90EE90>You've won 8x Blaze Rods."
-  ender_eye:
-    item:
-      material: ENDER_EYE
-      display-name: "<#f786be>2x Eyes of Ender"
-      amount: 2
-      lore:
-        - ''
-    chance: 2
-    give-item: true
-    actions:
-      - type: message
-        message: "<#90EE90>You've won 2x Eyes of Ender."
-  string:
-    item:
-      material: STRING
-      display-name: "<#f786be>24x String"
-      amount: 24
-      lore:
-        - ''
-    chance: 6
-    give-item: true
-    actions:
-      - type: message
-        message: "<#90EE90>You've won 24x String."
-  honey_bottle:
-    item:
-      material: HONEY_BOTTLE
-      display-name: "<#f786be>4x Honey Bottles"
-      amount: 4
-      lore:
-        - ''
-    chance: 3
-    give-item: true
-    actions:
-      - type: message
-        message: "<#90EE90>You've won 4x Honey Bottles."
   netherite_helmet:
     item:
       material: NETHERITE_HELMET

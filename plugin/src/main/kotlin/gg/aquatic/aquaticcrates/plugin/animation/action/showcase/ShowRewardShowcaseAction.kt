@@ -9,6 +9,8 @@ import gg.aquatic.waves.util.argument.impl.PrimitiveObjectArgument
 import gg.aquatic.waves.util.generic.Action
 import net.kyori.adventure.key.Key
 import org.bukkit.util.Vector
+import kotlin.math.cos
+import kotlin.math.sin
 
 @RegisterAction("show-reward-showcase")
 class ShowRewardShowcaseAction: Action<CrateAnimation> {
@@ -16,6 +18,8 @@ class ShowRewardShowcaseAction: Action<CrateAnimation> {
         PrimitiveObjectArgument("id", "example", true),
         PrimitiveObjectArgument("location-offset","0;0;0", false),
         PrimitiveObjectArgument("velocity", "0;0;0", false),
+        PrimitiveObjectArgument("pitch", 0.0, false),
+        PrimitiveObjectArgument("yaw", 0.0, false),
         PrimitiveObjectArgument("power", 1.0, false),
     )
 
@@ -25,8 +29,15 @@ class ShowRewardShowcaseAction: Action<CrateAnimation> {
         textUpdater: (CrateAnimation, String) -> String
     ) {
         val id = args.string("id") { textUpdater(binder, it) } ?: return
-        val velocity = args.vector("velocity") { textUpdater(binder, it) } ?: return
-        val power = args.double("power") { textUpdater(binder, it) } ?: 0.0
+        var velocity = args.vector("velocity") { textUpdater(binder, it) }
+        val power = args.double("power") { textUpdater(binder, it) } ?: 1.0
+
+        if (velocity == null) {
+            val yaw = args.double("yaw") { textUpdater(binder, it) } ?: 0.0
+            val pitch = args.double("pitch") { textUpdater(binder, it) } ?: 0.0
+
+            velocity = vectorFromYawPitch(yaw.toFloat(), pitch.toFloat())
+        }
 
         val vector = velocity.clone().multiply(power)
 
@@ -47,5 +58,17 @@ class ShowRewardShowcaseAction: Action<CrateAnimation> {
 
         binder.props[key]?.onEnd()
         binder.props[key] = prop
+    }
+
+    fun vectorFromYawPitch(yaw: Float, pitch: Float): Vector {
+        val pitchRadians = Math.toRadians(pitch.toDouble())
+        val yawRadians = Math.toRadians(yaw.toDouble())
+
+        // Calculate the components
+        val x = -sin(yawRadians) * cos(pitchRadians)
+        val y = -sin(pitchRadians)
+        val z = cos(yawRadians) * cos(pitchRadians)
+
+        return Vector(x, y, z)
     }
 }

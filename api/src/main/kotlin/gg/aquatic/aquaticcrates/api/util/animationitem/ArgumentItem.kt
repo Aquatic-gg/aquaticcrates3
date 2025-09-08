@@ -46,5 +46,4 @@ class ArgumentItem(
             return ArgumentItem(type, baseItem)
         }
     }
-
 }
