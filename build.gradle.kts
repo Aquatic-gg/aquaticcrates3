@@ -7,7 +7,7 @@ plugins {
 
 }
 
-val projectVersion = "3.2.1"
+val projectVersion = "3.2.2"
 group = "gg.aquatic.aquaticcrates"
 version = projectVersion
 
