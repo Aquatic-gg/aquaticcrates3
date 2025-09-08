@@ -14,7 +14,4 @@ abstract class Hologram(
 
     abstract fun spawn(audience: AquaticAudience, textUpdater: (Player, String) -> String)
 
-    abstract fun update(textUpdater: (Player,String) -> String)
-
-
 }

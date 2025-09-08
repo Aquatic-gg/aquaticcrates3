@@ -17,7 +17,7 @@ import java.util.logging.Logger;
 
 public class WavesHook {
 
-    private static final String REQUIRED_VERSION = "1.3.16";
+    private static final String REQUIRED_VERSION = "1.3.17";
 
     private static Logger logger;
     /**

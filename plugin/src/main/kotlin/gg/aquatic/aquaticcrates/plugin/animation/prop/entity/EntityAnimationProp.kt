@@ -6,6 +6,7 @@ import gg.aquatic.waves.fake.entity.FakeEntity
 import gg.aquatic.waves.scenario.Scenario
 import gg.aquatic.waves.scenario.ScenarioProp
 import gg.aquatic.waves.scenario.prop.Moveable
+import gg.aquatic.waves.scenario.prop.Passenger
 import gg.aquatic.waves.scenario.prop.Seatable
 import gg.aquatic.waves.scenario.prop.Throwable
 import gg.aquatic.waves.scenario.prop.path.PathBoundProperties
@@ -23,7 +24,7 @@ class EntityAnimationProp(
     entityType: String,
     properties: Collection<EntityProperty>,
     override val locationOffsetYawPitch: Pair<Float, Float>
-) : ScenarioProp, Moveable, Throwable, Seatable {
+) : ScenarioProp, Moveable, Throwable, Seatable, Passenger {
 
     var entity: FakeEntity
 
@@ -68,17 +69,21 @@ class EntityAnimationProp(
         }
     }
 
-    override fun addPassenger(entityAnimationProp: ScenarioProp) {
-        if (entityAnimationProp !is EntityAnimationProp) return
+    override val entityId: Int
+        get() = entity.entityId
+
+    override fun addPassenger(passenger: Passenger) {
         entity.updateEntity {
-            passengers += entityAnimationProp.entity.entityId
+            passengers += passenger.entityIds
         }
     }
 
-    override fun removePassenger(entityAnimationProp: ScenarioProp) {
-        if (entityAnimationProp !is EntityAnimationProp) return
+    override fun removePassenger(passenger: Passenger) {
         entity.updateEntity {
-            passengers -= entityAnimationProp.entity.entityId
+            passengers -= passenger.entityIds.toSet()
         }
     }
+
+    override val entityIds: Collection<Int>
+        get() = listOf(entity.entityId)
 }

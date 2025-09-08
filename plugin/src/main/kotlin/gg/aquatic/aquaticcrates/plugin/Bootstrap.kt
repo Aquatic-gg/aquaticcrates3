@@ -402,8 +402,6 @@ object Bootstrap {
 
 
     private fun registerObjects() {
-        ActionAnnotationProcessor.process(this, "gg.aquatic.aquaticcrates.plugin")
-        RequirementAnnotationProcessor.process(this, "gg.aquatic.aquaticcrates.plugin")
 
         // Open Restrictions
         WavesRegistry.registerRequirement("player", PlayerOpenRestriction())
@@ -426,6 +424,9 @@ object Bootstrap {
 
         // Prices
         PRICES += "crate-key" to CrateKeyPrice()
+
+        ActionAnnotationProcessor.process(this, "gg.aquatic.aquaticcrates.plugin")
+        RequirementAnnotationProcessor.process(this, "gg.aquatic.aquaticcrates.plugin")
     }
 
     private fun injectLegacyConverterListeners() {

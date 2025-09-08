@@ -53,6 +53,4 @@ class RewardShowcaseAnimationProp(
             viewer.sendPacket(motionPacket)
         }
     }
-
-
 }

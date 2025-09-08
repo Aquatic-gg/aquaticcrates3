@@ -12,20 +12,19 @@ import gg.aquatic.waves.util.generic.ClassTransform
 import gg.aquatic.waves.util.getSectionList
 import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.entity.Player
-import org.joml.Vector3d
 
 object ItemRewardShowcaseFactory : RewardShowcaseFactory {
     override fun load(section: ConfigurationSection): RewardShowcase? {
         val item = AquaticItem.loadFromYml(section.getConfigurationSection("item"))
         val gravity = section.getBoolean("gravity")
-        val hologram = HologramSerializer.loadLines(section.getSectionList("hologram"))
-        val hologramTranslation = section.getString("hologram-translation")?.split(";")?.let {
-            Vector3d(
-                it[0].toDouble(),
-                it[1].toDouble(),
-                it[2].toDouble()
-            )
+
+        val hologram = if (section.isConfigurationSection("hologram")) {
+            HologramSerializer.loadHologram(section.getConfigurationSection("hologram")!!)
+        } else {
+            HologramSerializer.loadHologram(section.getList("hologram") ?: emptyList<Any>())
         }
+
+        val bindHologramToItem = section.getBoolean("bind-hologram-to-item", false)
 
         val interactables = ArrayList<InteractableSettings>()
         for (configurationSection in section.getSectionList("interactables")) {
@@ -46,10 +45,10 @@ object ItemRewardShowcaseFactory : RewardShowcaseFactory {
             item,
             gravity,
             hologram,
-            hologramTranslation ?: Vector3d(0.0, 0.0, 0.0),
             interactables,
             spawnActions,
-            despawnActions
+            despawnActions,
+            bindHologramToItem
         )
     }
 }

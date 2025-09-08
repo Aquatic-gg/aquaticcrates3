@@ -7,7 +7,7 @@ import gg.aquatic.waves.interactable.settings.InteractableSettings
 abstract class Crate {
     abstract val identifier: String
     abstract val displayName: String
-    abstract val hologramSettings: HologramSettings
+    abstract val hologramSettings: HologramSettings?
     abstract val interactHandler: CrateInteractHandler
     abstract val interactables: List<InteractableSettings>
 }

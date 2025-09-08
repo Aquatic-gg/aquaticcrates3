@@ -42,7 +42,7 @@ import java.util.concurrent.CompletableFuture.runAsync
 class BasicCrate(
     override val identifier: String,
     override val displayName: String,
-    override val hologramSettings: HologramSettings,
+    override val hologramSettings: HologramSettings?,
     override val interactables: List<InteractableSettings>,
     //override val openRequirements: MutableList<ConfiguredRequirement<Player>>,
     override val openPriceGroups: MutableList<OpenPriceGroup>,

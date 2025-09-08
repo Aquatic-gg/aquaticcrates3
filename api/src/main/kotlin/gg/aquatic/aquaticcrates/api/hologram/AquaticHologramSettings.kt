@@ -1,11 +1,11 @@
 package gg.aquatic.aquaticcrates.api.hologram
 
-import gg.aquatic.waves.hologram.LineSettings
+import gg.aquatic.waves.hologram.AquaticHologram
 import org.bukkit.Location
 import org.bukkit.util.Vector
 
 class AquaticHologramSettings(
-    val lines: Set<LineSettings>,
+    val hologram: AquaticHologram.Settings,
     val offset: Vector,
 ): HologramSettings {
 

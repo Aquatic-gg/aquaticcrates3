@@ -1,7 +1,7 @@
 package gg.aquatic.aquaticcrates.plugin.animation.action.entity
 
-import gg.aquatic.aquaticcrates.plugin.animation.prop.entity.EntityAnimationProp
 import gg.aquatic.waves.scenario.Scenario
+import gg.aquatic.waves.scenario.prop.Passenger
 import gg.aquatic.waves.scenario.prop.Seatable
 import gg.aquatic.waves.util.action.RegisterAction
 import gg.aquatic.waves.util.argument.AquaticObjectArgument
@@ -19,7 +19,7 @@ class AddPassengerAction: Action<Scenario> {
 
     override fun execute(binder: Scenario, args: ObjectArguments, textUpdater: (Scenario, String) -> String) {
         val passengerId = args.string("passenger") { textUpdater(binder, it) } ?: return
-        val passenger = binder.prop<EntityAnimationProp>(passengerId) ?: return
+        val passenger = binder.prop<Passenger>(passengerId) ?: return
 
         val seatId = args.string("seat") { textUpdater(binder, it) } ?: return
         val seat = binder.props[Key.key(seatId)] as? Seatable ?: return

@@ -14,7 +14,7 @@ class SpawnedCrate(
 
     val audience = ACGlobalAudience()
 
-    val hologram = crate.hologramSettings.create(location)
+    val hologram = crate.hologramSettings?.create(location)
 
     val spawnedInteractables = crate.interactables.map {
         it.build(location, audience) { e ->
@@ -36,7 +36,7 @@ class SpawnedCrate(
     }
 
     init {
-        hologram.spawn(audience) { p, str ->
+        hologram?.spawn(audience) { p, str ->
             str.updatePAPIPlaceholders(p)
         }
 
@@ -60,7 +60,7 @@ class SpawnedCrate(
                 animation.props.forEach { it.value.onEnd() }
             }
         }
-        hologram.despawn()
+        hologram?.despawn()
     }
 
     fun forceHide(player: Player, hide: Boolean) {

@@ -7,6 +7,9 @@ import gg.aquatic.waves.fake.entity.FakeEntity
 import gg.aquatic.waves.fake.entity.data.impl.ItemEntityData
 import gg.aquatic.waves.fake.entity.data.impl.living.BaseEntityData
 import gg.aquatic.waves.hologram.AquaticHologram
+import gg.aquatic.waves.hologram.line.AnimatedHologramLine
+import gg.aquatic.waves.hologram.line.ItemHologramLine
+import gg.aquatic.waves.hologram.line.TextHologramLine
 import gg.aquatic.waves.interactable.type.EntityInteractable
 import gg.aquatic.waves.util.collection.mapPair
 import org.bukkit.entity.EntityType
@@ -16,7 +19,7 @@ class ItemRewardShowcaseHandle(
     override val animation: CrateAnimation,
     override var showcase: ItemRewardShowcase,
     val locationOffset: Pair<Vector, Pair<Float, Float>>,
-    override var reward: Reward
+    override var reward: Reward,
 ) :
     RewardShowcaseHandle<ItemRewardShowcase> {
 
@@ -51,17 +54,18 @@ class ItemRewardShowcaseHandle(
     var hologram = initializeHologram()
 
     fun initializeHologram(): AquaticHologram? {
-        if (showcase.hologram.isEmpty()) return null
-        return AquaticHologram(
+        if (showcase.hologram == null) return null
+        return showcase.hologram!!.create(
             animation.baseLocation.clone().add(locationOffset.first).apply {
                 this.yaw = locationOffset.second.first
                 this.pitch = locationOffset.second.second
             },
-            { p -> animation.audience.canBeApplied(p) },
             { _, str -> animation.updatePlaceholders(reward.updatePlaceholders(str)) },
-            50,
-            showcase.hologram.map { it.create() }.toSet()
+            { p -> animation.audience.canBeApplied(p) }
         ).apply {
+            if (showcase.bindHologramToItem) {
+                this.setAsPassenger(interactable.entity.entityId)
+            }
             tick()
         }
     }
@@ -75,11 +79,46 @@ class ItemRewardShowcaseHandle(
 
     override fun update(settings: ItemRewardShowcase, reward: Reward) {
         this.reward = reward
-        hologram?.destroy()
-        this.showcase = settings
-        hologram = initializeHologram()
+
         interactables.forEach { it.destroy() }
         interactables.clear()
+
+        val newHologram = settings.hologram
+        val previousHologram = showcase.hologram
+
+        var wasHologramHandled = false
+        if (hologram != null && newHologram != null && previousHologram != null) {
+            if (newHologram.lines.size == previousHologram.lines.size) {
+                var areLinesIdentical = true
+                for ((index, lineSettings) in newHologram.lines.withIndex()) {
+                    val oldLineSettings = previousHologram.lines[index]
+                    if (oldLineSettings.javaClass != lineSettings.javaClass) {
+                        areLinesIdentical = false
+                        break
+                    }
+                }
+                if (areLinesIdentical) {
+                    wasHologramHandled = true
+
+                    for ((index, line) in hologram!!.lines.withIndex()) {
+                        val lineSettings = newHologram.lines[index]
+                        when (line) {
+                            is TextHologramLine -> line.text = (lineSettings as TextHologramLine.Settings).text
+                            is ItemHologramLine -> line.setItem((lineSettings as ItemHologramLine.Settings).item)
+                            is AnimatedHologramLine -> {
+                                line.frames.clear()
+                                line.frames += (lineSettings as AnimatedHologramLine.Settings).frames.map { it.first to it.second.create() }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        if (!wasHologramHandled) {
+            hologram?.destroy()
+            this.showcase = settings
+            hologram = initializeHologram()
+        }
 
         interactables += settings.interactables.map {
             it.build(

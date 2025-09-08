@@ -165,6 +165,8 @@ object CrateSerializer : BaseSerializer() {
         config.load()
         val cfg = config.getConfiguration()!!
 
+        CratesPlugin.getInstance().logger.info("\nLoading crate $identifier\n")
+
         val interactableSections = cfg.getSectionList("interactables")
         val interactableSettings = interactableSections.mapNotNull { InteractableSerializer.load(it) }.toMutableList()
         if (interactableSettings.isEmpty()) {
@@ -388,10 +390,16 @@ object CrateSerializer : BaseSerializer() {
             RewardShowcaseSerializer.load(it)
         }
 
+        CratesPlugin.getInstance().logger.info("Loaded crate hologram!")
+        val hologram = HologramSerializer.loadAquaticHologram(cfg.getConfigurationSection("hologram"))
+        if (hologram == null) {
+            CratesPlugin.getInstance().logger.warning("Failed to load crate hologram!");
+        }
+
         return BasicCrate(
             identifier,
             cfg.getString("display-name") ?: identifier,
-            HologramSerializer.loadAquaticHologram(cfg.getConfigurationSection("hologram")),
+            hologram,
             interactableSettings,
             openPriceGroups,
             { bc ->
