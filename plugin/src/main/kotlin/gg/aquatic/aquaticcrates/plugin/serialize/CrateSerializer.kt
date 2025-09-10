@@ -36,6 +36,7 @@ import gg.aquatic.aquaticcrates.plugin.reroll.input.interaction.InteractionRerol
 import gg.aquatic.aquaticcrates.plugin.reroll.input.inventory.InventoryRerollInput
 import gg.aquatic.aquaticcrates.plugin.restriction.OpenData
 import gg.aquatic.aquaticcrates.plugin.restriction.OpenRestrictionHandle
+import gg.aquatic.aquaticcrates.plugin.restriction.impl.CrateRewardsRestriction
 import gg.aquatic.aquaticcrates.plugin.reward.RewardManagerImpl
 import gg.aquatic.aquaticcrates.plugin.reward.menu.RewardsMenuSettings
 import gg.aquatic.waves.interactable.settings.BlockInteractableSettings
@@ -50,11 +51,13 @@ import gg.aquatic.waves.registry.serializer.RequirementSerializer
 import gg.aquatic.waves.scenario.PlayerScenario
 import gg.aquatic.waves.scenario.Scenario
 import gg.aquatic.waves.util.Config
+import gg.aquatic.waves.util.action.impl.MessageAction
 import gg.aquatic.waves.util.argument.ObjectArguments
 import gg.aquatic.waves.util.block.impl.VanillaBlock
 import gg.aquatic.waves.util.generic.ClassTransform
 import gg.aquatic.waves.util.generic.ConfiguredExecutableObject
 import gg.aquatic.waves.util.getSectionList
+import gg.aquatic.waves.util.requirement.ConfiguredRequirement
 import gg.aquatic.waves.util.toMMComponent
 import org.bukkit.Bukkit
 import org.bukkit.Material
@@ -338,8 +341,15 @@ object CrateSerializer : BaseSerializer() {
             ActionSerializer.fromSections<Player>(cfg.getSectionList("mass-open.final-tasks")).toMutableList()
         val massOpenPerRewardActions =
             ActionSerializer.fromSections<Player>(cfg.getSectionList("mass-open.per-reward-tasks")).toMutableList()
+
+        val emptyCrateMessage = cfg.getString("empty-crate-message")
+        var foundEmptyRestriction = false
         val openRestrictions =
             cfg.getSectionList("open-restrictions").mapNotNull { section ->
+                val type = section.getString("type") ?: return@mapNotNull null
+                if (type.lowercase() == "available-rewards") {
+                    foundEmptyRestriction = true
+                }
                 val restriction = RequirementSerializer.fromSection<OpenData>(
                     section, ClassTransform(
                         Player::class.java
@@ -351,6 +361,21 @@ object CrateSerializer : BaseSerializer() {
 
                 OpenRestrictionHandle(restriction, failActions)
             }.toMutableList()
+
+        if (!foundEmptyRestriction && emptyCrateMessage != null) {
+            openRestrictions += OpenRestrictionHandle(
+                ConfiguredRequirement(
+                    CrateRewardsRestriction(),
+                    ObjectArguments(mapOf("available-rewards" to 1))
+                ),
+                listOf(
+                    ConfiguredExecutableObject(
+                        ActionSerializer.TransformedAction(MessageAction(), { d -> d.player }),
+                        ObjectArguments(mapOf("message" to emptyCrateMessage))
+                    )
+                )
+            )
+        }
 
         val openPriceGroups = ArrayList<OpenPriceGroup>()
         for (groupSection in cfg.getSectionList("open-price-groups")) {
@@ -368,6 +393,7 @@ object CrateSerializer : BaseSerializer() {
             )
             openPriceGroups += priceGroup
         }
+        val noKeyMessage = cfg.getString("no-key-message")
         if (openPriceGroups.isEmpty()) openPriceGroups += OpenPriceGroup(
             mutableListOf(
                 OpenPrice(
@@ -379,7 +405,18 @@ object CrateSerializer : BaseSerializer() {
                         ),
                         CrateKeyPrice()
                     ),
-                    mutableListOf()
+                    noKeyMessage?.let {
+                        mutableListOf(
+                            ConfiguredExecutableObject(
+                                MessageAction(),
+                                ObjectArguments(
+                                    mapOf(
+                                        "message" to it.toMMComponent()
+                                    )
+                                )
+                            )
+                        )
+                    } ?: mutableListOf()
                 )
             ),
             mutableListOf()

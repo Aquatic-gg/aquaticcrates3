@@ -410,6 +410,7 @@ object Bootstrap {
         WavesRegistry.registerRequirement("all-global", AllGlobalOpenRestriction())
         WavesRegistry.registerRequirement("world-blacklist", WorldBlacklistOpenRestriction())
         WavesRegistry.registerRequirement("full-inventory", EmptyInventoryOpenRestriction())
+        WavesRegistry.registerRequirement("available-rewards", CrateRewardsRestriction())
         WavesRegistry.registerRequirement("per-player-open-limit", PlayerLimitOpenRestriction())
         WavesRegistry.registerRequirement("global-open-limit", GlobalLimitOpenRestriction())
 
