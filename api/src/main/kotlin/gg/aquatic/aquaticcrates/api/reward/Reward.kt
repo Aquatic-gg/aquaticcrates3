@@ -77,9 +77,5 @@ interface Reward : IChance {
             .replace("%chance%", (chance * 100.0).decimals(2))
             .replace("%rarity-name%", rarity.displayName)
             .replace("%rarity-id%", rarity.rarityId)
-            .replace(
-                "%item_type_image_url%",
-                "https://raw.githubusercontent.com/KygekDev/default-textures/refs/heads/master/textures/items/${item.getItem().type.name.lowercase()}.png"
-            )
     }
 }
