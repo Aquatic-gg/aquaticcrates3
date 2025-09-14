@@ -173,6 +173,7 @@ class BasicOpenManager(val crate: BasicCrate) {
                     val amt = amtPair.first.get()
                     val amtTotal = amtPair.second.get()
                     runSync {
+                        reward.massGive(player, amtTotal, amt)
                         crate.massOpenPerRewardActions.executeActions(player) { p, str ->
                             str.replace("%reward%", reward.displayName)
                                 .replace("%amount%", amt.toString())

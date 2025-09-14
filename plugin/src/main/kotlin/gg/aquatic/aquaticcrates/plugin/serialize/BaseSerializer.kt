@@ -115,6 +115,7 @@ abstract class BaseSerializer {
         val showcase = section.getConfigurationSection("showcase")?.let {
             RewardShowcaseSerializer.load(it)
         }
+        val massOpenFinalActions = ActionSerializer.fromSections<Player>(section.getSectionList("mass-open-final-actions"))
 
         return RewardImpl(
             chance,
@@ -130,7 +131,8 @@ abstract class BaseSerializer {
             rarity,
             variables,
             fallbackPreviewItem,
-            showcase
+            showcase,
+            massOpenFinalActions
         )
     }
 

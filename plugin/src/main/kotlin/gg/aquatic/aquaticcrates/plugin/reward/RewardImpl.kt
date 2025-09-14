@@ -7,6 +7,7 @@ import gg.aquatic.aquaticcrates.api.reward.RewardAmountRange
 import gg.aquatic.aquaticcrates.api.reward.RewardRarity
 import gg.aquatic.aquaticcrates.api.reward.showcase.RewardShowcase
 import gg.aquatic.waves.item.AquaticItem
+import gg.aquatic.waves.util.generic.ConfiguredExecutableObject
 import gg.aquatic.waves.util.requirement.ConfiguredRequirement
 import org.bukkit.entity.Player
 
@@ -26,4 +27,5 @@ class RewardImpl(
     override val variables: MutableMap<String, String>,
     override val previewFallbackItem: AquaticItem?,
     override val showcase: RewardShowcase?,
+    override val massOpenFinalActions: Collection<ConfiguredExecutableObject<Player, Unit>>,
 ) : Reward

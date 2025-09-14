@@ -7,7 +7,9 @@ import gg.aquatic.aquaticcrates.api.reward.showcase.RewardShowcase
 import gg.aquatic.waves.item.AquaticItem
 import gg.aquatic.waves.profile.toAquaticPlayer
 import gg.aquatic.waves.util.chance.IChance
+import gg.aquatic.waves.util.collection.executeActions
 import gg.aquatic.waves.util.decimals
+import gg.aquatic.waves.util.generic.ConfiguredExecutableObject
 import gg.aquatic.waves.util.requirement.ConfiguredRequirement
 import gg.aquatic.waves.util.updatePAPIPlaceholders
 import org.bukkit.entity.Player
@@ -29,11 +31,48 @@ interface Reward : IChance {
     val variables: MutableMap<String, String>
     val previewFallbackItem: AquaticItem?
     val showcase: RewardShowcase?
+    val massOpenFinalActions: Collection<ConfiguredExecutableObject<Player, Unit>>
 
-    fun give(player: Player, randomAmount: Int, massOpen: Boolean) {
+    fun massGive(player: Player, totalAmount: Int, uniqueAmount: Int) {
         val crateEntry = player.toAquaticPlayer()?.crateEntry() ?: return
         if (giveItem) {
             val item = this.item.getItem()
+            item.amount = totalAmount
+            val toDrop = player.inventory.addItem(item)
+
+            for (value in toDrop.values) {
+                if (AbstractCratesPlugin.INSTANCE.settings.useRewardsMenu) {
+                    var foundItem: Pair<ItemStack, Int>? = null
+                    for ((containerItem, amount) in crateEntry.rewardContainer.items) {
+                        if (containerItem.isSimilar(value)) {
+                            foundItem = containerItem to amount
+                            break
+                        }
+                    }
+                    if (foundItem != null) {
+                        val newAmount = foundItem.second + value.amount
+                        crateEntry.rewardContainer.items[foundItem.first] = newAmount
+                        //player.sendMessage("Currently got ${newAmount}x ${foundItem.first.type} in Reward Container")
+                    } else {
+                        crateEntry.rewardContainer.items[value] = value.amount
+                        //player.sendMessage("Currently got ${randomAmount}x ${value.type} in Reward Container")
+                    }
+                } else {
+                    player.world.dropItem(player.location, value)
+                }
+            }
+        }
+        massOpenFinalActions.executeActions(player) { p, str ->
+            updatePlaceholders(str).updatePAPIPlaceholders(p).replace("%total-amount%", totalAmount.toString())
+                .replace("%amount%", uniqueAmount.toString())
+        }
+    }
+
+    fun give(player: Player, randomAmount: Int, massOpen: Boolean) {
+        if (!massOpen && giveItem) {
+            val crateEntry = player.toAquaticPlayer()?.crateEntry() ?: return
+            val item = this.item.getItem()
+            item.amount *= randomAmount
             val toDrop = player.inventory.addItem(item)
 
             for (value in toDrop.values) {
