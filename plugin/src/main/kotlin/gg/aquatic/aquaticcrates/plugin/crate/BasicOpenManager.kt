@@ -1,6 +1,5 @@
 package gg.aquatic.aquaticcrates.plugin.crate
 
-import com.nexomc.nexo.utils.flatMapFast
 import gg.aquatic.aquaticcrates.api.animation.crate.CrateAnimation
 import gg.aquatic.aquaticcrates.api.animation.crate.CrateAnimationManager
 import gg.aquatic.aquaticcrates.api.animation.crate.CrateAnimationSettings
@@ -15,6 +14,7 @@ import gg.aquatic.aquaticcrates.plugin.reward.RolledRewardImpl
 import gg.aquatic.waves.profile.toAquaticPlayer
 import gg.aquatic.waves.util.audience.AquaticAudience
 import gg.aquatic.waves.util.audience.FilterAudience
+import gg.aquatic.waves.util.chance.IChance
 import gg.aquatic.waves.util.chance.randomItem
 import gg.aquatic.waves.util.collection.executeActions
 import gg.aquatic.waves.util.collection.mapPair
@@ -27,10 +27,10 @@ import kotlinx.coroutines.withContext
 import org.bukkit.Location
 import org.bukkit.entity.Player
 import java.util.concurrent.CompletableFuture
-import java.util.concurrent.ConcurrentHashMap
-import java.util.concurrent.atomic.AtomicInteger
+import java.util.concurrent.ThreadLocalRandom
 import kotlin.coroutines.CoroutineContext
 import kotlin.math.max
+import kotlin.math.min
 import kotlin.time.measureTime
 
 class BasicOpenManager(val crate: BasicCrate) {
@@ -106,127 +106,144 @@ class BasicOpenManager(val crate: BasicCrate) {
 
     private data class RewardStats(var count: Int, var amount: Int)
 
+    private fun <T : IChance> getRandomItem(items: Collection<T>, rnd: ThreadLocalRandom, totalWeight: Double): T? {
+        var random = rnd.nextDouble() * totalWeight
+        for (item in items) {
+            random -= item.chance
+            if (random <= 0.0) {
+                return item
+            }
+        }
+        return null
+    }
+
     suspend fun massOpen(player: Player, amount: Int) = withContext(AsyncCtx) {
         val threads = idealThreads()
         //val wonRewards = ConcurrentHashMap<Reward, Pair<AtomicInteger, AtomicInteger>>()
         val allRewards = crate.rewardManager.rewards.values
+        val totalWeight = allRewards.sumOf { it.chance }
 
-        val hasRandomAmount = if ((crate.rewardManager as RewardManagerImpl).possibleRewardRanges.size == 1) {
-            val range = crate.rewardManager.possibleRewardRanges.first()
+        val amountRanges = (crate.rewardManager as RewardManagerImpl).possibleRewardRanges
+        val amountTotalWeight = amountRanges.sumOf { it.chance }
+
+        val hasRandomAmount = if (amountRanges.size == 1) {
+            val range = amountRanges.first()
             !(range.min == 1 && range.max == 1)
-        } else crate.rewardManager.possibleRewardRanges.size > 1
+        } else amountRanges.size > 1
 
-        val duration = measureTime {
-            val wonRewards: List<HashMap<Reward, RewardStats>> = parallelForEach(
-                total = amount,
-                parallelism = threads,
-                context = AsyncCtx
-            ) { range ->
-                val skipScaleBase = (5 * (amount.toDouble() / 100_000.0)).toInt()
+        val wonRewards: List<HashMap<Reward, RewardStats>> = parallelForEach(
+            total = amount,
+            parallelism = threads,
+            context = AsyncCtx
+        ) { range ->
+            val rnd = ThreadLocalRandom.current()
+            val wonRewards = HashMap<Reward, RewardStats>(allRewards.size)
 
-                val wonRewards = HashMap<Reward, RewardStats>(allRewards.size)
-                var skip = 0
-                val last = range.size
-                for (i in 0 until range.size) {
-                    if (skip-- > 0) continue
-
-                    if (hasRandomAmount) {
-                        val rewardsAmount =
-                            crate.rewardManager.possibleRewardRanges.randomItem()?.randomNum ?: 1
-                        val rewards = getRandomRewards(rewardsAmount, allRewards)
-                        for (reward in rewards) {
-                            val current = wonRewards[reward.reward]
-                            if (current == null) {
-                                wonRewards[reward.reward] = RewardStats(1, reward.randomAmount)
-                                continue
-                            }
-                            current.count++
-                            current.amount += reward.randomAmount
-                        }
-                    } else {
-                        val reward = allRewards.randomItem() ?: continue
-                        if (skipScaleBase > 1 && reward.chance > 0.1 && i % skipScaleBase == 0 && i + skipScaleBase < last) {
-                            val skipScale = max(2, if (reward.chance > 0.2) skipScaleBase else skipScaleBase / 2)
-                            skip = skipScale - 1
-                            val current = wonRewards[reward]
-                            if (current == null) {
-                                wonRewards[reward] = RewardStats(skipScale, skipScale)
-                                continue
-                            }
-                            current.count += skipScale
-                            current.amount += skipScale
-                            continue
-                        }
-                        val current = wonRewards[reward]
+            if (hasRandomAmount) {
+                for (i in range) {
+                    val rewardsAmount =
+                        getRandomItem(amountRanges, rnd, amountTotalWeight)?.randomNum ?: 1
+                    val rewards = getRandomRewards(rewardsAmount, allRewards, rnd, amountTotalWeight)
+                    for (reward in rewards) {
+                        val current = wonRewards[reward.reward]
                         if (current == null) {
-                            wonRewards[reward] = RewardStats(1, 1)
+                            wonRewards[reward.reward] = RewardStats(1, reward.randomAmount)
                             continue
                         }
                         current.count++
-                        current.amount++
+                        current.amount += reward.randomAmount
                     }
                 }
-                wonRewards
-            }
+            } else {
+                val skipScaleBase = (5 * (amount.toDouble() / 100_000.0)).toInt()
+                var skip = 0
+                val last = range.last
 
-            var totalWon = 0
-            var totalWonExcluded = 0
+                for (i in range) {
+                    if (skip-- > 0) continue
 
-            val wonRewardsFinal = HashMap<Reward, RewardStats>(allRewards.size)
-
-            for (map in wonRewards) {
-                for ((reward, amounts) in map) {
-                    val previous = wonRewardsFinal[reward]
-
-                    totalWon += amounts.amount
-                    totalWonExcluded += amounts.count
-
-                    if (previous == null) {
-                        wonRewardsFinal[reward] = amounts
-                    } else {
-                        previous.amount += amounts.amount
-                        previous.count += amounts.count
+                    val reward = getRandomItem(allRewards, rnd, totalWeight) ?: continue
+                    if (skipScaleBase > 1 && reward.chance > 0.1 && i % skipScaleBase == 0 && i + skipScaleBase < last) {
+                        val skipScale = max(2, if (reward.chance > 0.2) skipScaleBase else skipScaleBase / 2)
+                        skip = skipScale - 1
+                        val current = wonRewards[reward]
+                        if (current == null) {
+                            wonRewards[reward] = RewardStats(skipScale, skipScale)
+                            continue
+                        }
+                        current.count += skipScale
+                        current.amount += skipScale
+                        continue
                     }
+                    val current = wonRewards[reward]
+                    if (current == null) {
+                        wonRewards[reward] = RewardStats(1, 1)
+                        continue
+                    }
+                    current.count++
+                    current.amount++
                 }
             }
+            wonRewards
+        }
 
-            withContext(BukkitCtx) {
-                wonRewardsFinal.forEach { (reward, pair) ->
-                    reward.massGive(player, pair.amount, pair.count)
+        var totalWon = 0
+        var totalWonExcluded = 0
+
+        val wonRewardsFinal = HashMap<Reward, RewardStats>(allRewards.size)
+
+        for (map in wonRewards) {
+            for ((reward, amounts) in map) {
+                val previous = wonRewardsFinal[reward]
+
+                totalWon += amounts.amount
+                totalWonExcluded += amounts.count
+
+                if (previous == null) {
+                    wonRewardsFinal[reward] = amounts
+                } else {
+                    previous.amount += amounts.amount
+                    previous.count += amounts.count
                 }
-                crate.massOpenFinalActions.executeActions(player) { p, str ->
-                    str.replace("%total-won%", totalWon.toString())
-                        .replace("%total-won-excluded%", totalWonExcluded.toString())
-                        .replace("%player%", p.name)
-                }
-                wonRewardsFinal.clear()
             }
         }
-        player.sendMessage("Took ${duration.inWholeMilliseconds}ms (${duration.inWholeSeconds}s) to open $amount crates")
+
+        withContext(BukkitCtx) {
+            wonRewardsFinal.forEach { (reward, pair) ->
+                reward.massGive(player, pair.amount, pair.count)
+            }
+            crate.massOpenFinalActions.executeActions(player) { p, str ->
+                str.replace("%total-won%", totalWon.toString())
+                    .replace("%total-won-excluded%", totalWonExcluded.toString())
+                    .replace("%player%", p.name)
+            }
+            wonRewardsFinal.clear()
+        }
+
+        val runtime = Runtime.getRuntime()
+        val usedMemory = runtime.totalMemory() - runtime.freeMemory()
+        val maxMemory = runtime.maxMemory()
+
+        val percentage = (usedMemory.toDouble() / maxMemory.toDouble()) * 100.0
+        if (percentage >= 90.0) {
+            System.gc()
+        }
     }
 
     private fun getRandomRewards(
         amount: Int,
-        possibleRewards: Collection<Reward>
+        possibleRewards: Collection<Reward>,
+        rnd: ThreadLocalRandom,
+        totalWeight: Double
     ): List<RolledReward> {
-        val finalRewards = HashMap<String, Pair<Reward, Int>>()
         var amountLeft = amount
         if (possibleRewards.isEmpty()) return listOf()
 
         val rolledRewards = ArrayList<RolledReward>()
         while (amountLeft > 0) {
-            val randomReward = possibleRewards.randomItem() ?: return listOf()
-            val previous = finalRewards[randomReward.id]
-            finalRewards[randomReward.id] = (previous?.first ?: randomReward) to ((previous?.second ?: 0) + 1)
+            val randomReward = getRandomItem(possibleRewards, rnd, totalWeight) ?: return listOf()
+            rolledRewards += RolledRewardImpl(randomReward, randomReward.amountRanges.randomItem()?.randomNum ?: 1)
             amountLeft--
-        }
-
-        for ((_, pair) in finalRewards) {
-            val reward = pair.first
-            val amount = pair.second
-            for (i in 0..<amount) {
-                rolledRewards += RolledRewardImpl(reward, reward.amountRanges.randomItem()?.randomNum ?: 1)
-            }
         }
         return rolledRewards
     }
@@ -241,14 +258,18 @@ class BasicOpenManager(val crate: BasicCrate) {
         total: Int,
         parallelism: Int,
         context: CoroutineContext,
-        block: suspend (range: List<Int>) -> T
+        block: suspend (range: IntRange) -> T
     ) = coroutineScope {
         val chunkSize = max(1, total / parallelism)
 
-        (0 until total).chunked(chunkSize).map { chunk ->
+        (0 until parallelism).map { i ->
+            val start = i * chunkSize
+            val end = min(total, start + chunkSize)
+            if (start >= end) return@map null
+
             async(context) {
-                block(chunk)
+                block(start until end)
             }
-        }.awaitAll()
+        }.filterNotNull().awaitAll()
     }
 }
