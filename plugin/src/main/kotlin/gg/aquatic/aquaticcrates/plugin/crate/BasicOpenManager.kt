@@ -219,15 +219,6 @@ class BasicOpenManager(val crate: BasicCrate) {
             }
             wonRewardsFinal.clear()
         }
-
-        val runtime = Runtime.getRuntime()
-        val usedMemory = runtime.totalMemory() - runtime.freeMemory()
-        val maxMemory = runtime.maxMemory()
-
-        val percentage = (usedMemory.toDouble() / maxMemory.toDouble()) * 100.0
-        if (percentage >= 90.0) {
-            System.gc()
-        }
     }
 
     private fun getRandomRewards(
