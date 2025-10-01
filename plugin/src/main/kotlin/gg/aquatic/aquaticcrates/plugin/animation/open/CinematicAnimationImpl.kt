@@ -8,8 +8,10 @@ import gg.aquatic.aquaticcrates.plugin.animation.open.settings.CinematicAnimatio
 import gg.aquatic.aquaticcrates.plugin.animation.prop.CameraAnimationProp
 import gg.aquatic.waves.scenario.ScenarioProp
 import gg.aquatic.waves.util.audience.AquaticAudience
-import gg.aquatic.waves.util.runSync
+import gg.aquatic.waves.util.task.BukkitScope
+import kotlinx.coroutines.launch
 import net.kyori.adventure.key.Key
+import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.entity.Player
 import java.util.concurrent.CompletableFuture
@@ -66,7 +68,7 @@ class CinematicAnimationImpl(
         }
     }
 
-    override fun onFinalize(isSync: Boolean) {
+    override fun onFinalize() {
 
         val prop = prop<CameraAnimationProp>(Key.key("camera"))!!
         val runnable = {
@@ -82,10 +84,10 @@ class CinematicAnimationImpl(
             }
         }
 
-        if (isSync) {
+        if (Bukkit.isPrimaryThread()) {
             runnable()
         } else {
-            runSync {
+            BukkitScope.launch {
                 runnable()
             }
         }

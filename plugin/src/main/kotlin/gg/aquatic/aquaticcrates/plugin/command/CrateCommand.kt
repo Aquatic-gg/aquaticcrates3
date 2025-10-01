@@ -12,6 +12,8 @@ import gg.aquatic.aquaticcrates.plugin.editor.menu.EditorMenu
 import gg.aquatic.aquaticcrates.plugin.misc.Messages
 import gg.aquatic.waves.command.ICommand
 import gg.aquatic.waves.item.AquaticItemInteractEvent
+import gg.aquatic.waves.util.task.AsyncScope
+import kotlinx.coroutines.launch
 import org.bukkit.Bukkit
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
@@ -115,24 +117,27 @@ object CrateCommand : ICommand {
                 val noKey = args.contains("-nokey")
                 val isInstant = args.contains("-instant")
 
-                if (isInstant) {
-                    if (noKey) {
-                        crate.instantOpen(player, player.location, null)
-                        return
+                AsyncScope.launch {
+                    if (isInstant) {
+                        if (noKey) {
+                            crate.instantOpen(player, player.location, null)
+                            return@launch
+                        }
+                        crate.tryInstantOpen(player, player.location, null)
+                        return@launch
                     }
-                    crate.tryInstantOpen(player, player.location, null)
-                    return
+                    if (noKey) {
+                        crate.open(player, player.location, null)
+                        return@launch
+                    }
+                    crate.tryOpen(player, player.location, null)
                 }
-                if (noKey) {
-                    crate.open(player, player.location, null)
-                    return
-                }
-                crate.tryOpen(player, player.location, null)
+
             }
 
             "massopen" -> {
                 if (args.size < 5) {
-                    sender.sendMessage("Usage: /acrates crate massopen <crate> <player> <amount> [threads] [-nokey]")
+                    sender.sendMessage("Usage: /acrates crate massopen <crate> <player> <amount> [-nokey]")
                     return
                 }
                 val playerName = args[3]
@@ -154,19 +159,17 @@ object CrateCommand : ICommand {
                 }
 
                 val noKey = args.contains("-nokey")
-                var threadsAmount = 4
-                if (args.size > 5) {
-                    threadsAmount = args[5].toIntOrNull() ?: 4
-                }
 
-                if (crate is OpenableCrate) {
-                    if (noKey) {
-                        crate.massOpen(player, amount, threadsAmount)
+                AsyncScope.launch {
+                    if (crate is OpenableCrate) {
+                        if (noKey) {
+                            crate.massOpen(player, amount)
+                        } else {
+                            crate.tryMassOpen(player, amount)
+                        }
                     } else {
-                        crate.tryMassOpen(player, amount, threadsAmount)
+                        sender.sendMessage("This crate cannot be mass opened!")
                     }
-                } else {
-                    sender.sendMessage("This crate cannot be mass opened!")
                 }
             }
         }

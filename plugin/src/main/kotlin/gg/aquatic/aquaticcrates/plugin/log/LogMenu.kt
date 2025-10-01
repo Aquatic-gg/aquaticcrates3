@@ -8,6 +8,9 @@ import gg.aquatic.waves.menu.MenuComponent
 import gg.aquatic.waves.menu.PrivateAquaticMenu
 import gg.aquatic.waves.menu.component.Button
 import gg.aquatic.waves.util.*
+import gg.aquatic.waves.util.task.AsyncScope
+import gg.aquatic.waves.util.task.BukkitScope
+import kotlinx.coroutines.launch
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
@@ -75,7 +78,7 @@ class LogMenu(val settings: LogMenuSettings, player: Player) : PrivateAquaticMen
                             applyFilters()
                             return@create
                         } else if (e.buttonType == ButtonType.LEFT) {
-                            runSync {
+                            BukkitScope.launch {
                                 player.closeInventory()
                             }
                             player.send(
@@ -110,7 +113,7 @@ class LogMenu(val settings: LogMenuSettings, player: Player) : PrivateAquaticMen
                             return@create
                         }
                         else if (e.buttonType == ButtonType.LEFT) {
-                            runSync {
+                            BukkitScope.launch {
                                 player.closeInventory()
                             }
                             player.send(
@@ -161,7 +164,7 @@ class LogMenu(val settings: LogMenuSettings, player: Player) : PrivateAquaticMen
         }
         entryComponents.clear()
 
-        runAsync {
+        AsyncScope.launch {
             val offset = page * settings.logSlots.size
             val limit = settings.logSlots.size + 1
 
@@ -175,7 +178,7 @@ class LogMenu(val settings: LogMenuSettings, player: Player) : PrivateAquaticMen
                     val newLore = mutableListOf(
                         " ".toMMComponent(),
                         "<white>Player: <yellow>$playerName".toMMComponent(),
-                        "<white>Timestamp: <yellow>${entry.timestamp}".toMMComponent(),
+                        "<white>Timestamp: <yellow>${entry.timeStamp}".toMMComponent(),
                         "<white>Rewards: <yellow>${entry.rewardIds.size}".toMMComponent(),
                         )
 
@@ -184,7 +187,7 @@ class LogMenu(val settings: LogMenuSettings, player: Player) : PrivateAquaticMen
                     }
 
                     newLore += " ".toMMComponent()
-                    newLore += "<gray>${entry.timestamp.toFriendlyTimeFromSeconds()}".toMMComponent()
+                    newLore += "<gray>${entry.timeStamp.toFriendlyTimeFromSeconds()}".toMMComponent()
 
                     val meta = this.itemMeta
                     meta.lore(newLore)

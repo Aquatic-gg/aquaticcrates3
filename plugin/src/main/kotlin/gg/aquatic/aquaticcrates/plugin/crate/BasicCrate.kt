@@ -9,7 +9,6 @@ import gg.aquatic.aquaticcrates.api.crate.SpawnedCrate
 import gg.aquatic.aquaticcrates.api.hologram.HologramSettings
 import gg.aquatic.aquaticcrates.api.interaction.crate.CrateInteractHandler
 import gg.aquatic.aquaticcrates.api.openprice.OpenPriceGroup
-import gg.aquatic.aquaticcrates.api.player.CrateProfileEntry
 import gg.aquatic.aquaticcrates.api.reward.RewardManager
 import gg.aquatic.aquaticcrates.api.reward.showcase.RewardShowcase
 import gg.aquatic.aquaticcrates.plugin.Bootstrap
@@ -22,11 +21,13 @@ import gg.aquatic.waves.item.AquaticItem
 import gg.aquatic.waves.item.AquaticItemInteractEvent
 import gg.aquatic.waves.registry.register
 import gg.aquatic.waves.registry.setInteractionHandler
-import gg.aquatic.waves.util.collection.checkRequirements
 import gg.aquatic.waves.util.generic.ConfiguredExecutableObject
-import gg.aquatic.waves.util.requirement.ConfiguredRequirement
 import gg.aquatic.waves.util.runLaterSync
+import gg.aquatic.waves.util.task.AsyncCtx
+import gg.aquatic.waves.util.task.AsyncScope
 import gg.aquatic.waves.util.updatePAPIPlaceholders
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.TextDecoration
 import org.bukkit.Location
@@ -35,9 +36,6 @@ import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.ItemStack
-import java.util.HashMap
-import java.util.concurrent.CompletableFuture
-import java.util.concurrent.CompletableFuture.runAsync
 
 class BasicCrate(
     override val identifier: String,
@@ -52,9 +50,10 @@ class BasicCrate(
     interactHandler: (BasicCrate) -> CrateInteractHandler,
     val previewMenuSettings: MutableList<CratePreviewMenuSettings>,
     val massOpenFinalActions: MutableList<ConfiguredExecutableObject<Player, Unit>>,
-    val massOpenPerRewardActions: MutableList<ConfiguredExecutableObject<Player, Unit>>,
+    //val massOpenPerRewardActions: MutableList<ConfiguredExecutableObject<Player, Unit>>,
     val openRestrictions: MutableList<OpenRestrictionHandle>,
-    override val defaultRewardShowcase: RewardShowcase?
+    override val defaultRewardShowcase: RewardShowcase?,
+    val disableLogging: Boolean,
 ) : OpenableCrate() {
 
     var openManager = BasicOpenManager(this)
@@ -83,7 +82,7 @@ class BasicCrate(
                     if (e.interactType == AquaticItemInteractEvent.InteractType.RIGHT) {
                         runLaterSync(2) {
                             CrateHandler.spawnCrate(this@BasicCrate, location.clone().add(.5, 1.0, .5))
-                            runAsync {
+                            AsyncScope.launch {
                                 CrateHandler.saveSpawnedCrates(Bootstrap.spawnedCratesConfig)
                             }
                         }
@@ -113,40 +112,41 @@ class BasicCrate(
         location: Location,
         spawnedCrate: SpawnedCrate?
     ) {
-        openManager.instantOpen(player, false)
+        AsyncScope.launch {
+            openManager.instantOpen(player)
+        }
     }
 
-    override fun tryOpen(player: Player, location: Location, spawnedCrate: SpawnedCrate?): CompletableFuture<Void> {
-        if (!canBeOpened(player, 1, OpenData(player, location, this))) {
+    override suspend fun tryOpen(player: Player, location: Location, spawnedCrate: SpawnedCrate?) = withContext(AsyncCtx) {
+        if (!canBeOpened(player, 1, OpenData(player, location, this@BasicCrate))) {
             spawnedCrate?.let {
                 animationManager.playFailAnimation(it, player)
             }
-            return CompletableFuture.completedFuture(null)
+            return@withContext
         }
-        return open(player, location, spawnedCrate)
+        open(player, location, spawnedCrate)
     }
 
-    override fun open(
+    override suspend fun open(
         player: Player,
         location: Location,
         spawnedCrate: SpawnedCrate?
-    ): CompletableFuture<Void> {
-        return openManager.open(player, location, spawnedCrate)
+    ) = withContext(AsyncCtx) {
+        openManager.open(player, location)
     }
 
-    override fun tryMassOpen(player: Player, amount: Int, threads: Int?): CompletableFuture<Void> {
-        if (!canBeOpened(player, amount, OpenData(player, null, this))) {
-            return CompletableFuture.completedFuture(null)
+    override suspend fun tryMassOpen(player: Player, amount: Int) = withContext(AsyncCtx) {
+        if (!canBeOpened(player, amount, OpenData(player, null, this@BasicCrate))) {
+            return@withContext
         }
-        return massOpen(
+        massOpen(
             player,
             amount,
-            threads
         )
     }
 
-    override fun massOpen(player: Player, amount: Int, threads: Int?): CompletableFuture<Void> {
-        return openManager.massOpen(player, amount, threads)
+    override suspend fun massOpen(player: Player, amount: Int) = withContext(AsyncCtx)  {
+        openManager.massOpen(player, amount)
     }
 
     override fun openPreview(player: Player, placedCrate: SpawnedCrate?) {

@@ -44,6 +44,10 @@ import gg.aquatic.waves.registry.registerRequirement
 import gg.aquatic.waves.util.Config
 import gg.aquatic.waves.util.action.ActionAnnotationProcessor
 import gg.aquatic.waves.util.requirement.RequirementAnnotationProcessor
+import gg.aquatic.waves.util.task.AsyncCtx
+import gg.aquatic.waves.util.task.AsyncScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.future.asCompletableFuture
 import net.kyori.adventure.text.Component
 import org.bukkit.Bukkit
 import org.bukkit.NamespacedKey
@@ -357,13 +361,14 @@ object Bootstrap {
         }, 0, 50, TimeUnit.MILLISECONDS)
     }
 
-    internal fun load(): CompletableFuture<Void> {
+    internal fun load(): CompletableFuture<Unit> {
         CratesPlugin.getInstance().isLoading = true
         CratesPlugin.getInstance().dataFolder.mkdirs()
         CratesPlugin.getInstance().setSettings(CrateSerializer.loadPluginSettings())
         CratesPlugin.getInstance().rewardsMenuSettings = CrateSerializer.loadRewardMenuSettings()
         CratesPlugin.getInstance().logMenuSettings = CrateSerializer.loadLogMenuSettings()
-        return runAsync {
+
+        return AsyncScope.async {
             try {
                 Messages.load()
                 gg.aquatic.waves.util.message.Messages.injectMessages<Messages>("aquaticcrates")
@@ -382,7 +387,7 @@ object Bootstrap {
                         for ((id, amt) in history.rewardIds) {
                             val crateReward = crate.rewardManager.rewards[id] ?: continue
                             val latestReward =
-                                HistoryHandler.LatestReward(crateReward, history.timestamp, amt, playerName)
+                                HistoryHandler.LatestReward(crateReward, history.timeStamp, amt, playerName)
                             list.add(latestReward)
                             if (list.size >= 10) break
                         }
@@ -393,11 +398,7 @@ object Bootstrap {
                 e.printStackTrace()
             }
             CratesPlugin.getInstance().isLoading = false
-        }.exceptionally {
-            it.printStackTrace()
-            CratesPlugin.getInstance().isLoading = false
-            null
-        }
+        }.asCompletableFuture()
     }
 
 

@@ -8,6 +8,9 @@ import gg.aquatic.waves.menu.SlotSelection
 import gg.aquatic.waves.menu.component.Button
 import gg.aquatic.waves.util.*
 import gg.aquatic.waves.util.chance.randomItem
+import gg.aquatic.waves.util.task.AsyncScope
+import gg.aquatic.waves.util.task.BukkitScope
+import kotlinx.coroutines.launch
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.TextDecoration
 import org.bukkit.Material
@@ -66,9 +69,11 @@ class CratePreviewMenu(
                         if (page <= 0) return@create
                         openPage(page - 1)
                     } else if (id == "open") {
-                        runSync {
+                        BukkitScope.launch {
                             player.closeInventory()
-                            crate.tryOpen(player, placedCrate?.location ?: player.location.clone(), placedCrate)
+                            AsyncScope.launch {
+                                crate.tryOpen(player, placedCrate?.location ?: player.location.clone(), placedCrate)
+                            }
                         }
                     }
                 }

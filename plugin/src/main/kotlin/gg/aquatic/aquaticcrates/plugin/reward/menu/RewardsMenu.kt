@@ -5,10 +5,12 @@ import gg.aquatic.waves.menu.MenuComponent
 import gg.aquatic.waves.menu.PrivateAquaticMenu
 import gg.aquatic.waves.menu.component.Button
 import gg.aquatic.waves.profile.toAquaticPlayer
-import gg.aquatic.waves.util.runSync
+import gg.aquatic.waves.util.task.AsyncScope
+import gg.aquatic.waves.util.task.BukkitScope
 import gg.aquatic.waves.util.toMMComponent
 import gg.aquatic.waves.util.toMMString
 import gg.aquatic.waves.util.updatePAPIPlaceholders
+import kotlinx.coroutines.launch
 import org.bukkit.entity.Player
 
 class RewardsMenu(val settings: RewardsMenuSettings, player: Player) : PrivateAquaticMenu(
@@ -70,17 +72,19 @@ class RewardsMenu(val settings: RewardsMenuSettings, player: Player) : PrivateAq
                 onClick = { e ->
                     if (processing) return@Button
                     processing = true
-                    runSync {
+                    BukkitScope.launch {
                         for ((_, i) in player.inventory.addItem(item.clone().apply { this.amount = amount })) {
                             player.location.world!!.dropItem(player.location, i)
                         }
-                        crateEntry.rewardContainer.items.remove(item)
-                        rewardComponents.forEach { removeComponent(it) }
-                        rewardComponents.clear()
-                        loadRewards()
-                        updateComponents()
+                        AsyncScope.launch {
+                            crateEntry.rewardContainer.items.remove(item)
+                            rewardComponents.forEach { removeComponent(it) }
+                            rewardComponents.clear()
+                            loadRewards()
+                            updateComponents()
 
-                        processing = false
+                            processing = false
+                        }
                     }
                 }
             )

@@ -1,12 +1,11 @@
 package gg.aquatic.aquaticcrates.plugin.editor.item
 
-import com.google.gson.Gson
 import gg.aquatic.aquaticcrates.plugin.editor.menu.EditorMenu
 import gg.aquatic.waves.input.InputHandle
 import gg.aquatic.waves.inventory.event.AsyncPacketInventoryInteractEvent
-import gg.aquatic.waves.util.runSync
+import gg.aquatic.waves.util.task.BukkitScope
 import gg.aquatic.waves.util.toMMComponent
-import org.bukkit.Bukkit
+import kotlinx.coroutines.launch
 import org.bukkit.inventory.ItemStack
 
 class InputEditorItem(
@@ -21,7 +20,7 @@ class InputEditorItem(
         val player = event.viewer.player
         val menu = event.inventory as EditorMenu
 
-        runSync {
+        BukkitScope.launch {
             player.closeInventory()
 
             for (string in chatMessage) {

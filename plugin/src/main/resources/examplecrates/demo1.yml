@@ -34,6 +34,7 @@ interaction: #Not needed if you want to keep these interactions default
 open-price-groups:
   - prices:
       - type: "crate-key"
+        crate: "demo1"
         fail-actions:
           - type: message
             message: "<#FF474C>You do not have a <gradient:#f786be:#6abb64>Demo1 Key</gradient> <#FF474C>to open this."

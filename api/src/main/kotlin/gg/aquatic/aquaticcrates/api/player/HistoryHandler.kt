@@ -7,85 +7,93 @@ import gg.aquatic.aquaticcrates.api.player.CrateProfileEntry.HistoryType
 import gg.aquatic.aquaticcrates.api.player.CrateProfileEntry.OpenHistoryEntry
 import gg.aquatic.aquaticcrates.api.reward.Reward
 import gg.aquatic.waves.profile.toAquaticPlayer
-import gg.aquatic.waves.util.runAsync
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
-import kotlin.collections.ArrayList
-import kotlin.collections.HashMap
 
 object HistoryHandler {
 
     // namespace: CrateId, RewardId, Daily/Weekly/Monthly/Alltime, Amount
     //val openHistory = ConcurrentHashMap<String, ConcurrentHashMap<String, ConcurrentHashMap<HistoryType, Int>>>()
 
-    val latestRewards = ConcurrentHashMap<String,MutableList<LatestReward>>()
+    val latestRewards = ConcurrentHashMap<String, MutableList<LatestReward>>()
 
     // CrateId, Daily/Weekly/Monthly/Alltime, Amount
     val openHistory = ConcurrentHashMap<String, ConcurrentHashMap<HistoryType, Int>>()
+
     // CrateId:RewardId, Daily/Weekly/Monthly/Alltime, Amount
-    val rewardHistory = ConcurrentHashMap<String,ConcurrentHashMap<HistoryType, Int>>()
+    val rewardHistory = ConcurrentHashMap<String, ConcurrentHashMap<HistoryType, Int>>()
 
-    fun registerCrateOpen(player: Player, crateId: String, rewards: Map<Reward, Int>) {
-        val crateEntry = player.toAquaticPlayer()?.crateEntry() ?: return
-        val newEntries = crateEntry.newEntries
+    fun registerCrateOpen(crateProfile: CrateProfileEntry, crateId: String, rewards: Map<Reward, Int>) {
+        val newEntries = crateProfile.newEntries
+        try {
+            val globalCrateHistory = openHistory.getOrPut(crateId) { ConcurrentHashMap() }
+            for (historyType in HistoryType.entries) {
+                val currentAmount = globalCrateHistory.getOrPut(historyType) { 0 }
+                globalCrateHistory[historyType] = currentAmount + 1
 
-        val globalCrateHistory = openHistory.getOrPut(crateId) { ConcurrentHashMap() }
-        for (historyType in HistoryType.entries) {
-            val currentAmount = globalCrateHistory.getOrPut(historyType) { 0 }
-            globalCrateHistory[historyType] = currentAmount + 1
-
-            for ((reward, amount) in rewards) {
-                CrateHandler.crates[crateId]?.let { crate ->
-                    if (crate is OpenableCrate) {
-                        val latestReward = LatestReward(reward, System.currentTimeMillis() / 60000, amount, player.name)
-                        val list = latestRewards.getOrPut(crateId) { Collections.synchronizedList(ArrayList()) }
-                        list.add(latestReward)
-                        if (list.size > 10) {
-                            for (i in 10 until Int.MAX_VALUE) {
-                                if (list.size <= i) break
-                                try {
-                                    list.removeAt(i)
-                                } catch (_: Exception) {
-                                    break
+                for ((reward, amount) in rewards) {
+                    CrateHandler.crates[crateId]?.let { crate ->
+                        if (crate is OpenableCrate) {
+                            val latestReward = LatestReward(reward, System.currentTimeMillis() / 60000, amount, crateProfile.aquaticPlayer.username)
+                            val list = latestRewards.getOrPut(crateId) { Collections.synchronizedList(ArrayList()) }
+                            list.add(latestReward)
+                            if (list.size > 10) {
+                                for (i in 10 until Int.MAX_VALUE) {
+                                    if (list.size <= i) break
+                                    try {
+                                        list.removeAt(i)
+                                    } catch (_: Exception) {
+                                        break
+                                    }
                                 }
                             }
                         }
                     }
-                }
 
-                val rewardHistory = rewardHistory.getOrPut("$crateId:$reward") { ConcurrentHashMap() }
-                val currentRewardAmount = rewardHistory.getOrPut(historyType) { 0 }
-                rewardHistory[historyType] = currentRewardAmount + amount
+                    val rewardHistory = rewardHistory.getOrPut("$crateId:$reward") { ConcurrentHashMap() }
+                    val currentRewardAmount = rewardHistory.getOrPut(historyType) { 0 }
+                    rewardHistory[historyType] = currentRewardAmount + amount
+                }
             }
+
+            val entries = newEntries
+            val timeStamp = System.currentTimeMillis() / 60000
+
+            val lastContainer = entries.lastOrNull()
+            val container = if (lastContainer != null && lastContainer.timestamp == timeStamp) {
+                lastContainer
+            } else {
+                val container = CrateProfileEntry.OpenHistoryContainer(
+                    timeStamp
+                )
+                entries += container
+                container
+            }
+            container.entries += OpenHistoryEntry(
+                crateId,
+                rewards.mapKeys { it.key.id }.toMutableMap()
+            )
+            val crateHistory = crateProfile.openHistory.getOrPut(crateId) { ConcurrentHashMap() }
+            for (historyType in HistoryType.entries) {
+                val dailyCrate = crateHistory.getOrPut(historyType) { 0 }
+                crateHistory[historyType] = dailyCrate + rewards.values.sum()
+                for ((reward, amount) in rewards) {
+                    val rewardHistory = crateProfile.rewardHistory.getOrPut("$crateId:$reward") { ConcurrentHashMap() }
+                    val dailyReward = rewardHistory.getOrPut(historyType) { 0 }
+                    rewardHistory[historyType] = dailyReward + amount
+                }
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
 
-        val entries = newEntries.getOrPut(crateId) { Collections.synchronizedList(ArrayList()) }
-        entries += OpenHistoryEntry(
-            System.currentTimeMillis() / 60000,
-            crateId,
-            rewards.mapKeys { it.key.id }.toMutableMap()
-        )
-        val crateHistory = crateEntry.openHistory.getOrPut(crateId) { ConcurrentHashMap() }
-        for (historyType in HistoryType.entries) {
-            val dailyCrate = crateHistory.getOrPut(historyType) { 0 }
-            crateHistory[historyType] = dailyCrate + rewards.values.sum()
-            for ((reward, amount) in rewards) {
-                val rewardHistory = crateEntry.rewardHistory.getOrPut("$crateId:$reward") { ConcurrentHashMap() }
-                val dailyReward = rewardHistory.getOrPut(historyType) { 0 }
-                rewardHistory[historyType] = dailyReward + amount
-            }
-        }
-        var totalSize = 0
-        for ((_, histories) in newEntries) {
-            totalSize += histories.size
-            if (totalSize >= 500) {
-                runAsync {
-                    crateEntry.saveAndPrune()
-                }
-                break
-            }
+        val size = newEntries.sumOf { it.entries.size }
+        if (size >= 500) {
+            val entriesCopy = ArrayList(newEntries)
+            newEntries.clear()
+            crateProfile.saveAndPrune(entriesCopy)
         }
     }
 
@@ -136,23 +144,27 @@ object HistoryHandler {
         playerName: String?,
         crateId: String?,
         sorting: Sorting?,
-    ): List<Pair<String, OpenHistoryEntry>> {
+    ): List<Pair<String, CrateProfileDriver.LogEntry>> {
 
-        val cachedLogs = mutableListOf<Pair<String, OpenHistoryEntry>>()
+        val cachedLogs = mutableListOf<Pair<String, CrateProfileDriver.LogEntry>>()
 
         // 1. Gather cached logs with pre-sorted logic.
         fun collectPlayerLogs(
             playerName: String,
             crateEntry: CrateProfileEntry
-        ): List<Pair<String, OpenHistoryEntry>> {
+        ): List<Pair<String, CrateProfileDriver.LogEntry>> {
 
             val newEntries = crateEntry.newEntries
-            val filteredEntries = if (crateId != null) {
-                // Filter entries by crateId if needed
-                newEntries[crateId]?.toList() ?: emptyList()
-            } else {
-                // Combine all crates' entries
-                newEntries.flatMap { it.value }
+            val filteredEntries = ArrayList<CrateProfileDriver.LogEntry>()
+            for (container in newEntries) {
+                for (entry in container.entries) {
+                    if (crateId != null && entry.crateId != crateId) continue
+                    filteredEntries += CrateProfileDriver.LogEntry(
+                        container.timestamp,
+                        entry.crateId,
+                        entry.rewardIds
+                    )
+                }
             }
 
             // If sorting is OLDEST, reverse the filtered entries. Otherwise, use as-is.
@@ -163,7 +175,7 @@ object HistoryHandler {
             }
 
             // Apply offset and limit directly to this player's logs
-            return sortedEntries.take(limit+offset)
+            return sortedEntries.take(limit + offset)
                 .map { playerName to it } // Add player name in each entry
         }
 
@@ -195,7 +207,7 @@ object HistoryHandler {
          */
 
         // Query logs from the database if necessary.
-        val dbLogs: MutableMap<Int, Pair<String, OpenHistoryEntry>> =
+        val dbLogs: MutableMap<Int, Pair<String, CrateProfileDriver.LogEntry>> =
             CrateProfileDriver.loadLogEntries(
                 offset = remainingOffset,
                 limit = limit,
@@ -209,8 +221,8 @@ object HistoryHandler {
 
         // Sort the combined list.
         val sortedCombinedLogs = (when (sorting) {
-            Sorting.NEWEST -> combinedLogs.sortedByDescending { it.second.timestamp }
-            Sorting.OLDEST -> combinedLogs.sortedBy { it.second.timestamp }
+            Sorting.NEWEST -> combinedLogs.sortedByDescending { it.second.timeStamp }
+            Sorting.OLDEST -> combinedLogs.sortedBy { it.second.timeStamp }
             null -> combinedLogs // No sorting specified.
         }).toMutableList()
 

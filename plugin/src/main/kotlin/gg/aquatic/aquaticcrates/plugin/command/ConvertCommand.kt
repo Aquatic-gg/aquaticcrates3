@@ -1,10 +1,12 @@
 package gg.aquatic.aquaticcrates.plugin.command
 
+import com.undefined.stellar.kotlin.KotlinBaseStellarCommand
 import gg.aquatic.aquaticcrates.plugin.CratesPlugin
 import gg.aquatic.aquaticcrates.plugin.convert.CONVERTERS
 import gg.aquatic.waves.command.ICommand
 import gg.aquatic.waves.util.Config
-import gg.aquatic.waves.util.runAsync
+import gg.aquatic.waves.util.task.AsyncScope
+import kotlinx.coroutines.launch
 import org.bukkit.command.CommandSender
 import java.io.File
 
@@ -26,7 +28,7 @@ object ConvertCommand: ICommand {
 
         val fileName = args[2]
         if (fileName == "*") {
-            runAsync {
+            AsyncScope.launch {
                 CratesPlugin.getInstance().dataFolder.resolve("convert").listFiles()?.forEach {
                     convert(it)
                 }
@@ -34,7 +36,7 @@ object ConvertCommand: ICommand {
             return
         }
         val inputFile = CratesPlugin.getInstance().dataFolder.resolve("convert").resolve(args[2])
-        runAsync {
+        AsyncScope.launch {
             convert(inputFile)
         }
 

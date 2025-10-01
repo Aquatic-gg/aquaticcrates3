@@ -12,16 +12,16 @@ import gg.aquatic.waves.registry.serializer.ActionSerializer
 import gg.aquatic.waves.registry.serializer.ItemSerializer
 import gg.aquatic.waves.registry.serializer.RequirementSerializer
 import gg.aquatic.waves.util.getSectionList
-import gg.aquatic.waves.util.runSync
+import gg.aquatic.waves.util.task.BukkitScope
 import gg.aquatic.waves.util.toMMString
+import kotlinx.coroutines.async
 import org.bukkit.Bukkit
 import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.entity.Player
-import java.util.concurrent.CompletableFuture
 
 abstract class BaseSerializer {
 
-    fun loadRewards(
+    suspend fun loadRewards(
         section: ConfigurationSection,
         rarities: HashMap<String, RewardRarity>
     ): MutableMap<String, Reward> {
@@ -64,13 +64,10 @@ abstract class BaseSerializer {
         return rewards
     }
 
-    fun loadReward(section: ConfigurationSection, rarities: HashMap<String, RewardRarity>): Reward? {
+    suspend fun loadReward(section: ConfigurationSection, rarities: HashMap<String, RewardRarity>): Reward? {
         val id = section.name
-        val itemFuture = CompletableFuture<AquaticItem?>()
-        runSync {
-            itemFuture.complete(AquaticItem.loadFromYml(section.getConfigurationSection("item")))
-        }
-        val item = itemFuture.join()
+        val item = AquaticItem.loadFromYml(section.getConfigurationSection("item"))
+        //val item = itemFuture.join()
         if (item == null) {
             sendConsoleMessage("Could not load Reward Item! (${section.currentPath}.item)")
             return null

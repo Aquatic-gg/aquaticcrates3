@@ -12,10 +12,15 @@ import gg.aquatic.waves.profile.AquaticPlayer
 import gg.aquatic.waves.profile.ProfilesModule
 import gg.aquatic.waves.util.item.decodeToItemStack
 import gg.aquatic.waves.util.item.encode
+import kotlinx.coroutines.asCoroutineDispatcher
+import kotlinx.coroutines.withContext
 import org.intellij.lang.annotations.Language
 import java.sql.Connection
 import java.sql.PreparedStatement
 import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.Executors
+import java.util.concurrent.atomic.AtomicLong
+import kotlin.concurrent.atomics.ExperimentalAtomicApi
 
 object CrateProfileDriver {
     val driver: DataDriver = (Waves.INSTANCE.modules[WaveModules.PROFILES] as ProfilesModule).driver
@@ -27,6 +32,9 @@ object CrateProfileDriver {
     fun isMySQL(): Boolean {
         return !isSQLite()
     }
+
+    @OptIn(ExperimentalAtomicApi::class)
+    lateinit var idCounter: AtomicLong
 
     fun get(aquaticPlayer: AquaticPlayer): CrateProfileEntry {
         val entry = CrateProfileEntry(aquaticPlayer, RewardContainer())
@@ -54,7 +62,9 @@ object CrateProfileDriver {
 
     fun save(connection: Connection, entry: CrateProfileEntry) {
         saveKeys(connection, entry)
-        saveHistory(connection, entry)
+        val newEntries = ArrayList(entry.newEntries)
+        entry.newEntries.clear()
+        saveHistorySync(connection, entry, newEntries)
         saveRewardContainer(connection, entry)
     }
 
@@ -165,62 +175,129 @@ object CrateProfileDriver {
         }
     }
 
-    internal fun saveHistory(connection: Connection, profileEntry: CrateProfileEntry) {
-        val insertOpensQuery = "INSERT INTO aquaticcrates_opens (user_id, open_timestamp, crate_id) VALUES (?, ?, ?);"
-        val insertRewardsQuery = "INSERT INTO aquaticcrates_rewards (open_id, reward_id, amount) VALUES (?, ?, ?);"
+    val dbDispatcher = Executors.newSingleThreadExecutor().asCoroutineDispatcher()
 
-        val newEntries = ConcurrentHashMap(profileEntry.newEntries)
-        profileEntry.newEntries.clear()
+    internal fun saveHistorySync(
+        connection: Connection,
+        profileEntry: CrateProfileEntry,
+        toSave: List<CrateProfileEntry.OpenHistoryContainer>
+    ) {
+            val insertOpensQuery =
+                "INSERT INTO aquaticcrates_opens (user_id, open_timestamp, crate_id) VALUES (?, ?, ?);"
+            val insertRewardsQuery = "INSERT INTO aquaticcrates_rewards (open_id, reward_id, amount) VALUES (?, ?, ?);"
 
-        // Collect auto-generated open IDs and their related rewards
-        val openIdToRewards = mutableListOf<Pair<Int, List<Pair<String, Int>>>>()
+            // Collect auto-generated open IDs and their related rewards
+            val openIdToRewards = mutableListOf<Pair<Int, List<Pair<String, Int>>>>()
 
-        // Insert into `aquaticcrates_opens` and retrieve auto-generated keys
-        connection.prepareStatement(insertOpensQuery, PreparedStatement.RETURN_GENERATED_KEYS).use { opensStmt ->
-            for ((_, entries) in newEntries) {
-                for (entry in entries) {
-                    // Prepare batch for "opens" table inserts
-                    opensStmt.setInt(1, profileEntry.aquaticPlayer.index) // Assuming userId is numeric in string form
-                    opensStmt.setLong(2, entry.timestamp) // Set timestamp
-                    opensStmt.setString(3, entry.crateId) // Set crateId
-                    opensStmt.addBatch() // Add to batch
+            // Insert into `aquaticcrates_opens` and retrieve auto-generated keys
+            connection.autoCommit = false
+            connection.prepareStatement(insertOpensQuery, PreparedStatement.RETURN_GENERATED_KEYS).use { opensStmt ->
+                for (container in toSave) {
+                    for (entry in container.entries) {
+                        // Prepare batch for "opens" table inserts
+                        opensStmt.setInt(
+                            1,
+                            profileEntry.aquaticPlayer.index
+                        ) // Assuming userId is numeric in string form
+                        opensStmt.setLong(2, container.timestamp) // Set timestamp
+                        opensStmt.setString(3, entry.crateId) // Set crateId
+                        opensStmt.addBatch() // Add to batch
+                    }
                 }
-            }
 
-            // Execute the batch for "opens" table
-            opensStmt.executeBatch()
+                // Execute the batch for "opens" table
+                opensStmt.executeBatch()
 
-            // Retrieve auto-generated keys (open_id)
-            val generatedKeys = opensStmt.generatedKeys
-            for ((_, entries) in profileEntry.newEntries) {
-                for (entry in entries) {
-                    if (generatedKeys.next()) {
-                        val openId = generatedKeys.getInt(1) // Auto-generated `open_id`
-                        // Map this `open_id` to the rewards from `rewardIds`
+                // Retrieve auto-generated keys (open_id)
+                for (container in toSave) {
+                    for (entry in container.entries) {
+                        val openId = idCounter.incrementAndGet()
                         val rewards =
                             entry.rewardIds.map { it.key to it.value } // Convert rewardIds into list of (rewardId, amount)
-                        openIdToRewards.add(openId to rewards) // Add to mapping
+                        openIdToRewards.add(openId.toInt() to rewards) // Add to mapping
                     }
                 }
             }
+
+            // Insert into `aquaticcrates_rewards` using batched rewards
+            connection.prepareStatement(insertRewardsQuery).use { rewardsStmt ->
+                for ((openId, rewards) in openIdToRewards) {
+                    for ((rewardId, amount) in rewards) {
+                        // Prepare batch for "rewards" table inserts
+                        rewardsStmt.setInt(1, openId) // Set foreign key (open_id)
+                        rewardsStmt.setString(2, rewardId) // Set reward_id
+                        rewardsStmt.setInt(3, amount) // Set reward amount
+                        rewardsStmt.addBatch() // Add to batch
+                    }
+                }
+
+                // Execute batch for "rewards" table
+                rewardsStmt.executeBatch()
+            }
+            connection.commit()
         }
 
-        // Insert into `aquaticcrates_rewards` using batched rewards
-        connection.prepareStatement(insertRewardsQuery).use { rewardsStmt ->
-            for ((openId, rewards) in openIdToRewards) {
-                for ((rewardId, amount) in rewards) {
-                    // Prepare batch for "rewards" table inserts
-                    rewardsStmt.setInt(1, openId) // Set foreign key (open_id)
-                    rewardsStmt.setString(2, rewardId) // Set reward_id
-                    rewardsStmt.setInt(3, amount) // Set reward amount
-                    rewardsStmt.addBatch() // Add to batch
+    @OptIn(ExperimentalAtomicApi::class)
+    internal suspend fun saveHistory(
+        connection: Connection,
+        profileEntry: CrateProfileEntry,
+        toSave: List<CrateProfileEntry.OpenHistoryContainer>
+    ) =
+        withContext(dbDispatcher) {
+            val insertOpensQuery =
+                "INSERT INTO aquaticcrates_opens (user_id, open_timestamp, crate_id) VALUES (?, ?, ?);"
+            val insertRewardsQuery = "INSERT INTO aquaticcrates_rewards (open_id, reward_id, amount) VALUES (?, ?, ?);"
+
+            // Collect auto-generated open IDs and their related rewards
+            val openIdToRewards = mutableListOf<Pair<Int, List<Pair<String, Int>>>>()
+
+            // Insert into `aquaticcrates_opens` and retrieve auto-generated keys
+            connection.autoCommit = false
+            connection.prepareStatement(insertOpensQuery, PreparedStatement.RETURN_GENERATED_KEYS).use { opensStmt ->
+                for (container in toSave) {
+                    for (entry in container.entries) {
+                        // Prepare batch for "opens" table inserts
+                        opensStmt.setInt(
+                            1,
+                            profileEntry.aquaticPlayer.index
+                        ) // Assuming userId is numeric in string form
+                        opensStmt.setLong(2, container.timestamp) // Set timestamp
+                        opensStmt.setString(3, entry.crateId) // Set crateId
+                        opensStmt.addBatch() // Add to batch
+                    }
+                }
+
+                // Execute the batch for "opens" table
+                opensStmt.executeBatch()
+
+                // Retrieve auto-generated keys (open_id)
+                for (container in toSave) {
+                    for (entry in container.entries) {
+                        val openId = idCounter.incrementAndGet()
+                        val rewards =
+                            entry.rewardIds.map { it.key to it.value } // Convert rewardIds into list of (rewardId, amount)
+                        openIdToRewards.add(openId.toInt() to rewards) // Add to mapping
+                    }
                 }
             }
 
-            // Execute batch for "rewards" table
-            rewardsStmt.executeBatch()
+            // Insert into `aquaticcrates_rewards` using batched rewards
+            connection.prepareStatement(insertRewardsQuery).use { rewardsStmt ->
+                for ((openId, rewards) in openIdToRewards) {
+                    for ((rewardId, amount) in rewards) {
+                        // Prepare batch for "rewards" table inserts
+                        rewardsStmt.setInt(1, openId) // Set foreign key (open_id)
+                        rewardsStmt.setString(2, rewardId) // Set reward_id
+                        rewardsStmt.setInt(3, amount) // Set reward amount
+                        rewardsStmt.addBatch() // Add to batch
+                    }
+                }
+
+                // Execute batch for "rewards" table
+                rewardsStmt.executeBatch()
+            }
+            connection.commit()
         }
-    }
 
     fun loadRewardContainer(entry: CrateProfileEntry) {
         try {
@@ -410,8 +487,8 @@ object CrateProfileDriver {
         playerName: String?,
         crateId: String?,
         sorting: Sorting?,
-    ): MutableMap<Int, Pair<String, CrateProfileEntry.OpenHistoryEntry>> {
-        val resultMap: MutableMap<Int, Pair<String, CrateProfileEntry.OpenHistoryEntry>> = mutableMapOf()
+    ): MutableMap<Int, Pair<String, LogEntry>> {
+        val resultMap: MutableMap<Int, Pair<String, LogEntry>> = mutableMapOf()
 
         try {
             // Construct the query dynamically based on nullable parameters
@@ -487,10 +564,11 @@ object CrateProfileDriver {
                             updatedEntry.rewardIds[rewardId] = (updatedEntry.rewardIds[rewardId] ?: 0) + rewardAmount
                         } else {
                             // Create a new OpenHistoryEntry and add it to the map
-                            val newEntry = CrateProfileEntry.OpenHistoryEntry(
-                                timestamp = timestamp,
-                                crateId = crateIdResult,
-                                rewardIds = hashMapOf(rewardId to rewardAmount)
+
+                            val newEntry = LogEntry(
+                                timestamp,
+                                crateIdResult,
+                                mutableMapOf(rewardId to rewardAmount)
                             )
                             resultMap[openId] = Pair(username, newEntry)
                         }
@@ -503,6 +581,12 @@ object CrateProfileDriver {
 
         return resultMap
     }
+
+    class LogEntry(
+        val timeStamp: Long,
+        val crateId: String,
+        val rewardIds: MutableMap<String, Int>
+    )
 
     enum class Sorting {
         NEWEST, OLDEST

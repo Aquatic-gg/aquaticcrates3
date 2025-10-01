@@ -54,11 +54,21 @@ import gg.aquatic.waves.util.Config
 import gg.aquatic.waves.util.action.impl.MessageAction
 import gg.aquatic.waves.util.argument.ObjectArguments
 import gg.aquatic.waves.util.block.impl.VanillaBlock
+import gg.aquatic.waves.util.deepFilesLookup
 import gg.aquatic.waves.util.generic.ClassTransform
 import gg.aquatic.waves.util.generic.ConfiguredExecutableObject
 import gg.aquatic.waves.util.getSectionList
+import gg.aquatic.waves.util.message.impl.SimpleMessage
 import gg.aquatic.waves.util.requirement.ConfiguredRequirement
+import gg.aquatic.waves.util.task.AsyncCtx
+import gg.aquatic.waves.util.task.AsyncScope
 import gg.aquatic.waves.util.toMMComponent
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.asExecutor
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.runBlocking
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.configuration.ConfigurationSection
@@ -67,6 +77,9 @@ import org.bukkit.entity.Player
 import org.bukkit.util.Vector
 import java.io.File
 import java.util.*
+import kotlin.coroutines.CoroutineContext
+import kotlin.math.max
+import kotlin.math.min
 
 object CrateSerializer : BaseSerializer() {
 
@@ -137,32 +150,46 @@ object CrateSerializer : BaseSerializer() {
         )
     }
 
-    fun loadCrates(): HashMap<String, Crate> {
+    suspend fun loadCrates(): HashMap<String, Crate> {
+        //async()
         CratesPlugin.getInstance().dataFolder.mkdirs()
         val crates = HashMap<String, Crate>()
 
         val basicFolder = File(CratesPlugin.getInstance().dataFolder, "crates")
         basicFolder.mkdirs()
 
-        crates += loadBasicCrates(basicFolder)
-
-        return crates
-    }
-
-    fun loadBasicCrates(folder: File): HashMap<String, BasicCrate> {
-        val crates = HashMap<String, BasicCrate>()
-        for (file in folder.listFiles()!!) {
-            if (file.isDirectory) {
-                crates += loadBasicCrates(file)
-                continue
+        val files = basicFolder.deepFilesLookup { it.extension == "yml" }
+        parallelForEach(files, min(files.size,idealThreads()), AsyncScope) {
+            for (file in it) {
+                val crate = loadBasicCrate(file) ?: continue
+                crates += crate.identifier to crate
             }
-            val c = loadBasicCrate(file) ?: continue
-            crates[c.identifier] = c
         }
         return crates
     }
 
-    fun loadBasicCrate(file: File): BasicCrate? {
+    private fun idealThreads(): Int {
+        val cores = Runtime.getRuntime().availableProcessors()
+        val maxThreads = cores * 2
+        return maxThreads
+    }
+
+    private suspend fun <T> parallelForEach(
+        values: Collection<T>,
+        parallelism: Int,
+        scope: CoroutineScope,
+        block: suspend (list: List<T>) -> Unit
+    ) = coroutineScope {
+        val chunkSize = values.size/parallelism
+
+        values.chunked(chunkSize).map { chunk ->
+            scope.async {
+                block(chunk)
+            }
+        }.awaitAll()
+    }
+
+    suspend fun loadBasicCrate(file: File): BasicCrate? {
         val identifier = file.nameWithoutExtension
         val config = Config(file, CratesPlugin.getInstance())
         config.load()
@@ -242,39 +269,53 @@ object CrateSerializer : BaseSerializer() {
             }
         }
 
+
+        val milestones = TreeMap<Int, Milestone>()
+        val repeatableMilestone = TreeMap<Int, Milestone>()
+        val milestonesSection = cfg.getConfigurationSection("milestones")
+        if (milestonesSection != null) {
+            for (milestoneKey in milestonesSection.getKeys(false)) {
+                val milestoneSection = milestonesSection.getConfigurationSection(milestoneKey) ?: break
+                val name = milestoneSection.getString("display-name") ?: break
+                val milestone = milestoneKey.toIntOrNull() ?: break
+
+                val rewards =
+                    loadRewards(milestoneSection.getConfigurationSection("rewards") ?: continue, rarities)
+                Bukkit.getConsoleSender().sendMessage("Loaded milestone $milestone with ${rewards.size} rewards")
+                milestones += milestone to Milestone(milestone, name.toMMComponent(), rewards.values.toList())
+            }
+            milestonesSection.getKeys(false).forEach { milestoneKey ->
+                val milestoneSection = milestonesSection.getConfigurationSection(milestoneKey) ?: return@forEach
+                val name = milestoneSection.getString("display-name") ?: return@forEach
+                val milestone = milestoneKey.toIntOrNull() ?: return@forEach
+
+                val rewards =
+                    loadRewards(milestoneSection.getConfigurationSection("rewards") ?: return@forEach, rarities)
+                Bukkit.getConsoleSender().sendMessage("Loaded milestone $milestone with ${rewards.size} rewards")
+                milestones += milestone to Milestone(milestone, name.toMMComponent(), rewards.values.toList())
+            }
+        }
+        cfg.getConfigurationSection("repeatable-milestones")?.let { repeatableMilestonesSection ->
+            repeatableMilestonesSection.getKeys(false).forEach { repeatableMilestoneKey ->
+                val repeatableMilestoneSection =
+                    repeatableMilestonesSection.getConfigurationSection(repeatableMilestoneKey) ?: return@forEach
+                val name = repeatableMilestoneSection.getString("display-name") ?: return@forEach
+                val milestone = repeatableMilestoneKey.toIntOrNull() ?: return@forEach
+                val rewards = loadRewards(
+                    repeatableMilestoneSection.getConfigurationSection("rewards") ?: return@forEach,
+                    rarities
+                )
+                Bukkit.getConsoleSender()
+                    .sendMessage("Loaded repeatable milestone $milestone with ${rewards.size} rewards")
+                repeatableMilestone += milestone to Milestone(
+                    milestone,
+                    name.toMMComponent(),
+                    rewards.values.toList()
+                )
+            }
+        }
+
         val milestoneManager = { crate: OpenableCrate ->
-            val milestones = TreeMap<Int, Milestone>()
-            val repeatableMilestone = TreeMap<Int, Milestone>()
-            cfg.getConfigurationSection("milestones")?.let { milestonesSection ->
-                milestonesSection.getKeys(false).forEach { milestoneKey ->
-                    val milestoneSection = milestonesSection.getConfigurationSection(milestoneKey) ?: return@forEach
-                    val name = milestoneSection.getString("display-name") ?: return@forEach
-                    val milestone = milestoneKey.toIntOrNull() ?: return@forEach
-                    val rewards =
-                        loadRewards(milestoneSection.getConfigurationSection("rewards") ?: return@forEach, rarities)
-                    Bukkit.getConsoleSender().sendMessage("Loaded milestone $milestone with ${rewards.size} rewards")
-                    milestones += milestone to Milestone(milestone, name.toMMComponent(), rewards.values.toList())
-                }
-            }
-            cfg.getConfigurationSection("repeatable-milestones")?.let { repeatableMilestonesSection ->
-                repeatableMilestonesSection.getKeys(false).forEach { repeatableMilestoneKey ->
-                    val repeatableMilestoneSection =
-                        repeatableMilestonesSection.getConfigurationSection(repeatableMilestoneKey) ?: return@forEach
-                    val name = repeatableMilestoneSection.getString("display-name") ?: return@forEach
-                    val milestone = repeatableMilestoneKey.toIntOrNull() ?: return@forEach
-                    val rewards = loadRewards(
-                        repeatableMilestoneSection.getConfigurationSection("rewards") ?: return@forEach,
-                        rarities
-                    )
-                    Bukkit.getConsoleSender()
-                        .sendMessage("Loaded repeatable milestone $milestone with ${rewards.size} rewards")
-                    repeatableMilestone += milestone to Milestone(
-                        milestone,
-                        name.toMMComponent(),
-                        rewards.values.toList()
-                    )
-                }
-            }
             MilestoneManagerImpl(
                 crate, milestones, repeatableMilestone
             )
@@ -370,8 +411,8 @@ object CrateSerializer : BaseSerializer() {
                 ),
                 listOf(
                     ConfiguredExecutableObject(
-                        ActionSerializer.TransformedAction(MessageAction(), { d -> d.player }),
-                        ObjectArguments(mapOf("message" to emptyCrateMessage))
+                        ActionSerializer.TransformedAction(MessageAction()) { d -> d.player },
+                        ObjectArguments(mapOf("message" to SimpleMessage(emptyCrateMessage)))
                     )
                 )
             )
@@ -381,7 +422,7 @@ object CrateSerializer : BaseSerializer() {
         for (groupSection in cfg.getSectionList("open-price-groups")) {
             val prices = ArrayList<OpenPrice>()
             for (priceSection in groupSection.getSectionList("prices")) {
-                val price = gg.aquatic.aquaticcrates.api.openprice.PriceSerializer.fromSection(priceSection) ?: continue
+                val price = gg.aquatic.aquaticcrates.api.openprice.PriceSerializer.fromSection(priceSection, identifier) ?: continue
                 val failActions = ActionSerializer.fromSections<Player>(priceSection.getSectionList("fail-actions"))
 
                 prices += OpenPrice(price, failActions.toMutableList())
@@ -411,7 +452,7 @@ object CrateSerializer : BaseSerializer() {
                                 MessageAction(),
                                 ObjectArguments(
                                     mapOf(
-                                        "message" to it.toMMComponent()
+                                        "message" to SimpleMessage(noKeyMessage)
                                     )
                                 )
                             )
@@ -458,9 +499,10 @@ object CrateSerializer : BaseSerializer() {
             interactHandler,
             previewMenuPages,
             massOpenFinalActions,
-            massOpenPerRewardActions,
+            //massOpenPerRewardActions,
             openRestrictions,
-            defaultRewardShowcase
+            defaultRewardShowcase,
+            cfg.getBoolean("disable-open-logging",false),
         )
     }
 

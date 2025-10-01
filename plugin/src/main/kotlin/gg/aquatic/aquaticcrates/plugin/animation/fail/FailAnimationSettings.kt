@@ -4,7 +4,6 @@ import gg.aquatic.aquaticcrates.api.crate.SpawnedCrate
 import gg.aquatic.waves.scenario.PlayerScenario
 import gg.aquatic.waves.util.generic.ConfiguredExecutableObject
 import gg.aquatic.waves.util.runLaterSync
-import gg.aquatic.waves.util.runSync
 import org.bukkit.entity.Player
 import java.util.*
 
@@ -26,9 +25,7 @@ class FailAnimationSettings (
         }
 
         animation.future.thenRun {
-            runSync {
-                spawnedCrate.forceHide(player, false)
-            }
+            spawnedCrate.forceHide(player, false)
         }
 
         return animation

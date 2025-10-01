@@ -7,10 +7,13 @@ import gg.aquatic.waves.profile.ProfilesModule
 import gg.aquatic.waves.profile.module.ProfileModule
 import gg.aquatic.waves.profile.module.ProfileModuleEntry
 import java.sql.Connection
+import java.util.concurrent.atomic.AtomicLong
+import kotlin.concurrent.atomics.ExperimentalAtomicApi
 
 object CrateProfileModule: ProfileModule {
     override val id: String = "aquaticcrates_profile_module"
 
+    @OptIn(ExperimentalAtomicApi::class)
     override fun initialize(connection: Connection) {
         if (CrateProfileDriver.isSQLite()) {
             val enableForeignKeys = "PRAGMA foreign_keys = ON;"
@@ -117,6 +120,13 @@ object CrateProfileModule: ProfileModule {
                         ")"
             ).use {
                 it.execute()
+            }
+        }
+
+        connection.prepareStatement("SELECT COALESCE(MAX(id), 0) FROM aquaticcrates_opens;").use {
+            it.executeQuery().use { resultSet ->
+                val lastId = if (resultSet.next()) resultSet.getLong(1) else 0
+                CrateProfileDriver.idCounter = AtomicLong(lastId)
             }
         }
 

@@ -33,6 +33,14 @@ subprojects {
 
     repositories {
         maven {
+            name = "undefined-repo"
+            url = uri("https://repo.undefinedcreations.com/releases")
+        }
+        maven {
+            name = "undefined-repo"
+            url = uri("https://repo.undefinedcreations.com/snapshots")
+        }
+        maven {
             name = "papermc"
             url = uri("https://repo.papermc.io/repository/maven-public/")
         }
@@ -56,13 +64,16 @@ subprojects {
     }
 
     dependencies {
-        compileOnly("io.papermc.paper:paper-api:1.21.4-R0.1-SNAPSHOT")
+        compileOnly("io.papermc.paper:paper-api:1.21.8-R0.1-SNAPSHOT")
         compileOnly("com.github.LoneDev6:API-ItemsAdder:3.6.2-beta-r3-b")
         compileOnly("gg.aquatic.comet:Comet-API:1.13.0")
         compileOnly("com.ticxo.modelengine:ModelEngine:R4.0.8")
-        compileOnly("gg.aquatic.waves:Waves:1.3.21:publish")
+        compileOnly("gg.aquatic.waves:Waves:1.3.24:publish")
         compileOnly("io.github.toxicity188:bettermodel:1.11.3")
         compileOnly("com.hibiscusmc:HMCCosmetics:2.8.1-1ef7f475")
+        compileOnly("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0")
+        compileOnly("com.undefined:stellar-kotlin:1.1.0-SNAPSHOT:paper")
+        compileOnly("com.undefined:stellar:1.1.0-SNAPSHOT:paper")
         //implementation("net.kyori:adventure-api:4.17.0")
     }
 

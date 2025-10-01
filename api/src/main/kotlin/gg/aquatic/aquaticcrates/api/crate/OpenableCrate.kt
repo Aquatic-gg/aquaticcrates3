@@ -4,9 +4,7 @@ import gg.aquatic.aquaticcrates.api.animation.crate.CrateAnimationManager
 import gg.aquatic.aquaticcrates.api.openprice.OpenPriceGroup
 import gg.aquatic.aquaticcrates.api.reward.showcase.RewardShowcase
 import gg.aquatic.aquaticcrates.api.util.Rewardable
-import gg.aquatic.waves.util.requirement.ConfiguredRequirement
 import org.bukkit.entity.Player
-import java.util.concurrent.CompletableFuture
 
 abstract class OpenableCrate : Crate(), Rewardable {
 
@@ -18,10 +16,10 @@ abstract class OpenableCrate : Crate(), Rewardable {
 
     abstract fun tryInstantOpen(player: Player, location: org.bukkit.Location, spawnedCrate: SpawnedCrate?)
     abstract fun instantOpen(player: Player, location: org.bukkit.Location, spawnedCrate: SpawnedCrate?)
-    abstract fun tryOpen(player: Player, location: org.bukkit.Location, spawnedCrate: SpawnedCrate?): CompletableFuture<Void>
-    abstract fun open(player: Player, location: org.bukkit.Location, spawnedCrate: SpawnedCrate?): CompletableFuture<Void>
-    abstract fun tryMassOpen(player: Player, amount: Int, threads: Int?): CompletableFuture<Void>
-    abstract fun massOpen(player: Player, amount: Int, threads: Int?): CompletableFuture<Void>
+    abstract suspend fun tryOpen(player: Player, location: org.bukkit.Location, spawnedCrate: SpawnedCrate?)
+    abstract suspend fun open(player: Player, location: org.bukkit.Location, spawnedCrate: SpawnedCrate?)
+    abstract suspend fun tryMassOpen(player: Player, amount: Int)
+    abstract suspend fun massOpen(player: Player, amount: Int)
 
     abstract fun openPreview(player: Player, placedCrate: SpawnedCrate?)
 }

@@ -18,13 +18,16 @@ val PRICES = hashMapOf<String, Price>()
 
 object PriceSerializer {
 
-    fun fromSection(section: ConfigurationSection): ConfiguredPrice? {
+    fun fromSection(section: ConfigurationSection, crateId: String): ConfiguredPrice? {
         val type = section.getString("type") ?: return null
         val typeInstance = PRICES[type] ?: return null
-        val args = ArgumentSerializer.load(section, typeInstance.arguments)
+        val args = ArgumentSerializer.load(section, typeInstance.arguments).toMutableMap()
+        if (type.lowercase() == "crate-key" && !args.containsKey("crate")) {
+            args += "crate" to crateId
+        }
         return ConfiguredPrice(ObjectArguments(args), typeInstance)
     }
 
-    fun fromSections(sections: List<ConfigurationSection>): List<ConfiguredPrice> = sections.mapNotNull { fromSection(it) }
+    fun fromSections(sections: List<ConfigurationSection>, crateId: String): List<ConfiguredPrice> = sections.mapNotNull { fromSection(it, crateId) }
 
 }

@@ -8,7 +8,10 @@ import gg.aquatic.waves.util.audience.FilterAudience
 import gg.aquatic.waves.util.audience.GlobalAudience
 import gg.aquatic.waves.util.generic.ConfiguredExecutableObject
 import gg.aquatic.waves.util.runLaterSync
-import gg.aquatic.waves.util.runSync
+import gg.aquatic.waves.util.task.AsyncCtx
+import gg.aquatic.waves.util.task.BukkitScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.bukkit.Location
 import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.entity.Player
@@ -28,12 +31,12 @@ class RegularAnimationSettings(
     override val variables: Map<String, String>,
 ) : CrateAnimationSettings() {
 
-    override fun create(
+    override suspend fun create(
         player: Player,
         animationManager: CrateAnimationManager,
         location: Location,
         rolledRewards: MutableList<RolledReward>
-    ): CompletableFuture<CrateAnimation> {
+    ): CrateAnimation = withContext(AsyncCtx) {
         val futureValue = CompletableFuture<CrateAnimation>()
         val animation = RegularAnimationImpl(
             player,
@@ -68,16 +71,16 @@ class RegularAnimationSettings(
         }
 
         animationManager.playAnimation(animation)
-        return animation.completionFuture.thenApply { animation ->
-            runSync {
-                if (!personal) {
-                    spawnedCrate?.forceHide(false)
-                } else {
-                    spawnedCrate?.forceHide(player, false)
-                }
+        animation.completionFuture.join()
+
+        BukkitScope.launch {
+            if (!personal) {
+                spawnedCrate?.forceHide(false)
+            } else {
+                spawnedCrate?.forceHide(player, false)
             }
-            animation
         }
+        animation
     }
 
     override fun canBeOpened(

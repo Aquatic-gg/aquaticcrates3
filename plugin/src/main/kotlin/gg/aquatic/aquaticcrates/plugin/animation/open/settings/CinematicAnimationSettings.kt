@@ -10,7 +10,10 @@ import gg.aquatic.aquaticcrates.plugin.animation.prop.CameraAnimationProp
 import gg.aquatic.waves.util.audience.FilterAudience
 import gg.aquatic.waves.util.generic.ConfiguredExecutableObject
 import gg.aquatic.waves.util.location.AquaticLocation
-import gg.aquatic.waves.util.runSync
+import gg.aquatic.waves.util.task.AsyncCtx
+import gg.aquatic.waves.util.task.BukkitScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import net.kyori.adventure.key.Key
 import org.bukkit.Location
 import org.bukkit.Material
@@ -36,13 +39,13 @@ class CinematicAnimationSettings(
     override val variables: Map<String, String>
 ) : CrateAnimationSettings() {
 
-    override fun create(
+    override suspend fun create(
         player: Player,
         animationManager: CrateAnimationManager,
         location: Location,
         rolledRewards: MutableList<RolledReward>
-    ): CompletableFuture<CrateAnimation> {
-        val cinematicLocation = this.cinematicLocation.toLocation()!!
+    ): CrateAnimation = withContext(AsyncCtx) {
+        val cinematicLocation = this@CinematicAnimationSettings.cinematicLocation.toLocation()!!
         val futureValue = CompletableFuture<CrateAnimation>()
         val animation = CinematicAnimationImpl(
             player,
@@ -70,7 +73,7 @@ class CinematicAnimationSettings(
             animation.playerEquipment[entry] = ItemStack(Material.AIR)
         }
 
-        runSync {
+        BukkitScope.launch {
             player.updateInventory()
         }
 
@@ -85,7 +88,7 @@ class CinematicAnimationSettings(
         animation.props[Key.key("camera")] = cameraProp
 
         animationManager.playAnimation(animation)
-        return animation.completionFuture
+        animation.completionFuture.join()
     }
 
     override fun canBeOpened(player: Player, animationManager: CrateAnimationManager, location: Location): AnimationResult {

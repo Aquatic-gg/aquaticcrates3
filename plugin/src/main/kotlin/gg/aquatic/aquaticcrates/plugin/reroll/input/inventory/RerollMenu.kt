@@ -6,10 +6,11 @@ import gg.aquatic.aquaticcrates.api.reward.RolledReward
 import gg.aquatic.waves.menu.PrivateAquaticMenu
 import gg.aquatic.waves.menu.SlotSelection
 import gg.aquatic.waves.menu.component.Button
-import gg.aquatic.waves.util.runSync
+import gg.aquatic.waves.util.task.BukkitScope
 import gg.aquatic.waves.util.toMMComponent
 import gg.aquatic.waves.util.toMMString
 import gg.aquatic.waves.util.updatePAPIPlaceholders
+import kotlinx.coroutines.launch
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
@@ -65,12 +66,12 @@ class RerollMenu(
                 { e ->
                     if (id == "reroll") {
                         future.complete(RerollManager.RerollResult(true))
-                        runSync {
+                        BukkitScope.launch {
                             player.closeInventory()
                         }
                     } else if (id == "claim") {
                         future.complete(RerollManager.RerollResult(false))
-                        runSync {
+                        BukkitScope.launch {
                             player.closeInventory()
                         }
                     }

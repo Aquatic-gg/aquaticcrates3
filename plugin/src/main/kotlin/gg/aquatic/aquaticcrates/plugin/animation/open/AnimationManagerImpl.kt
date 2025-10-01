@@ -12,7 +12,8 @@ import gg.aquatic.aquaticcrates.plugin.animation.idle.IdleAnimationSettings
 import gg.aquatic.waves.scenario.PlayerScenario
 import gg.aquatic.waves.scenario.Scenario
 import gg.aquatic.waves.util.chance.randomItem
-import gg.aquatic.waves.util.runAsync
+import gg.aquatic.waves.util.task.AsyncScope
+import kotlinx.coroutines.launch
 import org.bukkit.entity.Player
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
@@ -73,15 +74,13 @@ class AnimationManagerImpl(
     }
 
     override fun skipAnimation(player: Player) {
-        runAsync {
-            playingAnimations[player.uniqueId]?.forEach { it.skip() }
-        }
+        playingAnimations[player.uniqueId]?.forEach { it.skip() }
     }
 
     override fun forceStopAnimation(player: Player) {
         val animations = playingAnimations[player.uniqueId] ?: return
         for (animation in animations) {
-            animation.finalizeAnimation(true)
+            animation.finalizeAnimation()
         }
     }
 
@@ -89,7 +88,7 @@ class AnimationManagerImpl(
         for ((_, animations) in playingAnimations) {
             for (animation in animations) {
                 animation.rewards.forEach { reward -> reward.give(animation.player, false) }
-                runAsync {
+                AsyncScope.launch {
                     for (value in animation.props.values) {
                         value.onEnd()
                     }

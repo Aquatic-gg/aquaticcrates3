@@ -37,7 +37,7 @@ interface Reward : IChance {
         val crateEntry = player.toAquaticPlayer()?.crateEntry() ?: return
         if (giveItem) {
             val item = this.item.getItem()
-            item.amount = totalAmount
+            item.amount = totalAmount*item.amount
             val toDrop = player.inventory.addItem(item)
 
             for (value in toDrop.values) {

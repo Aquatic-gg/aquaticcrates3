@@ -1,9 +1,15 @@
 package gg.aquatic.aquaticcrates.api.player
 
+import gg.aquatic.aquaticcrates.api.player.CrateProfileDriver.dbDispatcher
 import gg.aquatic.aquaticcrates.api.reward.RewardContainer
 import gg.aquatic.waves.profile.AquaticPlayer
 import gg.aquatic.waves.profile.module.ProfileModuleEntry
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import java.sql.Connection
+import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 
 class CrateProfileEntry(aquaticPlayer: AquaticPlayer, val rewardContainer: RewardContainer) :
@@ -12,7 +18,9 @@ class CrateProfileEntry(aquaticPlayer: AquaticPlayer, val rewardContainer: Rewar
     val balance = hashMapOf<String, Int>()
 
     // CrateId, Entry
-    val newEntries = ConcurrentHashMap<String, MutableCollection<OpenHistoryEntry>>()
+    @Volatile
+    var newEntries = Collections.synchronizedList<OpenHistoryContainer>(ArrayList())
+        internal set
 
     // CrateId, Daily/Weekly/Monthly/Alltime, Amount
     val openHistory = ConcurrentHashMap<String, ConcurrentHashMap<HistoryType, Int>>()
@@ -37,9 +45,11 @@ class CrateProfileEntry(aquaticPlayer: AquaticPlayer, val rewardContainer: Rewar
         return total
     }
 
-    fun saveAndPrune() {
+    fun saveAndPrune(toSave: List<OpenHistoryContainer>) {
         CrateProfileDriver.driver.useConnection {
-            CrateProfileDriver.saveHistory(this,this@CrateProfileEntry)
+            GlobalScope.launch(dbDispatcher) {
+                CrateProfileDriver.saveHistory(this@useConnection, this@CrateProfileEntry, toSave)
+            }
             //newEntries.clear()
         }
     }
@@ -59,7 +69,7 @@ class CrateProfileEntry(aquaticPlayer: AquaticPlayer, val rewardContainer: Rewar
 
     override fun save(connection: Connection) {
         try {
-            CrateProfileDriver.save(connection, this)
+            CrateProfileDriver.save(connection, this@CrateProfileEntry)
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -89,8 +99,13 @@ class CrateProfileEntry(aquaticPlayer: AquaticPlayer, val rewardContainer: Rewar
         return balance(id) >= amount
     }
 
-    data class OpenHistoryEntry(
+    class OpenHistoryContainer(
         val timestamp: Long,
+    ) {
+        val entries = Collections.synchronizedList(ArrayList<OpenHistoryEntry>())
+    }
+
+    data class OpenHistoryEntry(
         val crateId: String,
         val rewardIds: MutableMap<String, Int>,
     ) {

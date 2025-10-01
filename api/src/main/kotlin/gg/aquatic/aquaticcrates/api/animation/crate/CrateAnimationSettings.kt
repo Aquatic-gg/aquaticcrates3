@@ -19,7 +19,7 @@ abstract class CrateAnimationSettings {
     abstract val skippable: Boolean
     abstract val variables: Map<String, String>
 
-    abstract fun create(player: Player, animationManager: CrateAnimationManager, location: Location, rolledRewards: MutableList<RolledReward>): CompletableFuture<CrateAnimation>
+    abstract suspend fun create(player: Player, animationManager: CrateAnimationManager, location: Location, rolledRewards: MutableList<RolledReward>): CrateAnimation
 
     abstract fun canBeOpened(player: Player, animationManager: CrateAnimationManager, location: Location): AnimationResult
 

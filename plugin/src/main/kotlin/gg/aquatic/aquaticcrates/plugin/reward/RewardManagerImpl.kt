@@ -22,7 +22,7 @@ class RewardManagerImpl(
         val rolledRewards = mutableListOf<RolledReward>()
 
         val rewardsAmount = possibleRewardRanges.randomItem()?.randomNum ?: 1
-        val randomRewards = getRandomRewards(player, rewardsAmount)
+        val randomRewards = getRandomRewards(player, rewardsAmount, getPossibleRewards(player))
         for ((_, pair) in randomRewards) {
             val reward = pair.first
             val amount = pair.second
@@ -33,15 +33,17 @@ class RewardManagerImpl(
         return rolledRewards
     }
 
-    fun getRandomRewards(player: Player, amount: Int): HashMap<String, Pair<Reward, Int>> {
+    fun getRandomRewards(
+        player: Player,
+        amount: Int,
+        possibleRewards: Map<String, Reward>
+    ): HashMap<String, Pair<Reward, Int>> {
         val finalRewards = HashMap<String, Pair<Reward, Int>>()
         var amountLeft = amount
-
-        val possibleRewards = getPossibleRewards(player)
         if (possibleRewards.isEmpty()) return finalRewards
 
         val alltimeHistory = HistoryHandler.history(crate.identifier, CrateProfileEntry.HistoryType.ALLTIME, player)
-        guaranteedRewards[alltimeHistory+1]?.let { reward ->
+        guaranteedRewards[alltimeHistory + 1]?.let { reward ->
             finalRewards[reward.id] = reward to 1
             amountLeft--
         }

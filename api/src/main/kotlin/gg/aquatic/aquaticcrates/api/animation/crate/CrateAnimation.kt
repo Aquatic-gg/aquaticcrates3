@@ -11,9 +11,10 @@ import gg.aquatic.waves.scenario.ScenarioProp
 import gg.aquatic.waves.util.collection.executeActions
 import gg.aquatic.waves.util.decimals
 import gg.aquatic.waves.util.generic.ConfiguredExecutableObject
-import gg.aquatic.waves.util.runAsync
-import gg.aquatic.waves.util.runSync
+import gg.aquatic.waves.util.task.AsyncScope
+import gg.aquatic.waves.util.task.BukkitScope
 import gg.aquatic.waves.util.updatePAPIPlaceholders
+import kotlinx.coroutines.launch
 import net.kyori.adventure.key.Key
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
@@ -68,7 +69,7 @@ abstract class CrateAnimation : PlayerScenario() {
                 val event =
                     CrateAnimationStartEvent(animationManager.crate as OpenableCrate, this@CrateAnimation, player)
                 if (Bukkit.isPrimaryThread()) {
-                    runAsync {
+                    AsyncScope.launch {
                         event.call()
                     }
                 } else {
@@ -140,14 +141,14 @@ abstract class CrateAnimation : PlayerScenario() {
 
     abstract fun onReroll()
 
-    fun finalizeAnimation(isSync: Boolean = false) {
+    fun finalizeAnimation() {
         updatePhase(FinalPhase())
 
         val eventRunnable = {
             CrateAnimationEndEvent(animationManager.crate as OpenableCrate, this, player).call()
         }
         if (Bukkit.isPrimaryThread()) {
-            runAsync {
+            AsyncScope.launch {
                 eventRunnable()
             }
         } else {
@@ -155,7 +156,7 @@ abstract class CrateAnimation : PlayerScenario() {
         }
 
         runOrCatch {
-            onFinalize(isSync)
+            onFinalize()
         }
         executeActions(settings.finalAnimationTasks)
         destroy()
@@ -167,10 +168,10 @@ abstract class CrateAnimation : PlayerScenario() {
             }
         }
 
-        if (isSync) {
+        if (Bukkit.isPrimaryThread()) {
             block()
         } else {
-            runSync {
+            BukkitScope.launch {
                 block()
             }
         }
@@ -184,7 +185,7 @@ abstract class CrateAnimation : PlayerScenario() {
         completionFuture.complete(this)
     }
 
-    open fun onFinalize(isSync: Boolean) {}
+    open fun onFinalize() {}
 
     fun updatePhase(phase: Phase) {
         onPhaseUpdate(phase)

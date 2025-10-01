@@ -9,6 +9,8 @@ import gg.aquatic.waves.util.audience.AquaticAudience
 import gg.aquatic.waves.util.audience.GlobalAudience
 import gg.aquatic.waves.util.collection.executeActions
 import gg.aquatic.waves.util.generic.ConfiguredExecutableObject
+import gg.aquatic.waves.util.task.AsyncCtx
+import kotlinx.coroutines.withContext
 import org.bukkit.Location
 import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.entity.Player
@@ -32,18 +34,19 @@ class InstantAnimationSettings(
     override val skippable: Boolean = false
     override val variables: Map<String, String> = mapOf()
 
-    override fun create(
+    override suspend fun create(
         player: Player,
         animationManager: CrateAnimationManager,
         location: Location,
         rolledRewards: MutableList<RolledReward>
-    ): CompletableFuture<CrateAnimation> {
+    ): CrateAnimation = withContext(AsyncCtx) {
         for (rolledReward in rolledRewards) {
             rolledReward.give(player, false)
         }
 
-        execute(player, animationManager)
-        return CompletableFuture.completedFuture(null)
+        val anim = execute(player, animationManager)
+        anim.rewards += rolledRewards
+        return@withContext anim
     }
 
     override fun canBeOpened(
@@ -68,7 +71,7 @@ class InstantAnimationSettings(
         fun execute(
             player: Player,
             animationManager: CrateAnimationManager
-        ) {
+        ): CrateAnimation {
             val finalAnimationTasks = animationManager.animationSettings.finalAnimationTasks
 
             val obj = object : CrateAnimation() {
@@ -84,9 +87,9 @@ class InstantAnimationSettings(
                 override fun onReroll() {
 
                 }
-
             }
             finalAnimationTasks.executeActions(obj) { a, str -> a.updatePlaceholders(str) }
+            return obj
         }
     }
 }

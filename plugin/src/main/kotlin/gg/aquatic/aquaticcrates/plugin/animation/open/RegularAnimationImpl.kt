@@ -6,8 +6,10 @@ import gg.aquatic.aquaticcrates.api.crate.OpenableCrate
 import gg.aquatic.aquaticcrates.api.reward.RolledReward
 import gg.aquatic.waves.scenario.ScenarioProp
 import gg.aquatic.waves.util.audience.AquaticAudience
-import gg.aquatic.waves.util.runSync
+import gg.aquatic.waves.util.task.BukkitScope
+import kotlinx.coroutines.launch
 import net.kyori.adventure.key.Key
+import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.entity.Player
 import java.util.concurrent.CompletableFuture
@@ -57,15 +59,15 @@ class RegularAnimationImpl(
         }
     }
 
-    override fun onFinalize(isSync: Boolean) {
+    override fun onFinalize() {
         val runnable = {
             player.updateInventory()
         }
 
-        if (isSync) {
+        if (Bukkit.isPrimaryThread()) {
             runnable()
         } else {
-            runSync {
+            BukkitScope.launch {
                 runnable()
             }
         }
