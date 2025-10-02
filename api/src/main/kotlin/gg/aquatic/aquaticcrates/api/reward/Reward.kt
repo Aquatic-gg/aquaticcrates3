@@ -14,6 +14,7 @@ import gg.aquatic.waves.util.requirement.ConfiguredRequirement
 import gg.aquatic.waves.util.updatePAPIPlaceholders
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
+import kotlin.math.min
 
 interface Reward : IChance {
     val id: String
@@ -37,10 +38,38 @@ interface Reward : IChance {
         val crateEntry = player.toAquaticPlayer()?.crateEntry() ?: return
         if (giveItem) {
             val item = this.item.getItem()
-            item.amount = totalAmount*item.amount
-            val toDrop = player.inventory.addItem(item)
+            val totalItemAmount = item.amount * uniqueAmount
+            val maxAmount = min(64, totalItemAmount)
+            item.amount = maxAmount
 
-            for (value in toDrop.values) {
+            val toDrop = HashMap<Int, ItemStack>()
+            if (totalItemAmount > maxAmount) {
+                var remaining = totalItemAmount
+                var foundDrops = false
+                while(true) {
+                    val newItem = item.clone()
+                    val toDecrease = min(remaining, maxAmount)
+                    newItem.amount = toDecrease
+                    remaining -= toDecrease
+
+                    val drops = player.inventory.addItem(newItem)
+                    if (drops.isNotEmpty()) {
+                        foundDrops = true
+                        break
+                    }
+
+                    toDrop[maxAmount] = newItem
+                    if (remaining == 0) break
+                }
+
+                if (foundDrops) {
+                    toDrop[remaining] = item
+                }
+            }
+
+            toDrop += player.inventory.addItem(item)
+
+            for ((amt, value) in toDrop) {
                 if (AbstractCratesPlugin.INSTANCE.settings.useRewardsMenu) {
                     var foundItem: Pair<ItemStack, Int>? = null
                     for ((containerItem, amount) in crateEntry.rewardContainer.items) {
@@ -50,15 +79,13 @@ interface Reward : IChance {
                         }
                     }
                     if (foundItem != null) {
-                        val newAmount = foundItem.second + value.amount
+                        val newAmount = foundItem.second + amt
                         crateEntry.rewardContainer.items[foundItem.first] = newAmount
                         //player.sendMessage("Currently got ${newAmount}x ${foundItem.first.type} in Reward Container")
                     } else {
-                        crateEntry.rewardContainer.items[value] = value.amount
+                        crateEntry.rewardContainer.items[value] = amt
                         //player.sendMessage("Currently got ${randomAmount}x ${value.type} in Reward Container")
                     }
-                } else {
-                    player.world.dropItem(player.location, value)
                 }
             }
         }
