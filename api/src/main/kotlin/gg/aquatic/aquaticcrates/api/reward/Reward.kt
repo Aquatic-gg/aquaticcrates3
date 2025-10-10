@@ -34,7 +34,7 @@ interface Reward : IChance {
     val showcase: RewardShowcase?
     val massOpenFinalActions: Collection<ConfiguredExecutableObject<Player, Unit>>
 
-    fun massGive(player: Player, totalAmount: Int, uniqueAmount: Int) {
+    fun massGive(player: Player, totalAmount: Long, uniqueAmount: Int) {
         val crateEntry = player.toAquaticPlayer()?.crateEntry() ?: return
         if (giveItem) {
             val item = this.item.getItem()

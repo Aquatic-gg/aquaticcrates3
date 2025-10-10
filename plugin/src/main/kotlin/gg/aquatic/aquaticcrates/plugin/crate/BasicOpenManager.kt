@@ -20,9 +20,11 @@ import gg.aquatic.waves.util.collection.executeActions
 import gg.aquatic.waves.util.collection.mapPair
 import gg.aquatic.waves.util.task.AsyncCtx
 import gg.aquatic.waves.util.task.BukkitCtx
+import gg.aquatic.waves.util.task.BukkitScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.bukkit.Location
 import org.bukkit.entity.Player
@@ -104,7 +106,7 @@ class BasicOpenManager(val crate: BasicCrate) {
         }
     }
 
-    private data class RewardStats(var count: Int, var amount: Int)
+    private data class RewardStats(var count: Int, var amount: Long)
 
     private fun <T : IChance> getRandomItem(items: Collection<T>, rnd: ThreadLocalRandom, totalWeight: Double): T? {
         var random = rnd.nextDouble() * totalWeight
@@ -131,6 +133,18 @@ class BasicOpenManager(val crate: BasicCrate) {
             !(range.min == 1 && range.max == 1)
         } else amountRanges.size > 1
 
+        val hasStaticRandomAmount = HashMap<String, Long>()
+        for (reward in allRewards) {
+            if (reward.amountRanges.isEmpty()) {
+                hasStaticRandomAmount[reward.id] = reward.item.getItem().amount.toLong()
+            } else if (reward.amountRanges.size == 1) {
+                val range = reward.amountRanges.first()
+                if (range.min == range.max) {
+                    hasStaticRandomAmount[reward.id] = range.min.toLong()
+                }
+            }
+        }
+
         val wonRewards: List<HashMap<Reward, RewardStats>> = parallelForEach(
             total = amount,
             parallelism = threads,
@@ -147,7 +161,7 @@ class BasicOpenManager(val crate: BasicCrate) {
                     for (reward in rewards) {
                         val current = wonRewards[reward.reward]
                         if (current == null) {
-                            wonRewards[reward.reward] = RewardStats(1, reward.randomAmount)
+                            wonRewards[reward.reward] = RewardStats(1, reward.randomAmount.toLong())
                             continue
                         }
                         current.count++
@@ -163,31 +177,57 @@ class BasicOpenManager(val crate: BasicCrate) {
                     if (skip-- > 0) continue
 
                     val reward = getRandomItem(allRewards, rnd, totalWeight) ?: continue
+
+                    val staticRandomAmount = hasStaticRandomAmount[reward.id]
+                    var isRandom = false
+                    val amount = staticRandomAmount
+                        ?: let {
+                            isRandom = true
+                            val random = reward.amountRanges.randomItem()?.randomNum?.toLong()
+                            if (random != null) {
+                                isRandom = true
+                                random
+                            } else {
+                                1L
+                            }
+                        }
+
+                    if (isRandom) {
+                        wonRewards.computeIfPresent(reward) { _, second ->
+                            second.apply {
+                                count++
+                                this.amount += amount
+                            }
+                        } ?: let {
+                            wonRewards[reward] = RewardStats(1, amount)
+                        }
+                        continue
+                    }
                     if (skipScaleBase > 1 && reward.chance > 0.1 && i % skipScaleBase == 0 && i + skipScaleBase < last) {
                         val skipScale = max(2, if (reward.chance > 0.2) skipScaleBase else skipScaleBase / 2)
                         skip = skipScale - 1
                         val current = wonRewards[reward]
                         if (current == null) {
-                            wonRewards[reward] = RewardStats(skipScale, skipScale)
+                            wonRewards[reward] = RewardStats(skipScale, skipScale.toLong() * amount)
                             continue
                         }
                         current.count += skipScale
-                        current.amount += skipScale
+                        current.amount += skipScale * amount
                         continue
                     }
                     val current = wonRewards[reward]
                     if (current == null) {
-                        wonRewards[reward] = RewardStats(1, 1)
+                        wonRewards[reward] = RewardStats(1, amount)
                         continue
                     }
                     current.count++
-                    current.amount++
+                    current.amount += amount
                 }
             }
             wonRewards
         }
 
-        var totalWon = 0
+        var totalWon = 0L
         var totalWonExcluded = 0
 
         val wonRewardsFinal = HashMap<Reward, RewardStats>(allRewards.size)
@@ -208,7 +248,7 @@ class BasicOpenManager(val crate: BasicCrate) {
             }
         }
 
-        withContext(BukkitCtx) {
+        BukkitScope.launch {
             wonRewardsFinal.forEach { (reward, pair) ->
                 reward.massGive(player, pair.amount, pair.count)
             }

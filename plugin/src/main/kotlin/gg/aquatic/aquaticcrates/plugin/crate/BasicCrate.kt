@@ -145,8 +145,10 @@ class BasicCrate(
         )
     }
 
-    override suspend fun massOpen(player: Player, amount: Int) = withContext(AsyncCtx)  {
-        openManager.massOpen(player, amount)
+    override suspend fun massOpen(player: Player, amount: Int) {
+        withContext(AsyncCtx)  {
+            openManager.massOpen(player, amount)
+        }
     }
 
     override fun openPreview(player: Player, placedCrate: SpawnedCrate?) {
