@@ -60,15 +60,12 @@ import gg.aquatic.waves.util.generic.ConfiguredExecutableObject
 import gg.aquatic.waves.util.getSectionList
 import gg.aquatic.waves.util.message.impl.SimpleMessage
 import gg.aquatic.waves.util.requirement.ConfiguredRequirement
-import gg.aquatic.waves.util.task.AsyncCtx
 import gg.aquatic.waves.util.task.AsyncScope
 import gg.aquatic.waves.util.toMMComponent
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.asExecutor
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.runBlocking
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.configuration.ConfigurationSection
@@ -77,8 +74,6 @@ import org.bukkit.entity.Player
 import org.bukkit.util.Vector
 import java.io.File
 import java.util.*
-import kotlin.coroutines.CoroutineContext
-import kotlin.math.max
 import kotlin.math.min
 
 object CrateSerializer : BaseSerializer() {
@@ -367,7 +362,7 @@ object CrateSerializer : BaseSerializer() {
 
         val rewards = loadRewards(rewardSection, rarities)
         val guaranteedRewardsSection = cfg.getConfigurationSection("guaranteed-rewards")
-        val guaranteedRewards = HashMap<Int, Reward>()
+        val guaranteedRewards = TreeMap<Int, Reward>()
         if (guaranteedRewardsSection != null) {
             for (milestoneStr in guaranteedRewardsSection.getKeys(false)) {
                 val milestone = milestoneStr.toIntOrNull() ?: continue

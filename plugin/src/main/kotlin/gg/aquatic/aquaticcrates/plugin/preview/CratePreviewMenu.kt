@@ -1,6 +1,7 @@
 package gg.aquatic.aquaticcrates.plugin.preview
 
 import gg.aquatic.aquaticcrates.api.crate.SpawnedCrate
+import gg.aquatic.aquaticcrates.api.reward.Reward
 import gg.aquatic.aquaticcrates.plugin.crate.BasicCrate
 import gg.aquatic.aquaticcrates.plugin.reward.RolledRewardImpl
 import gg.aquatic.waves.menu.PrivateAquaticMenu
@@ -8,6 +9,7 @@ import gg.aquatic.waves.menu.SlotSelection
 import gg.aquatic.waves.menu.component.Button
 import gg.aquatic.waves.util.*
 import gg.aquatic.waves.util.chance.randomItem
+import gg.aquatic.waves.util.chance.realChance
 import gg.aquatic.waves.util.task.AsyncScope
 import gg.aquatic.waves.util.task.BukkitScope
 import kotlinx.coroutines.launch
@@ -30,12 +32,20 @@ class CratePreviewMenu(
 ) {
     val possibleRewards = crate.rewardManager.getPossibleRewards(player).keys
 
+    val rewardChances = HashMap<Reward, Double>()
     val rewards = crate.rewardManager.rewards.mapNotNull {
         val reward = it.value
-        reward to (if (reward.id in possibleRewards) reward.item else reward.previewFallbackItem ?: return@mapNotNull null)
+        reward to (if (reward.id in possibleRewards) reward.item else reward.previewFallbackItem
+            ?: return@mapNotNull null)
     }
 
     init {
+        val mapped = rewards.map { it.first }
+        for (reward in mapped) {
+            val chance = mapped.realChance(reward)
+            rewardChances[reward] = chance
+        }
+
         loadItems()
         updateComponents()
     }
@@ -55,24 +65,30 @@ class CratePreviewMenu(
     private fun loadButtons() {
         for ((id, component) in settings.invSettings.components) {
             val comp = component.create(
-                { str, menu ->
+                { str, _ ->
                     str
                         .replace("%page%", "${page + 1}")
                         .replace("%player%", player.name)
                         .updatePAPIPlaceholders(player)
                 },
                 { e ->
-                    if (id == "next-page") {
-                        if (!hasNextPage()) return@create
-                        openPage(page + 1)
-                    } else if (id == "prev-page") {
-                        if (page <= 0) return@create
-                        openPage(page - 1)
-                    } else if (id == "open") {
-                        BukkitScope.launch {
-                            player.closeInventory()
-                            AsyncScope.launch {
-                                crate.tryOpen(player, placedCrate?.location ?: player.location.clone(), placedCrate)
+                    when (id) {
+                        "next-page" -> {
+                            if (!hasNextPage()) return@create
+                            openPage(page + 1)
+                        }
+
+                        "prev-page" -> {
+                            if (page <= 0) return@create
+                            openPage(page - 1)
+                        }
+
+                        "open" -> {
+                            BukkitScope.launch {
+                                player.closeInventory()
+                                AsyncScope.launch {
+                                    crate.tryOpen(player, placedCrate?.location ?: player.location.clone(), placedCrate)
+                                }
                             }
                         }
                     }
@@ -122,12 +138,12 @@ class CratePreviewMenu(
                 SlotSelection.of(rewardSlot).slots,
                 10,
                 settings.updateRewardItemsEvery,
-                null, textUpdater = { str, menu ->
+                null, textUpdater = { str, _ ->
                     str.updatePAPIPlaceholders(player)
-                        .replace("%chance%", (reward.chance * 100.0).decimals(2))
+                        .replace("%chance%", ((rewardChances[reward] ?: 0.0) * 100.0).decimals(2))
                         .replace("%rarity%", reward.rarity.displayName)
                         .updatePAPIPlaceholders(player)
-                }, onClick = { e ->
+                }, onClick = { _ ->
                     if (player.hasPermission("aquaticcrates.admin")) {
                         RolledRewardImpl(reward, reward.amountRanges.randomItem()?.randomNum ?: 1).give(player, false)
                     }

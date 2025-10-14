@@ -83,6 +83,54 @@ object PAPIHook {
                         }
                     }
                 }
+
+                // %aquaticcrates_guaranteed_<crate>_next_remaining%
+                // %aquaticcrates_guaranteed_<crate>_next_required%
+                // %aquaticcrates_guaranteed_<crate>_next_id%
+                // %aquaticcrates_guaranteed_<crate>_next_name%
+                "guaranteed" -> {
+                    if (args.size < 4) return@registerExtension ""
+                    val crateId = args[1]
+                    val crate = CrateHandler.crates[crateId] ?: return@registerExtension ""
+                    if (crate !is OpenableCrate) {
+                        return@registerExtension ""
+                    }
+
+                    val arg2 = args[2].lowercase()
+                    if (arg2 == "next") {
+                        val arg3 = args[3].lowercase()
+
+                        val guaranteedRewards = crate.rewardManager.guaranteedRewards
+                        val player = offlinePlayer.player ?: return@registerExtension ""
+                        val totalOpened = HistoryHandler.history(
+                            crate.identifier,
+                            CrateProfileEntry.HistoryType.ALLTIME,
+                            player
+                        )
+                        val entry = guaranteedRewards.higherEntry(totalOpened)
+
+                        when (arg3) {
+                            "remaining" -> {
+                                val entry = entry ?: return@registerExtension "0"
+                                return@registerExtension (entry.key - totalOpened).toString()
+                            }
+                            "id" -> {
+                                val entry = entry ?: return@registerExtension "none"
+                                return@registerExtension entry.value.id
+                            }
+                            "required" -> {
+                                val entry = entry ?: return@registerExtension "0"
+                                return@registerExtension entry.key.toString()
+                            }
+                            "name" -> {
+                                val entry = entry ?: return@registerExtension "0"
+                                return@registerExtension entry.value.displayName
+                            }
+                        }
+                    }
+                    return@registerExtension ""
+                }
+
                 // %aquaticcrates_milestone_<crate>_<milestone>_reached%
                 // %aquaticcrates_milestone_<crate>_<milestone>_name%
                 "milestone" -> {

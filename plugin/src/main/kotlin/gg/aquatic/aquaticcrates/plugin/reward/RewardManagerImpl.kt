@@ -8,11 +8,12 @@ import gg.aquatic.aquaticcrates.api.reward.*
 import gg.aquatic.waves.util.chance.randomItem
 import gg.aquatic.waves.util.collection.checkRequirements
 import org.bukkit.entity.Player
+import java.util.TreeMap
 
 class RewardManagerImpl(
     val crate: OpenableCrate,
     val possibleRewardRanges: MutableList<RewardAmountRange>,
-    val guaranteedRewards: HashMap<Int, Reward>,
+    override val guaranteedRewards: TreeMap<Int, Reward>,
     milestoneManager: (OpenableCrate) -> MilestoneManager,
     override val rewards: MutableMap<String, Reward>
 ) : RewardManager() {
