@@ -135,6 +135,16 @@ object Bootstrap {
                 }
             }
         }
+        if (Bukkit.getPluginManager().getPlugin("EcoItems") != null) {
+            val awaiter = EcoAwaiter()
+            awaiters += awaiter
+            awaiter.future.thenRun {
+                awaiters -= awaiter
+                if (awaiters.isEmpty()) {
+                    load()
+                }
+            }
+        }
 
         HistoryHandler.rewardHistory.clear()
         HistoryHandler.openHistory.clear()
@@ -374,7 +384,9 @@ object Bootstrap {
                 gg.aquatic.waves.util.message.Messages.injectMessages<Messages>("aquaticcrates")
                 loadExampleCrates()
 
+                val time = System.currentTimeMillis()
                 CrateHandler.crates += CrateSerializer.loadCrates()
+                println("Loaded ${CrateHandler.crates.size} crates in ${System.currentTimeMillis() - time}ms")
                 CrateHandler.loadSpawnedCrates(spawnedCratesConfig)
 
                 for (crate in CrateHandler.crates.values) {

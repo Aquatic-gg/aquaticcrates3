@@ -25,3 +25,9 @@ dependencies:
     HMCCosmetics:
       load: BEFORE
       required: false
+    Eco:
+      load: AFTER
+      required: false
+    EcoItems:
+      load: AFTER
+      required: false

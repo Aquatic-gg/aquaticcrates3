@@ -1,5 +1,7 @@
 package gg.aquatic.aquaticcrates.plugin.serialize
 
+import com.willfp.ecoitems.EcoItemsPlugin
+import com.willfp.ecoitems.items.EcoItems
 import gg.aquatic.aquaticcrates.api.PluginSettings
 import gg.aquatic.aquaticcrates.api.animation.crate.CrateAnimation
 import gg.aquatic.aquaticcrates.api.crate.Crate
@@ -154,12 +156,19 @@ object CrateSerializer : BaseSerializer() {
         basicFolder.mkdirs()
 
         val files = basicFolder.deepFilesLookup { it.extension == "yml" }
-        parallelForEach(files, min(files.size,idealThreads()), AsyncScope) {
+        val list = parallelForEach(files, min(files.size,idealThreads()), AsyncScope) {
+            val crates = HashMap<String, Crate>()
             for (file in it) {
-                val crate = loadBasicCrate(file) ?: continue
-                crates += crate.identifier to crate
+                try {
+                    val crate = loadBasicCrate(file) ?: continue
+                    crates += crate.identifier to crate
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
             }
-        }
+            crates
+        }.flatMap { it.values }
+        list.forEach { crates[it.identifier] = it }
         return crates
     }
 
@@ -169,11 +178,11 @@ object CrateSerializer : BaseSerializer() {
         return maxThreads
     }
 
-    private suspend fun <T> parallelForEach(
+    private suspend fun <T,G> parallelForEach(
         values: Collection<T>,
         parallelism: Int,
         scope: CoroutineScope,
-        block: suspend (list: List<T>) -> Unit
+        block: suspend (list: List<T>) -> G
     ) = coroutineScope {
         val chunkSize = values.size/parallelism
 
@@ -184,7 +193,7 @@ object CrateSerializer : BaseSerializer() {
         }.awaitAll()
     }
 
-    suspend fun loadBasicCrate(file: File): BasicCrate? {
+    fun loadBasicCrate(file: File): BasicCrate? {
         val identifier = file.nameWithoutExtension
         val config = Config(file, CratesPlugin.getInstance())
         config.load()

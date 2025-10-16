@@ -14,6 +14,7 @@ import gg.aquatic.waves.util.requirement.ConfiguredRequirement
 import gg.aquatic.waves.util.updatePAPIPlaceholders
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
+import java.math.BigInteger
 import kotlin.math.min
 
 interface Reward : IChance {
@@ -34,7 +35,7 @@ interface Reward : IChance {
     val showcase: RewardShowcase?
     val massOpenFinalActions: Collection<ConfiguredExecutableObject<Player, Unit>>
 
-    fun massGive(player: Player, totalAmount: Long, uniqueAmount: Int) {
+    fun massGive(player: Player, totalAmount: BigInteger, uniqueAmount: Int) {
         val crateEntry = player.toAquaticPlayer()?.crateEntry() ?: return
         if (giveItem) {
             val item = this.item.getItem()

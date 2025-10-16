@@ -61,6 +61,7 @@ subprojects {
         maven {
             url = uri("https://repo.hibiscusmc.com/releases")
         }
+        maven("https://repo.auxilor.io/repository/maven-public/")
     }
 
     dependencies {
@@ -74,6 +75,8 @@ subprojects {
         compileOnly("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0")
         compileOnly("com.undefined:stellar-kotlin:1.1.0-SNAPSHOT:paper")
         compileOnly("com.undefined:stellar:1.1.0-SNAPSHOT:paper")
+        compileOnly("com.willfp:EcoItems:5.66.0")
+        compileOnly("com.willfp:eco:6.77.1")
         //implementation("net.kyori:adventure-api:4.17.0")
     }
 

@@ -9,14 +9,16 @@ import gg.aquatic.aquaticcrates.api.reward.showcase.RewardShowcase
 import gg.aquatic.waves.item.AquaticItem
 import gg.aquatic.waves.util.generic.ConfiguredExecutableObject
 import gg.aquatic.waves.util.requirement.ConfiguredRequirement
+import gg.aquatic.waves.util.toMMString
 import org.bukkit.entity.Player
 
-class RewardImpl(
+class  RewardImpl(
     override var chance: Double,
     override val id: String,
     override val item: AquaticItem,
     override val giveItem: Boolean,
-    override val displayName: String,
+    displayName: String?,
+    //override val displayName: String,
     override val globalLimits: HashMap<CrateProfileEntry.HistoryType, Int>,
     override val perPlayerLimits: HashMap<CrateProfileEntry.HistoryType, Int>,
     override val actions: List<RewardAction>,
@@ -28,4 +30,10 @@ class RewardImpl(
     override val previewFallbackItem: AquaticItem?,
     override val showcase: RewardShowcase?,
     override val massOpenFinalActions: Collection<ConfiguredExecutableObject<Player, Unit>>,
-) : Reward
+) : Reward {
+
+    override val displayName: String by lazy {
+        displayName ?: item.getItem().itemMeta?.displayName()?.toMMString() ?: id
+    }
+
+}

@@ -24,28 +24,19 @@ interaction: #Not needed if you want to keep these interactions default
     type: "open-crate-instant"
   LEFT:
     type: "preview-crate"
-  SHIFT_LEFT: #To view crate config
-    type: "execute-actions"
-    actions:
-      - type: "message"
-        message: "<#C4F1F1>[ <click:open_url:'https://discord.com/channels/884159187565826179/1395460355462926367'><u>Click to view this crate config...</u></click> ]"
-  #SHIFT_LEFT:
-  #  type: "destroy-crate" # Only players with "aquaticcrates.admin" can really break it
-open-price-groups:
-  - prices:
-      - type: "crate-key"
-        crate: "demo1"
-        fail-actions:
-          - type: message
-            message: "<#FF474C>You do not have a <gradient:#f786be:#6abb64>Demo1 Key</gradient> <#FF474C>to open this."
+  SHIFT_LEFT:
+    type: "destroy-crate" # Only players with "aquaticcrates.admin" can really break it
+
+no-key-message: "You need a key to open the crate!"
 open-restrictions: #cancel crate open if inventory is full
   - type: "full-inventory"
+
 interactables:
-  - type: MODELENGINE
-    model: iron_crate_1 #replace to what model you will use
-    offset: "0;0;0"
+  # - type: MODELENGINE #Needs to be installed
+  #  model: iron_crate_1 #replace to what model you will use
+  #  offset: "0;0;0"
   - type: BLOCK
-    material: BARRIER
+    material: STONE
 hologram:
   offset: "0;2;0"
   lines:
@@ -207,3 +198,4 @@ preview:
             - "<#D3D3D3>Click to open crate..."
 animation:
   type: INSTANT
+# Add your customized animation here!

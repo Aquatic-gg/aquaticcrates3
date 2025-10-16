@@ -12,26 +12,27 @@ import gg.aquatic.waves.registry.serializer.ActionSerializer
 import gg.aquatic.waves.registry.serializer.ItemSerializer
 import gg.aquatic.waves.registry.serializer.RequirementSerializer
 import gg.aquatic.waves.util.getSectionList
-import gg.aquatic.waves.util.task.BukkitScope
-import gg.aquatic.waves.util.toMMString
-import kotlinx.coroutines.async
 import org.bukkit.Bukkit
 import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.entity.Player
 
 abstract class BaseSerializer {
 
-    suspend fun loadRewards(
+    fun loadRewards(
         section: ConfigurationSection,
         rarities: HashMap<String, RewardRarity>
     ): MutableMap<String, Reward> {
         val rewards = LinkedHashMap<String, Reward>()
 
         for (key in section.getKeys(false)) {
-            val rewardSection = section.getConfigurationSection(key) ?: continue
-            val reward = loadReward(rewardSection, rarities) ?: continue
-            rewards[reward.id] = reward
-            Bukkit.getConsoleSender().sendMessage("Loaded Reward: ${reward.id}")
+            try {
+                val rewardSection = section.getConfigurationSection(key) ?: continue
+                val reward = loadReward(rewardSection, rarities) ?: continue
+                rewards[reward.id] = reward
+                Bukkit.getConsoleSender().sendMessage("Loaded Reward: ${reward.id}")
+            } catch (e: Exception) {
+                Bukkit.getConsoleSender().sendMessage("Failed to load reward: ${e.message}")
+            }
         }
 
         val totalRarityChance = rarities.values.sumOf { it.chance }
@@ -64,7 +65,7 @@ abstract class BaseSerializer {
         return rewards
     }
 
-    suspend fun loadReward(section: ConfigurationSection, rarities: HashMap<String, RewardRarity>): Reward? {
+    fun loadReward(section: ConfigurationSection, rarities: HashMap<String, RewardRarity>): Reward? {
         val id = section.name
         val item = AquaticItem.loadFromYml(section.getConfigurationSection("item"))
         //val item = itemFuture.join()
@@ -119,7 +120,7 @@ abstract class BaseSerializer {
             id,
             item,
             giveItem,
-            displayName ?: item.getItem().itemMeta?.displayName()?.toMMString() ?: id,
+            displayName,
             globalLimits,
             perPlayerLimits,
             actions,

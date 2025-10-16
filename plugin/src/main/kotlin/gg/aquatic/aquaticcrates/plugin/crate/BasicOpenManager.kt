@@ -28,6 +28,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.bukkit.Location
 import org.bukkit.entity.Player
+import java.math.BigInteger
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ThreadLocalRandom
 import kotlin.coroutines.CoroutineContext
@@ -106,7 +107,7 @@ class BasicOpenManager(val crate: BasicCrate) {
         }
     }
 
-    private data class RewardStats(var count: Int, var amount: Long)
+    private data class RewardStats(var count: Int, var amount: BigInteger)
 
     private fun <T : IChance> getRandomItem(items: Collection<T>, rnd: ThreadLocalRandom, totalWeight: Double): T? {
         var random = rnd.nextDouble() * totalWeight
@@ -161,11 +162,11 @@ class BasicOpenManager(val crate: BasicCrate) {
                     for (reward in rewards) {
                         val current = wonRewards[reward.reward]
                         if (current == null) {
-                            wonRewards[reward.reward] = RewardStats(1, reward.randomAmount.toLong())
+                            wonRewards[reward.reward] = RewardStats(1, reward.randomAmount.toBigInteger())
                             continue
                         }
                         current.count++
-                        current.amount += reward.randomAmount
+                        current.amount += reward.randomAmount.toBigInteger()
                     }
                 }
             } else {
@@ -196,10 +197,10 @@ class BasicOpenManager(val crate: BasicCrate) {
                         wonRewards.computeIfPresent(reward) { _, second ->
                             second.apply {
                                 count++
-                                this.amount += amount
+                                this.amount += amount.toBigInteger()
                             }
                         } ?: let {
-                            wonRewards[reward] = RewardStats(1, amount)
+                            wonRewards[reward] = RewardStats(1, amount.toBigInteger())
                         }
                         continue
                     }
@@ -208,26 +209,26 @@ class BasicOpenManager(val crate: BasicCrate) {
                         skip = skipScale - 1
                         val current = wonRewards[reward]
                         if (current == null) {
-                            wonRewards[reward] = RewardStats(skipScale, skipScale.toLong() * amount)
+                            wonRewards[reward] = RewardStats(skipScale, skipScale.toBigInteger() * amount.toBigInteger())
                             continue
                         }
                         current.count += skipScale
-                        current.amount += skipScale * amount
+                        current.amount += skipScale.toBigInteger() * amount.toBigInteger()
                         continue
                     }
                     val current = wonRewards[reward]
                     if (current == null) {
-                        wonRewards[reward] = RewardStats(1, amount)
+                        wonRewards[reward] = RewardStats(1, amount.toBigInteger())
                         continue
                     }
                     current.count++
-                    current.amount += amount
+                    current.amount += amount.toBigInteger()
                 }
             }
             wonRewards
         }
 
-        var totalWon = 0L
+        var totalWon = BigInteger.ZERO
         var totalWonExcluded = 0
 
         val wonRewardsFinal = HashMap<Reward, RewardStats>(allRewards.size)
