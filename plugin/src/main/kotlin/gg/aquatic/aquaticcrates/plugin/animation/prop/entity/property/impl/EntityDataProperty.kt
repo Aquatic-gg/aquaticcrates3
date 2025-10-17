@@ -16,7 +16,10 @@ class EntityDataProperty(
 ) : EntityProperty {
     override fun apply(entity: FakeEntity, prop: EntityAnimationProp) {
         entity.updateEntity {
-            val generated = data.flatMap { it.generate { str -> prop.scenario.updatePlaceholders(str) } }
+            val generated = data.filter { e ->
+                val entityClass = entity.type.entityClass!!
+                (entityClass == e.entityData.entityClass || entityClass.isAssignableFrom(e.entityData.entityClass))
+            }.flatMap { it.generate { str -> prop.scenario.updatePlaceholders(str) } }
             setEntityData(generated)
         }
     }

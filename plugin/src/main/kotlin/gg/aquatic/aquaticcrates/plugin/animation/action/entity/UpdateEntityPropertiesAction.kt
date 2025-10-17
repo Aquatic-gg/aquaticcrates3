@@ -3,6 +3,7 @@ package gg.aquatic.aquaticcrates.plugin.animation.action.entity
 import gg.aquatic.aquaticcrates.plugin.animation.prop.entity.EntityAnimationProp
 import gg.aquatic.aquaticcrates.plugin.animation.prop.entity.property.EntityPropertiesObjectArgument
 import gg.aquatic.aquaticcrates.plugin.animation.prop.entity.property.EntityProperty
+import gg.aquatic.aquaticcrates.plugin.animation.prop.entity.property.impl.EntityDataProperty
 import gg.aquatic.waves.scenario.Scenario
 import gg.aquatic.waves.util.action.RegisterAction
 import gg.aquatic.waves.util.argument.AquaticObjectArgument
