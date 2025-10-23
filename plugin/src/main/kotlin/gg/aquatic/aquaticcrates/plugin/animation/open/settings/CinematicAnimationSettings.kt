@@ -11,7 +11,7 @@ import gg.aquatic.waves.util.audience.FilterAudience
 import gg.aquatic.waves.util.generic.ConfiguredExecutableObject
 import gg.aquatic.waves.util.location.AquaticLocation
 import gg.aquatic.waves.util.task.AsyncCtx
-import gg.aquatic.waves.util.task.BukkitScope
+import gg.aquatic.waves.util.task.BukkitCtx
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import net.kyori.adventure.key.Key
@@ -73,7 +73,7 @@ class CinematicAnimationSettings(
             animation.playerEquipment[entry] = ItemStack(Material.AIR)
         }
 
-        BukkitScope.launch {
+        BukkitCtx {
             player.updateInventory()
         }
 

@@ -11,6 +11,8 @@ import gg.aquatic.aquaticcrates.api.reward.RolledReward
 import gg.aquatic.aquaticcrates.plugin.animation.open.settings.InstantAnimationSettings
 import gg.aquatic.aquaticcrates.plugin.reward.RewardManagerImpl
 import gg.aquatic.aquaticcrates.plugin.reward.RolledRewardImpl
+import gg.aquatic.waves.item.option.AmountOptionHandle
+import gg.aquatic.waves.item.option.ItemOptions
 import gg.aquatic.waves.profile.toAquaticPlayer
 import gg.aquatic.waves.util.audience.AquaticAudience
 import gg.aquatic.waves.util.audience.FilterAudience
@@ -20,7 +22,6 @@ import gg.aquatic.waves.util.collection.executeActions
 import gg.aquatic.waves.util.collection.mapPair
 import gg.aquatic.waves.util.task.AsyncCtx
 import gg.aquatic.waves.util.task.BukkitCtx
-import gg.aquatic.waves.util.task.BukkitScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
@@ -45,7 +46,7 @@ class BasicOpenManager(val crate: BasicCrate) {
 
         val rewards = crate.rewardManager.getRewards(player)
         for (reward in rewards) {
-            reward.give(player, false)
+            reward.give(player)
         }
 
         crate.animationManager.animationSettings.finalAnimationTasks.executeActions(
@@ -70,7 +71,7 @@ class BasicOpenManager(val crate: BasicCrate) {
         val milestones = crate.rewardManager.milestoneManager.milestonesReached(player)
         for (milestone in milestones) {
             for (reward in milestone.rewards) {
-                reward.give(player, 1, false)
+                reward.give(player, 1)
             }
         }
 
@@ -95,7 +96,7 @@ class BasicOpenManager(val crate: BasicCrate) {
             val milestones = crate.rewardManager.milestoneManager.milestonesReached(player)
             for (milestone in milestones) {
                 for (reward in milestone.rewards) {
-                    reward.give(player, 1, false)
+                    reward.give(player, 1)
                 }
             }
             if (!crate.disableLogging) {
@@ -137,7 +138,8 @@ class BasicOpenManager(val crate: BasicCrate) {
         val hasStaticRandomAmount = HashMap<String, Long>()
         for (reward in allRewards) {
             if (reward.amountRanges.isEmpty()) {
-                hasStaticRandomAmount[reward.id] = reward.item.getItem().amount.toLong()
+                val amount = (reward.item.getOption(ItemOptions.AMOUNT) as? AmountOptionHandle)?.amount ?: 1
+                hasStaticRandomAmount[reward.id] = amount.toLong()
             } else if (reward.amountRanges.size == 1) {
                 val range = reward.amountRanges.first()
                 if (range.min == range.max) {
@@ -249,7 +251,7 @@ class BasicOpenManager(val crate: BasicCrate) {
             }
         }
 
-        BukkitScope.launch {
+        BukkitCtx {
             wonRewardsFinal.forEach { (reward, pair) ->
                 reward.massGive(player, pair.amount, pair.count)
             }

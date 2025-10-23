@@ -11,6 +11,7 @@ import gg.aquatic.waves.util.collection.executeActions
 import gg.aquatic.waves.util.decimals
 import gg.aquatic.waves.util.generic.ConfiguredExecutableObject
 import gg.aquatic.waves.util.requirement.ConfiguredRequirement
+import gg.aquatic.waves.util.task.BukkitCtx
 import gg.aquatic.waves.util.updatePAPIPlaceholders
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
@@ -96,37 +97,51 @@ interface Reward : IChance {
         }
     }
 
-    fun give(player: Player, randomAmount: Int, massOpen: Boolean) {
-        if (!massOpen && giveItem) {
-            val crateEntry = player.toAquaticPlayer()?.crateEntry() ?: return
-            val item = this.item.getItem()
-            item.amount *= randomAmount
-            val toDrop = player.inventory.addItem(item)
+    fun give(player: Player, randomAmount: Int) {
+        if (giveItem) {
+            BukkitCtx {
+                val crateEntry = player.toAquaticPlayer()?.crateEntry() ?: return@BukkitCtx
+                val item = item.getItem()
+                var remaining = item.amount * randomAmount
+                val maxStackSize = item.maxStackSize
+                while(remaining > 0) {
+                    val amount = if (remaining > maxStackSize) {
+                        remaining -= maxStackSize
+                        maxStackSize
+                    } else {
+                        val toDrop = remaining
+                        remaining = 0
+                        toDrop
+                    }
 
-            for (value in toDrop.values) {
-                if (AbstractCratesPlugin.INSTANCE.settings.useRewardsMenu) {
-                    var foundItem: Pair<ItemStack, Int>? = null
-                    for ((containerItem, amount) in crateEntry.rewardContainer.items) {
-                        if (containerItem.isSimilar(value)) {
-                            foundItem = containerItem to amount
-                            break
+                    val clone = item.asQuantity(amount)
+                    val toDrop = player.inventory.addItem(clone)
+
+                    for (value in toDrop.values) {
+                        if (AbstractCratesPlugin.INSTANCE.settings.useRewardsMenu) {
+                            var foundItem: Pair<ItemStack, Int>? = null
+                            for ((containerItem, amount) in crateEntry.rewardContainer.items) {
+                                if (containerItem.isSimilar(value)) {
+                                    foundItem = containerItem to amount
+                                    break
+                                }
+                            }
+                            if (foundItem != null) {
+                                val newAmount = foundItem.second + value.amount
+                                crateEntry.rewardContainer.items[foundItem.first] = newAmount
+                                //player.sendMessage("Currently got ${newAmount}x ${foundItem.first.type} in Reward Container")
+                            } else {
+                                crateEntry.rewardContainer.items[value] = value.amount
+                                //player.sendMessage("Currently got ${randomAmount}x ${value.type} in Reward Container")
+                            }
+                        } else {
+                            player.world.dropItem(player.location, value)
                         }
                     }
-                    if (foundItem != null) {
-                        val newAmount = foundItem.second + value.amount
-                        crateEntry.rewardContainer.items[foundItem.first] = newAmount
-                        //player.sendMessage("Currently got ${newAmount}x ${foundItem.first.type} in Reward Container")
-                    } else {
-                        crateEntry.rewardContainer.items[value] = value.amount
-                        //player.sendMessage("Currently got ${randomAmount}x ${value.type} in Reward Container")
-                    }
-                } else {
-                    player.world.dropItem(player.location, value)
                 }
             }
         }
         for (action in actions) {
-            if (!action.massOpenExecute && massOpen) continue
             action.action.execute(player) { p, str ->
                 updatePlaceholders(str).updatePAPIPlaceholders(player).replace("%player%", p.name)
                     .replace("%random-amount%", randomAmount.toString())

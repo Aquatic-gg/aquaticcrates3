@@ -5,14 +5,10 @@ import gg.aquatic.aquaticcrates.api.crate.OpenableCrate
 import gg.aquatic.aquaticcrates.plugin.crate.BasicCrate
 import gg.aquatic.aquaticcrates.plugin.editor.category.MainEditorCategory
 import gg.aquatic.aquaticcrates.plugin.editor.data.CrateModel
-import gg.aquatic.aquaticcrates.plugin.editor.data.ItemModel
-import gg.aquatic.aquaticcrates.plugin.editor.data.interact.CrateInteractActionModel
-import gg.aquatic.aquaticcrates.plugin.editor.data.key.KeyModel
 import gg.aquatic.aquaticcrates.plugin.editor.menu.EditorMenu
 import gg.aquatic.aquaticcrates.plugin.misc.Messages
 import gg.aquatic.waves.command.ICommand
-import gg.aquatic.waves.item.AquaticItemInteractEvent
-import gg.aquatic.waves.util.task.AsyncScope
+import gg.aquatic.waves.util.task.AsyncCtx
 import kotlinx.coroutines.launch
 import org.bukkit.Bukkit
 import org.bukkit.command.CommandSender
@@ -117,18 +113,18 @@ object CrateCommand : ICommand {
                 val noKey = args.contains("-nokey")
                 val isInstant = args.contains("-instant")
 
-                AsyncScope.launch {
+                AsyncCtx {
                     if (isInstant) {
                         if (noKey) {
                             crate.instantOpen(player, player.location, null)
-                            return@launch
+                            return@AsyncCtx
                         }
                         crate.tryInstantOpen(player, player.location, null)
-                        return@launch
+                        return@AsyncCtx
                     }
                     if (noKey) {
                         crate.open(player, player.location, null)
-                        return@launch
+                        return@AsyncCtx
                     }
                     crate.tryOpen(player, player.location, null)
                 }
@@ -160,7 +156,7 @@ object CrateCommand : ICommand {
 
                 val noKey = args.contains("-nokey")
 
-                AsyncScope.launch {
+                AsyncCtx {
                     if (crate is OpenableCrate) {
                         if (noKey) {
                             crate.massOpen(player, amount)

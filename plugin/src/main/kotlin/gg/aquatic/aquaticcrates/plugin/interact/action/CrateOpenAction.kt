@@ -6,8 +6,7 @@ import gg.aquatic.waves.util.action.RegisterAction
 import gg.aquatic.waves.util.argument.AquaticObjectArgument
 import gg.aquatic.waves.util.argument.ObjectArguments
 import gg.aquatic.waves.util.generic.Action
-import gg.aquatic.waves.util.task.AsyncScope
-import kotlinx.coroutines.launch
+import gg.aquatic.waves.util.task.AsyncCtx
 
 @RegisterAction("open-crate")
 class CrateOpenAction : Action<CrateInteractAction> {
@@ -21,7 +20,7 @@ class CrateOpenAction : Action<CrateInteractAction> {
     ) {
         val crate = binder.crate
         if (crate is OpenableCrate) {
-            AsyncScope.launch {
+            AsyncCtx {
                 crate.tryOpen(binder.player, binder.interactedLocation, binder.spawnedCrate)
             }
         }

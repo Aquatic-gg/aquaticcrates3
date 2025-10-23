@@ -6,7 +6,7 @@ import gg.aquatic.aquaticcrates.api.event.CrateAnimationEndEvent
 import gg.aquatic.aquaticcrates.api.event.CrateAnimationStartEvent
 import gg.aquatic.aquaticcrates.plugin.animation.open.CinematicAnimationImpl
 import gg.aquatic.waves.api.event.event
-import gg.aquatic.waves.util.task.BukkitScope
+import gg.aquatic.waves.util.task.BukkitCtx
 import kotlinx.coroutines.launch
 
 class HMCCosmeticsHook {
@@ -16,7 +16,7 @@ class HMCCosmeticsHook {
             val player = e.player
             if (e.animation !is CinematicAnimationImpl) return@event
             val user = HMCCosmeticsAPI.getUser(player.uniqueId) ?: return@event
-            BukkitScope.launch {
+            BukkitCtx {
                 user.hideCosmetics(CosmeticUser.HiddenReason.PLUGIN)
             }
         }
@@ -24,7 +24,7 @@ class HMCCosmeticsHook {
             val player = e.player
             if (e.animation !is CinematicAnimationImpl) return@event
             val user = HMCCosmeticsAPI.getUser(player.uniqueId) ?: return@event
-            BukkitScope.launch {
+            BukkitCtx {
                 user.showCosmetics(CosmeticUser.HiddenReason.PLUGIN)
             }
         }

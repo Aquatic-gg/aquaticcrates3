@@ -12,7 +12,7 @@ import gg.aquatic.aquaticcrates.plugin.animation.idle.IdleAnimationSettings
 import gg.aquatic.waves.scenario.PlayerScenario
 import gg.aquatic.waves.scenario.Scenario
 import gg.aquatic.waves.util.chance.randomItem
-import gg.aquatic.waves.util.task.AsyncScope
+import gg.aquatic.waves.util.task.AsyncCtx
 import kotlinx.coroutines.launch
 import org.bukkit.entity.Player
 import java.util.*
@@ -87,8 +87,8 @@ class AnimationManagerImpl(
     override fun forceStopAnimations() {
         for ((_, animations) in playingAnimations) {
             for (animation in animations) {
-                animation.rewards.forEach { reward -> reward.give(animation.player, false) }
-                AsyncScope.launch {
+                animation.rewards.forEach { reward -> reward.give(animation.player) }
+                AsyncCtx {
                     for (value in animation.props.values) {
                         value.onEnd()
                     }

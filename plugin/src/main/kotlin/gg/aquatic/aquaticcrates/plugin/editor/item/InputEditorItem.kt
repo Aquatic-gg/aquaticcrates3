@@ -3,9 +3,8 @@ package gg.aquatic.aquaticcrates.plugin.editor.item
 import gg.aquatic.aquaticcrates.plugin.editor.menu.EditorMenu
 import gg.aquatic.waves.input.InputHandle
 import gg.aquatic.waves.inventory.event.AsyncPacketInventoryInteractEvent
-import gg.aquatic.waves.util.task.BukkitScope
+import gg.aquatic.waves.util.task.BukkitCtx
 import gg.aquatic.waves.util.toMMComponent
-import kotlinx.coroutines.launch
 import org.bukkit.inventory.ItemStack
 
 class InputEditorItem(
@@ -20,7 +19,7 @@ class InputEditorItem(
         val player = event.viewer.player
         val menu = event.inventory as EditorMenu
 
-        BukkitScope.launch {
+        BukkitCtx {
             player.closeInventory()
 
             for (string in chatMessage) {

@@ -37,7 +37,6 @@ import gg.aquatic.waves.command.AquaticBaseCommand
 import gg.aquatic.waves.command.register
 import gg.aquatic.waves.inventory.InventoryManager
 import gg.aquatic.waves.inventory.event.AsyncPacketInventoryCloseEvent
-import gg.aquatic.waves.item.ItemHandler
 import gg.aquatic.waves.profile.ProfilesModule
 import gg.aquatic.waves.registry.WavesRegistry
 import gg.aquatic.waves.registry.registerRequirement
@@ -45,26 +44,21 @@ import gg.aquatic.waves.util.Config
 import gg.aquatic.waves.util.action.ActionAnnotationProcessor
 import gg.aquatic.waves.util.requirement.RequirementAnnotationProcessor
 import gg.aquatic.waves.util.task.AsyncCtx
-import gg.aquatic.waves.util.task.AsyncScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.future.asCompletableFuture
 import net.kyori.adventure.text.Component
 import org.bukkit.Bukkit
-import org.bukkit.NamespacedKey
 import org.bukkit.entity.Player
 import org.bukkit.event.block.Action
 import org.bukkit.event.entity.EntityDamageEvent
 import org.bukkit.event.inventory.InventoryInteractEvent
-import org.bukkit.event.inventory.InventoryOpenEvent
 import org.bukkit.event.player.*
 import org.bukkit.event.world.WorldLoadEvent
 import org.bukkit.inventory.EquipmentSlot
-import org.bukkit.persistence.PersistentDataType
 import java.io.File
 import java.net.URLDecoder
 import java.util.*
 import java.util.concurrent.CompletableFuture
-import java.util.concurrent.CompletableFuture.runAsync
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 import java.util.jar.JarFile
@@ -378,7 +372,7 @@ object Bootstrap {
         CratesPlugin.getInstance().rewardsMenuSettings = CrateSerializer.loadRewardMenuSettings()
         CratesPlugin.getInstance().logMenuSettings = CrateSerializer.loadLogMenuSettings()
 
-        return AsyncScope.async {
+        return AsyncCtx.scope.async {
             try {
                 Messages.load()
                 gg.aquatic.waves.util.message.Messages.injectMessages<Messages>("aquaticcrates")

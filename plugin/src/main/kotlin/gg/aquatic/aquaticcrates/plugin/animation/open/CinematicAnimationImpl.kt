@@ -8,7 +8,7 @@ import gg.aquatic.aquaticcrates.plugin.animation.open.settings.CinematicAnimatio
 import gg.aquatic.aquaticcrates.plugin.animation.prop.CameraAnimationProp
 import gg.aquatic.waves.scenario.ScenarioProp
 import gg.aquatic.waves.util.audience.AquaticAudience
-import gg.aquatic.waves.util.task.BukkitScope
+import gg.aquatic.waves.util.task.BukkitCtx
 import kotlinx.coroutines.launch
 import net.kyori.adventure.key.Key
 import org.bukkit.Bukkit
@@ -87,7 +87,7 @@ class CinematicAnimationImpl(
         if (Bukkit.isPrimaryThread()) {
             runnable()
         } else {
-            BukkitScope.launch {
+            BukkitCtx {
                 runnable()
             }
         }

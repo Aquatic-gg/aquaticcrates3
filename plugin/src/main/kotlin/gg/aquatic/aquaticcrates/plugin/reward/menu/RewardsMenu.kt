@@ -5,20 +5,21 @@ import gg.aquatic.waves.menu.MenuComponent
 import gg.aquatic.waves.menu.PrivateAquaticMenu
 import gg.aquatic.waves.menu.component.Button
 import gg.aquatic.waves.profile.toAquaticPlayer
-import gg.aquatic.waves.util.task.AsyncScope
-import gg.aquatic.waves.util.task.BukkitScope
+import gg.aquatic.waves.util.task.BukkitCtx
 import gg.aquatic.waves.util.toMMComponent
 import gg.aquatic.waves.util.toMMString
 import gg.aquatic.waves.util.updatePAPIPlaceholders
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.async
+import kotlinx.coroutines.future.asCompletableFuture
 import org.bukkit.entity.Player
+import java.util.Collections
 
 class RewardsMenu(val settings: RewardsMenuSettings, player: Player) : PrivateAquaticMenu(
     settings.invSettings.title.toMMString().updatePAPIPlaceholders(player).toMMComponent(),
     settings.invSettings.type, player, true
 ) {
     private var page = 0
-    private val rewardComponents = HashSet<MenuComponent>()
+    private val rewardComponents = Collections.synchronizedSet<MenuComponent>(HashSet())
 
     init {
         val crateEntry = player.toAquaticPlayer()?.crateEntry()
@@ -50,16 +51,20 @@ class RewardsMenu(val settings: RewardsMenuSettings, player: Player) : PrivateAq
         val crateEntry = player.toAquaticPlayer()?.crateEntry() ?: return
 
         val entries = crateEntry.rewardContainer.items.entries
+
+        entries.removeIf { (_, amount) -> amount <= 0 }
+
         for ((index, rewardSlot) in settings.rewardSlots.withIndex()) {
             val rewardIndex = page * settings.rewardSlots.size + index
             val (item, amount) = entries.elementAtOrNull(rewardIndex)?.toPair() ?: break
+            if (amount <= 0) continue
 
             val button = Button(
                 "reward-${rewardSlot}",
                 item.clone().apply {
                     val meta = this.itemMeta
                     meta.lore(
-                        (meta.lore() ?: emptyList()) +settings.additionalRewardLore.map { it.toMMComponent() }
+                        (meta.lore() ?: emptyList()) + settings.additionalRewardLore.map { it.toMMComponent() }
                     )
                     this.itemMeta = meta
                 },
@@ -72,19 +77,31 @@ class RewardsMenu(val settings: RewardsMenuSettings, player: Player) : PrivateAq
                 onClick = { e ->
                     if (processing) return@Button
                     processing = true
-                    BukkitScope.launch {
-                        for ((_, i) in player.inventory.addItem(item.clone().apply { this.amount = amount })) {
-                            player.location.world!!.dropItem(player.location, i)
-                        }
-                        AsyncScope.launch {
-                            crateEntry.rewardContainer.items.remove(item)
-                            rewardComponents.forEach { removeComponent(it) }
-                            rewardComponents.clear()
-                            loadRewards()
-                            updateComponents()
+                    var remaining = crateEntry.rewardContainer.items.remove(item) ?: return@Button
+                    rewardComponents.forEach { removeComponent(it) }
+                    rewardComponents.clear()
 
-                            processing = false
+                    BukkitCtx.scope.async {
+                        val maxStackSize = item.maxStackSize
+                        while (remaining > 0) {
+                            if (remaining > maxStackSize) {
+                                for ((_, i) in player.inventory.addItem(item.asQuantity(maxStackSize))) {
+                                    player.location.world!!.dropItem(player.location, i)
+                                }
+                                remaining -= maxStackSize
+                            } else {
+                                for ((_, i) in player.inventory.addItem(item.asQuantity(remaining))) {
+                                    player.location.world!!.dropItem(player.location, i)
+                                }
+                                break
+                            }
                         }
+                    }.asCompletableFuture().exceptionally {
+                        it.printStackTrace()
+                    }.thenRun {
+                        loadRewards()
+                        updateComponents()
+                        processing = false
                     }
                 }
             )

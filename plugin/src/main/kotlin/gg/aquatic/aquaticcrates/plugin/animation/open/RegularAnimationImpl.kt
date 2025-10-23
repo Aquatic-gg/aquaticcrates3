@@ -6,8 +6,7 @@ import gg.aquatic.aquaticcrates.api.crate.OpenableCrate
 import gg.aquatic.aquaticcrates.api.reward.RolledReward
 import gg.aquatic.waves.scenario.ScenarioProp
 import gg.aquatic.waves.util.audience.AquaticAudience
-import gg.aquatic.waves.util.task.BukkitScope
-import kotlinx.coroutines.launch
+import gg.aquatic.waves.util.task.BukkitCtx
 import net.kyori.adventure.key.Key
 import org.bukkit.Bukkit
 import org.bukkit.Location
@@ -67,7 +66,7 @@ class RegularAnimationImpl(
         if (Bukkit.isPrimaryThread()) {
             runnable()
         } else {
-            BukkitScope.launch {
+            BukkitCtx {
                 runnable()
             }
         }

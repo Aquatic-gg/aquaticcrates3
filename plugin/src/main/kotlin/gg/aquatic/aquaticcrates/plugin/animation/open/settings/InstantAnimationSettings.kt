@@ -41,7 +41,7 @@ class InstantAnimationSettings(
         rolledRewards: MutableList<RolledReward>
     ): CrateAnimation = withContext(AsyncCtx) {
         for (rolledReward in rolledRewards) {
-            rolledReward.give(player, false)
+            rolledReward.give(player)
         }
 
         val anim = execute(player, animationManager)

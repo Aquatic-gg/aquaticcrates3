@@ -24,7 +24,6 @@ import gg.aquatic.waves.registry.setInteractionHandler
 import gg.aquatic.waves.util.generic.ConfiguredExecutableObject
 import gg.aquatic.waves.util.runLaterSync
 import gg.aquatic.waves.util.task.AsyncCtx
-import gg.aquatic.waves.util.task.AsyncScope
 import gg.aquatic.waves.util.updatePAPIPlaceholders
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -42,7 +41,6 @@ class BasicCrate(
     override val displayName: String,
     override val hologramSettings: HologramSettings?,
     override val interactables: List<InteractableSettings>,
-    //override val openRequirements: MutableList<ConfiguredRequirement<Player>>,
     override val openPriceGroups: MutableList<OpenPriceGroup>,
     animationManager: (BasicCrate) -> CrateAnimationManager,
     key: (BasicCrate) -> Key,
@@ -82,7 +80,7 @@ class BasicCrate(
                     if (e.interactType == AquaticItemInteractEvent.InteractType.RIGHT) {
                         runLaterSync(2) {
                             CrateHandler.spawnCrate(this@BasicCrate, location.clone().add(.5, 1.0, .5))
-                            AsyncScope.launch {
+                            AsyncCtx {
                                 CrateHandler.saveSpawnedCrates(Bootstrap.spawnedCratesConfig)
                             }
                         }
@@ -112,7 +110,7 @@ class BasicCrate(
         location: Location,
         spawnedCrate: SpawnedCrate?
     ) {
-        AsyncScope.launch {
+        AsyncCtx {
             openManager.instantOpen(player)
         }
     }

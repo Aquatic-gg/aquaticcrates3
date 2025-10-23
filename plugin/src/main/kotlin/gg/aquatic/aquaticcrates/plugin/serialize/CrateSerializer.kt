@@ -62,7 +62,7 @@ import gg.aquatic.waves.util.generic.ConfiguredExecutableObject
 import gg.aquatic.waves.util.getSectionList
 import gg.aquatic.waves.util.message.impl.SimpleMessage
 import gg.aquatic.waves.util.requirement.ConfiguredRequirement
-import gg.aquatic.waves.util.task.AsyncScope
+import gg.aquatic.waves.util.task.AsyncCtx
 import gg.aquatic.waves.util.toMMComponent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.async
@@ -156,7 +156,7 @@ object CrateSerializer : BaseSerializer() {
         basicFolder.mkdirs()
 
         val files = basicFolder.deepFilesLookup { it.extension == "yml" }
-        val list = parallelForEach(files, min(files.size,idealThreads()), AsyncScope) {
+        val list = parallelForEach(files, min(files.size,idealThreads()), AsyncCtx.scope) {
             val crates = HashMap<String, Crate>()
             for (file in it) {
                 try {

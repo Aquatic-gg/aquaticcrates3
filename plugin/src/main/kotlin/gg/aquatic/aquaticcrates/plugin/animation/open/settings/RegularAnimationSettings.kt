@@ -9,7 +9,7 @@ import gg.aquatic.waves.util.audience.GlobalAudience
 import gg.aquatic.waves.util.generic.ConfiguredExecutableObject
 import gg.aquatic.waves.util.runLaterSync
 import gg.aquatic.waves.util.task.AsyncCtx
-import gg.aquatic.waves.util.task.BukkitScope
+import gg.aquatic.waves.util.task.BukkitCtx
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.bukkit.Location
@@ -73,7 +73,7 @@ class RegularAnimationSettings(
         animationManager.playAnimation(animation)
         animation.completionFuture.join()
 
-        BukkitScope.launch {
+        BukkitCtx {
             if (!personal) {
                 spawnedCrate?.forceHide(false)
             } else {

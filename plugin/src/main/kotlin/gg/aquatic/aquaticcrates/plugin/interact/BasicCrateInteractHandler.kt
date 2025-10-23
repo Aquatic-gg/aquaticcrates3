@@ -8,7 +8,7 @@ import gg.aquatic.aquaticcrates.api.interaction.CrateInteractAction
 import gg.aquatic.waves.api.event.call
 import gg.aquatic.waves.item.AquaticItemInteractEvent
 import gg.aquatic.waves.util.generic.ConfiguredExecutableObject
-import gg.aquatic.waves.util.task.BukkitScope
+import gg.aquatic.waves.util.task.BukkitCtx
 import kotlinx.coroutines.launch
 import org.bukkit.Bukkit
 import org.bukkit.Location
@@ -35,7 +35,7 @@ class BasicCrateInteractHandler(
                 interactedLocation
             ).call()
         } else {
-            BukkitScope.launch {
+            BukkitCtx {
                 CrateInteractEvent(
                     player,
                     crate,

@@ -14,7 +14,7 @@ import gg.aquatic.waves.scenario.prop.path.PathProp
 import gg.aquatic.waves.util.modify
 import gg.aquatic.waves.util.runLaterSync
 import gg.aquatic.waves.util.sendPacket
-import gg.aquatic.waves.util.task.BukkitScope
+import gg.aquatic.waves.util.task.BukkitCtx
 import gg.aquatic.waves.util.version.ServerVersion
 import kotlinx.coroutines.launch
 import org.bukkit.GameMode
@@ -56,7 +56,7 @@ class CameraAnimationProp(
             0
         } else 5
         scenario.player.teleportAsync(location).thenAccept {
-            BukkitScope.launch {
+            BukkitCtx {
                 scenario.player.isInvisible = true
                 scenario.player.gameMode = GameMode.SPECTATOR
             }

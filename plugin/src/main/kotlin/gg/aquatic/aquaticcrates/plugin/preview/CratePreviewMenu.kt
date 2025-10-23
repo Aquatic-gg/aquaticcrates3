@@ -10,8 +10,8 @@ import gg.aquatic.waves.menu.component.Button
 import gg.aquatic.waves.util.*
 import gg.aquatic.waves.util.chance.randomItem
 import gg.aquatic.waves.util.chance.realChance
-import gg.aquatic.waves.util.task.AsyncScope
-import gg.aquatic.waves.util.task.BukkitScope
+import gg.aquatic.waves.util.task.AsyncCtx
+import gg.aquatic.waves.util.task.BukkitCtx
 import kotlinx.coroutines.launch
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.TextDecoration
@@ -84,9 +84,9 @@ class CratePreviewMenu(
                         }
 
                         "open" -> {
-                            BukkitScope.launch {
+                            BukkitCtx {
                                 player.closeInventory()
-                                AsyncScope.launch {
+                                AsyncCtx {
                                     crate.tryOpen(player, placedCrate?.location ?: player.location.clone(), placedCrate)
                                 }
                             }
@@ -145,7 +145,7 @@ class CratePreviewMenu(
                         .updatePAPIPlaceholders(player)
                 }, onClick = { _ ->
                     if (player.hasPermission("aquaticcrates.admin")) {
-                        RolledRewardImpl(reward, reward.amountRanges.randomItem()?.randomNum ?: 1).give(player, false)
+                        RolledRewardImpl(reward, reward.amountRanges.randomItem()?.randomNum ?: 1).give(player)
                     }
                 }
             )

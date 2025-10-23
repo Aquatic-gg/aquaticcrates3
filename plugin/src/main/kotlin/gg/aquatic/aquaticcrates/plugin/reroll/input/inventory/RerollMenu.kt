@@ -6,7 +6,7 @@ import gg.aquatic.aquaticcrates.api.reward.RolledReward
 import gg.aquatic.waves.menu.PrivateAquaticMenu
 import gg.aquatic.waves.menu.SlotSelection
 import gg.aquatic.waves.menu.component.Button
-import gg.aquatic.waves.util.task.BukkitScope
+import gg.aquatic.waves.util.task.BukkitCtx
 import gg.aquatic.waves.util.toMMComponent
 import gg.aquatic.waves.util.toMMString
 import gg.aquatic.waves.util.updatePAPIPlaceholders
@@ -62,16 +62,16 @@ class RerollMenu(
     private fun loadButtons() {
         for ((id, button) in settings.inventorySettings.components) {
             components += id to button.create(
-                { str, menu -> animation.updatePlaceholders(str) },
+                { str, _ -> animation.updatePlaceholders(str) },
                 { e ->
                     if (id == "reroll") {
                         future.complete(RerollManager.RerollResult(true))
-                        BukkitScope.launch {
+                        BukkitCtx {
                             player.closeInventory()
                         }
                     } else if (id == "claim") {
                         future.complete(RerollManager.RerollResult(false))
-                        BukkitScope.launch {
+                        BukkitCtx {
                             player.closeInventory()
                         }
                     }

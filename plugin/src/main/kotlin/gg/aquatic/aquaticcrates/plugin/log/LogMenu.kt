@@ -8,8 +8,8 @@ import gg.aquatic.waves.menu.MenuComponent
 import gg.aquatic.waves.menu.PrivateAquaticMenu
 import gg.aquatic.waves.menu.component.Button
 import gg.aquatic.waves.util.*
-import gg.aquatic.waves.util.task.AsyncScope
-import gg.aquatic.waves.util.task.BukkitScope
+import gg.aquatic.waves.util.task.AsyncCtx
+import gg.aquatic.waves.util.task.BukkitCtx
 import kotlinx.coroutines.launch
 import org.bukkit.Material
 import org.bukkit.entity.Player
@@ -78,7 +78,7 @@ class LogMenu(val settings: LogMenuSettings, player: Player) : PrivateAquaticMen
                             applyFilters()
                             return@create
                         } else if (e.buttonType == ButtonType.LEFT) {
-                            BukkitScope.launch {
+                            BukkitCtx {
                                 player.closeInventory()
                             }
                             player.send(
@@ -113,7 +113,7 @@ class LogMenu(val settings: LogMenuSettings, player: Player) : PrivateAquaticMen
                             return@create
                         }
                         else if (e.buttonType == ButtonType.LEFT) {
-                            BukkitScope.launch {
+                            BukkitCtx {
                                 player.closeInventory()
                             }
                             player.send(
@@ -164,7 +164,7 @@ class LogMenu(val settings: LogMenuSettings, player: Player) : PrivateAquaticMen
         }
         entryComponents.clear()
 
-        AsyncScope.launch {
+        AsyncCtx {
             val offset = page * settings.logSlots.size
             val limit = settings.logSlots.size + 1
 

@@ -11,8 +11,8 @@ import gg.aquatic.waves.scenario.ScenarioProp
 import gg.aquatic.waves.util.collection.executeActions
 import gg.aquatic.waves.util.decimals
 import gg.aquatic.waves.util.generic.ConfiguredExecutableObject
-import gg.aquatic.waves.util.task.AsyncScope
-import gg.aquatic.waves.util.task.BukkitScope
+import gg.aquatic.waves.util.task.AsyncCtx
+import gg.aquatic.waves.util.task.BukkitCtx
 import gg.aquatic.waves.util.updatePAPIPlaceholders
 import kotlinx.coroutines.launch
 import net.kyori.adventure.key.Key
@@ -69,7 +69,7 @@ abstract class CrateAnimation : PlayerScenario() {
                 val event =
                     CrateAnimationStartEvent(animationManager.crate as OpenableCrate, this@CrateAnimation, player)
                 if (Bukkit.isPrimaryThread()) {
-                    AsyncScope.launch {
+                    AsyncCtx {
                         event.call()
                     }
                 } else {
@@ -148,7 +148,7 @@ abstract class CrateAnimation : PlayerScenario() {
             CrateAnimationEndEvent(animationManager.crate as OpenableCrate, this, player).call()
         }
         if (Bukkit.isPrimaryThread()) {
-            AsyncScope.launch {
+            AsyncCtx {
                 eventRunnable()
             }
         } else {
@@ -163,7 +163,7 @@ abstract class CrateAnimation : PlayerScenario() {
         val block = {
             for (reward in rewards) {
                 runOrCatch {
-                    reward.give(player, false)
+                    reward.give(player)
                 }
             }
         }
@@ -171,7 +171,7 @@ abstract class CrateAnimation : PlayerScenario() {
         if (Bukkit.isPrimaryThread()) {
             block()
         } else {
-            BukkitScope.launch {
+            BukkitCtx {
                 block()
             }
         }
