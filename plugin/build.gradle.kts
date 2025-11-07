@@ -1,5 +1,3 @@
-import com.github.jengelman.gradle.plugins.shadow.ShadowJavaPlugin.Companion.shadowJar
-
 group = "gg.aquatic.aquaticcrates.plugin"
 
 repositories {

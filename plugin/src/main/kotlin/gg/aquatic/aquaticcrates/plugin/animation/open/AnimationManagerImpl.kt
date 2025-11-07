@@ -58,19 +58,24 @@ class AnimationManagerImpl(
     }
 
     override fun tick() {
-        for ((_, animations) in playingAnimations) {
-            for (animation in animations.toMutableList()) {
+        try {
+            for ((_, animations) in playingAnimations) {
+                for (animation in animations.toMutableList()) {
+                    animation.tick()
+                }
+            }
+            for ((_, animation) in idleAnimation) {
                 animation.tick()
             }
-        }
-        for ((_, animation) in idleAnimation) {
-            animation.tick()
-        }
-        for (entry in failAnimations) {
-            for ((_, animation) in entry.value.toMutableMap()) {
-                animation.tick()
+            for (entry in failAnimations) {
+                for ((_, animation) in entry.value.toMutableMap()) {
+                    animation.tick()
+                }
             }
+        } catch (ex: Exception) {
+            ex.printStackTrace()
         }
+
     }
 
     override fun skipAnimation(player: Player) {

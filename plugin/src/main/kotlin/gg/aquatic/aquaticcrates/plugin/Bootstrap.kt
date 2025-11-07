@@ -43,6 +43,7 @@ import gg.aquatic.waves.registry.registerRequirement
 import gg.aquatic.waves.util.Config
 import gg.aquatic.waves.util.action.ActionAnnotationProcessor
 import gg.aquatic.waves.util.requirement.RequirementAnnotationProcessor
+import gg.aquatic.waves.util.runAsyncTimer
 import gg.aquatic.waves.util.task.AsyncCtx
 import kotlinx.coroutines.async
 import kotlinx.coroutines.future.asCompletableFuture
@@ -355,14 +356,17 @@ object Bootstrap {
     }
 
     private fun startTicker() {
-        val scheduler = Executors.newSingleThreadScheduledExecutor()
-        scheduler.scheduleWithFixedDelay({
-            for ((_, crate) in CrateHandler.crates) {
-                if (crate is OpenableCrate) {
-                    crate.animationManager.tick()
+        runAsyncTimer(1,1) {
+            try {
+                for ((_, crate) in CrateHandler.crates) {
+                    if (crate is OpenableCrate) {
+                        crate.animationManager.tick()
+                    }
                 }
+            } catch (ex: Exception) {
+                ex.printStackTrace()
             }
-        }, 0, 50, TimeUnit.MILLISECONDS)
+        }
     }
 
     internal fun load(): CompletableFuture<Unit> {

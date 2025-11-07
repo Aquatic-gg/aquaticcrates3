@@ -62,12 +62,10 @@ class RegularAnimationSettings(
 
         val spawnedCrate = CrateHandler.spawned[location]
         animation.tick()
-        runLaterSync(1) {
-            if (!personal) {
-                spawnedCrate?.forceHide(true)
-            } else {
-                spawnedCrate?.forceHide(player, true)
-            }
+        if (!personal) {
+            spawnedCrate?.forceHide(true)
+        } else {
+            spawnedCrate?.forceHide(player, true)
         }
 
         animationManager.playAnimation(animation)

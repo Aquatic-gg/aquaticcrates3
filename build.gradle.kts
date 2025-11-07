@@ -1,6 +1,6 @@
 plugins {
-    kotlin("jvm") version "2.1.10"
-    id("com.gradleup.shadow") version "9.0.0-beta11"
+    kotlin("jvm") version "2.2.21"
+    id("com.gradleup.shadow") version "9.2.2"
     id("co.uzzu.dotenv.gradle") version "2.0.0"
     id("xyz.jpenilla.run-paper") version "2.3.1"
     java
@@ -37,7 +37,7 @@ subprojects {
             url = uri("https://repo.undefinedcreations.com/releases")
         }
         maven {
-            name = "undefined-repo"
+            name = "undefined-snapshots"
             url = uri("https://repo.undefinedcreations.com/snapshots")
         }
         maven {
@@ -69,12 +69,12 @@ subprojects {
         compileOnly("com.github.LoneDev6:API-ItemsAdder:3.6.2-beta-r3-b")
         compileOnly("gg.aquatic.comet:Comet-API:1.13.0")
         compileOnly("com.ticxo.modelengine:ModelEngine:R4.0.8")
-        compileOnly("gg.aquatic.waves:Waves:1.3.26:publish")
+        compileOnly("gg.aquatic.waves:Waves:1.3.28:publish")
         compileOnly("io.github.toxicity188:bettermodel:1.11.3")
         compileOnly("com.hibiscusmc:HMCCosmetics:2.8.1-1ef7f475")
         compileOnly("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0")
-        compileOnly("com.undefined:stellar-kotlin:1.1.0-SNAPSHOT:paper")
-        compileOnly("com.undefined:stellar:1.1.0-SNAPSHOT:paper")
+        compileOnly("com.undefined:stellar-kotlin:1.1.1:paper")
+        compileOnly("com.undefined:stellar:1.1.1:paper")
         compileOnly("com.willfp:EcoItems:5.66.0")
         compileOnly("com.willfp:eco:6.77.1")
         //implementation("net.kyori:adventure-api:4.17.0")
