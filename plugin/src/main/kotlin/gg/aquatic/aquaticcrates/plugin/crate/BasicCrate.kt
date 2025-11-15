@@ -25,7 +25,6 @@ import gg.aquatic.waves.util.generic.ConfiguredExecutableObject
 import gg.aquatic.waves.util.runLaterSync
 import gg.aquatic.waves.util.task.AsyncCtx
 import gg.aquatic.waves.util.updatePAPIPlaceholders
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.TextDecoration

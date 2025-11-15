@@ -10,10 +10,12 @@ import gg.aquatic.waves.hologram.AquaticHologram
 import gg.aquatic.waves.hologram.line.AnimatedHologramLine
 import gg.aquatic.waves.hologram.line.ItemHologramLine
 import gg.aquatic.waves.hologram.line.TextHologramLine
+import gg.aquatic.waves.interactable.Interactable
 import gg.aquatic.waves.interactable.type.EntityInteractable
 import gg.aquatic.waves.util.collection.mapPair
 import org.bukkit.entity.EntityType
 import org.bukkit.util.Vector
+import java.util.concurrent.ConcurrentHashMap
 
 class ItemRewardShowcaseHandle(
     override val animation: CrateAnimation,
@@ -41,15 +43,19 @@ class ItemRewardShowcaseHandle(
             {}, {}
         )) {}
 
-    val interactables = showcase.interactables.map {
-        it.build(
-            animation.baseLocation.clone().add(locationOffset.first).apply {
-                this.yaw = locationOffset.second.first
-                this.pitch = locationOffset.second.second
-            },
-            animation.audience
-        ) {}
-    }.toMutableList()
+    val interactables = ConcurrentHashMap.newKeySet<Interactable>().apply {
+        addAll(
+            showcase.interactables.map {
+                it.build(
+                    animation.baseLocation.clone().add(locationOffset.first).apply {
+                        this.yaw = locationOffset.second.first
+                        this.pitch = locationOffset.second.second
+                    },
+                    animation.audience
+                ) {}
+            }.toMutableList()
+        )
+    }
 
     var hologram = initializeHologram()
 
