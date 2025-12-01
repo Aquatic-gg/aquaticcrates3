@@ -1,12 +1,15 @@
 package gg.aquatic.aquaticcrates.plugin;
 
+import com.google.common.util.concurrent.AsyncCallable;
 import gg.aquatic.aquaticcrates.api.AbstractCratesPlugin;
 import gg.aquatic.aquaticcrates.api.PluginSettings;
 import gg.aquatic.aquaticcrates.api.crate.CrateHandler;
 import gg.aquatic.aquaticcrates.api.crate.OpenableCrate;
 import gg.aquatic.aquaticcrates.api.crate.SpawnedCrate;
+import gg.aquatic.aquaticcrates.plugin.animation.open.AnimationManagerImpl;
 import gg.aquatic.aquaticcrates.plugin.log.LogMenuSettings;
 import gg.aquatic.aquaticcrates.plugin.reward.menu.RewardsMenuSettings;
+import gg.aquatic.waves.util.task.AsyncCtx;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.CompletableFuture;
@@ -47,17 +50,12 @@ public class CratesPlugin extends AbstractCratesPlugin {
 
         for (Object value : CrateHandler.INSTANCE.getCrates().values()) {
             if (value instanceof OpenableCrate) {
-                ((OpenableCrate) value).getAnimationManager().forceStopAllAnimations();
+                AnimationManagerImpl.AnimationCtx.INSTANCE.launch((f,f1) -> ((OpenableCrate) value).getAnimationManager().forceStopAllAnimations(f1));
             }
         }
 
         CrateHandler.INSTANCE.getCrates().clear();
-
-        for (SpawnedCrate value : CrateHandler.INSTANCE.getSpawned().values()) {
-            value.destroy();
-        }
-
-        CrateHandler.INSTANCE.getSpawned().clear();
+        CrateHandler.INSTANCE.destroyCrates();
 
         return Bootstrap.INSTANCE.load$plugin().thenApply(v -> true);
     }

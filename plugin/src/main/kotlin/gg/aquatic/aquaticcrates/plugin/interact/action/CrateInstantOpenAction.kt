@@ -6,6 +6,7 @@ import gg.aquatic.waves.util.action.RegisterAction
 import gg.aquatic.waves.util.argument.AquaticObjectArgument
 import gg.aquatic.waves.util.argument.ObjectArguments
 import gg.aquatic.waves.util.generic.Action
+import gg.aquatic.waves.util.task.AsyncCtx
 
 @RegisterAction("open-crate-instant")
 class CrateInstantOpenAction: Action<CrateInteractAction> {
@@ -20,7 +21,9 @@ class CrateInstantOpenAction: Action<CrateInteractAction> {
         val crate = binder.crate
         val player = binder.player
         if (crate is OpenableCrate) {
-            crate.tryInstantOpen(player, binder.interactedLocation, binder.spawnedCrate)
+            AsyncCtx {
+                crate.tryInstantOpen(player, binder.interactedLocation, binder.spawnedCrate)
+            }
         }
     }
 

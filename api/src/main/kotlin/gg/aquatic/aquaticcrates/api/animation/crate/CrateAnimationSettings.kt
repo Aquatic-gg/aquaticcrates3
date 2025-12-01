@@ -21,7 +21,7 @@ abstract class CrateAnimationSettings {
 
     abstract suspend fun create(player: Player, animationManager: CrateAnimationManager, location: Location, rolledRewards: MutableList<RolledReward>): CrateAnimation
 
-    abstract fun canBeOpened(player: Player, animationManager: CrateAnimationManager, location: Location): AnimationResult
+    abstract suspend fun canBeOpened(player: Player, animationManager: CrateAnimationManager, location: Location): AnimationResult
 
     enum class AnimationResult {
         ALREADY_BEING_OPENED,

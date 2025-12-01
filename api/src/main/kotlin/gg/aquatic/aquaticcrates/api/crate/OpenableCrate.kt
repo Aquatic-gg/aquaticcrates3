@@ -14,8 +14,8 @@ abstract class OpenableCrate : Crate(), Rewardable {
     abstract val animationManager: CrateAnimationManager
     abstract val defaultRewardShowcase: RewardShowcase?
 
-    abstract fun tryInstantOpen(player: Player, location: org.bukkit.Location, spawnedCrate: SpawnedCrate?)
-    abstract fun instantOpen(player: Player, location: org.bukkit.Location, spawnedCrate: SpawnedCrate?)
+    abstract suspend fun tryInstantOpen(player: Player, location: org.bukkit.Location, spawnedCrate: SpawnedCrate?)
+    abstract suspend fun instantOpen(player: Player, location: org.bukkit.Location, spawnedCrate: SpawnedCrate?)
     abstract suspend fun tryOpen(player: Player, location: org.bukkit.Location, spawnedCrate: SpawnedCrate?)
     abstract suspend fun open(player: Player, location: org.bukkit.Location, spawnedCrate: SpawnedCrate?)
     abstract suspend fun tryMassOpen(player: Player, amount: Int)

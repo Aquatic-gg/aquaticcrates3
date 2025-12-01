@@ -1,6 +1,7 @@
 package gg.aquatic.aquaticcrates.plugin.animation.fail
 
 import gg.aquatic.aquaticcrates.api.crate.SpawnedCrate
+import gg.aquatic.aquaticcrates.plugin.animation.open.AnimationManagerImpl
 import gg.aquatic.waves.scenario.PlayerScenario
 import gg.aquatic.waves.util.generic.ConfiguredExecutableObject
 import gg.aquatic.waves.util.runLaterSync
@@ -19,14 +20,17 @@ class FailAnimationSettings (
             spawnedCrate
         )
 
-        animation.tick()
-        runLaterSync(1) {
-            spawnedCrate.forceHide(player, true)
+        AnimationManagerImpl.AnimationCtx.launch {
+            animation.tick()
+            runLaterSync(1) {
+                spawnedCrate.forceHide(player, true)
+            }
+
+            animation.future.thenRun {
+                spawnedCrate.forceHide(player, false)
+            }
         }
 
-        animation.future.thenRun {
-            spawnedCrate.forceHide(player, false)
-        }
 
         return animation
     }

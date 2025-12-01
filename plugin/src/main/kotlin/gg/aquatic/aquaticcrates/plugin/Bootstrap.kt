@@ -11,6 +11,7 @@ import gg.aquatic.aquaticcrates.api.player.CrateProfileModule
 import gg.aquatic.aquaticcrates.api.player.HistoryHandler
 import gg.aquatic.aquaticcrates.api.reroll.RerollManager
 import gg.aquatic.aquaticcrates.plugin.animation.condition.CustomCondition
+import gg.aquatic.aquaticcrates.plugin.animation.open.AnimationManagerImpl
 import gg.aquatic.aquaticcrates.plugin.animation.prop.inventory.AnimationMenu
 import gg.aquatic.aquaticcrates.plugin.awaiters.*
 import gg.aquatic.aquaticcrates.plugin.command.*
@@ -33,8 +34,6 @@ import gg.aquatic.waves.api.event.event
 import gg.aquatic.waves.api.event.packet.PacketContainerContentEvent
 import gg.aquatic.waves.api.event.packet.PacketContainerSetSlotEvent
 import gg.aquatic.waves.api.event.packet.PacketInteractEvent
-import gg.aquatic.waves.command.AquaticBaseCommand
-import gg.aquatic.waves.command.register
 import gg.aquatic.waves.inventory.InventoryManager
 import gg.aquatic.waves.inventory.event.AsyncPacketInventoryCloseEvent
 import gg.aquatic.waves.profile.ProfilesModule
@@ -60,8 +59,6 @@ import java.io.File
 import java.net.URLDecoder
 import java.util.*
 import java.util.concurrent.CompletableFuture
-import java.util.concurrent.Executors
-import java.util.concurrent.TimeUnit
 import java.util.jar.JarFile
 
 object Bootstrap {
@@ -157,27 +154,34 @@ object Bootstrap {
         }
 
         event<PlayerQuitEvent> {
-            for (crate in CrateHandler.crates.values) {
-                if (crate is OpenableCrate) {
-                    crate.animationManager.forceStopAllAnimationTypes(it.player)
+            AnimationManagerImpl.AnimationCtx.launch {
+                for (crate in CrateHandler.crates.values) {
+                    if (crate is OpenableCrate) {
+                        crate.animationManager.forceStopAllAnimationTypes(it.player)
+                    }
                 }
             }
+
         }
         event<PlayerToggleSneakEvent> {
             if (it.isSneaking) {
-                var animationhandler: CrateAnimationManager? = null
-                for (crate in CrateHandler.crates.values) {
-                    if (crate is OpenableCrate) {
-                        if (crate.animationManager.playingAnimations.containsKey(it.player.uniqueId)) {
-                            animationhandler = crate.animationManager
-                            break
+                AnimationManagerImpl.AnimationCtx.launch {
+                    var animationhandler: CrateAnimationManager? = null
+                    for (crate in CrateHandler.crates.values) {
+                        if (crate is OpenableCrate) {
+                            if (crate.animationManager.playingAnimations().containsKey(it.player.uniqueId)) {
+                                animationhandler = crate.animationManager
+                                break
+                            }
                         }
                     }
-                }
-                if (animationhandler != null) {
-                    if (InteractionInputHandler.onSneak(it)) return@event
-                    if (animationhandler.animationSettings.skippable) {
-                        animationhandler.skipAnimation(it.player)
+                    if (animationhandler != null) {
+                        if (InteractionInputHandler.onSneak(it)) return@launch
+                        if (animationhandler.animationSettings.skippable) {
+                            AnimationManagerImpl.AnimationCtx.launch {
+                                animationhandler.skipAnimation(it.player)
+                            }
+                        }
                     }
                 }
             }
@@ -235,7 +239,7 @@ object Bootstrap {
             var isInAnimation = false
             for (crate in CrateHandler.crates.values) {
                 if (crate is OpenableCrate) {
-                    if (crate.animationManager.playingAnimations.containsKey(player.uniqueId)) {
+                    if (crate.animationManager.playingAnimationsUnsafe().containsKey(player.uniqueId)) {
                         isInAnimation = true
                         break
                     }
@@ -244,7 +248,6 @@ object Bootstrap {
 
             if (isInAnimation) {
                 it.isCancelled = true
-                return@event
             }
         }
 
@@ -264,7 +267,7 @@ object Bootstrap {
             var isInAnimation = false
             for (crate in CrateHandler.crates.values) {
                 if (crate is OpenableCrate) {
-                    if (crate.animationManager.playingAnimations.containsKey(player.uniqueId)) {
+                    if (crate.animationManager.playingAnimationsUnsafe().containsKey(player.uniqueId)) {
                         isInAnimation = true
                         break
                     }
@@ -291,18 +294,21 @@ object Bootstrap {
         event<PacketInteractEvent> {
             val player = it.player
             var isInAnimation = false
-            for (crate in CrateHandler.crates.values) {
-                if (crate is OpenableCrate) {
-                    if (crate.animationManager.playingAnimations.containsKey(player.uniqueId)) {
-                        isInAnimation = true
-                        break
+            AnimationManagerImpl.AnimationCtx.launch {
+                for (crate in CrateHandler.crates.values) {
+                    if (crate is OpenableCrate) {
+                        if (crate.animationManager.playingAnimations().containsKey(player.uniqueId)) {
+                            isInAnimation = true
+                            break
+                        }
                     }
                 }
+                if (isInAnimation) {
+                    it.isCancelled = true
+                    InteractionInputHandler.onInteract(it)
+                }
             }
-            if (isInAnimation) {
-                it.isCancelled = true
-                InteractionInputHandler.onInteract(it)
-            }
+
         }
         event<PacketContainerSetSlotEvent> {
             val player = it.player
@@ -314,7 +320,7 @@ object Bootstrap {
                 if (value !is OpenableCrate) {
                     continue
                 }
-                val animations = value.animationManager.playingAnimations[player.uniqueId] ?: continue
+                val animations = value.animationManager.playingAnimationsUnsafe()[player.uniqueId] ?: continue
                 for (animation1 in animations) {
                     if (animation1.phase is CrateAnimation.FinalPhase) continue
                     if (animation1.playerEquipment.isNotEmpty()) {
@@ -335,26 +341,28 @@ object Bootstrap {
 
             var animation: CrateAnimation? = null
 
-            for (value in CrateHandler.crates.values) {
-                if (value !is OpenableCrate) {
-                    continue
-                }
-                val animations = value.animationManager.playingAnimations[player.uniqueId] ?: continue
-                for (animation1 in animations) {
-                    if (animation1.phase is CrateAnimation.FinalPhase) continue
-                    if (animation1.playerEquipment.isNotEmpty()) {
-                        animation = animation1
-                        break
+            AnimationManagerImpl.AnimationCtx.launch {
+                for (value in CrateHandler.crates.values) {
+                    if (value !is OpenableCrate) {
+                        continue
+                    }
+                    val animations = value.animationManager.playingAnimations()[player.uniqueId] ?: continue
+                    for (animation1 in animations) {
+                        if (animation1.phase is CrateAnimation.FinalPhase) continue
+                        if (animation1.playerEquipment.isNotEmpty()) {
+                            animation = animation1
+                            break
+                        }
                     }
                 }
-            }
 
-            animation ?: return@event
-            if (animation.phase is CrateAnimation.FinalPhase) return@event
+                animation ?: return@launch
+                if (animation.phase is CrateAnimation.FinalPhase) return@launch
 
-            animation.playerEquipment.forEach { (slot, equipment) ->
-                val intSlot = slot.toSlot(player)
-                it.contents[intSlot] = equipment
+                animation.playerEquipment.forEach { (slot, equipment) ->
+                    val intSlot = slot.toSlot(player)
+                    it.contents[intSlot] = equipment
+                }
             }
         }
     }
@@ -362,9 +370,11 @@ object Bootstrap {
     private fun startTicker() {
         runAsyncTimer(1,1) {
             try {
-                for ((_, crate) in CrateHandler.crates) {
-                    if (crate is OpenableCrate) {
-                        crate.animationManager.tick()
+                AnimationManagerImpl.AnimationCtx.launch {
+                    for ((_, crate) in CrateHandler.crates) {
+                        if (crate is OpenableCrate) {
+                            crate.animationManager.tick()
+                        }
                     }
                 }
             } catch (ex: Exception) {

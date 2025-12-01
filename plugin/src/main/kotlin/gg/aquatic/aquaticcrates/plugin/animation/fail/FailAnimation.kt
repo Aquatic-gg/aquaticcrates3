@@ -25,16 +25,14 @@ class FailAnimation(
     override val audience = FilterAudience { p -> p == player }
     override val props: MutableMap<Key, ScenarioProp> = ConcurrentHashMap()
 
-    override fun onTick() {
+    override suspend fun onTick() {
         tickProps()
         settings.animationTasks[tick]?.executeActions(this) { a, str -> a.updatePlaceholders(str) }
 
         if (tick > settings.length) {
-            val fail = (spawnedCrate.crate as OpenableCrate).animationManager.failAnimations[spawnedCrate]
-            fail?.remove(player.uniqueId)
-
-            props.values.forEach { it.onEnd() }
-            future.complete(this)
+            if ((spawnedCrate.crate as OpenableCrate).animationManager.stopFailAnimation(spawnedCrate, player)) {
+                future.complete(this)
+            }
         }
     }
 

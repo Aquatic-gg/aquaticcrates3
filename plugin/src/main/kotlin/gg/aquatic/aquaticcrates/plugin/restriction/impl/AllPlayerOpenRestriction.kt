@@ -20,6 +20,7 @@ class AllPlayerOpenRestriction: OpenRestriction() {
         val player = binder.player
         val location = binder.location ?: return true
 
+        /*
         val playerAnimations = mutableListOf<CrateAnimation>()
         for ((_,cr) in CrateHandler.crates) {
             if (cr !is OpenableCrate) continue
@@ -31,6 +32,8 @@ class AllPlayerOpenRestriction: OpenRestriction() {
             if (playerAnimation.baseLocation.world != location.world) continue
             if (playerAnimation.baseLocation.distanceSquared(location) <= radius * radius) return false
         }
+
+         */
         return true
     }
 

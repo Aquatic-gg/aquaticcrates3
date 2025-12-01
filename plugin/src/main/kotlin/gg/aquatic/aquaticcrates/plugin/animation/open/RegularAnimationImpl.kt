@@ -38,20 +38,22 @@ class RegularAnimationImpl(
         val rerollManager = animationManager.rerollManager!!
 
         rerollManager.openReroll(player, this, rewards).thenAcceptAsync { result ->
-            if (result.reroll) {
-                updatePhase(OpeningPhase())
-                rewards.clear()
-                for ((_, prop) in props) {
-                    prop.onEnd()
+            AnimationManagerImpl.AnimationCtx.launch {
+                if (result.reroll) {
+                    updatePhase(OpeningPhase())
+                    rewards.clear()
+                    for ((_, prop) in props) {
+                        prop.onEnd()
+                    }
+                    props.clear()
+                    rewards += crate.rewardManager.getRewards(player)
+                    tick()
+                } else {
+                    updatePhase(PostOpenPhase())
+                    tick()
                 }
-                props.clear()
-                rewards += crate.rewardManager.getRewards(player)
-                tick()
-            } else {
-                updatePhase(PostOpenPhase())
-                tick()
+                usedRerolls++
             }
-            usedRerolls++
         }.exceptionally {
             it.printStackTrace()
             null

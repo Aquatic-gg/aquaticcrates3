@@ -2,6 +2,7 @@ package gg.aquatic.aquaticcrates.plugin.animation.idle
 
 import gg.aquatic.aquaticcrates.api.crate.OpenableCrate
 import gg.aquatic.aquaticcrates.api.crate.SpawnedCrate
+import gg.aquatic.aquaticcrates.plugin.animation.open.AnimationManagerImpl
 import gg.aquatic.waves.scenario.Scenario
 import gg.aquatic.waves.scenario.ScenarioProp
 import gg.aquatic.waves.util.audience.AquaticAudience
@@ -17,19 +18,20 @@ class IdleAnimationImpl(
     override val audience: AquaticAudience = crate.audience
     override val props: MutableMap<Key, ScenarioProp> = ConcurrentHashMap()
 
-    override fun onTick() {
+    override suspend fun onTick() {
         tickProps()
         settings.animationTasks[tick]?.executeActions(this) { a, str ->
             a.updatePlaceholders(str)
         }
-
         if (tick > settings.length) {
             if (settings.isLoop) {
                 tick = 0
                 return
             }
             props.values.forEach { it.onEnd() }
-            (crate.crate as OpenableCrate).animationManager.playNewIdleAnimation(crate)
+            AnimationManagerImpl.AnimationCtx.launch {
+                (crate.crate as OpenableCrate).animationManager.playNewIdleAnimation(crate)
+            }
         }
     }
 

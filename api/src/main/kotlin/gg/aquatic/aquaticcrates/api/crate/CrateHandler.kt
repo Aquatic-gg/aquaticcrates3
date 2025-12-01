@@ -2,15 +2,15 @@ package gg.aquatic.aquaticcrates.api.crate
 
 import gg.aquatic.waves.util.Config
 import gg.aquatic.waves.util.location.AquaticLocation
+import gg.aquatic.waves.util.task.AsyncCtx
 import org.bukkit.Location
 import org.bukkit.World
-import java.util.concurrent.ConcurrentHashMap
 
 object CrateHandler {
 
-    val crates = ConcurrentHashMap<String, Crate>()
-    val cratesToSpawn = ConcurrentHashMap<String, HashMap<AquaticLocation, Crate>>()
-    val spawned = ConcurrentHashMap<Location, SpawnedCrate>()
+    val crates = HashMap<String, Crate>()
+    private val cratesToSpawn = HashMap<String, HashMap<AquaticLocation, Crate>>()
+    val spawned = HashMap<Location, SpawnedCrate>()
 
     fun spawnCrate(crate: Crate, location: Location): SpawnedCrate {
         val spawnedCrate = SpawnedCrate(crate, location)
@@ -55,6 +55,16 @@ object CrateHandler {
                     continue
                 }
                 cratesToSpawn.getOrPut(key) { HashMap() }[loc] = crate
+            }
+        }
+    }
+
+    fun destroyCrates() {
+        val toDestroy = spawned.values.toList()
+        spawned.clear()
+        AsyncCtx {
+            for (entry in toDestroy) {
+                entry.destroy()
             }
         }
     }

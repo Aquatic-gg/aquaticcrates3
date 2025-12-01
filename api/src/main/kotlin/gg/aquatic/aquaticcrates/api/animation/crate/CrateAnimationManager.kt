@@ -7,7 +7,6 @@ import gg.aquatic.waves.scenario.PlayerScenario
 import gg.aquatic.waves.scenario.Scenario
 import org.bukkit.entity.Player
 import java.util.*
-import java.util.concurrent.ConcurrentHashMap
 
 abstract class CrateAnimationManager {
 
@@ -15,22 +14,30 @@ abstract class CrateAnimationManager {
     abstract val animationSettings: CrateAnimationSettings
     abstract val rerollManager: RerollManager?
 
-    abstract fun playNewIdleAnimation(spawnedCrate: SpawnedCrate)
-    abstract fun playFailAnimation(spawnedCrate: SpawnedCrate, player: Player)
+    abstract suspend fun playNewIdleAnimation(spawnedCrate: SpawnedCrate)
+    abstract suspend fun playFailAnimation(spawnedCrate: SpawnedCrate, player: Player)
 
-    abstract val playingAnimations: ConcurrentHashMap<UUID, MutableSet<CrateAnimation>>
-    abstract val idleAnimation: ConcurrentHashMap<SpawnedCrate, Scenario>
-    abstract val failAnimations: ConcurrentHashMap<SpawnedCrate,ConcurrentHashMap<UUID, PlayerScenario>>
-    abstract fun playAnimation(animation: CrateAnimation)
+    abstract suspend fun playingAnimations(): HashMap<UUID, MutableSet<CrateAnimation>>
+    abstract fun playingAnimationsUnsafe(): Map<UUID, MutableSet<CrateAnimation>>
 
-    abstract fun skipAnimation(player: Player)
+    abstract suspend fun stopPlayingAnimation(player: Player, animation: CrateAnimation)
 
-    abstract fun forceStopAnimation(player: Player)
-    abstract fun forceStopAnimations()
+    abstract suspend fun idleAnimation(): HashMap<SpawnedCrate, Scenario>
+    abstract suspend fun stopIdleAnimations(crate: SpawnedCrate)
+    abstract suspend fun failAnimations(): HashMap<SpawnedCrate,HashMap<UUID, PlayerScenario>>
+    abstract suspend fun stopFailAnimations(crate: SpawnedCrate)
+    abstract suspend fun stopFailAnimation(crate: SpawnedCrate, player: Player): Boolean
 
-    abstract fun forceStopAllAnimationTypes(player: Player)
-    abstract fun forceStopAllAnimations()
+    abstract suspend fun playAnimation(animation: CrateAnimation)
 
-    abstract fun tick()
+    abstract suspend fun skipAnimation(player: Player)
+
+    abstract suspend fun forceStopAnimation(player: Player)
+    abstract suspend fun forceStopAnimations()
+
+    abstract suspend fun forceStopAllAnimationTypes(player: Player)
+    abstract suspend fun forceStopAllAnimations()
+
+    abstract suspend fun tick()
 
 }

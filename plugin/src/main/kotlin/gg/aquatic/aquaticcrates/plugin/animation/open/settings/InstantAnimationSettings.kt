@@ -49,7 +49,7 @@ class InstantAnimationSettings(
         return@withContext anim
     }
 
-    override fun canBeOpened(
+    override suspend fun canBeOpened(
         player: Player,
         animationManager: CrateAnimationManager,
         location: Location

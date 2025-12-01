@@ -88,11 +88,11 @@ class CinematicAnimationSettings(
         animation.props[Key.key("camera")] = cameraProp
 
         animationManager.playAnimation(animation)
-        animation.completionFuture.join()
+        animation
     }
 
-    override fun canBeOpened(player: Player, animationManager: CrateAnimationManager, location: Location): AnimationResult {
-        if (animationManager.playingAnimations.containsKey(player.uniqueId)) return AnimationResult.ALREADY_BEING_OPENED
+    override suspend fun canBeOpened(player: Player, animationManager: CrateAnimationManager, location: Location): AnimationResult {
+        if (animationManager.playingAnimations().containsKey(player.uniqueId)) return AnimationResult.ALREADY_BEING_OPENED
         return AnimationResult.SUCCESS
     }
 

@@ -18,6 +18,7 @@ class PlayerOpenRestriction: OpenRestriction() {
         val location = binder.location ?: return true
         val crate = binder.crate
 
+        /*
         val playerAnimations = crate.animationManager.playingAnimations[player.uniqueId] ?: return true
         if (playerAnimations.isEmpty()) return true
 
@@ -25,6 +26,7 @@ class PlayerOpenRestriction: OpenRestriction() {
             if (playerAnimation.baseLocation.world != location.world) continue
             if (playerAnimation.baseLocation.distanceSquared(location) <= radius * radius) return false
         }
+         */
         return true
     }
 }

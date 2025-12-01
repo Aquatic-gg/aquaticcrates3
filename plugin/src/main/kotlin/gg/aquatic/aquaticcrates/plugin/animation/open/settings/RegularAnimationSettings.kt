@@ -69,25 +69,28 @@ class RegularAnimationSettings(
         }
 
         animationManager.playAnimation(animation)
-        animation.completionFuture.join()
-
-        BukkitCtx {
-            if (!personal) {
-                spawnedCrate?.forceHide(false)
-            } else {
-                spawnedCrate?.forceHide(player, false)
+        animation.completionFuture.thenRun {
+            BukkitCtx {
+                if (!personal) {
+                    spawnedCrate?.forceHide(false)
+                } else {
+                    spawnedCrate?.forceHide(player, false)
+                }
             }
         }
+
         animation
     }
 
-    override fun canBeOpened(
+    override suspend fun canBeOpened(
         player: Player,
         animationManager: CrateAnimationManager,
         location: Location
     ): AnimationResult {
-        if (animationManager.playingAnimations.isNotEmpty() && !personal) return AnimationResult.ALREADY_BEING_OPENED_OTHER
-        if (personal && animationManager.playingAnimations.containsKey(player.uniqueId)) return AnimationResult.ALREADY_BEING_OPENED
+
+        val animations = animationManager.playingAnimations()
+        if (animations.isNotEmpty() && !personal) return AnimationResult.ALREADY_BEING_OPENED_OTHER
+        if (personal && animations.containsKey(player.uniqueId)) return AnimationResult.ALREADY_BEING_OPENED
         return AnimationResult.SUCCESS
     }
 

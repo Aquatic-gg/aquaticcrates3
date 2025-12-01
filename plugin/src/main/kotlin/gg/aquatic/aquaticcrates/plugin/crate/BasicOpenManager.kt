@@ -8,6 +8,7 @@ import gg.aquatic.aquaticcrates.api.player.HistoryHandler
 import gg.aquatic.aquaticcrates.api.player.crateEntry
 import gg.aquatic.aquaticcrates.api.reward.Reward
 import gg.aquatic.aquaticcrates.api.reward.RolledReward
+import gg.aquatic.aquaticcrates.plugin.CratesPlugin
 import gg.aquatic.aquaticcrates.plugin.animation.open.settings.InstantAnimationSettings
 import gg.aquatic.aquaticcrates.plugin.reward.RewardManagerImpl
 import gg.aquatic.aquaticcrates.plugin.reward.RolledRewardImpl
@@ -22,6 +23,10 @@ import gg.aquatic.waves.util.collection.executeActions
 import gg.aquatic.waves.util.collection.mapPair
 import gg.aquatic.waves.util.task.AsyncCtx
 import gg.aquatic.waves.util.task.BukkitCtx
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
@@ -31,15 +36,15 @@ import org.bukkit.Location
 import org.bukkit.entity.Player
 import java.math.BigInteger
 import java.util.concurrent.CompletableFuture
+import java.util.concurrent.Executors
 import java.util.concurrent.ThreadLocalRandom
 import kotlin.coroutines.CoroutineContext
 import kotlin.math.max
 import kotlin.math.min
-import kotlin.time.measureTime
 
 class BasicOpenManager(val crate: BasicCrate) {
 
-    suspend fun instantOpen(player: Player) = withContext(AsyncCtx) {
+    suspend fun instantOpen(player: Player) = withContext(CacheCtx) {
         val profile = player.toAquaticPlayer()?.crateEntry() ?: return@withContext
 
         CrateOpenEvent(crate, player).callEvent()
@@ -84,7 +89,7 @@ class BasicOpenManager(val crate: BasicCrate) {
         InstantAnimationSettings.execute(player, crate.animationManager)
     }
 
-    suspend fun open(player: Player, location: Location) = withContext(AsyncCtx) {
+    suspend fun open(player: Player, location: Location) = withContext(CacheCtx) {
         val profile = player.toAquaticPlayer()?.crateEntry() ?: return@withContext
 
         val rewards = crate.rewardManager.getRewards(player)
@@ -121,7 +126,7 @@ class BasicOpenManager(val crate: BasicCrate) {
         return null
     }
 
-    suspend fun massOpen(player: Player, amount: Int) = withContext(AsyncCtx) {
+    suspend fun massOpen(player: Player, amount: Int) = withContext(CacheCtx) {
         val threads = idealThreads()
         //val wonRewards = ConcurrentHashMap<Reward, Pair<AtomicInteger, AtomicInteger>>()
         val allRewards = crate.rewardManager.rewards.values
@@ -305,5 +310,45 @@ class BasicOpenManager(val crate: BasicCrate) {
                 block(start until end)
             }
         }.filterNotNull().awaitAll()
+    }
+
+    object CacheCtx : CoroutineDispatcher() {
+
+        // Single worker thread dedicated to cache operations
+        private val executor = Executors.newSingleThreadExecutor(
+            Thread.ofPlatform()
+                .name("Cache-Worker", 0)
+                .daemon(true)
+                .uncaughtExceptionHandler { t, e ->
+                    CratesPlugin.getInstance().logger.severe("Unhandled exception on $t in CacheCtx")
+                    e.printStackTrace()
+                }
+                .factory()
+        )
+
+        val scope = CoroutineScope(
+            this + SupervisorJob() + CoroutineExceptionHandler { _, e ->
+                CratesPlugin.getInstance().logger.severe("Coroutine exception in CacheCtx")
+                e.printStackTrace()
+            }
+        )
+
+        override fun isDispatchNeeded(context: CoroutineContext): Boolean = true
+
+        override fun dispatch(context: CoroutineContext, block: Runnable) {
+            executor.execute(block)
+        }
+
+        // Public helpers
+
+        fun launch(block: suspend CoroutineScope.() -> Unit) = scope.launch(block = block)
+
+        fun post(task: () -> Unit) {
+            executor.execute(task)
+        }
+
+        fun shutdown() {
+            executor.shutdown()
+        }
     }
 }

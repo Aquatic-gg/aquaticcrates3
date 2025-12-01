@@ -14,7 +14,6 @@ import gg.aquatic.waves.util.generic.ConfiguredExecutableObject
 import gg.aquatic.waves.util.task.AsyncCtx
 import gg.aquatic.waves.util.task.BukkitCtx
 import gg.aquatic.waves.util.updatePAPIPlaceholders
-import kotlinx.coroutines.launch
 import net.kyori.adventure.key.Key
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
@@ -53,7 +52,7 @@ abstract class CrateAnimation : PlayerScenario() {
 
     var phase: Phase = PreOpenPhase()
 
-    override fun onTick() {
+    override suspend fun onTick() {
         phase.tick()
     }
 
@@ -63,7 +62,7 @@ abstract class CrateAnimation : PlayerScenario() {
     val playerEquipment = ConcurrentHashMap<EquipmentSlot, ItemStack>()
 
     inner class PreOpenPhase : Phase {
-        override fun tick() {
+        override suspend fun tick() {
             tickPreOpen()
             if (tick >= settings.preAnimationDelay) {
                 val event =
@@ -83,7 +82,7 @@ abstract class CrateAnimation : PlayerScenario() {
     }
 
     inner class OpeningPhase : Phase {
-        override fun tick() {
+        override suspend fun tick() {
             tickOpening()
             if (tick >= settings.animationLength) {
                 tryReroll()
@@ -94,7 +93,7 @@ abstract class CrateAnimation : PlayerScenario() {
     }
 
     inner class PostOpenPhase : Phase {
-        override fun tick() {
+        override suspend fun tick() {
             tickPostOpen()
             if (tick >= settings.postAnimationDelay) {
                 finalizeAnimation()
@@ -105,18 +104,18 @@ abstract class CrateAnimation : PlayerScenario() {
     }
 
     inner class RollingPhase : Phase {
-        override fun tick() {
+        override suspend fun tick() {
 
         }
     }
 
     inner class FinalPhase : Phase {
-        override fun tick() {
+        override suspend fun tick() {
 
         }
     }
 
-    fun tryReroll() {
+    suspend fun tryReroll() {
         val crate = animationManager.crate
 
         if (crate !is OpenableCrate) {
@@ -141,7 +140,7 @@ abstract class CrateAnimation : PlayerScenario() {
 
     abstract fun onReroll()
 
-    fun finalizeAnimation() {
+    suspend fun finalizeAnimation() {
         updatePhase(FinalPhase())
 
         val eventRunnable = {
@@ -159,7 +158,6 @@ abstract class CrateAnimation : PlayerScenario() {
             onFinalize()
         }
         executeActions(settings.finalAnimationTasks)
-        destroy()
         val block = {
             for (reward in rewards) {
                 runOrCatch {
@@ -176,18 +174,13 @@ abstract class CrateAnimation : PlayerScenario() {
             }
         }
 
-        animationManager.playingAnimations[player.uniqueId]?.let {
-            it.remove(this)
-            if (it.isEmpty()) {
-                animationManager.playingAnimations.remove(player.uniqueId)
-            }
-        }
+        animationManager.stopPlayingAnimation(player,this)
         completionFuture.complete(this)
     }
 
     open fun onFinalize() {}
 
-    fun updatePhase(phase: Phase) {
+    suspend fun updatePhase(phase: Phase) {
         onPhaseUpdate(phase)
         this.phase = phase
         tick = 0
@@ -226,7 +219,7 @@ abstract class CrateAnimation : PlayerScenario() {
 
     var usedRerolls = 0
 
-    fun skip() {
+    suspend fun skip() {
         if (phase is RollingPhase || phase is FinalPhase) return
         tryReroll()
     }

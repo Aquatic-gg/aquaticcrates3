@@ -92,7 +92,7 @@ object BaseCommand : KotlinBaseStellarCommand(
                     { CrateHandler.crates.keys.toList() },
                 ) {
                     allPlayersArgument("player", true) {
-                        asyncRunnable<Player> {
+                        asyncRunnable<CommandSender> {
                             val crateId: String by args
                             val player: Player by args
 
@@ -146,7 +146,7 @@ object BaseCommand : KotlinBaseStellarCommand(
                     "crateId",
                     { CrateHandler.crates.keys.toList() },
                 ) {
-                    asyncRunnable<Player> {
+                    asyncRunnable<CommandSender> {
                         val crateId: String by args
                         val amount = getOrNull<Int>("amount") ?: 1
                         val flags = getOrNull<String>("flags") ?: ""

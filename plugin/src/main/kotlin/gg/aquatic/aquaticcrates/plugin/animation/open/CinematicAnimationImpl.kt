@@ -6,6 +6,7 @@ import gg.aquatic.aquaticcrates.api.crate.OpenableCrate
 import gg.aquatic.aquaticcrates.api.reward.RolledReward
 import gg.aquatic.aquaticcrates.plugin.animation.open.settings.CinematicAnimationSettings
 import gg.aquatic.aquaticcrates.plugin.animation.prop.CameraAnimationProp
+import gg.aquatic.aquaticcrates.plugin.crate.BasicOpenManager
 import gg.aquatic.waves.scenario.ScenarioProp
 import gg.aquatic.waves.util.audience.AquaticAudience
 import gg.aquatic.waves.util.task.BukkitCtx
@@ -44,27 +45,29 @@ class CinematicAnimationImpl(
         val crate = animationManager.crate as OpenableCrate
         val rerollManager = animationManager.rerollManager!!
         rerollManager.openReroll(player, this, rewards).thenAccept { result ->
-            if (result.reroll) {
-                for ((_, prop) in props) {
-                    if (prop is CameraAnimationProp) {
-                        prop.boundPaths.clear()
-                        continue
+            AnimationManagerImpl.AnimationCtx.launch {
+                if (result.reroll) {
+                    for ((_, prop) in props) {
+                        if (prop is CameraAnimationProp) {
+                            prop.boundPaths.clear()
+                            continue
+                        }
+                        prop.onEnd()
                     }
-                    prop.onEnd()
+                    props.toList().forEach { if (it.first != Key.key("camera")) props.remove(it.first) }
+
+                    rewards.clear()
+                    updatePhase(OpeningPhase())
+
+                    rewards += crate.rewardManager.getRewards(player)
+                    tick()
+                } else {
+                    updatePhase(PostOpenPhase())
+                    tick()
                 }
-                props.toList().forEach { if (it.first != Key.key("camera")) props.remove(it.first) }
 
-                rewards.clear()
-                updatePhase(OpeningPhase())
-
-                rewards += crate.rewardManager.getRewards(player)
-                tick()
-            } else {
-                updatePhase(PostOpenPhase())
-                tick()
+                usedRerolls++
             }
-
-            usedRerolls++
         }
     }
 

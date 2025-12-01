@@ -2,10 +2,12 @@ package gg.aquatic.aquaticcrates.api.crate
 
 import gg.aquatic.aquaticcrates.api.util.ACGlobalAudience
 import gg.aquatic.waves.item.AquaticItemInteractEvent
+import gg.aquatic.waves.util.task.AsyncCtx
 import gg.aquatic.waves.util.updatePAPIPlaceholders
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.entity.Player
+import java.util.concurrent.CompletableFuture
 
 class SpawnedCrate(
     val crate: Crate,
@@ -40,25 +42,20 @@ class SpawnedCrate(
             str.updatePAPIPlaceholders(p)
         }
 
-        if (crate is OpenableCrate) {
-            crate.animationManager.playNewIdleAnimation(this)
+        AsyncCtx {
+            if (crate is OpenableCrate) {
+                crate.animationManager.playNewIdleAnimation(this@SpawnedCrate)
+            }
         }
     }
 
-    fun destroy() {
+    suspend fun destroy() {
+        if (crate is OpenableCrate) {
+            crate.animationManager.stopFailAnimations(this)
+            crate.animationManager.stopIdleAnimations(this)
+        }
         for (spawnedInteractable in spawnedInteractables) {
             spawnedInteractable.destroy()
-        }
-        if (crate is OpenableCrate) {
-            crate.animationManager.failAnimations.remove(this)?.let { animations ->
-                for (value in animations.values) {
-                    value.props.forEach { it.value.onEnd() }
-                }
-                animations.clear()
-            }
-            crate.animationManager.idleAnimation.remove(this)?.let { animation ->
-                animation.props.forEach { it.value.onEnd() }
-            }
         }
         hologram?.despawn()
     }

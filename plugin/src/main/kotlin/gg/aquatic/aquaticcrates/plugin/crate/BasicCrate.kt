@@ -34,6 +34,7 @@ import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.ItemStack
+import java.util.concurrent.CompletableFuture
 
 class BasicCrate(
     override val identifier: String,
@@ -93,28 +94,25 @@ class BasicCrate(
         }
     }
 
-    override fun tryInstantOpen(
+    override suspend fun tryInstantOpen(
         player: Player,
         location: Location,
         spawnedCrate: SpawnedCrate?
     ) {
-        if (!canBeOpened(player, 1, OpenData(player, null, this))) {
-            return
-        }
+        if (!canBeOpened(player, 1, OpenData(player, null, this))) return
         instantOpen(player, location, spawnedCrate)
     }
 
-    override fun instantOpen(
+    override suspend fun instantOpen(
         player: Player,
         location: Location,
         spawnedCrate: SpawnedCrate?
     ) {
-        AsyncCtx {
-            openManager.instantOpen(player)
-        }
+        openManager.instantOpen(player)
     }
 
-    override suspend fun tryOpen(player: Player, location: Location, spawnedCrate: SpawnedCrate?) = withContext(AsyncCtx) {
+    override suspend fun tryOpen(player: Player, location: Location, spawnedCrate: SpawnedCrate?): Unit = withContext(
+        BasicOpenManager.CacheCtx) {
         if (!canBeOpened(player, 1, OpenData(player, location, this@BasicCrate))) {
             spawnedCrate?.let {
                 animationManager.playFailAnimation(it, player)
@@ -128,24 +126,17 @@ class BasicCrate(
         player: Player,
         location: Location,
         spawnedCrate: SpawnedCrate?
-    ) = withContext(AsyncCtx) {
+    ) = withContext(BasicOpenManager.CacheCtx) {
         openManager.open(player, location)
     }
 
-    override suspend fun tryMassOpen(player: Player, amount: Int) = withContext(AsyncCtx) {
-        if (!canBeOpened(player, amount, OpenData(player, null, this@BasicCrate))) {
-            return@withContext
-        }
-        massOpen(
-            player,
-            amount,
-        )
+    override suspend fun tryMassOpen(player: Player, amount: Int): Unit = withContext(BasicOpenManager.CacheCtx) {
+        if (!canBeOpened(player, amount, OpenData(player, null, this@BasicCrate))) return@withContext
+        massOpen(player, amount)
     }
 
     override suspend fun massOpen(player: Player, amount: Int) {
-        withContext(AsyncCtx)  {
-            openManager.massOpen(player, amount)
-        }
+        openManager.massOpen(player, amount)
     }
 
     override fun openPreview(player: Player, placedCrate: SpawnedCrate?) {
@@ -154,21 +145,24 @@ class BasicCrate(
     }
 
 
-    fun canBeOpened(player: Player, amount: Int, openData: OpenData): Boolean {
+    suspend fun canBeOpened(player: Player, amount: Int, openData: OpenData): Boolean {
         for (handle in openRestrictions) {
             if (!handle.check(openData) { data, msg -> msg.updatePAPIPlaceholders(data.player) }) return false
         }
         val location = openData.location
+
         if (location != null) {
             val spawned = CrateHandler.spawned[location]
             if (spawned != null) {
-                if (animationManager.failAnimations[spawned]?.containsKey(player.uniqueId) == true) {
+                if (animationManager.failAnimations()[spawned]?.containsKey(player.uniqueId) == true) {
                     return false
                 }
             }
 
             val animationResult =
                 animationManager.animationSettings.canBeOpened(player, animationManager, location)
+
+
             when (animationResult) {
                 CrateAnimationSettings.AnimationResult.ALREADY_BEING_OPENED -> {
                     //player.sendMessage("You are already opening a crate!")
