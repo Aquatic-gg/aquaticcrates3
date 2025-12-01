@@ -184,6 +184,9 @@ object Bootstrap {
         }
 
         startTicker()
+
+        BaseCommand.setup().register()
+        /*
         AquaticBaseCommand(
             "aquaticcrates",
             "Base command of AquaticCrates plugin",
@@ -201,6 +204,7 @@ object Bootstrap {
             {
                 Messages.HELP.message
             }).register("aquaticcrates")
+         */
 
         event<AsyncPacketInventoryCloseEvent> {
             val inv = it.inventory
