@@ -42,7 +42,7 @@ object BaseCommand : KotlinBaseStellarCommand(
                 allPlayersArgument("player", true) {
                     requires("aquaticcrates.command.key.bank.other")
                 }
-                runnable<CommandSender> {
+                runnable<CommandSender>(true) {
                     val player = getOrNull<Player>("player")
 
                     if (player == null) {
@@ -92,7 +92,7 @@ object BaseCommand : KotlinBaseStellarCommand(
                     { CrateHandler.crates.keys.toList() },
                 ) {
                     allPlayersArgument("player", true) {
-                        asyncRunnable<CommandSender> {
+                        asyncRunnable<CommandSender>(true) {
                             val crateId: String by args
                             val player: Player by args
 
@@ -146,7 +146,7 @@ object BaseCommand : KotlinBaseStellarCommand(
                     "crateId",
                     { CrateHandler.crates.keys.toList() },
                 ) {
-                    asyncRunnable<CommandSender> {
+                    asyncRunnable<CommandSender>(true) {
                         val crateId: String by args
                         val amount = getOrNull<Int>("amount") ?: 1
                         val flags = getOrNull<String>("flags") ?: ""
@@ -249,7 +249,7 @@ object BaseCommand : KotlinBaseStellarCommand(
                             addWordSuggestions(1, "-nokey", "-instant")
                         }
 
-                        runnable<CommandSender>(scope = AsyncCtx.scope) {
+                        runnable<CommandSender>(scope = AsyncCtx.scope, alwaysApplicable = true) {
                             val crateId: String by args
                             val player: Player by args
                             val flags = getOrNull<String>("flags") ?: ""
@@ -295,7 +295,7 @@ object BaseCommand : KotlinBaseStellarCommand(
                                 addWordSuggestions(0, "-nokey")
                             }
 
-                            runnable<CommandSender>(scope = AsyncCtx.scope) {
+                            runnable<CommandSender>(scope = AsyncCtx.scope, alwaysApplicable = true) {
                                 val player: Player by args
                                 val crateId: String by args
 
