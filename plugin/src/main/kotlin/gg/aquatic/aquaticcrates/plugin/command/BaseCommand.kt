@@ -98,7 +98,7 @@ object BaseCommand : KotlinBaseStellarCommand(
                             val crate = CrateHandler.crates[crateId]
                             if (crate == null) {
                                 Messages.UNKNOWN_CRATE.message.send(sender)
-                                return@asyncRunnable false
+                                return@asyncRunnable
                             }
 
                             val amount = getOrNull<Int>("amount") ?: 1
@@ -111,7 +111,7 @@ object BaseCommand : KotlinBaseStellarCommand(
                                 val aPlayer = player.toAquaticPlayer()?.crateEntry()
                                 if (aPlayer == null) {
                                     sender.sendMessage("Player is not initialized!")
-                                    return@asyncRunnable false
+                                    return@asyncRunnable
                                 }
 
                                 aPlayer.give(amount, crate.identifier)
@@ -128,7 +128,6 @@ object BaseCommand : KotlinBaseStellarCommand(
                                 }.send(player)
                                 sender.sendMessage("Key given!")
                             }
-                            false
                         }
                         integerArgument("amount") {
                             phraseArgument("flags") {
@@ -153,7 +152,7 @@ object BaseCommand : KotlinBaseStellarCommand(
                         val crate = CrateHandler.crates[crateId]
                         if (crate == null) {
                             Messages.UNKNOWN_CRATE.message.send(sender)
-                            return@asyncRunnable false
+                            return@asyncRunnable
                         }
 
                         val isSilent = flags.contains("-s")
@@ -182,7 +181,6 @@ object BaseCommand : KotlinBaseStellarCommand(
                         if (!isSilent) {
                             sender.sendMessage("Key given to ${given.size} players!")
                         }
-                        false
                     }
                     integerArgument("amount") {
                         phraseArgument("flags") {
