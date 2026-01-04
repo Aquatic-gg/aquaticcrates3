@@ -2,7 +2,6 @@ package gg.aquatic.aquaticcrates.plugin.command
 
 import com.undefined.stellar.StellarCommand
 import com.undefined.stellar.kotlin.*
-import gg.aquatic.aquaticcrates.api.crate.Crate
 import gg.aquatic.aquaticcrates.api.crate.CrateHandler
 import gg.aquatic.aquaticcrates.api.crate.Key
 import gg.aquatic.aquaticcrates.api.crate.OpenableCrate
