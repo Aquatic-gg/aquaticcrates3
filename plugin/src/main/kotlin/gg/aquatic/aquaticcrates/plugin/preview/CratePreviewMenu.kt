@@ -40,7 +40,7 @@ class CratePreviewMenu(
     }
 
     init {
-        val mapped = rewards.map { it.first }
+        val mapped = rewards.mapNotNull { if (it.first.id !in possibleRewards) null else it.first }
         for (reward in mapped) {
             val chance = mapped.realChance(reward)
             rewardChances[reward] = chance
